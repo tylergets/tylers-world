@@ -123,16 +123,19 @@ export class Stage {
     const dbg = gl.getExtension('WEBGL_debug_renderer_info');
     this.gpu = dbg ? gl.getParameter(dbg.UNMASKED_RENDERER_WEBGL) : 'renderer unknown';
 
-    // Real GPU time per frame. Wall-clock around `render()` measures only how
+    // Real GPU time. Wall-clock around `render()` measures only how
     // long it took to SUBMIT the frame -- the GPU is still working when it
     // returns -- so CPU timing alone cannot tell a saturated GPU from an idle
-    // one. Timer queries are the only thing that can.
+    // one. Timer queries are the only thing that can. They are sampled rather
+    // than issued every frame: the quality controller runs twice per second,
+    // and continuously instrumenting the driver can itself become frame cost.
     this.timerExt = gl.getExtension('EXT_disjoint_timer_query_webgl2');
     this.gpuMs = 0;
     this.tViews = 0;      // ms walking our own scene nodes
     this.tSubmit = 0;     // ms inside three's render
     this._activeQuery = null;
     this._pendingQueries = [];
+    this._nextGpuSample = 0;
     this.renderer.shadowMap.enabled = true;
     this.renderer.shadowMap.type = THREE.PCFShadowMap;
 
@@ -505,17 +508,20 @@ export class Stage {
   }
 
   // ------------------------------------------------------- GPU timer query --
-  // TIME_ELAPSED_EXT allows exactly ONE query in flight at a time, and a result
-  // is not readable on the frame it was issued -- asking for it early would
-  // stall the pipeline, which is precisely the thing we are trying to measure.
-  // So: begin/end each frame, and collect whatever has ripened since.
+  // A result is not readable on the frame it was issued -- asking for it early
+  // would stall the pipeline, which is precisely the thing we are trying to
+  // measure. Keep one query outstanding and start a fresh sample at most four
+  // times per second.
 
   #beginGpuTimer() {
-    if (!this.timerExt || this._activeQuery) return;
+    const now = performance.now();
+    if (!this.timerExt || this._activeQuery || this._pendingQueries.length
+      || now < this._nextGpuSample) return;
     const gl = this.renderer.getContext();
     const q = gl.createQuery();
     gl.beginQuery(this.timerExt.TIME_ELAPSED_EXT, q);
     this._activeQuery = q;
+    this._nextGpuSample = now + 250;
   }
 
   #endGpuTimer() {
