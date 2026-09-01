@@ -41,15 +41,22 @@
 import * as THREE from 'three';
 import { CameraRig } from './CameraRig.js';
 import { buildTerrain, shorelineBlendUniform } from './Terrain.js';
-import { buildProps } from './props.js';
+import { buildProps, hideProp, leanProp } from './props.js';
+import { FixtureBatch } from './FixtureBatch.js';
 import { PlayerView } from './PlayerView.js';
 import { AnimalBatch } from './AnimalBatch.js';
 import { NpcView } from './NpcView.js';
 import { ItemBatch } from './ItemBatch.js';
+import { DigBatch } from './DigBatch.js';
 import { flatUniform, timeUniform } from './flatten.js';
+import { waterUniforms, WATER_LEVELS } from './water.js';
 
 /** Half-width of the shadow frustum, in tiles. Sized to the top-down view. */
 const SHADOW_SPAN = 17;
+
+/** How long a struck tree sways for, and how far its top leans while it does. */
+const SWAY_TIME = 0.34;
+const SWAY_AMOUNT = 0.055;
 
 /**
  * Ambience defaults, per place kind. A world file's `ambience` block overrides
@@ -173,10 +180,16 @@ export class Stage {
     this.fauna = new Map();     // place id -> AnimalBatch
     this.folkViews = new Map(); // place id -> { group, pairs } of npc views
     this.loose = new Map();     // place id -> { batch, version } of item instances
+    this.digs = new Map();      // place id -> { batch, version } of hole instances
+    this.fixtures = new Map();  // place id -> FixtureBatch of animated kit parts
     this.live = null;           // the fauna entry currently in the scene
     this.liveFolk = null;       // the npc entry currently in the scene
     this.liveLoose = null;      // the item entry currently in the scene
+    this.liveDigs = null;       // the hole entry currently in the scene
+    this.liveFixtures = null;   // the fixture batch currently in the scene
     this.ground = null;         // the Ground it is mirroring
+    this.edits = null;          // the Edits it is mirroring
+    this.chopping = null;       // { key, until } while a struck prop is still swaying
     this.group = null;          // the one currently in the scene
     this.amb = AMBIENCE.exterior;
     this.sky3d = new THREE.Color(this.amb.sky);
@@ -236,6 +249,16 @@ export class Stage {
   /** Blend amount for natural sand/water transitions; zero restores hard tiles. */
   setShorelineBlend(amount) {
     shorelineBlendUniform.value = Math.max(0, Math.min(1, amount));
+  }
+
+  /**
+   * How much water the machine is asked to draw: 0 plain, 1 ripples, 2 sunlit.
+   *
+   * A uniform, so this costs one number and no recompile -- see water.js for
+   * what each level buys and why it is a preference at all.
+   */
+  setWaterQuality(level) {
+    waterUniforms.quality.value = Math.max(0, Math.min(WATER_LEVELS - 1, Math.round(level)));
   }
 
   // 2.0 on a HiDPI display quadruples fragment cost for a barely visible gain,
@@ -340,16 +363,31 @@ export class Stage {
     for (const { group } of this.fauna.values()) killShared(group);
     for (const { group } of this.folkViews.values()) killShared(group);
     for (const { group } of this.loose.values()) killShared(group);
+    // The one live batch that owns real geometry: the per-instance ground
+    // height rides on a clone of the shared primitive, so a fixture batch has
+    // something to free where an animal view has nothing.
+    for (const batch of this.fixtures.values()) {
+      batch?.dispose();
+      batch?.group.parent?.remove(batch.group);
+    }
+    // Holes are a view of the same kind as the items: one shared model, one
+    // per-place instance buffer, and only the buffer is ours to free.
+    for (const { group } of this.digs.values()) killShared(group);
 
     this.built.clear();
     this.fauna.clear();
     this.folkViews.clear();
     this.loose.clear();
+    this.fixtures.clear();
+    this.digs.clear();
     // Every one of these pointed into a cache that no longer has anything in
     // it. Left set, the next setWorld would try to remove a group that is not
     // in the scene, and `toggleGroup` would toggle the visibility of a corpse.
-    this.live = this.liveFolk = this.liveLoose = null;
+    this.live = this.liveFolk = this.liveLoose = this.liveDigs = null;
+    this.liveFixtures = null;
     this.ground = null;
+    this.edits = null;
+    this.chopping = null;
     this.group = null;
     this.terrain = null;
     this.world = null;
@@ -397,7 +435,41 @@ export class Stage {
     this.scene.add(group);
     this.setMarker(null);
 
+    this.#setFixtures(world);
     this.#applyAmbience(world);
+  }
+
+  /**
+   * The animated parts of this place's fixtures.
+   *
+   * Built from the World and not from a sim class, which makes it the one live
+   * group that is not mirroring anything: which parts of a fountain move is a
+   * fact about its kit file, exactly as its basin's shape is, and no amount of
+   * playing changes it. What playing CAN change is whether the fountain is
+   * still there -- and that arrives through `#syncEdits`, the same path that
+   * collapses the baked half.
+   *
+   * Cached per place beside the geometry, so re-entering a courtyard is an
+   * `add` rather than a re-gather. A place with no animated fixture in it
+   * builds nothing and adds nothing.
+   */
+  #setFixtures(world) {
+    if (this.liveFixtures) this.scene.remove(this.liveFixtures.group);
+    this.liveFixtures = null;
+
+    const id = world.meta.id;
+    let batch = this.fixtures.get(id);
+    if (batch === undefined) {
+      batch = new FixtureBatch(world);
+      // Cached even when empty, so a place without fixtures is one Map hit on
+      // re-entry instead of a re-scan of every object in it.
+      this.fixtures.set(id, batch.empty ? null : batch);
+      if (batch.empty) batch = null;
+    }
+    if (!batch) return;
+
+    this.liveFixtures = batch;
+    this.scene.add(batch.group);
   }
 
   /**
@@ -491,6 +563,85 @@ export class Stage {
     entry.batch.reconcile(ground.items);
   }
 
+  /**
+   * Show what the player has DONE to a place: its holes, and the gaps where
+   * its trees used to be.
+   *
+   * Takes the Edits rather than the World for the reason setGround takes the
+   * Ground -- the file says which trees a place opens with, and which of them
+   * are still standing is simulation state (sim/Edits.js).
+   *
+   * Both halves ride one version counter, so the common case is one integer
+   * compare, and both are idempotent: re-entering a place re-applies the whole
+   * felled set to geometry that already has those spans collapsed, which costs
+   * nothing and removes any need to remember what was applied when.
+   */
+  setEdits(edits) {
+    if (this.liveDigs) this.scene.remove(this.liveDigs.group);
+
+    const id = edits.world.meta.id;
+    let entry = this.digs.get(id);
+    if (!entry) {
+      const batch = new DigBatch();
+      batch.group.name = `digs:${id}`;
+      // -1 so a fresh entry always reconciles once, exactly as the items do.
+      this.digs.set(id, (entry = { batch, group: batch.group, version: -1 }));
+    }
+
+    this.edits = edits;
+    this.liveDigs = entry;
+    this.chopping = null;
+    this.scene.add(entry.group);
+    this.#syncEdits();
+  }
+
+  #syncEdits() {
+    const entry = this.liveDigs, edits = this.edits;
+    if (!entry || !edits || entry.version === edits.version) return;
+    entry.version = edits.version;
+    entry.batch.reconcile(edits.holeList);
+    for (const id of edits.felled) {
+      hideProp(this.group, id);
+      // Every tree was meshed with a stump waiting under its trunk. Felling
+      // reveals it; grubbing it out with a shovel collapses that span too.
+      if (!edits.hasStump(id)) hideProp(this.group, `${id}:stump`);
+      // A fixture's baked half and its moving half are one object and always go
+      // together. A basin that has been removed with its water still hanging in
+      // the air is the most conspicuous bug this format could produce.
+      this.liveFixtures?.setHidden(id, true);
+    }
+  }
+
+  /**
+   * A blow that did not fell it: sway the prop for a moment.
+   *
+   * Recorded rather than animated on the spot, because the swing happens in the
+   * simulation's update and the geometry has to move on every frame until it
+   * settles. The clock is the same `time` the render already runs on, so this
+   * needs no tick of its own -- and a chop that lands while the last one is
+   * still swaying simply restarts it from the top.
+   */
+  chopHit(key, time) {
+    if (this.chopping) leanProp(this.group, this.chopping.key, 0, 0);
+    this.chopping = key ? { key, start: time } : null;
+  }
+
+  /** Advance the sway, and put the prop straight again when it is spent. */
+  #sway(time) {
+    const c = this.chopping;
+    if (!c) return;
+    const u = (time - c.start) / SWAY_TIME;
+    if (u >= 1) {
+      leanProp(this.group, c.key, 0, 0);
+      this.chopping = null;
+      return;
+    }
+    // Two swings of a decaying wobble: enough to read as impact, short enough
+    // that a fast chopper never sees the tree drift.
+    const amp = SWAY_AMOUNT * Math.sin(u * Math.PI * 2) * (1 - u);
+    leanProp(this.group, c.key, amp, amp * 0.4);
+  }
+
   #applyAmbience(world) {
     const base = AMBIENCE[world.kind] ?? AMBIENCE.exterior;
     this.amb = { ...base, ...(world.ambience ?? {}) };
@@ -500,6 +651,12 @@ export class Stage {
 
     this.sun.intensity = this.amb.sun;
     this.sun.color.set(this.amb.sunColor);
+    // The glint on the water has to come from THIS place's sun, or the
+    // highlight sits somewhere the light plainly is not. The offset is where
+    // the sun stands relative to the player, so normalised it is the direction
+    // any point on the water looks to find it.
+    waterUniforms.sun.value.set(...this.amb.sunOffset).normalize();
+    waterUniforms.sunColor.value.set(this.amb.sunColor);
     this.hemi.intensity = this.amb.hemi;
     this.hemi.color.set(this.amb.hemiSky);
     this.hemi.groundColor.set(this.amb.hemiGround);
@@ -518,7 +675,7 @@ export class Stage {
   /**
    * @param {Player} player
    * @param {number} t      raw morph amount in [0,1]
-   * @param {number} time   seconds, for the water shimmer
+   * @param {number} time   seconds, for the water surface
    */
   render(player, t, time) {
     const mark0 = performance.now();
@@ -537,6 +694,9 @@ export class Stage {
     this.scene.fog.far = fogFar + e * 8000;
     this.bg.copy(this.sky3d).lerp(this.sky2d, e);
     this.scene.fog.color.copy(this.bg);
+    // Water reflects the sky the player can actually see behind it, including
+    // while that sky is lerping toward the flat one mid-morph.
+    waterUniforms.sky.value.copy(this.bg);
 
     // Keep the shadow frustum centred on the player.
     const [ox, oy, oz] = this.amb.sunOffset;
@@ -561,6 +721,14 @@ export class Stage {
     if (this.liveFolk) for (const { npc, view } of this.liveFolk.pairs) view.update(npc, e, tilt, time);
     this.#syncGround();
     this.liveLoose?.batch.update(e, tilt, time);
+    // Holes and felled props: one version compare on a still frame, and the
+    // sway is the only thing here that touches a merged buffer per frame --
+    // one prop's worth of vertices, and only while a tree is being chopped.
+    this.#syncEdits();
+    // Animated kit parts. Purely a function of the clock (see FixtureBatch), so
+    // it runs after the edit sync that may have just hidden some of them.
+    this.liveFixtures?.update(time);
+    this.#sway(time);
     // Everything above walks OUR nodes; everything below is three's. Splitting
     // the two is what separates "we are doing too much per frame" from "three
     // is doing too much with what we gave it" -- and with the GPU idle at a few

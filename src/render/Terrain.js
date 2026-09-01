@@ -21,6 +21,7 @@ import { FLAG } from '../world/WorldFile.js';
 import { hashString } from '../core/rng.js';
 import { GeoBuilder } from './geo.js';
 import { flatUniform, timeUniform } from './flatten.js';
+import { waterUniforms, WATER_FRAGMENT, WATER_FRAGMENT_HEAD } from './water.js';
 import { buildBorder } from './border.js';
 
 /**
@@ -214,9 +215,10 @@ export function buildTerrain(world) {
 
 /**
  * Terrain material: the flatten morph, plus two things only the ground needs --
- * an animated water shimmer, and tile grid lines that fade in as the view goes
- * top-down. DoubleSide because wall winding depends on which neighbour is
- * taller, and getting that wrong is a whole class of bug worth designing out.
+ * the water surface (see water.js for its three levels), and tile grid lines
+ * that fade in as the view goes top-down. DoubleSide because wall winding
+ * depends on which neighbour is taller, and getting that wrong is a whole
+ * class of bug worth designing out.
  */
 function terrainMaterial() {
   const m = new THREE.MeshLambertMaterial({ vertexColors: true, side: THREE.DoubleSide });
@@ -225,6 +227,10 @@ function terrainMaterial() {
     shader.uniforms.uFlat = flatUniform;
     shader.uniforms.uTime = timeUniform;
     shader.uniforms.uShorelineBlend = shorelineBlendUniform;
+    shader.uniforms.uWaterQuality = waterUniforms.quality;
+    shader.uniforms.uSunDir = waterUniforms.sun;
+    shader.uniforms.uSunColor = waterUniforms.sunColor;
+    shader.uniforms.uSkyColor = waterUniforms.sky;
 
     shader.vertexShader = shader.vertexShader
       .replace('#include <common>', `#include <common>
@@ -234,27 +240,25 @@ function terrainMaterial() {
         varying vec2 vLocal;
         varying float vWater;
         varying float vShore;
-        varying vec2 vWorldXZ;`)
+        varying vec3 vWorldPos;`)
       .replace('#include <begin_vertex>', `#include <begin_vertex>
         vLocal = aLocal;
         vWater = aWater;
         vShore = aShore;
-        vWorldXZ = (modelMatrix * vec4(transformed, 1.0)).xz;`);
+        vWorldPos = (modelMatrix * vec4(transformed, 1.0)).xyz;`);
 
     shader.fragmentShader = shader.fragmentShader
       .replace('#include <common>', `#include <common>
         uniform float uFlat;
         uniform float uTime;
         uniform float uShorelineBlend;
+        ${WATER_FRAGMENT_HEAD}
         varying vec2 vLocal;
         varying float vWater;
         varying float vShore;
-        varying vec2 vWorldXZ;`)
+        varying vec3 vWorldPos;`)
       .replace('#include <opaque_fragment>', `
-        // Crossed travelling waves; cheap, and enough to keep water alive.
-        float s1 = sin(vWorldXZ.x * 1.5 + vWorldXZ.y * 0.9 + uTime * 1.3) * 0.5 + 0.5;
-        float s2 = sin(vWorldXZ.x * 0.7 - vWorldXZ.y * 1.9 - uTime * 0.9) * 0.5 + 0.5;
-        outgoingLight += vWater * pow(s1 * s2, 2.0) * 0.14;
+        ${WATER_FRAGMENT}
 
         outgoingLight = mix(outgoingLight, diffuseColor.rgb * 1.04, uFlat);
 
@@ -264,8 +268,8 @@ function terrainMaterial() {
         // gets wet, shallow water warms toward turquoise, and a thin animated
         // foam line ties the two sides together. Applied after the flat-shading
         // morph so it remains visible (but quieter) on the top-down map.
-        float shoreNoise = sin(vWorldXZ.x * 8.3 + vWorldXZ.y * 5.7)
-          * sin(vWorldXZ.x * 3.1 - vWorldXZ.y * 7.9) * 0.055;
+        float shoreNoise = sin(vWorldPos.x * 8.3 + vWorldPos.z * 5.7)
+          * sin(vWorldPos.x * 3.1 - vWorldPos.z * 7.9) * 0.055;
         float shore = smoothstep(0.08 + shoreNoise, 0.94 + shoreNoise, vShore);
         float shorelineDetail = uShorelineBlend * (1.0 - uFlat * 0.62);
         float wetSand = shore * (1.0 - vWater);
@@ -274,7 +278,7 @@ function terrainMaterial() {
           wetSand * 0.52 * shorelineDetail);
         outgoingLight = mix(outgoingLight, vec3(0.33, 0.68, 0.72),
           shallows * 0.34 * shorelineDetail);
-        float foamPulse = 0.72 + 0.28 * sin(uTime * 1.8 + vWorldXZ.x * 5.2 + vWorldXZ.y * 3.7);
+        float foamPulse = 0.72 + 0.28 * sin(uTime * 1.8 + vWorldPos.x * 5.2 + vWorldPos.z * 3.7);
         float foam = smoothstep(0.76 + shoreNoise, 0.98, vShore) * vWater * foamPulse;
         outgoingLight += vec3(0.30, 0.29, 0.24) * foam * shorelineDetail;
 
@@ -286,6 +290,6 @@ function terrainMaterial() {
 
         #include <opaque_fragment>`);
   };
-  m.customProgramCacheKey = () => 'terrain-shoreline-v1';
+  m.customProgramCacheKey = () => 'terrain-shoreline-water-v2';
   return m;
 }

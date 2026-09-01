@@ -43,6 +43,9 @@ import { Fauna } from './sim/Fauna.js';
 import { Folk } from './sim/Folk.js';
 import { Dialogue } from './sim/Dialogue.js';
 import { Ground } from './sim/Ground.js';
+import { Edits } from './sim/Edits.js';
+import { Fixtures, interactOf } from './sim/Fixtures.js';
+import { toolTarget, chopDrops, stumpDrops, digFind } from './sim/tools.js';
 import { FreeInput, GridInput } from './sim/inputs.js';
 import { findPath } from './sim/pathfind.js';
 import { Keyboard } from './sim/Keyboard.js';
@@ -52,7 +55,8 @@ import { Chat } from './ui/dialogue.js';
 import { VOICE_MODES } from './audio/voice.js';
 import { generate, worldId } from './world/generate.js';
 import {
-  SHORELINE_STYLES, readGraphicsSettings, writeGraphicsSettings,
+  SHORELINE_STYLES, WATER_STYLES, MAP_MODES, MAP_SIZES,
+  readGraphicsSettings, writeGraphicsSettings,
 } from './settings/graphics.js';
 import {
   SAVE_VERSION, listSaves, readSave, writeSave, deleteSave,
@@ -104,6 +108,16 @@ const TRESPASS_GRACE = 7;
 const AUTOSAVE_EVERY = 15;
 
 /**
+ * How long a fixture's line stays in the corner, in seconds.
+ *
+ * Long enough to read twice, short enough that walking away is how you dismiss
+ * it. There is no key to close it on purpose: a message you must acknowledge is
+ * a message that has interrupted you, and dropping a coin in a fountain has not
+ * earned that.
+ */
+const NOTE_TIME = 4.5;
+
+/**
  * Where the chosen NPC voice is remembered.
  *
  * A preference and not game state, so it lives in localStorage rather than in
@@ -120,6 +134,8 @@ class Game {
     this.fauna = new Map();// place id -> its live animals, kept across visits
     this.folk = new Map(); // place id -> its live people, likewise -- and they remember
     this.grounds = new Map();// place id -> its loose items, likewise
+    this.changes = new Map();// place id -> what the player has chopped and dug there
+    this.fittings = new Map();// place id -> what its fixtures remember (sim/Fixtures.js)
     this.travel = null;    // the doorway fade in progress, if any
     this.trespass = null;  // { zone, t } while standing somewhere unwelcome
     this.legalTile = null; // the last tile in THIS place we were welcome on
@@ -127,6 +143,7 @@ class Game {
     this.graphics = readGraphicsSettings();
     this.stage = new Stage(canvas);
     this.stage.setShorelineBlend(this.graphics.shoreline === 'natural' ? 1 : 0);
+    this.stage.setWaterQuality(WATER_STYLES.indexOf(this.graphics.water));
     this.player = new Player(world);
     this.keys = new Keyboard();
     canvas.addEventListener('pointerdown', (e) => this.pointAt(e));
@@ -164,6 +181,8 @@ class Game {
       onToggle: () => this.toggleView(),
       onVoice: () => this.cycleVoice(),
       onShoreline: () => this.cycleShoreline(),
+      onWater: () => this.cycleWater(),
+      onMap: (sizesOnly) => this.cycleMap(sizesOnly),
       onWorlds: () => this.openWorlds(),
     });
 
@@ -185,6 +204,8 @@ class Game {
     this.chat = new Chat(hudRoot, { mode: readVoiceMode() });
     this.hud.setVoice(this.chat.mode);
     this.hud.setShoreline(this.graphics.shoreline);
+    this.hud.setWater(this.graphics.water);
+    this.hud.setMap(this.graphics.map);
 
     this.setPlace(world, world.spawn.tile, world.spawn.facing);
 
@@ -197,8 +218,10 @@ class Game {
     // mostly scheduler noise at this resolution.
     this.msUpdate = 0; this.msRender = 0;
     this.msViews = 0; this.msSubmit = 0;
+    this.msMap = 0;
     this._updAccum = 0; this._rndAccum = 0;
     this._viewAccum = 0; this._subAccum = 0;
+    this._mapAccum = 0;
     this._last = performance.now();
     this._onResize = () => this.resize();
     addEventListener('resize', this._onResize);
@@ -235,6 +258,39 @@ class Game {
     this.graphics.shoreline = SHORELINE_STYLES[(current + 1) % SHORELINE_STYLES.length];
     this.stage.setShorelineBlend(this.graphics.shoreline === 'natural' ? 1 : 0);
     this.hud.setShoreline(this.graphics.shoreline);
+    writeGraphicsSettings(this.graphics);
+  }
+
+  /**
+   * Step through the water levels, cheapest to best and round again.
+   *
+   * Free, like the shoreline: the level is a shader uniform, so nothing is
+   * recompiled and no terrain is rebuilt. That is what lets a player stand on
+   * a beach and flick between all three to see which one their machine likes.
+   */
+  cycleWater() {
+    const current = WATER_STYLES.indexOf(this.graphics.water);
+    this.graphics.water = WATER_STYLES[(current + 1) % WATER_STYLES.length];
+    this.stage.setWaterQuality(WATER_STYLES.indexOf(this.graphics.water));
+    this.hud.setWater(this.graphics.water);
+    writeGraphicsSettings(this.graphics);
+  }
+
+  /**
+   * Step the minimap on: through its sizes, and -- only from the key or the
+   * drawer -- off.
+   *
+   * `sizesOnly` is what clicking the map itself passes, and it is the whole
+   * reason there are two lists in graphics.js: zooming the map by clicking it
+   * must never be able to close it. A mode that is not in the list being cycled
+   * lands on its first entry, which is what brings a map that was off back at
+   * its default size rather than leaving the click doing nothing.
+   */
+  cycleMap(sizesOnly = false) {
+    const modes = sizesOnly ? MAP_SIZES : MAP_MODES;
+    const current = modes.indexOf(this.graphics.map);
+    this.graphics.map = modes[(current + 1) % modes.length];
+    this.hud.setMap(this.graphics.map);
     writeGraphicsSettings(this.graphics);
   }
 
@@ -293,6 +349,9 @@ class Game {
     this.stage.setFolk(this.people);
     this.loose = this.groundFor(world);
     this.stage.setGround(this.loose);
+    this.edits = this.editsFor(world);
+    this.stage.setEdits(this.edits);
+    this.fixtures = this.fixturesFor(world);
     this.player.placeIn(world, tile, facing);
     // A conversation is with someone in the room you just left. Ending it here
     // rather than in `enter` covers every way of leaving, including the ones
@@ -374,6 +433,47 @@ class Game {
     return this.pending?.[world.meta.id]?.[part] ?? null;
   }
 
+  /**
+   * What the player has changed about a place, created on first visit and KEPT
+   * -- for the reason the Ground is, and with the same consequence if it were
+   * not. A rebuilt Edits would stand every tree you had felled back up and fill
+   * in every hole you had dug the moment you stepped through a door.
+   *
+   * It is also the one of the three that reaches into the World: the collision
+   * and occupancy indices the simulation reads every frame have to agree that
+   * the tree is gone. Creating it here, where the place is first built, is what
+   * keeps that application in one place -- and what makes a save's edits arrive
+   * at the same moment its items and its people do.
+   */
+  editsFor(world) {
+    let edits = this.changes.get(world.meta.id);
+    if (!edits) {
+      this.changes.set(world.meta.id, (edits = new Edits(world)));
+      edits.restore(this.#claim(world, 'edits'));
+    }
+    return edits;
+  }
+
+  /**
+   * What this place's fixtures remember -- the fourth thing cached per place,
+   * on exactly the terms of the other three.
+   *
+   * Nothing tells the Stage about it. The animated half of a fountain is a fact
+   * about its kit file and is built straight off the World (see
+   * `Stage.#setFixtures`); this holds only what has HAPPENED to one, which no
+   * renderer has any use for. That is the cleanest evidence the split in
+   * world/kit.js is in the right place: the two halves of a fixture have
+   * different lifetimes and neither file has to know about the other.
+   */
+  fixturesFor(world) {
+    let fixtures = this.fittings.get(world.meta.id);
+    if (!fixtures) {
+      this.fittings.set(world.meta.id, (fixtures = new Fixtures(world)));
+      fixtures.restore(this.#claim(world, 'fixtures'));
+    }
+    return fixtures;
+  }
+
   tileKey() { return `${this.player.tileX},${this.player.tileZ}`; }
 
   // --------------------------------------------------------- saved games --
@@ -404,6 +504,13 @@ class Game {
    */
   beginSession(world, { source, saveId, name, pending = null, restore = null }) {
     this.places.reset(world);
+    // Put the place back the way its file describes it. A World is cached by
+    // URL and survives a session ending (world/places.js), so the town this
+    // game is about to open in may be the one the LAST game chopped its way
+    // through -- and its edits belong to that save, not to this one. Every
+    // other place is dropped wholesale by the reset above; this is the single
+    // survivor, because it is the world we are about to stand in.
+    world.revert();
     // The renderer caches a meshed group per world id and never disposes one,
     // which is right for a session that visits a town and its rooms and wrong
     // the moment a session can visit a different town. Dropping the Worlds
@@ -413,10 +520,13 @@ class Game {
     this.fauna.clear();
     this.folk.clear();
     this.grounds.clear();
+    this.changes.clear();
+    this.fittings.clear();
     this.placeUrls.clear();
     this.stack.length = 0;
     this.travel = null;
     this.fadeEl.style.opacity = 0;
+    this.fadeEl.classList.remove('fading');
 
     this.source = source;
     this.saveId = saveId;
@@ -429,6 +539,15 @@ class Game {
     this.player.inventory.restore(restore?.inventory ?? { slots: [], selected: 0 });
     this.player.purse.restore(restore?.coins);
     this.player.friends.restore(restore?.friends ?? []);
+    // A new game starts with the two tools in the bag. They are ordinary items
+    // -- sellable, droppable, and buyable again over a counter -- so this is a
+    // starting KIT and not a permanent ability. What it buys is that every
+    // world can be chopped and dug from the first minute, including a generated
+    // one, which has trees and beaches but no shop to sell you a spade.
+    if (!restore) {
+      this.player.inventory.add('tool.axe', 1);
+      this.player.inventory.add('tool.shovel', 1);
+    }
 
     this.setPlace(world, world.spawn.tile, world.spawn.facing);
     this._savedStamp = null;   // force the next autosave to write
@@ -554,7 +673,9 @@ class Game {
     const places = {};
     for (const [id, part] of Object.entries(this.pending ?? {})) places[id] = { ...part };
     for (const [id, ground] of this.grounds) (places[id] ??= {}).ground = ground.snapshot();
+    for (const [id, edits] of this.changes) (places[id] ??= {}).edits = edits.snapshot();
     for (const [id, folk] of this.folk) (places[id] ??= {}).folk = folk.snapshot();
+    for (const [id, fx] of this.fittings) (places[id] ??= {}).fixtures = fx.snapshot();
     for (const [id, part] of Object.entries(places)) {
       part.url = this.placeUrls.get(id) ?? part.url ?? null;
     }
@@ -609,7 +730,8 @@ class Game {
     const p = this.player;
     return `${this.world.meta.id}|${p.tileX},${p.tileZ}|${this.stack.length}`
       + `|${p.inventory.version}|${p.purse.version}|${p.friends.version}`
-      + `|${this.loose.version}|${this._talked ?? 0}`;
+      + `|${this.loose.version}|${this.edits.version}|${this.fixtures.version}`
+      + `|${this._talked ?? 0}`;
   }
 
   /**
@@ -685,6 +807,9 @@ class Game {
    */
   beginTravel(placePromise, arrive) {
     if (this.travel) return;   // already going somewhere
+    // Promote the fade to its own layer for exactly as long as it animates.
+    // See the note on #fade in index.html for why it must not be permanent.
+    this.fadeEl.classList.add('fading');
     const tr = this.travel = { t: 0, phase: 'out', arrive: null, failed: false };
     placePromise.then(
       (world) => { tr.arrive = () => arrive(world); },
@@ -707,6 +832,9 @@ class Game {
 
     const dark = !this.travel ? 0 : (this.travel.phase === 'out' ? this.travel.t : 1 - this.travel.t);
     this.fadeEl.style.opacity = dark;
+    // Drop the layer promotion on the frame the fade finishes, not later: the
+    // whole point is that it does not outlive the animation.
+    if (!this.travel) this.fadeEl.classList.remove('fading');
   }
 
   // ------------------------------------------------------------- trespass --
@@ -819,18 +947,36 @@ class Game {
    *
    *   1. an NPC on the tile ahead -- pointing at someone is unambiguous
    *   2. an item in reach -- underfoot or ahead, as `reachable` defines it
-   *   3. an NPC within `TALK_RANGE` -- the fallback that makes counters work,
+   *   3. a FIXTURE on the tile ahead, if its kit offers something here
+   *   4. an NPC within `TALK_RANGE` -- the fallback that makes counters work,
    *      and deliberately LAST: a shopkeeper two tiles away must not quietly
    *      eat the key you were using to pick apples up off his floor.
    *
-   * Nothing here mutates: the HUD asks ten times a second.
+   * A fixture sits at 3 rather than 1 because it is a solid object you can only
+   * ever face, never stand on: an apple at your feet in front of a fountain is
+   * still an apple you meant to pick up. It sits above the merely-nearby NPC
+   * for the same reason the faced NPC does -- what you are pointing at wins.
+   *
+   * Nothing here mutates: the HUD asks ten times a second. That constraint is
+   * why a fixture's `when` is data and only its body is script (world/kit.js).
    */
   interaction() {
-    const ahead = this.people?.at(...this.player.aheadTile());
+    const [ax, az] = this.player.aheadTile();
+    const ahead = this.people?.at(ax, az);
     if (ahead?.talkable) return { kind: 'talk', npc: ahead };
 
     const item = this.reachable();
     if (item) return { kind: 'take', item };
+
+    // The `interactOf` test before `tradeCtx` is not micro-optimisation: this
+    // method is polled ten times a second, and building a context object for
+    // every wall and tree the player happens to be facing is garbage generated
+    // by a query that is supposed to be free.
+    const obj = this.world.objectAt(ax, az);
+    if (obj && interactOf(obj.type)) {
+      const fixture = this.fixtures?.target(obj, this.tradeCtx());
+      if (fixture) return { kind: 'use', fixture };
+    }
 
     const near = this.people?.nearest(this.player.x, this.player.z, TALK_RANGE);
     return near ? { kind: 'talk', npc: near } : null;
@@ -841,7 +987,33 @@ class Game {
     const what = this.interaction();
     if (!what) return;
     if (what.kind === 'take') this.take();
+    else if (what.kind === 'use') this.use(what.fixture);
     else this.talk(what.npc);
+  }
+
+  /**
+   * Use a fixture, and put whatever it said on screen.
+   *
+   * The line is a HUD note rather than a dialog box, and that is a judgement
+   * about what an interaction IS: a conversation is a thing you are held in
+   * until you step out of it, and dropping a coin in a fountain is a thing you
+   * do on the way past. Making it modal would turn a two-second flourish into
+   * something you have to dismiss.
+   */
+  use(fixture) {
+    const result = this.fixtures.use(fixture.object, this.tradeCtx());
+    if (result.lines.length) this.note(result.lines.join(' '));
+    return result.ok;
+  }
+
+  /**
+   * Say one line in the corner for a few seconds.
+   *
+   * Kept as data with an expiry rather than a DOM write, so the HUD stays the
+   * only thing that draws and this stays the only thing that decides.
+   */
+  note(text) {
+    this.notice = { text, until: this.time + NOTE_TIME };
   }
 
   /**
@@ -956,6 +1128,125 @@ class Game {
     return this.loose.drop(gone.typeId, spot[0], spot[1]);
   }
 
+  // ----------------------------------------------------------------- tools --
+
+  /**
+   * What a press of the tool key would do right now, or null.
+   *
+   *   { verb: 'chop' | 'dig' | 'fill', tile, label, blocked, ... }
+   *
+   * A SECOND KEY, and deliberately not a third case inside E. E is the key for
+   * whatever is in front of you -- a person, a thing on the floor, a door --
+   * and what it does is decided by the world. A tool is decided by what you are
+   * HOLDING, which is the only control in the game the player sets in advance,
+   * and folding it into E would mean the shopkeeper two tiles away quietly
+   * losing an argument with the shovel in your hand. One key each, and the HUD
+   * can tell the truth about both at once.
+   *
+   * The resolver itself lives in sim/tools.js and mutates nothing, for the
+   * reason the interaction resolver does not: the HUD asks it ten times a
+   * second.
+   */
+  toolAction() {
+    const held = this.player.inventory.held;
+    return toolTarget({
+      world: this.world,
+      edits: this.edits,
+      ground: this.loose,
+      people: this.people,
+      fauna: this.live,
+      player: this.player,
+      typeId: held?.typeId ?? null,
+    });
+  }
+
+  /** Do whatever the held tool does here. */
+  useTool() {
+    const what = this.toolAction();
+    if (!what || what.blocked) return null;
+    if (what.verb === 'chop') return this.chop(what);
+    if (what.verb === 'dig') return this.dig(what);
+    if (what.verb === 'fill') return this.edits.fill(...what.tile) ? what : null;
+    if (what.verb === 'clear') return this.grub(what);
+    return null;
+  }
+
+  /**
+   * Take a stump out of the ground.
+   *
+   * The last step of clearing a patch of land, and the reason the axe does not
+   * do it: felling a tree and grubbing out what is left are two jobs, and
+   * giving the second one to the shovel is what makes owning both tools mean
+   * something beyond owning one of each.
+   */
+  grub(what) {
+    const id = this.edits.clearStump(...what.tile);
+    if (!id) return null;
+    for (const typeId of stumpDrops(id)) this.spill(typeId, what.tile);
+    return what;
+  }
+
+  /**
+   * Land one blow on a tree, and fell it on the last one.
+   *
+   * Several swings rather than one, because a tree that vanishes on a single
+   * keypress reads as a deletion rather than as work -- and because the swings
+   * are what the HUD counts, which is the only way the player learns that
+   * chopping has a cost before it is over. The sway between them is the same
+   * fact told to the eye (render/Stage.js).
+   */
+  chop(what) {
+    const obj = what.object;
+    if (this.edits.swing(obj) < what.swings) {
+      this.stage.chopHit(obj.id, this.time);
+      return what;
+    }
+    // Straighten whatever is still swaying BEFORE the trunk goes: a sway that
+    // outlived its tree would lean a span that is no longer there.
+    this.stage.chopHit(null);
+    this.edits.fell(obj);
+    for (const typeId of chopDrops(obj)) this.spill(typeId, what.tile);
+    return what;
+  }
+
+  /**
+   * Open a hole, and hand over whatever was under it.
+   *
+   * The find is rolled BEFORE the hole exists, because the place's dig counter
+   * is what seeds it and digging is what increments that counter -- see
+   * sim/tools.js on why one lucky tile cannot become a shell mine.
+   */
+  dig(what) {
+    const [x, z] = what.tile;
+    const found = digFind(this.world, x, z, this.edits.digs);
+    if (!this.edits.dig(x, z)) return null;
+    if (found) this.spill(found, what.tile);
+    return what;
+  }
+
+  /**
+   * Put something the world has just produced where the player can reach it.
+   *
+   * ONTO THE GROUND FIRST and into the pockets second, which is the reverse of
+   * picking something up, and on purpose. Three sticks posted straight into a
+   * bag with one slot free would silently eat two of them; wood left lying
+   * where the tree fell is both the honest version and the one you can watch
+   * happen. The spiral is small -- a stump and a hole are each surrounded by
+   * open ground -- and if two rings of tiles are all spoken for then the bag is
+   * the better answer anyway.
+   */
+  spill(typeId, [x, z]) {
+    for (let r = 0; r <= 2; r++) {
+      for (let dz = -r; dz <= r; dz++) {
+        for (let dx = -r; dx <= r; dx++) {
+          if (Math.max(Math.abs(dx), Math.abs(dz)) !== r) continue;
+          if (this.loose.canDrop(x + dx, z + dz)) return this.loose.drop(typeId, x + dx, z + dz);
+        }
+      }
+    }
+    return this.player.inventory.add(typeId, 1) > 0;
+  }
+
   /**
    * Drive the open conversation from the keyboard, and close it when it ends.
    *
@@ -1052,6 +1343,8 @@ class Game {
     // change the render scale instead of answering the shopkeeper.
     if (this.keys.pressed('Tab') || this.keys.pressed('KeyV')) this.toggleView();
 
+    if (this.keys.pressed('KeyN')) this.cycleMap();
+
     if (this.keys.pressed('KeyO')) { this.openWorlds(); this.keys.endFrame(); return; }
 
     // Perf probes. Setting one by hand pins it, so auto-scaling stops fighting.
@@ -1087,6 +1380,7 @@ class Game {
     // the apple, and it belongs to the place you took it in.
     if (this.keys.pressed('KeyE') || this.keys.pressed('Space')) this.interact();
     if (this.keys.pressed('KeyQ')) this.drop();
+    if (this.keys.pressed('KeyF')) this.useTool();
     if (this.keys.pressed('BracketLeft')) this.player.inventory.cycle(-1);
     if (this.keys.pressed('BracketRight')) this.player.inventory.cycle(1);
     // Only the live place's animals tick. A town whose chickens kept walking
@@ -1154,8 +1448,21 @@ class Game {
     const slow = 1000 / this.fps > FRAME_BUDGET;
     const note = slow && !blind && cpu >= gpu ? ' · cpu-bound' : '';
 
-    // -- shed pixels, but only when pixels are what is over budget -----------
-    if (slow && (blind || gpu > cpu)) {
+    // -- shed pixels on any sustained miss ------------------------------------
+    // This used to require `gpu > cpu` -- shed only when pixels are provably
+    // what is over budget. That guard assumed the split between `cpu` and `gpu`
+    // is trustworthy, and the note on `free` below explains why it is not: the
+    // timer query misses the resolve and the present, and the vsync wait inside
+    // render() is booked as CPU. A frame that is fill-bound in ways the query
+    // cannot see reads as `cpu >= gpu` and the guard refused the one lever that
+    // would have helped, which is how a 30fps frame ends up pinned at 1.00.
+    //
+    // So a sustained miss is now reason enough to try. That is safe here in a
+    // way it was not for the fps-only controller this replaced, because the
+    // ratchet is no longer one-way: `fits` climbs back the moment the frame is
+    // genuinely inside budget, so a wrong guess costs one rung for half a
+    // second and corrects itself, while a right one buys the frame back.
+    if (slow) {
       this._fast = 0;
       const down = QUALITY_STEPS[Math.max(0, rung - 1)];
       if (down >= q) {
@@ -1188,8 +1495,24 @@ class Game {
     // image costs nothing. Without `free`, a frame that is slow for reasons
     // resolution cannot touch would sit at half scale for ever -- soft image,
     // no speed, which is exactly the state this rewrite exists to end.
+    //
+    // BUT `free` MAY NEVER FIRE WHILE THE FRAME IS MISSING BUDGET, because both
+    // of the numbers it reasons from understate the true cost of a pixel:
+    //
+    //   gpuMs  is a TIME_ELAPSED query around the draw commands, so it counts
+    //          neither the MSAA resolve nor the present/composite. Both scale
+    //          with resolution, and both are invisible here.
+    //   cpu    is wall-clock around render(), and a WebGL call blocks on the
+    //          previous frame's buffer swap. A frame that is over budget for
+    //          ANY reason therefore books its vsync wait as CPU time.
+    //
+    // Slow and cpu >= gpu is exactly the state those two errors produce, and
+    // the old rule read it as "pixels are free" and bought the most expensive
+    // framebuffer on offer -- observed sitting at 1.00 while holding 30fps
+    // against a 60fps budget. Climbing is a bet that there is headroom; a
+    // sustained miss is the one proof there is not.
     const fits = Math.max(cpu, gpuAtUp) < FRAME_BUDGET * 0.85;
-    const free = !blind && gpuAtUp < cpu * 0.9;
+    const free = !blind && !slow && gpuAtUp < cpu * 0.9;
 
     if (up > q && (fits || free)) {
       if (++this._fast >= 6) {
@@ -1232,8 +1555,16 @@ class Game {
     const t1 = performance.now();
     this.stage.render(this.player, this.viewT, this.time);
     const t2 = performance.now();
+    // The map is drawn EVERY frame, unlike the rest of the HUD below: it is a
+    // moving picture of a moving world, and at the readout's ten-a-second it
+    // stutters visibly against the view behind it. It is timed separately so
+    // the claim that this is affordable is a number on the panel (`cpu map`)
+    // rather than a promise in a comment.
+    this.hud.drawMap(this);
+    const t3 = performance.now();
     this._updAccum += t1 - t0;
     this._rndAccum += t2 - t1;
+    this._mapAccum += t3 - t2;
     this._viewAccum += this.stage.tViews;
     this._subAccum += this.stage.tSubmit;
 
@@ -1243,8 +1574,10 @@ class Game {
       this.msRender = this._rndAccum / this._fpsFrames;
       this.msViews = this._viewAccum / this._fpsFrames;
       this.msSubmit = this._subAccum / this._fpsFrames;
+      this.msMap = this._mapAccum / this._fpsFrames;
       this._updAccum = 0; this._rndAccum = 0;
       this._viewAccum = 0; this._subAccum = 0;
+      this._mapAccum = 0;
       this.fps = this._fpsFrames / this._fpsAccum;
       this._fpsAccum = 0; this._fpsFrames = 0;
       this.adaptQuality();

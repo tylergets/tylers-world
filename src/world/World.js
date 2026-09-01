@@ -28,6 +28,7 @@ export const BLOCK = {
   NONE: 0,
   SOLID: 1 << 0,   // an object's solid mask cell, or a solid ground surface (a wall)
   LIQUID: 1 << 1,  // a non-walkable, non-solid surface (water)
+  DUG: 1 << 2,     // a hole somebody opened with a shovel (see sim/Edits.js)
 };
 
 /**
@@ -88,10 +89,120 @@ export class World {
     this.occupant = new Int32Array(n).fill(-1);
     this.byId = new Map();
     this.portals = new Map();
+    /**
+     * The two overlays the player can lay over a place: objects that are no
+     * longer there, and tiles that have been dug open. Held here because every
+     * query below has to answer with them applied, and owned by sim/Edits.js,
+     * which is the thing that can write them down. See `removeObject`.
+     */
+    this.felled = new Set();
+    this.dug = new Set();
 
+    this.#derive();
+  }
+
+  /** Build every index this class derives from the file. */
+  #derive() {
+    this.collision.fill(0);
+    this.occupant.fill(-1);
+    this.byId.clear();
+    this.portals.clear();
     this.#buildCollision();
     this.#buildPortals();
     this.#buildBuckets();
+  }
+
+  // ----------------------------------------------------------- mutation --
+  //
+  // The three calls below are the ONLY way anything in here changes, and they
+  // exist because an axe and a shovel exist. Everything else on this class is
+  // derivation: build it from the file and it is correct by construction.
+  //
+  // They are all reversible, and that is the point. A World is still a fact
+  // about a world FILE -- what the player has done to it is a list of edits
+  // kept by sim/Edits.js, replayed onto a place when it is built and taken
+  // back wholesale by `revert` when a session ends. Storing the edits here
+  // instead would make a place carry the last game into the next one, because
+  // a World outlives a session (see world/places.js).
+
+  /**
+   * Take an object out of the world: a felled tree.
+   *
+   * The object stays in `objects` -- occupancy, buckets and byId are all keyed
+   * by its INDEX in that array, and splicing it would renumber every object
+   * after it. It is marked felled instead, and every read below skips it.
+   *
+   * Its footprint is then re-derived rather than simply cleared, because a
+   * tile's collision is the surface's opinion plus every object standing on
+   * it: clearing outright would punch a walkable hole through a wall that
+   * happened to share a tile with what was removed.
+   *
+   * @returns {boolean} false if there was nothing there to remove.
+   */
+  removeObject(obj) {
+    if (!obj || this.felled.has(obj.id)) return false;
+    this.felled.add(obj.id);
+
+    for (const [k, portal] of this.portals) {
+      if (portal.objectId === obj.id) this.portals.delete(k);
+    }
+
+    const [ax, az] = obj.tile;
+    const { w, d } = obj.shape;
+    for (let dz = 0; dz < d; dz++) {
+      for (let dx = 0; dx < w; dx++) this.#recell(ax + dx, az + dz);
+    }
+    return true;
+  }
+
+  /** Open or fill a hole on a tile. Returns false if the tile is out of bounds. */
+  setHole(x, z, open) {
+    if (!this.inBounds(x, z)) return false;
+    const i = this.idx(x, z);
+    if (open) this.dug.add(i); else this.dug.delete(i);
+    this.#recell(x, z);
+    return true;
+  }
+
+  /**
+   * Put the place back the way its file describes it.
+   *
+   * Called when a session starts in a world the last one may already have
+   * chopped its way through: a World is cached by URL and survives a new game
+   * beginning (world/places.js), so without this, loading a save would open a
+   * town with somebody else's tree stumps in it.
+   */
+  revert() {
+    this.felled.clear();
+    this.dug.clear();
+    this.#derive();
+  }
+
+  /** Re-derive one tile's collision and occupancy from the file plus the overlays. */
+  #recell(x, z) {
+    if (!this.inBounds(x, z)) return;
+    const i = this.idx(x, z);
+
+    const s = surfaceById(this.surface[i]);
+    let bits = BLOCK.NONE;
+    if (s.solid) bits |= BLOCK.SOLID;
+    else if (!s.walkable) bits |= BLOCK.LIQUID;
+    if (this.dug.has(i)) bits |= BLOCK.DUG;
+
+    // objectsInRect answers by BUCKET, so it returns everything in this tile's
+    // eight-by-eight neighbourhood; the footprint test is what narrows that to
+    // the objects actually standing here.
+    let occupant = -1;
+    for (const obj of this.objectsInRect(x, z, x, z)) {
+      const [ax, az] = obj.tile;
+      const dx = x - ax, dz = z - az;
+      if (dx < 0 || dz < 0 || dx >= obj.shape.w || dz >= obj.shape.d) continue;
+      occupant = obj.index;
+      if (obj.shape.mask[dz][dx] === CELL.SOLID) bits |= BLOCK.SOLID;
+    }
+
+    this.collision[i] = bits;
+    this.occupant[i] = occupant;
   }
 
   // ------------------------------------------------------------- indexing --
@@ -245,10 +356,24 @@ export class World {
 
   objectById(id) {
     const i = this.byId.get(id);
+    if (i === undefined || this.felled.has(id)) return null;
+    return this.objects[i];
+  }
+
+  /**
+   * The object a felled id NAMES, standing or not.
+   *
+   * The one read that deliberately sees through `felled`, and it has exactly
+   * one caller: replaying a save's edits, which has to find the tree in order
+   * to fell it. Everything else asking "what is at this id" means "what is
+   * there now", which is `objectById`.
+   */
+  objectRecord(id) {
+    const i = this.byId.get(id);
     return i === undefined ? null : this.objects[i];
   }
 
-  /** Objects whose footprint intersects a tile rect. Deduped. */
+  /** Objects whose footprint intersects a tile rect. Deduped, felled ones gone. */
   objectsInRect(x0, z0, x1, z1) {
     const out = new Set();
     const c0 = Math.max(0, Math.floor(x0 / BUCKET));
@@ -260,7 +385,7 @@ export class World {
         for (const i of this.buckets[r * this.bucketCols + c]) out.add(i);
       }
     }
-    return [...out].map((i) => this.objects[i]);
+    return [...out].map((i) => this.objects[i]).filter((o) => !this.felled.has(o.id));
   }
 
   // ------------------------------------------------------------- geometry --

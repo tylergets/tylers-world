@@ -13,6 +13,14 @@
  * brings back the whole performance block AND the coordinate readout, exactly
  * as before; the bisect keys work whether or not it is showing.
  *
+ * THE MINIMAP is the one addition to the default screen, and it earns the space
+ * by answering a question the 3D view genuinely cannot: which way is the shop.
+ * It is drawn by minimap.js into its own canvas, from the frame loop rather
+ * than from `update` -- see `drawMap` -- and it sits in a column above the
+ * readouts, so the two panels that both want the top-right corner stack instead
+ * of fighting. `N` sizes it and can switch it off; clicking the map only ever
+ * sizes it.
+ *
  * THE ROWS ARE BUILT ONCE. An earlier version rebuilt `readout.innerHTML` ten
  * times a second, which is an HTML parse plus a full layout for numbers that
  * change by a digit -- churn in the middle of the frame, and exactly the kind
@@ -39,6 +47,7 @@ import { DIR_NAME, DIR_VEC } from '../core/constants.js';
 import { objectType } from '../world/objectTypes.js';
 import { itemType } from '../world/itemTypes.js';
 import { PORTAL } from '../world/World.js';
+import { Minimap } from './minimap.js';
 
 /** 0xrrggbb -> a CSS colour. */
 const css = (hex) => `#${hex.toString(16).padStart(6, '0')}`;
@@ -55,8 +64,15 @@ const ROWS = [
   ['here', 'here'],
   ['zone', 'floor'],
   ['item', 'take'],
+  ['tool', 'use'],
+  // A fixture's key text is written by its kit ("Make a wish"), so this label
+  // is only what the row says before one is ever in front of you.
+  ['fixture', 'use'],
   ['npc', 'talk'],
   ['portal', ''],
+  // Whatever a fixture last said. Last in the column because it is the only row
+  // here that is not a readout of the present -- it is a thing that happened.
+  ['note', ''],
 ];
 
 /**
@@ -84,6 +100,7 @@ const PERF_ROWS = [
   ['cpudraw', 'cpu draw'],
   ['views', '· our nodes'],
   ['submit', '· three'],
+  ['cpumap', 'cpu map'],
   ['gpu', 'gpu'],
   ['calls', 'draws'],
   ['tris', 'tris'],
@@ -95,7 +112,7 @@ const PERF_ROWS = [
 ];
 
 export class Hud {
-  constructor(root, { onScrub, onToggle, onVoice, onShoreline, onWorlds }) {
+  constructor(root, { onScrub, onToggle, onVoice, onShoreline, onWater, onMap, onWorlds }) {
     root.innerHTML = `
       <div class="hud hud-tl">
         <div class="panel-head">
@@ -126,9 +143,18 @@ export class Hud {
             <span class="vt-label">Shoreline</span>
             <span class="vt-key" id="hud-shoreline-label"></span>
           </button>
+          <button class="view-toggle" id="hud-water"
+                  title="Still, rippling, or a full sunlit surface with glints and reflections">
+            <span class="vt-label">Water</span>
+            <span class="vt-key" id="hud-water-label"></span>
+          </button>
           <button class="view-toggle" id="hud-voice">
             <span class="vt-label" id="hud-voice-label"></span>
             <span class="vt-key">M</span>
+          </button>
+          <button class="view-toggle" id="hud-map-btn">
+            <span class="vt-label" id="hud-map-label"></span>
+            <span class="vt-key">N</span>
           </button>
           <button class="view-toggle" id="hud-perf-btn">
             <span class="vt-label" id="hud-perf-label"></span>
@@ -147,13 +173,21 @@ export class Hud {
         <span class="warn-clock" id="hud-trespass-clock"></span>
       </div>
 
-      <div class="hud hud-tr" id="hud-panel-tr">
-        <div id="hud-debug" hidden></div>
-        <div class="hud-sep" id="hud-sep-a" hidden></div>
-        <div id="hud-readout"></div>
-        <div class="hud-sep" id="hud-sep-b" hidden></div>
-        <div id="hud-perf" hidden></div>
-        <div class="gpu-name" id="hud-device" hidden></div>
+      <div class="hud-col">
+        <div class="hud map-card" id="hud-map" hidden>
+          <canvas id="hud-map-canvas"></canvas>
+          <span class="map-north">N</span>
+          <span class="map-mode" id="hud-map-mode"></span>
+        </div>
+
+        <div class="hud hud-tr" id="hud-panel-tr">
+          <div id="hud-debug" hidden></div>
+          <div class="hud-sep" id="hud-sep-a" hidden></div>
+          <div id="hud-readout"></div>
+          <div class="hud-sep" id="hud-sep-b" hidden></div>
+          <div id="hud-perf" hidden></div>
+          <div class="gpu-name" id="hud-device" hidden></div>
+        </div>
       </div>
 
       <div class="hud hud-br">
@@ -173,6 +207,7 @@ export class Hud {
           <b>Tab</b><span>Switch view</span>
           <b>E</b><span>Talk <span class="dim">&middot;</span> pick up <span class="dim">&middot;</span> enter</span>
           <b>Q</b><span>Drop</span>
+          <b>F</b><span>Use tool <span class="dim">&middot;</span> chop <span class="dim">&middot;</span> dig</span>
           <b>[ ]</b><span>Change slot</span>
           <b>Esc</b><span>Walk away</span>
         </div>
@@ -213,10 +248,28 @@ export class Hud {
     this.scrub.addEventListener('input', () => onScrub(this.scrub.value / 1000));
     root.querySelector('#hud-toggle').addEventListener('click', onToggle);
 
+    // The map, and the card it lives in. The Minimap owns the canvas and
+    // knows nothing about the drawer; the Hud owns the card's visibility,
+    // because "off" is a thing you can see on screen and the Minimap should
+    // not have to hide itself to express it.
+    this.mapCard = root.querySelector('#hud-map');
+    this.mapModeLabel = root.querySelector('#hud-map-mode');
+    this.mapLabel = root.querySelector('#hud-map-label');
+    this.minimap = new Minimap(root.querySelector('#hud-map-canvas'));
+    this._mapSpare = false;
+    root.querySelector('#hud-map-btn').addEventListener('click', () => onMap());
+    // Clicking the map zooms it -- and ONLY zooms it. A control on the face of
+    // the panel is the one a player finds without opening a drawer first, which
+    // is exactly why it must not be able to close the panel: the discoverable
+    // way to change the map cannot also be the way to lose it.
+    this.mapCard.addEventListener('click', () => onMap(true));
+
     this.voiceLabel = root.querySelector('#hud-voice-label');
     this.shorelineLabel = root.querySelector('#hud-shoreline-label');
+    this.waterLabel = root.querySelector('#hud-water-label');
     this.perfLabel = root.querySelector('#hud-perf-label');
     root.querySelector('#hud-shoreline').addEventListener('click', onShoreline);
+    root.querySelector('#hud-water').addEventListener('click', onWater);
     root.querySelector('#hud-voice').addEventListener('click', onVoice);
     root.querySelector('#hud-perf-btn').addEventListener('click', () => this.togglePerf());
     root.querySelector('#hud-worlds').addEventListener('click', onWorlds);
@@ -319,8 +372,59 @@ export class Hud {
     this.shorelineLabel.textContent = style === 'natural' ? 'Natural' : 'Blocky';
   }
 
+  /**
+   * Say which water the player is getting.
+   *
+   * The names come straight from the setting rather than from a second table
+   * here: a label that can disagree with the level actually being drawn is a
+   * bug waiting for the day someone appends a fourth one.
+   */
+  setWater(style) {
+    this.waterLabel.textContent = style[0].toUpperCase() + style.slice(1);
+  }
+
+  /**
+   * Set how much map is in the corner, including none.
+   *
+   * Pushed in by the Game for the reason the voice is: the setting is the
+   * Game's to remember across places and saves, and a panel that kept its own
+   * copy would be a second answer to the same question.
+   */
+  setMap(mode) {
+    this.mapCard.hidden = mode === 'off';
+    this.minimap.setMode(mode);
+    this.mapModeLabel.textContent = mode === 'place' ? 'all' : mode;
+    this.mapLabel.textContent = `Map  ${mode}`;
+  }
+
+  /**
+   * Draw the map for this frame.
+   *
+   * Called from the frame loop and NOT from `update` below, which runs ten
+   * times a second: at that rate the arrow in the corner visibly steps while
+   * the world it sits on top of moves smoothly, and the eye reads the stutter
+   * as the game hitching. It is a blit and a few dozen dots -- see minimap.js,
+   * and `· minimap` on the performance panel for what it actually costs.
+   */
+  drawMap(game) {
+    if (this.mapCard.hidden) return;
+    // Faded out on the way into the top-down view, because there the whole
+    // screen IS this picture, at a size you can read -- a second copy of it in
+    // the corner is a panel covering the thing it duplicates. Held as a state
+    // compare rather than a class written every frame: toggling a class is a
+    // style recalculation, and this runs at frame rate.
+    const spare = game.viewT > 0.75;
+    if (spare !== this._mapSpare) {
+      this._mapSpare = spare;
+      this.mapCard.classList.toggle('spare', spare);
+    }
+    if (spare) return;
+    this.minimap.draw(game);
+  }
+
   setWorld(world, indoors = false) {
     this.worldName.textContent = world.meta.name ?? 'World';
+    this.minimap.setWorld(world);
     // The subtitle exists so an interior never reads as a second overworld.
     this.note.hidden = !indoors;
     this.note.textContent = indoors ? 'Inside' : '';
@@ -361,6 +465,7 @@ export class Hud {
     this.#set('cpudraw', `${game.msRender.toFixed(2)} ms`);
     this.#set('views', `${game.msViews.toFixed(2)} ms`);
     this.#set('submit', `${game.msSubmit.toFixed(2)} ms`);
+    this.#set('cpumap', `${game.msMap.toFixed(2)} ms`);
     this.#set('gpu', stage.gpuMs > 0 ? `${stage.gpuMs.toFixed(2)} ms` : 'n/a');
     this.#set('calls', info.calls);
     this.#set('tris', info.triangles.toLocaleString());
@@ -438,6 +543,17 @@ export class Hud {
     const what = game.interaction?.() ?? null;
     const item = what?.kind === 'take' ? what.item : null;
     const npc = what?.kind === 'talk' ? what.npc : null;
+    const fixture = what?.kind === 'use' ? what.fixture : null;
+
+    // The key text comes from the kit file and the value is the thing itself,
+    // so the row reads "Make a wish   Fountain". A fixture is the only prompt
+    // whose verb is authored rather than built in, which is the whole point of
+    // the format -- and the reason `interact.label` is a required field.
+    this.#set('fixture', fixture ? objectType(fixture.object.type).label : null,
+      fixture ? fixture.label : 'use');
+
+    const notice = game.notice;
+    this.#set('note', notice && game.time < notice.until ? notice.text : null);
 
     this.#set('item', item ? item.type.label : null,
       item && game.player.inventory.isFullFor(item.typeId) ? 'full' : 'take');
@@ -447,6 +563,30 @@ export class Hud {
     const friend = npc && game.player.friends.has(npc.id);
     this.#set('npc', npc ? `${npc.name}${friend ? ' · friend' : ''}` : null,
       npc?.shop ? 'trade' : 'talk');
+    this.#toolRow(game);
+  }
+
+  /**
+   * What the tool in your hand would do to the tile in front of you.
+   *
+   * Its own row rather than a second reading of the take/talk one, because it
+   * answers a different key -- and because both can be true at once: standing
+   * in front of an oak with an apple at your feet, E takes the apple and F
+   * swings at the tree, and the panel has to be able to say so.
+   *
+   * A REFUSAL IS ALSO A PROMPT. When the resolver hands back a reason the tool
+   * cannot be used -- someone standing where the hole would go -- the row says
+   * that instead of vanishing. A key that silently does nothing reads as a bug
+   * every time; a key that tells you why reads as a rule.
+   */
+  #toolRow(game) {
+    const what = game.toolAction?.() ?? null;
+    if (!what) { this.#set('tool', null); return; }
+    // The swing count is only worth showing once it is under way: "Oak" before
+    // the first blow, "Oak · 2 of 3" while you are in the middle of it.
+    const progress = what.verb === 'chop' && what.hits
+      ? ` · ${what.hits} of ${what.swings}` : '';
+    this.#set('tool', what.blocked ?? `${what.label}${progress}`, what.verb);
   }
 
   /**

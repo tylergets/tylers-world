@@ -22,13 +22,13 @@ import { writeFileSync, mkdirSync } from 'node:fs';
 import { dirname, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { heal, verifyForm } from '../src/world/draft.js';
-import { meadowbrook, sourwood } from '../src/world/recipes.js';
+import { meadowbrook, sourwood, thistledown, tidewrack } from '../src/world/recipes.js';
 
 const ROOT = resolve(dirname(fileURLToPath(import.meta.url)), '..');
 
 // ===========================================================================
 
-const WORLDS = { meadowbrook, sourwood };
+const WORLDS = { meadowbrook, sourwood, tidewrack, thistledown };
 
 const asked = process.argv.slice(2).filter((a) => !a.startsWith('-'));
 for (const name of asked.length ? asked : Object.keys(WORLDS)) {

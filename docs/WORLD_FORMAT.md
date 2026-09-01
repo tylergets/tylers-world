@@ -118,8 +118,11 @@ per-place table rather than into a code registry. See
 ```
 
 - **`type`** indexes `src/world/animalTypes.js`, which owns the species: its
-  size, its speeds, its palette, and the *behaviour* it runs. Adding a duck is
-  one registry entry plus one mesh builder, and no schema change.
+  size, its speeds, its gait, its palette, and the *behaviour* it runs. The
+  seven shipped species are `chicken`, `duck`, `rabbit`, `sheep`, `goat`,
+  `cat` and `crow`; every one of them runs the same `wander` behaviour and
+  differs only in those numbers. Adding an eighth is one registry entry plus one
+  mesh builder, and no schema change.
 - **`tile`** is where the animal starts, and the centre of the patch it keeps
   to. It is not where the animal *is*: a second after the world opens it is
   somewhere else, and nothing ever writes a live position back to the file.

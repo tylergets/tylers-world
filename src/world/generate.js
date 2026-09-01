@@ -40,13 +40,24 @@
  */
 
 import { heal, verifyForm } from './draft.js';
-import { meadowbrook, sourwood } from './recipes.js';
+import { meadowbrook, sourwood, thistledown, tidewrack } from './recipes.js';
 
-/** The landforms you can ask for, in the order the picker lists them. */
+/**
+ * The landforms you can ask for, in the order the picker lists them.
+ *
+ * One per recipe, which is what makes this list the same length as STARTERS:
+ * every shipped world is a roll of one of these with the numbers it was
+ * authored at, so anything you can start you can also ask for a fresh one of.
+ */
 export const FORMS = [
   { id: 'island', label: 'Island', note: 'A shore all the way round, and a bluff over the town.' },
   { id: 'holler', label: 'Holler', note: 'A creek in the bottom, benches climbing both walls.' },
+  { id: 'atoll', label: 'Atoll', note: 'A ring of land round a lagoon you cannot cut across.' },
+  { id: 'gap', label: 'Gap', note: 'A pass open at both ends, with pasture stepping up either side.' },
 ];
+
+/** form -> the recipe that builds it. */
+const RECIPES = { island: meadowbrook, holler: sourwood, atoll: tidewrack, gap: thistledown };
 
 /** How many seeds to try before admitting the request was a bad one. */
 const ATTEMPTS = 12;
@@ -59,8 +70,12 @@ const FIRST = [
   'Salt', 'Gull', 'Amber', 'Bramble', 'Cinder', 'Pebble', 'Tansy', 'Wick',
   'Alder', 'Sorrel', 'Marrow', 'Harrow', 'Nettle', 'Quill', 'Rowan', 'Thistle',
 ];
-const ISLAND_LAST = ['Cove', 'Reach', 'Sands', 'Point', 'Landing', 'Strand', 'Bay', 'Isle'];
-const HOLLER_LAST = ['Holler', 'Hollow', 'Bottom', 'Draw', 'Gap', 'Fork', 'Run', 'Branch'];
+const LAST = {
+  island: ['Cove', 'Reach', 'Sands', 'Point', 'Landing', 'Strand', 'Bay', 'Isle'],
+  holler: ['Holler', 'Hollow', 'Bottom', 'Draw', 'Gap', 'Fork', 'Run', 'Branch'],
+  atoll: ['Atoll', 'Ring', 'Lagoon', 'Reef', 'Key', 'Roads', 'Shoals', 'Wrack'],
+  gap: ['Gap', 'Pass', 'Saddle', 'Notch', 'Col', 'Bench', 'Rise', 'Gate'],
+};
 
 /** mulberry32, the same one the Draft uses. Same seed, same place, forever. */
 function makeRng(seed) {
@@ -93,9 +108,12 @@ export function randomSeed() {
 /** What this seed and form are called. Derived, so it never has to be stored. */
 export function worldName(form, seed) {
   const rnd = makeRng((seed >>> 0) ^ 0x9e3779b9);
-  const last = form === 'holler' ? HOLLER_LAST : ISLAND_LAST;
+  const last = LAST[form] ?? LAST.island;
   return `${FIRST[Math.floor(rnd() * FIRST.length)]} ${last[Math.floor(rnd() * last.length)]}`;
 }
+
+/** form -> the function that rolls that recipe's numbers. Filled in below. */
+const OPTS = {};
 
 /** `lo` to `hi`, from the roll. */
 const span = (rnd, lo, hi) => lo + rnd() * (hi - lo);
@@ -168,6 +186,75 @@ function hollerOpts(rnd, seed, meta) {
 }
 
 /**
+ * The atoll's shape, rolled.
+ *
+ * The one number that has to be handled carefully is the LAGOON, because the
+ * ring is the difference between the two shores: widen the lagoon and the band
+ * of land narrows everywhere at once, and below about eight tiles a 5x4 store
+ * has nowhere on the ring to stand. So the lagoon moves over a narrow range and
+ * the outer shore does not move at all -- an atoll varies in how much water is
+ * in the middle of it, not in whether you can walk round.
+ */
+function atollOpts(rnd, seed, meta) {
+  const size = spanInt(rnd, 64, 72);
+  const lagoon = span(rnd, 0.20, 0.27);
+  return {
+    seed,
+    size,
+    radius: Math.round(size * span(rnd, 0.40, 0.42)),
+    wobble: [
+      [3, span(rnd, 0.06, 0.10), rnd() * Math.PI * 2],
+      [5, span(rnd, 0.04, 0.07), rnd() * Math.PI * 2],
+      [8, span(rnd, 0.03, 0.05), rnd() * Math.PI * 2],
+    ],
+    // Two harmonics only, and slower ones: a lagoon with the coastline's
+    // detail in it reads as a second island rather than as still water.
+    lagoonWobble: [
+      [2, span(rnd, 0.07, 0.12), rnd() * Math.PI * 2],
+      [4, span(rnd, 0.05, 0.09), rnd() * Math.PI * 2],
+    ],
+    bands: { lagoon, inner: lagoon + 0.10, grass: 0.76, shore: 0.88 },
+    // The dune stays over the middle columns for the same reason Meadowbrook's
+    // bluff does: `rampNorth` cuts the only way up it at cx and cx-1.
+    dune: [spanInt(rnd, -1, 1), -spanInt(rnd, 15, 17), span(rnd, 4.0, 4.8)],
+    meta,
+  };
+}
+
+/**
+ * The gap's shape, rolled.
+ *
+ * Same arithmetic as the holler and one extra constraint: the trail rows have
+ * to land in the flat middle, clear of both mouths. `at` maps a fraction to a
+ * row INSIDE that middle rather than inside the whole length, which is what
+ * keeps that true however long the pass turns out to be.
+ */
+function gapOpts(rnd, seed, meta) {
+  const height = spanInt(rnd, 72, 88);
+  const mouth = spanInt(rnd, 18, 22);
+  const at = (f) => Math.round(mouth + 4 + (height - 2 * mouth - 8) * f);
+  return {
+    seed,
+    width: spanInt(rnd, 42, 48),
+    height,
+    floor: spanInt(rnd, 8, 9),
+    bench: span(rnd, 2.2, 2.6),
+    mouth,
+    mouthRate: span(rnd, 0.8, 0.95),
+    tarn: [-span(rnd, 2.0, 4.0), span(rnd, 0.40, 0.55), span(rnd, 2.8, 3.6)],
+    trails: [[at(0.05), -1], [at(0.75), -1], [at(0.30), 1], [at(0.95), 1]],
+    sites: {
+      north: Math.round(mouth * 0.7),
+      home: at(0.22),
+      store: at(0.85),
+      south: height - 1 - Math.round(mouth * 0.7),
+    },
+    spawnRow: at(0.5),
+    meta,
+  };
+}
+
+/**
  * Build a world from a form and a seed.
  *
  * Returns `{ data, form, seed, name, id, attempts }`. `data` is a world file in
@@ -179,6 +266,10 @@ function hollerOpts(rnd, seed, meta) {
  * retry sequence happened to work. That is the one that reproduces this world,
  * and it is the one a save file stores.
  */
+Object.assign(OPTS, {
+  island: islandOpts, holler: hollerOpts, atoll: atollOpts, gap: gapOpts,
+});
+
 export function generate({ form = 'island', seed = randomSeed(), name } = {}) {
   if (!FORMS.some((f) => f.id === form)) throw new Error(`unknown form "${form}"`);
 
@@ -193,10 +284,8 @@ export function generate({ form = 'island', seed = randomSeed(), name } = {}) {
     const roll = (seed >>> 0) + attempt * 0x9e3779b9;
     const rnd = makeRng(roll);
     try {
-      const opts = form === 'island'
-        ? islandOpts(rnd, roll, meta)
-        : hollerOpts(rnd, roll, meta);
-      const { draft, world } = form === 'island' ? meadowbrook(opts) : sourwood(opts);
+      const opts = OPTS[form](rnd, roll, meta);
+      const { draft, world } = RECIPES[form](opts);
 
       verifyForm(draft, world.terrain);
       // Ground you can see and cannot stand on is the only failure that does

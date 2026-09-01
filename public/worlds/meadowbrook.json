@@ -1,6 +1,7 @@
 {
   "format": "tw.world",
   "version": 1,
+  "kits": ["kits/fountain.kit.json"],
   "meta": {
     "id": "meadowbrook",
     "name": "Meadowbrook",
@@ -218,6 +219,7 @@
       }
   },
   "objects": [
+    {"id":"fountain.plaza","type":"fixture.fountain","tile":[30,44],"rotation":0,"props":{"label":"Plaza Fountain"}},
     {"id":"gate.north","type":"building.gate","tile":[28,16],"props":{"label":"Meadowbrook Lookout"}},
     {"id":"home.player","type":"building.home","tile":[24,34],"props":{"label":"Tyler's House","interior":"worlds/interiors/home-tyler.json"}},
     {"id":"store.nook","type":"building.store","tile":[40,35],"props":{"label":"General Store","interior":"worlds/interiors/store-nook.json"}},
@@ -425,11 +427,12 @@
     {"id":"chicken.1","type":"chicken","tile":[24,44]},
     {"id":"chicken.2","type":"chicken","tile":[29,41]},
     {"id":"chicken.3","type":"chicken","tile":[27,40]},
-    {"id":"chicken.4","type":"chicken","tile":[27,41]},
-    {"id":"chicken.5","type":"chicken","tile":[29,40]},
-    {"id":"chicken.6","type":"chicken","tile":[24,43]},
-    {"id":"chicken.7","type":"chicken","tile":[23,35]},
-    {"id":"chicken.8","type":"chicken","tile":[30,38]}
+    {"id":"duck.0","type":"duck","tile":[18,42]},
+    {"id":"duck.1","type":"duck","tile":[15,40]},
+    {"id":"duck.2","type":"duck","tile":[19,43]},
+    {"id":"rabbit.0","type":"rabbit","tile":[18,29]},
+    {"id":"rabbit.1","type":"rabbit","tile":[22,29]},
+    {"id":"cat.0","type":"cat","tile":[34,48]}
   ],
   "npcs": [
     {

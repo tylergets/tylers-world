@@ -1,0 +1,91 @@
+{
+  "format": "tw.world",
+  "version": 1,
+  "kind": "interior",
+  "meta": {
+    "id": "home.nan.interior",
+    "name": "Nan's Croft",
+    "note": "Interior of home.nan in thistledown.json. Hand-authored. PRIVATE: see zones."
+  },
+  "grid": {"width":12,"height":9,"tileSize":1},
+  "zones": {
+    "hers": {"owner": "folk.nan", "label": "Nan's Croft"}
+  },
+  "layers": {
+    "surface": {
+        "palette": {"#":"wall","w":"floor.wood","t":"floor.tile","r":"rug"},
+        "data": [
+          "############",
+          "#wwwwwwwwww#",
+          "#wwwwwwwwww#",
+          "#wwwwwwwwww#",
+          "#wwwrrrrwww#",
+          "#wwwrrrrwww#",
+          "#wwwwwwwwww#",
+          "#wwwwwwwwww#",
+          "#####tt#####"
+        ]
+      },
+    "elevation": {
+        "palette": {"0":"0","4":"4"},
+        "data": [
+          "444444444444",
+          "400000000004",
+          "400000000004",
+          "400000000004",
+          "400000000004",
+          "400000000004",
+          "400000000004",
+          "400000000004",
+          "444440044444"
+        ]
+      },
+    "flags": {
+        "palette": {".":"none"},
+        "data": [
+          "............",
+          "............",
+          "............",
+          "............",
+          "............",
+          "............",
+          "............",
+          "............",
+          "............"
+        ]
+      },
+    "zones": {
+        "palette": {".":"none","h":"hers"},
+        "data": [
+          "............",
+          ".hhhhhhhhhh.",
+          ".hhhhhhhhhh.",
+          ".hhhhhhhhhh.",
+          ".hhhhhhhhhh.",
+          ".hhhhhhhhhh.",
+          ".hhhhhhhhhh.",
+          ".hhhhhhhhhh.",
+          ".....hh....."
+        ]
+      }
+  },
+  "objects": [
+    {"id":"bed","type":"furn.bed","tile":[1,1]},
+    {"id":"stove","type":"furn.stove","tile":[4,1],"props":{"label":"Range"}},
+    {"id":"shelf.fleece","type":"furn.shelf","tile":[8,1],"props":{"label":"Fleece Shelf"}},
+    {"id":"table","type":"furn.table","tile":[8,4]},
+    {"id":"chair","type":"furn.chair","tile":[7,5],"rotation":90},
+    {"id":"crate","type":"furn.crate","tile":[1,7]},
+    {"id":"plant","type":"furn.plant","tile":[10,7]}
+  ],
+  "items": [
+    {"id":"flower.bundle","type":"item.flower","tile":[3,2]},
+    {"id":"mushroom.string","type":"item.mushroom","tile":[6,2]},
+    {"id":"stick.kindling","type":"item.stick","tile":[2,6]}
+  ],
+  "exits": [
+    {"tile":[5,8]},
+    {"tile":[6,8]}
+  ],
+  "spawn": {"tile":[6,7],"facing":"north"}
+}

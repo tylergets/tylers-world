@@ -143,12 +143,27 @@ export function newSaveId() {
   return `s${Date.now().toString(36)}${Math.floor(Math.random() * 4096).toString(36)}`;
 }
 
-/** A world you can start: the two shipped files, plus whatever you generate. */
+/**
+ * A world you can start: the four shipped files, plus whatever you generate.
+ *
+ * Two pairs, and the pairing is the point. Each form ships twice -- an island
+ * and an atoll, a holler and a gap -- because the second of each is the one
+ * that proves the first was a choice rather than the only thing the form could
+ * do. They also carry different animals, so which world you are in is a
+ * question the ground answers before anybody says a word.
+ *
+ * ORDER IS THE ORDER THEY ARE OFFERED IN, and the first is what a session with
+ * no save opens on.
+ */
 export const STARTERS = [
   { id: 'meadowbrook', name: 'Meadowbrook', url: 'worlds/meadowbrook.json',
     note: 'An island. A bluff over the town, and a beach all the way round.' },
   { id: 'sourwood', name: 'Sourwood Holler', url: 'worlds/sourwood.json',
     note: 'A valley. A creek in the bottom, benches climbing both walls.' },
+  { id: 'tidewrack', name: 'Tidewrack Atoll', url: 'worlds/tidewrack.json',
+    note: 'A ring of land round a lagoon. Everyone lives on a different side of it.' },
+  { id: 'thistledown', name: 'Thistledown Gap', url: 'worlds/thistledown.json',
+    note: 'A pass, open at both ends. Sheep on one wall, goats on the other.' },
 ];
 
 /** How a save says which world it is. */

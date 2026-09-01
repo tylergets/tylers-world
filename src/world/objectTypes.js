@@ -83,19 +83,19 @@ export const OBJECT_TYPES = {
     category: 'tree', label: 'Oak',
     footprint: solid(1, 1), height: 2.7,
     squash: 0.16,
-    palette: { trunk: 0x8a6242, leaf: 0x4f9e3f, leafHi: 0x63b84e, leafLo: 0x3d7f31 },
+    palette: { trunk: 0x8a6242, cut: 0xd8b98a, leaf: 0x4f9e3f, leafHi: 0x63b84e, leafLo: 0x3d7f31 },
   },
   'tree.pine': {
     category: 'tree', label: 'Pine',
     footprint: solid(1, 1), height: 3.4,
     squash: 0.16,
-    palette: { trunk: 0x6f4f36, leaf: 0x2f7a4a, leafHi: 0x3f9459, leafLo: 0x24603a },
+    palette: { trunk: 0x6f4f36, cut: 0xcaa87c, leaf: 0x2f7a4a, leafHi: 0x3f9459, leafLo: 0x24603a },
   },
   'tree.palm': {
     category: 'tree', label: 'Palm',
     footprint: solid(1, 1), height: 3.6,
     squash: 0.16,
-    palette: { trunk: 0xa8895e, leaf: 0x5fb457, leafHi: 0x74c96b, leafLo: 0x489443 },
+    palette: { trunk: 0xa8895e, cut: 0xe2cba4, leaf: 0x5fb457, leafHi: 0x74c96b, leafLo: 0x489443 },
   },
 
   // ----------------------------------------------------------------- rock --
@@ -193,5 +193,35 @@ export function objectType(typeId) {
   if (!t) throw new Error(`Unknown object type: "${typeId}"`);
   return t;
 }
+
+/**
+ * Add a type that came out of a kit file (see world/kit.js).
+ *
+ * The registry above is code because it describes the things the game ships
+ * with; a kit describes a thing that travels, and it lands HERE rather than in
+ * a second parallel registry. That is the point: once a fountain is in this
+ * map, collision, the spatial buckets, the world-file validator, the prop
+ * mesher and the ASCII map all handle it without knowing it came from a file.
+ * A separate "fixture" table would mean auditing every consumer of this one for
+ * whether it had also been taught about the other.
+ *
+ * Re-registering the same id is how a kit reload works and is not an error;
+ * shadowing a built-in is refused, because a kit that could redefine
+ * `building.store` could silently repaint a town by being loaded next to it.
+ * (world/kit.js also requires a `fixture.` prefix, so this is the second of two
+ * locks rather than the only one.)
+ */
+export function registerObjectType(typeId, type) {
+  if (BUILT_IN.has(typeId)) {
+    throw new Error(`"${typeId}" is a built-in object type and cannot be redefined`);
+  }
+  const doors = maskCells(type.footprint, CELL.DOOR);
+  if (doors.length) type.door = doors[0];
+  OBJECT_TYPES[typeId] = type;
+  return type;
+}
+
+/** The types this build ships with, frozen before any kit can be loaded. */
+const BUILT_IN = new Set(Object.keys(OBJECT_TYPES));
 
 export const OBJECT_TYPE_IDS = Object.keys(OBJECT_TYPES);

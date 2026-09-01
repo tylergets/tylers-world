@@ -13,6 +13,8 @@
     "shoot": "node tools/shoot.mjs"
   },
   "dependencies": {
+    "@jitl/quickjs-singlefile-browser-release-sync": "^0.32.0",
+    "quickjs-emscripten-core": "^0.32.0",
     "three": "^0.185.1"
   },
   "devDependencies": {

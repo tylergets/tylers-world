@@ -34,6 +34,35 @@
   .hud-tc { top: 16px; left: 50%; transform: translateX(-50%); }
   .hud-br { bottom: 16px; right: 16px; }
 
+  /* The right-hand column: the map card, and under it the readouts.
+     A stack rather than two independently pinned corners, because both want
+     the top right and the one that is showing should not have to know whether
+     the other is. Only the cards take the pointer; the gap between them stays
+     click-through to the world. */
+  .hud-col {
+    position: absolute; top: 16px; right: 16px;
+    display: flex; flex-direction: column; align-items: flex-end; gap: 10px;
+    pointer-events: none;
+  }
+  .hud-col > .hud { position: static; }
+
+  /* The map. Padding-free: the picture goes to the card's edge, because a
+     framed map inside a framed panel is two borders saying one thing. */
+  .map-card {
+    position: relative; padding: 0; overflow: hidden; cursor: pointer;
+    transition: opacity 0.22s;
+  }
+  .map-card.spare { opacity: 0; pointer-events: none; }
+  .map-card canvas { display: block; border-radius: 11px; }
+  .map-north, .map-mode {
+    position: absolute; pointer-events: none;
+    font-size: 9.5px; font-weight: 700; letter-spacing: 0.09em;
+    text-transform: uppercase; color: var(--ink);
+    text-shadow: 0 1px 3px rgba(0, 0, 0, 0.85);
+  }
+  .map-north { top: 5px; left: 50%; transform: translateX(-50%); opacity: 0.85; }
+  .map-mode { right: 7px; bottom: 5px; color: var(--dim); }
+
   .world-name {
     font-size: 17px; font-weight: 650; letter-spacing: -0.01em;
   }
@@ -375,10 +404,18 @@
 
   /* Covers the swap between places. Opacity is driven from the loop, and the
      element never takes pointer events, so a fade cannot eat a click. */
+  /* `will-change: opacity` is on the .fading class and NOT on the base rule,
+     which matters more than it looks. On the base rule it promotes a
+     FULL-SCREEN compositor layer that exists for the entire session -- sitting
+     over the WebGL canvas at opacity 0, costing a blend every frame, and on
+     some drivers knocking the canvas off the direct-scanout path into a full
+     compositing pass. The hint is worth having for the quarter-second the fade
+     actually animates and worth nothing for the hours it does not. */
   #fade {
     position: fixed; inset: 0; background: #05070a;
-    opacity: 0; pointer-events: none; will-change: opacity;
+    opacity: 0; pointer-events: none;
   }
+  #fade.fading { will-change: opacity; }
 
   #status {
     position: fixed; inset: 0; display: grid; place-items: center;

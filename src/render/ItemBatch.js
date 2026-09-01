@@ -115,6 +115,34 @@ function flower(p) {
   return g;
 }
 
+/**
+ * The tools, which are the only items authored to be READ as tools rather than
+ * as produce: a haft along one axis and a head across it, so the silhouette
+ * says "axe" from overhead as clearly as it does from the 3D camera. Lying
+ * down, like the stick, because a shovel standing on its blade is a signpost.
+ */
+function axe(p) {
+  const g = new GeoBuilder();
+  g.addGeometry(CYL, trs(-0.02, 0.035, 0, 0, 0.35, Math.PI / 2, 0.022, 0.34, 0.022), p.haft);
+  g.addGeometry(CYL, trs(0.1, 0.045, 0.036, 0, 0.35, Math.PI / 2, 0.016, 0.08, 0.016), p.haftHi);
+  // The head sits across the haft's far end: a wedge and its bright edge.
+  g.addGeometry(BOX, trs(0.13, 0.055, 0.05, 0, 0.35, 0, 0.075, 0.05, 0.11), p.head);
+  g.addGeometry(BOX, trs(0.155, 0.055, 0.06, 0, 0.35, 0, 0.03, 0.042, 0.115), p.edge);
+  g.addGeometry(BOX, trs(0.085, 0.05, 0.026, 0, 0.35, 0, 0.03, 0.045, 0.05), p.band);
+  return g;
+}
+
+function shovel(p) {
+  const g = new GeoBuilder();
+  g.addGeometry(CYL, trs(-0.05, 0.035, -0.02, 0, -0.3, Math.PI / 2, 0.02, 0.36, 0.02), p.haft);
+  g.addGeometry(CYL, trs(-0.19, 0.038, -0.065, 0, -0.3, Math.PI / 2, 0.026, 0.07, 0.026), p.grip);
+  g.addGeometry(CYL, trs(-0.02, 0.045, -0.01, 0, -0.3, Math.PI / 2, 0.024, 0.1, 0.024), p.haftHi);
+  // A blade: a flat pan, and a lighter lip so the tip reads from directly above.
+  g.addGeometry(BOX, trs(0.13, 0.03, 0.045, 0, -0.3, 0, 0.155, 0.03, 0.135), p.blade);
+  g.addGeometry(BOX, trs(0.19, 0.032, 0.062, 0, -0.3, 0, 0.05, 0.024, 0.1), p.bladeHi);
+  return g;
+}
+
 const BUILDERS = {
   'item.apple': apple,
   'item.mushroom': mushroom,
@@ -122,6 +150,8 @@ const BUILDERS = {
   'item.stone': stone,
   'item.shell': shell,
   'item.flower': flower,
+  'tool.axe': axe,
+  'tool.shovel': shovel,
 };
 
 function modelFor(typeId) {

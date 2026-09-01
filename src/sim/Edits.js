@@ -1,0 +1,201 @@
+/**
+ * What the player has CHANGED about one place.
+ *
+ * The third thing a place remembers, alongside its loose items (sim/Ground.js)
+ * and what its people know about you (sim/Folk.js) -- and it exists for exactly
+ * the same reason. The world file says which trees a place opens with; whether
+ * one of them is still standing is a fact about the running game, and putting
+ * it here keeps the rule the codebase runs on intact: World holds facts derived
+ * from the file, and it is never the authority on what has happened since.
+ *
+ * TWO RECORDS, ONE VERSION
+ * ------------------------
+ *   felled   object ids that are no longer there  (an axe)
+ *   holes    tiles that have been dug open        (a shovel)
+ *
+ * Both are edits to the same place and both are undone the same way -- by
+ * rebuilding the World from its file -- so they share one version counter, and
+ * the renderer reconciles both behind one integer compare (render/Stage.js).
+ *
+ * THE WORLD IS TOLD, NOT ASKED
+ * ----------------------------
+ * Every method here calls into the World's mutation API, which is deliberately
+ * small and deliberately reversible: `removeObject`, `setHole`, `revert`. This
+ * class owns WHAT changed and can write it down; the World owns the derived
+ * collision and occupancy indices the simulation reads every frame, and it
+ * would be a slow lie to make it re-derive them from a Set on every query.
+ *
+ * That is also why `restore` re-applies rather than assumes. A save is a list
+ * of edits, not a world: it is replayed onto a freshly built place, so a world
+ * file whose trees have been moved since still loads -- an id that no longer
+ * names anything is simply an edit with nothing left to apply.
+ *
+ * SWINGS ARE NOT SAVED, ON PURPOSE. Two chops into an oak is a thing your arms
+ * remember, not the world; a tree that was still standing when you closed the
+ * tab is a tree that is still standing when you open it.
+ */
+
+import { objectType } from '../world/objectTypes.js';
+
+export class Edits {
+  constructor(world) {
+    this.world = world;
+    /** Object ids that have been felled. */
+    this.felled = new Set();
+    /** tile index -> the id of the tree whose stump is on it, and back again. */
+    this.stumps = new Map();
+    this.stumpTile = new Map();
+    /** tile index -> { x, z, y } for every open hole. */
+    this.holes = new Map();
+    /** How many holes this place has ever had dug in it. Seeds what they turn up. */
+    this.digs = 0;
+    /** Bumped on every change, so the renderer can skip a reconcile. */
+    this.version = 0;
+    /** object id -> swings landed so far. Transient: see the note above. */
+    this.hits = new Map();
+  }
+
+  get holeList() { return [...this.holes.values()]; }
+
+  hitsOn(id) { return this.hits.get(id) ?? 0; }
+
+  /** Land one blow on an object. Returns how many it has taken in total. */
+  swing(obj) {
+    const n = this.hitsOn(obj.id) + 1;
+    this.hits.set(obj.id, n);
+    return n;
+  }
+
+  /**
+   * Take an object out of the world for good. Returns whether it was there.
+   *
+   * A tree leaves a stump behind, and the renderer has had one ready since the
+   * place was meshed (see render/props.js) -- this is only the record that says
+   * it is showing. The tile is walkable either way: what is left is a mark, not
+   * an obstacle, and the shovel is what finally takes it out.
+   */
+  fell(obj) {
+    if (!obj || !this.world.removeObject(obj)) return false;
+    this.felled.add(obj.id);
+    this.hits.delete(obj.id);
+    if (objectType(obj.type).category === 'tree') {
+      const i = this.world.idx(obj.tile[0], obj.tile[1]);
+      this.stumps.set(i, obj.id);
+      this.stumpTile.set(obj.id, i);
+    }
+    this.version++;
+    return true;
+  }
+
+  /**
+   * The stump a felled tree leaves, by tile and by tree.
+   *
+   * Two maps of one fact, because both questions are asked constantly and in
+   * opposite directions: the tool resolver asks "is there a stump on this tile"
+   * ten times a second, and the renderer asks "does this felled tree still have
+   * one" whenever it reconciles. Neither should be a scan.
+   *
+   * A stump is not blocking. You walk over it, you can dig it out with a
+   * shovel, and until you do it is the mark that says something used to grow
+   * here -- which is the whole reason felling something leaves anything at all.
+   */
+  stumpAt(x, z) {
+    return this.world.inBounds(x, z)
+      ? this.stumps.get(this.world.idx(x, z)) ?? null
+      : null;
+  }
+
+  hasStump(id) { return this.stumpTile.has(id); }
+
+  /** Grub a stump out of the ground. Returns the tree id it belonged to. */
+  clearStump(x, z) {
+    const id = this.stumpAt(x, z);
+    if (!id) return null;
+    this.stumps.delete(this.world.idx(x, z));
+    this.stumpTile.delete(id);
+    this.version++;
+    return id;
+  }
+
+  holeAt(x, z) {
+    return this.world.inBounds(x, z)
+      ? this.holes.get(this.world.idx(x, z)) ?? null
+      : null;
+  }
+
+  /**
+   * Open a hole on a tile.
+   *
+   * The tile becomes blocked, which is the whole reason a hole is worth
+   * digging and the whole reason it is only ever dug at arm's length: it is a
+   * thing you can put between yourself and a chicken, and a thing you can fall
+   * into if the game let you dig under your own feet. It does not.
+   */
+  dig(x, z) {
+    if (this.holeAt(x, z) || !this.world.setHole(x, z, true)) return null;
+    const hole = { x: x + 0.5, z: z + 0.5, y: this.world.groundHeight(x + 0.5, z + 0.5), tile: [x, z] };
+    this.holes.set(this.world.idx(x, z), hole);
+    this.digs++;
+    this.version++;
+    return hole;
+  }
+
+  /** Fill one back in. Returns whether there was one. */
+  fill(x, z) {
+    if (!this.holeAt(x, z)) return false;
+    this.holes.delete(this.world.idx(x, z));
+    this.world.setHole(x, z, false);
+    this.version++;
+    return true;
+  }
+
+  /**
+   * The edits as plain data.
+   *
+   * Tiles and ids, and nothing derived. `y` is the ground under a hole and is
+   * re-read on load, so a save survives terrain edited under it -- the same
+   * rule Ground.snapshot follows for the items lying on that terrain.
+   */
+  snapshot() {
+    return {
+      felled: [...this.felled],
+      // Which stumps are GONE rather than which are left: a stump is what
+      // felling a tree produces, so the list that needs writing down is the
+      // one recording the second thing that happened to it.
+      cleared: [...this.felled].filter((id) => !this.hasStump(id)),
+      holes: this.holeList.map((h) => [...h.tile]),
+      digs: this.digs,
+    };
+  }
+
+  /**
+   * Replay a save's edits onto this place.
+   *
+   * Wholesale, and only ever onto a place built fresh from its file -- the
+   * Game reverts a world before a session starts in it, so nothing here is
+   * being applied on top of a previous game's chopping. See Game.beginSession.
+   */
+  restore(snap) {
+    if (!snap) return;
+    // Through `fell` and not straight into the World, so replaying a save takes
+    // exactly the path an axe takes -- including the stump it leaves, which a
+    // shortcut into `removeObject` would silently skip.
+    for (const id of snap.felled ?? []) this.fell(this.world.objectRecord(id));
+    // After the felling, which is what puts the stumps there in the first place.
+    for (const id of snap.cleared ?? []) {
+      const i = this.stumpTile.get(id);
+      if (i !== undefined) { this.stumps.delete(i); this.stumpTile.delete(id); }
+    }
+    for (const tile of snap.holes ?? []) {
+      const [x, z] = tile ?? [];
+      // A hole whose tile is now a wall is an edit to a world file that has
+      // been redrawn since. Dropping it is the same call Ground.restore makes
+      // about an apple inside a rock.
+      if (this.world.inBounds(x, z) && !this.world.isBlocked(x, z)) this.dig(x, z);
+    }
+    // AFTER the replay, not before: `dig` counts every hole it opens, and the
+    // saved counter is the one that seeds what the NEXT hole turns up.
+    this.digs = snap.digs | 0;
+    this.version++;
+  }
+}

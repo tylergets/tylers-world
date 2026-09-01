@@ -88,6 +88,7 @@ import { ANIMAL_TYPES } from './animalTypes.js';
 import { NPC_TYPES } from './npcTypes.js';
 import { parseDialog } from './dialog.js';
 import { ITEM_TYPES } from './itemTypes.js';
+import { kits } from './kits.js';
 import { DIR_FROM_NAME } from '../core/constants.js';
 
 export const WORLD_FORMAT = 'tw.world';
@@ -635,7 +636,19 @@ export function parseWorldFile(raw) {
   };
 }
 
-/** Fetch + parse a world file by URL. */
+/**
+ * Fetch + parse a world file by URL.
+ *
+ * The kits come first, and they have to. `parseWorldFile` rejects an object
+ * whose type is not in the registry -- the check that turns a typo into a
+ * message naming the object -- so a world placing a `fixture.fountain` must
+ * have registered the fountain before it is parsed. See world/kits.js.
+ *
+ * A world DECLARES its kits rather than having them inferred from the types it
+ * uses: a missing kit is then one error at load naming the file, instead of a
+ * world that parses fine until the fixture nobody can find turns out to have
+ * been dropped by the validator.
+ */
 export async function loadWorldFile(url) {
   const res = await fetch(url);
   if (!res.ok) throw new Error(`Failed to load world "${url}": ${res.status} ${res.statusText}`);
@@ -644,6 +657,12 @@ export async function loadWorldFile(url) {
     raw = await res.json();
   } catch (e) {
     throw new Error(`World "${url}" is not valid JSON: ${e.message}`);
+  }
+  if (raw.kits !== undefined) {
+    if (!Array.isArray(raw.kits) || raw.kits.some((k) => typeof k !== 'string')) {
+      throw new WorldFileError('"kits" must be an array of kit URLs', 'kits');
+    }
+    await kits.loadAll(raw.kits);
   }
   return parseWorldFile(raw);
 }

@@ -379,7 +379,67 @@ const BUILDERS = {
 };
 
 /**
+ * The cut base a felled tree leaves behind.
+ *
+ * Built for EVERY tree, standing or not, and this is the whole trick: a stump
+ * that has to appear when a tree comes down would mean adding vertices to a
+ * merged buffer, which is the one thing a merge cannot do. So it is always
+ * there, in its own span, tucked around the foot of the trunk where it reads as
+ * root flare -- and felling the tree collapses the trunk's span and leaves the
+ * stump standing, at a cost of zero new geometry.
+ *
+ * Drawn AFTER the tree and never before, because a PropCtx draws its randomness
+ * from one seeded stream: taking two numbers off the front of it would redraw
+ * every tree in every shipped world.
+ */
+function stump(c) {
+  const p = c.pal;
+  c.add(CYL, trs(0, 0.09, 0, 0, 0, 0, 0.155, 0.18, 0.155), p.trunk);
+  // The pale cut face, invisible inside the trunk until there is no trunk.
+  c.add(CYL, trs(0, 0.185, 0, 0, 0, 0, 0.15, 0.02, 0.15), p.cut ?? p.trunk);
+}
+
+// ------------------------------------------------------------------- kits --
+
+/** Primitive name -> shared geometry. The one place kit part names become shapes. */
+const PRIM_GEO = {
+  box: BOX, cyl: CYL, taper: TAPER, cone: CONE, pyr: PYR, blob: BLOB, chunk: CHUNK,
+};
+
+/**
+ * The builder for a type that came out of a file (see world/kit.js).
+ *
+ * One function for every kit there will ever be, where the built-in props above
+ * are one function each. That is the trade the kit format makes: a hand-written
+ * builder can lean on the footprint, seed a lean from the object's id and put a
+ * window where the door is not, and a parts list cannot do any of that. What it
+ * can do is arrive without a code change.
+ *
+ * ONLY THE STATIC PARTS. A part carrying an `anim` is deliberately skipped: the
+ * bake is what makes a town a handful of draw calls, and it works precisely
+ * because those vertices never move. Animated parts are submitted separately
+ * (render/FixtureBatch.js), which is the same split ItemBatch.js already makes
+ * for the opposite reason -- items hold still but stop existing; fountains keep
+ * existing but do not hold still.
+ */
+function kitParts(c) {
+  for (const part of c.type.staticParts) {
+    const [px, py, pz] = part.at;
+    const [rx, ry, rz] = part.rot;
+    const [sx, sy, sz] = part.size;
+    c.add(PRIM_GEO[part.prim], trs(px, py, pz, rx, ry, rz, sx, sy, sz), c.pal[part.color]);
+  }
+}
+
+/**
  * Build every prop in the world, batched by squash factor.
+ *
+ * Felled objects are still built. The place's geometry is a picture of the
+ * FILE, and what the player has knocked down is an overlay the Stage applies
+ * to it afterwards (see `hideProp` and sim/Edits.js) -- so a town rebuilt from
+ * a save has a span to collapse for every tree it is told is gone, instead of
+ * needing the sim's edits threaded through the mesh builder.
+ *
  * @returns {THREE.Mesh[]} one mesh per squash class
  */
 export function buildProps(world) {
@@ -387,7 +447,9 @@ export function buildProps(world) {
 
   for (const obj of world.objects) {
     const type = objectType(obj.type);
-    const build = BUILDERS[obj.type];
+    // A kit type has no entry in BUILDERS and never will -- its shape is in its
+    // file. Everything after this line treats the two identically.
+    const build = BUILDERS[obj.type] ?? (type.staticParts ? kitParts : null);
     if (!build) continue;
 
     let g = groups.get(type.squash);
@@ -401,7 +463,15 @@ export function buildProps(world) {
     // positive Y rotation is counter-clockwise from above -- hence the minus.
     const yaw = -obj.rotation * DEG;
 
-    build(new PropCtx(g, cx, baseY, cz, yaw, obj, type));
+    const ctx = new PropCtx(g, cx, baseY, cz, yaw, obj, type);
+    g.begin(obj.id, baseY);
+    build(ctx);
+    g.end();
+    if (type.category === 'tree') {
+      g.begin(`${obj.id}:stump`, baseY);
+      stump(ctx);
+      g.end();
+    }
   }
 
   return [...groups.entries()].map(([squash, g]) => {
@@ -414,6 +484,76 @@ export function buildProps(world) {
     mesh.name = `props:${squash}`;
     return mesh;
   });
+}
+
+// --------------------------------------------------------- editing a bake --
+//
+// Two operations on a merged prop, and both work by rewriting a span's slice of
+// the position buffer in place and uploading just that sub-range. Nothing else
+// in the buffer is touched, no geometry is rebuilt, and the draw call count
+// does not move -- which is what makes an axe affordable in a scene whose whole
+// performance story is "the town is four draws".
+
+/** Every { mesh, span } in a place group carrying `key`. */
+function spansOf(group, key) {
+  const out = [];
+  for (const mesh of group?.children ?? []) {
+    const span = mesh.geometry?.userData?.spans?.get(key);
+    if (span) out.push({ mesh, span });
+  }
+  return out;
+}
+
+/**
+ * Collapse an object's vertices to a single point: what felling a tree does.
+ *
+ * Every triangle in the span becomes zero-area and is discarded by the
+ * rasteriser, so the object stops being drawn without the buffer changing size
+ * and without any other prop being disturbed. Idempotent, which is what lets
+ * the Stage simply re-apply the whole felled set whenever it re-enters a place
+ * rather than tracking which of them it has already dealt with.
+ */
+export function hideProp(group, key) {
+  for (const { mesh, span } of spansOf(group, key)) {
+    if (span.gone) continue;
+    const pos = mesh.geometry.attributes.position;
+    const a = pos.array;
+    const i0 = span.start * 3;
+    const [x, y, z] = [a[i0], a[i0 + 1], a[i0 + 2]];
+    for (let i = span.start; i < span.start + span.count; i++) {
+      a[i * 3] = x; a[i * 3 + 1] = y; a[i * 3 + 2] = z;
+    }
+    span.gone = true;
+    pos.addUpdateRange(i0, span.count * 3);
+    pos.needsUpdate = true;
+  }
+}
+
+/**
+ * Lean an object about its own feet: what a blow that does not fell it does.
+ *
+ * The offset scales with height above the object's base, so a tree pivots
+ * rather than sliding sideways -- and the base itself never moves, which is
+ * what keeps a trunk planted in its tile while its canopy swings. The original
+ * positions are copied on the first lean and leaned FROM every time after, so
+ * a sway that is interrupted still has somewhere true to return to.
+ */
+export function leanProp(group, key, dx, dz) {
+  for (const { mesh, span } of spansOf(group, key)) {
+    if (span.gone) continue;
+    const pos = mesh.geometry.attributes.position;
+    const a = pos.array;
+    const i0 = span.start * 3, n = span.count * 3;
+    if (!span.base) span.base = a.slice(i0, i0 + n);
+    const base = span.base;
+    for (let i = 0; i < n; i += 3) {
+      const h = Math.max(0, base[i + 1] - span.baseY);
+      a[i0 + i] = base[i] + dx * h;
+      a[i0 + i + 2] = base[i + 2] + dz * h;
+    }
+    pos.addUpdateRange(i0, n);
+    pos.needsUpdate = true;
+  }
 }
 
 export { flatUniform };

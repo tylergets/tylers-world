@@ -115,7 +115,9 @@
           {"type": "item.stick", "count": null},
           {"type": "item.mushroom", "count": 4},
           {"type": "item.flower", "count": 3, "price": 28},
-          {"type": "item.shell", "count": 1, "price": 70}
+          {"type": "item.shell", "count": 1, "price": 70},
+          {"type": "tool.axe", "count": 1, "price": 210},
+          {"type": "tool.shovel", "count": 1, "price": 165}
         ]
       },
       "dialog": {

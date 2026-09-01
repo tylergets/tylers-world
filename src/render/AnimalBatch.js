@@ -19,6 +19,17 @@
  * The head is a separate node rather than part of the body, because the head is
  * the whole performance: a chicken's walk is a head thrust, and its idle is a
  * peck. Bolt it to the body and you have a wind-up toy.
+ *
+ * ONE BUILDER PER SPECIES, and no shared "bird" or "quadruped" base. What makes
+ * a goat not a sheep is the horns, the tail carried up and the wedge of a head,
+ * which is to say it is entirely the parts a base class would not have. Seven
+ * short functions that each read top to bottom beat one parameterised animal
+ * that reads as a spreadsheet.
+ *
+ * The MOVEMENT differences are not here at all: they are four numbers per
+ * species in animalTypes.js under `gait`, because they are the SAME four
+ * numbers for every species, and a duck that waddles by virtue of its roll
+ * value is a duck anybody can retune without opening this file.
  */
 
 import * as THREE from 'three';
@@ -32,7 +43,7 @@ const NUB = new THREE.IcosahedronGeometry(1, 1);
 const CYL = new THREE.CylinderGeometry(1, 1, 1, 8);
 const CONE = new THREE.ConeGeometry(1, 1, 7);
 
-/** Species -> { body, head, neckY } built once, shared by every instance. */
+/** Species -> { body, head, material, gait, neckY, neckZ }, built once and shared. */
 const MODELS = new Map();
 
 /**
@@ -83,7 +94,225 @@ function chicken(p) {
   return { body, head, neckY: 0.21, neckZ: 0.07 };
 }
 
-const BUILDERS = { chicken };
+
+/**
+ * A duck, authored facing +z.
+ *
+ * A chicken is a sphere on legs; a duck is a BOAT -- long, low, and widest at
+ * the waterline -- with the legs set so far back that standing up is an effort.
+ * That, the flat bill and the roll in its gait are the three things doing the
+ * work. Colour alone would just be a painted chicken.
+ */
+function duck(p) {
+  const body = new GeoBuilder();
+  body.addGeometry(BLOB, trs(0, 0.20, -0.01, -0.06, 0, 0, 0.16, 0.14, 0.24), p.body);
+  body.addGeometry(BLOB, trs(0, 0.20, 0.13, 0, 0, 0, 0.12, 0.11, 0.11), p.breast);
+  // A short cocked wedge, nothing like the chicken's standing fan.
+  body.addGeometry(CONE, trs(0, 0.27, -0.22, -2.2, 0, 0, 0.05, 0.14, 0.09), p.bodyShade);
+  // Folded wings, each with the blue speculum flash that names the species --
+  // and which is the only mark on it visible from straight overhead.
+  for (const sx of [-1, 1]) {
+    body.addGeometry(NUB, trs(sx * 0.145, 0.22, -0.02, 0, 0, sx * 0.15, 0.05, 0.09, 0.17), p.bodyShade);
+    body.addGeometry(BOX, trs(sx * 0.16, 0.235, -0.11, 0, 0, 0, 0.03, 0.05, 0.075), p.speculum);
+  }
+  // Legs set well back, and webbed feet that are wider than they are anything
+  // else: both halves of why the walk rocks.
+  for (const sx of [-1, 1]) {
+    body.addGeometry(CYL, trs(sx * 0.07, 0.045, -0.03, 0, 0, 0, 0.02, 0.09, 0.02), p.leg);
+    body.addGeometry(BOX, trs(sx * 0.07, 0.012, 0.02, 0, 0, 0, 0.085, 0.024, 0.11), p.leg);
+  }
+
+  const head = new GeoBuilder();
+  head.addGeometry(CYL, trs(0, 0.07, 0.015, 0.25, 0, 0, 0.045, 0.17, 0.045), p.head);
+  head.addGeometry(CYL, trs(0, 0.135, 0.033, 0.25, 0, 0, 0.052, 0.022, 0.052), p.collar);
+  head.addGeometry(BLOB, trs(0, 0.19, 0.05, 0, 0, 0, 0.072, 0.075, 0.078), p.head);
+  head.addGeometry(BOX, trs(0, 0.17, 0.155, 0.08, 0, 0, 0.06, 0.028, 0.115), p.bill);
+  for (const sx of [-1, 1]) {
+    head.addGeometry(NUB, trs(sx * 0.055, 0.22, 0.05, 0, 0, 0, 0.016, 0.016, 0.016), p.eye);
+  }
+
+  return { body, head, neckY: 0.235, neckZ: 0.05 };
+}
+
+/**
+ * A rabbit, authored facing +z.
+ *
+ * Built back-to-front on purpose: the haunches are their own lumps and they are
+ * the biggest thing on it, because a sitting rabbit is mostly back legs and a
+ * running one is entirely back legs. The ears and the cottontail are the two
+ * marks that survive being twenty tiles away, so both are oversized.
+ */
+function rabbit(p) {
+  const body = new GeoBuilder();
+  body.addGeometry(BLOB, trs(0, 0.145, -0.01, -0.15, 0, 0, 0.115, 0.115, 0.17), p.body);
+  body.addGeometry(NUB, trs(0, 0.11, 0.03, 0, 0, 0, 0.09, 0.07, 0.1), p.belly);
+  for (const sx of [-1, 1]) {
+    body.addGeometry(NUB, trs(sx * 0.085, 0.125, -0.08, 0, 0, 0, 0.06, 0.085, 0.1), p.bodyShade);
+    body.addGeometry(BOX, trs(sx * 0.075, 0.022, -0.03, 0, 0, 0, 0.05, 0.044, 0.14), p.body);
+    body.addGeometry(CYL, trs(sx * 0.055, 0.05, 0.085, 0, 0, 0, 0.016, 0.1, 0.016), p.body);
+  }
+  // The cottontail: small, white, and the only part of a leaving rabbit you get.
+  body.addGeometry(NUB, trs(0, 0.175, -0.175, 0, 0, 0, 0.055, 0.055, 0.05), p.tail);
+
+  const head = new GeoBuilder();
+  head.addGeometry(BLOB, trs(0, 0.075, 0.035, 0, 0, 0, 0.075, 0.072, 0.085), p.body);
+  head.addGeometry(NUB, trs(0, 0.052, 0.11, 0, 0, 0, 0.045, 0.04, 0.045), p.belly);
+  head.addGeometry(NUB, trs(0, 0.058, 0.145, 0, 0, 0, 0.016, 0.014, 0.014), p.nose);
+  for (const sx of [-1, 1]) {
+    head.addGeometry(BOX, trs(sx * 0.042, 0.19, -0.02, -0.12, 0, sx * 0.16, 0.032, 0.18, 0.02), p.ear);
+    head.addGeometry(BOX, trs(sx * 0.042, 0.185, -0.005, -0.12, 0, sx * 0.16, 0.019, 0.145, 0.014), p.earInner);
+    head.addGeometry(NUB, trs(sx * 0.062, 0.095, 0.06, 0, 0, 0, 0.015, 0.015, 0.015), p.eye);
+  }
+
+  return { body, head, neckY: 0.17, neckZ: 0.06 };
+}
+
+/**
+ * A sheep, authored facing +z.
+ *
+ * FOUR LEGS ARE THE WHOLE DIFFERENCE, and they are deliberately stick-thin and
+ * near-black: the fleece only reads as bulk if what carries it does not. The
+ * body is one big blob plus lumps, because a sheep is a cloud with a dark face
+ * on the front of it, and a smooth ellipsoid reads as a boulder.
+ *
+ * The neck is long and reaches forward and DOWN even at rest, so the graze --
+ * one hinge at `neckY`, like every other species here -- puts the muzzle in the
+ * grass instead of somewhere over the animal's own chest.
+ */
+function sheep(p) {
+  const body = new GeoBuilder();
+  body.addGeometry(BLOB, trs(0, 0.36, -0.02, 0, 0, 0, 0.23, 0.21, 0.3), p.wool);
+  body.addGeometry(NUB, trs(0, 0.47, -0.12, 0, 0, 0, 0.15, 0.1, 0.14), p.woolShade);
+  for (const sx of [-1, 1]) {
+    body.addGeometry(NUB, trs(sx * 0.17, 0.31, 0.1, 0, 0, 0, 0.1, 0.1, 0.12), p.wool);
+  }
+  for (const sx of [-1, 1]) {
+    for (const sz of [-1, 1]) {
+      body.addGeometry(CYL, trs(sx * 0.13, 0.105, sz * 0.16, 0, 0, 0, 0.028, 0.21, 0.028), p.leg);
+    }
+  }
+  body.addGeometry(NUB, trs(0, 0.4, -0.29, 0, 0, 0, 0.045, 0.06, 0.05), p.woolShade);
+
+  const head = new GeoBuilder();
+  head.addGeometry(CYL, trs(0, 0.05, 0.075, 0.55, 0, 0, 0.055, 0.19, 0.06), p.face);
+  head.addGeometry(BLOB, trs(0, 0.085, 0.19, 0.35, 0, 0, 0.075, 0.08, 0.105), p.face);
+  head.addGeometry(NUB, trs(0, 0.045, 0.265, 0, 0, 0, 0.05, 0.045, 0.05), p.faceShade);
+  for (const sx of [-1, 1]) {
+    head.addGeometry(NUB, trs(sx * 0.09, 0.115, 0.155, 0, 0, sx * 0.5, 0.06, 0.022, 0.035), p.ear);
+    head.addGeometry(NUB, trs(sx * 0.055, 0.11, 0.235, 0, 0, 0, 0.016, 0.016, 0.016), p.eye);
+  }
+
+  return { body, head, neckY: 0.38, neckZ: 0.12 };
+}
+
+/**
+ * A goat, authored facing +z.
+ *
+ * The same four-legged frame as the sheep, and everything on top of it argues
+ * with it: a lean body instead of a fleece, a long wedge head instead of a
+ * blunt one, horns swept back over the neck and a tail carried UP. From
+ * overhead the tail and the horns are the whole tell, which is why both are
+ * bigger than they strictly are.
+ */
+function goat(p) {
+  const body = new GeoBuilder();
+  body.addGeometry(BLOB, trs(0, 0.35, -0.02, 0, 0, 0, 0.185, 0.175, 0.29), p.body);
+  body.addGeometry(NUB, trs(0, 0.46, -0.06, 0, 0, 0, 0.12, 0.07, 0.19), p.saddle);
+  for (const sx of [-1, 1]) {
+    for (const sz of [-1, 1]) {
+      body.addGeometry(CYL, trs(sx * 0.115, 0.12, sz * 0.17, 0, 0, 0, 0.026, 0.24, 0.026), p.bodyShade);
+      body.addGeometry(BOX, trs(sx * 0.115, 0.018, sz * 0.17, 0, 0, 0, 0.055, 0.036, 0.07), p.hoof);
+    }
+  }
+  body.addGeometry(CONE, trs(0, 0.48, -0.27, -0.7, 0, 0, 0.035, 0.13, 0.035), p.bodyShade);
+
+  const head = new GeoBuilder();
+  head.addGeometry(CYL, trs(0, 0.06, 0.075, 0.5, 0, 0, 0.05, 0.19, 0.055), p.body);
+  head.addGeometry(BLOB, trs(0, 0.1, 0.19, 0.3, 0, 0, 0.062, 0.065, 0.115), p.face);
+  head.addGeometry(NUB, trs(0, 0.06, 0.285, 0, 0, 0, 0.042, 0.04, 0.045), p.face);
+  for (const sx of [-1, 1]) {
+    head.addGeometry(CONE, trs(sx * 0.042, 0.205, 0.115, -0.9, 0, sx * 0.15, 0.022, 0.17, 0.022), p.horn);
+    head.addGeometry(NUB, trs(sx * 0.085, 0.14, 0.175, 0, 0, sx * 0.6, 0.06, 0.02, 0.035), p.ear);
+    head.addGeometry(NUB, trs(sx * 0.05, 0.14, 0.245, 0, 0, 0, 0.015, 0.015, 0.015), p.eye);
+  }
+  head.addGeometry(CONE, trs(0, -0.005, 0.265, Math.PI - 0.3, 0, 0, 0.03, 0.12, 0.03), p.beard);
+
+  return { body, head, neckY: 0.38, neckZ: 0.11 };
+}
+
+/**
+ * A cat, authored facing +z.
+ *
+ * Long, low and narrow -- the only body here that is longer than it is tall by
+ * a clear margin. Two features carry it from directly above, where a cat is
+ * otherwise an orange smear: the tabby bands across the back, and the tail,
+ * carried up in three segments so it stands clear of the body outline instead
+ * of lying inside it.
+ */
+function cat(p) {
+  const body = new GeoBuilder();
+  body.addGeometry(BLOB, trs(0, 0.19, -0.02, 0, 0, 0, 0.105, 0.1, 0.21), p.body);
+  body.addGeometry(NUB, trs(0, 0.13, 0.02, 0, 0, 0, 0.08, 0.06, 0.14), p.belly);
+  for (const dz of [-0.12, -0.02, 0.08]) {
+    body.addGeometry(BOX, trs(0, 0.272, dz, 0, 0, 0, 0.13, 0.022, 0.03), p.stripe);
+  }
+  for (const sx of [-1, 1]) {
+    for (const sz of [-1, 1]) {
+      body.addGeometry(CYL, trs(sx * 0.075, 0.08, sz * 0.12, 0, 0, 0, 0.022, 0.16, 0.022), p.bodyShade);
+      body.addGeometry(NUB, trs(sx * 0.075, 0.018, sz * 0.12 + 0.015, 0, 0, 0, 0.03, 0.018, 0.042), p.paw);
+    }
+  }
+  body.addGeometry(CYL, trs(0, 0.25, -0.21, -0.5, 0, 0, 0.022, 0.13, 0.022), p.body);
+  body.addGeometry(CYL, trs(0, 0.345, -0.25, -0.15, 0, 0, 0.021, 0.12, 0.021), p.body);
+  body.addGeometry(NUB, trs(0, 0.405, -0.253, 0, 0, 0, 0.024, 0.03, 0.024), p.belly);
+
+  const head = new GeoBuilder();
+  head.addGeometry(CYL, trs(0, 0.045, 0.05, 0.5, 0, 0, 0.045, 0.11, 0.05), p.body);
+  head.addGeometry(BLOB, trs(0, 0.1, 0.12, 0, 0, 0, 0.072, 0.068, 0.07), p.body);
+  head.addGeometry(NUB, trs(0, 0.075, 0.175, 0, 0, 0, 0.042, 0.035, 0.04), p.belly);
+  head.addGeometry(NUB, trs(0, 0.085, 0.205, 0, 0, 0, 0.013, 0.011, 0.012), p.nose);
+  for (const sx of [-1, 1]) {
+    head.addGeometry(CONE, trs(sx * 0.045, 0.172, 0.105, -0.1, 0, sx * 0.25, 0.032, 0.08, 0.02), p.ear);
+    head.addGeometry(CONE, trs(sx * 0.045, 0.167, 0.122, -0.1, 0, sx * 0.25, 0.019, 0.058, 0.012), p.earInner);
+    head.addGeometry(NUB, trs(sx * 0.038, 0.115, 0.17, 0, 0, 0, 0.016, 0.014, 0.012), p.eye);
+  }
+
+  return { body, head, neckY: 0.245, neckZ: 0.09 };
+}
+
+/**
+ * A crow, authored facing +z.
+ *
+ * The chicken's build stretched into a line: from overhead it is beak, body and
+ * a long flat wedge of tail on one axis, and that outline is the read -- black
+ * on grass has no interior detail to offer. The sheen panels on the folded
+ * wings exist for the 3D view, where a bird this dark otherwise renders as a
+ * hole in the world.
+ */
+function crow(p) {
+  const body = new GeoBuilder();
+  body.addGeometry(BLOB, trs(0, 0.21, -0.01, -0.1, 0, 0, 0.115, 0.115, 0.19), p.body);
+  body.addGeometry(BOX, trs(0, 0.23, -0.27, 0.12, 0, 0, 0.085, 0.024, 0.19), p.tail);
+  for (const sx of [-1, 1]) {
+    body.addGeometry(NUB, trs(sx * 0.105, 0.23, -0.03, 0, 0, sx * 0.18, 0.04, 0.085, 0.16), p.bodyShade);
+    body.addGeometry(BOX, trs(sx * 0.085, 0.268, -0.02, 0.06, 0, sx * 0.3, 0.035, 0.016, 0.1), p.sheen);
+    body.addGeometry(CYL, trs(sx * 0.05, 0.06, -0.01, 0, 0, 0, 0.014, 0.12, 0.014), p.leg);
+    body.addGeometry(BOX, trs(sx * 0.05, 0.014, 0.025, 0, 0, 0, 0.045, 0.028, 0.08), p.leg);
+  }
+
+  const head = new GeoBuilder();
+  head.addGeometry(CYL, trs(0, 0.075, 0, 0.15, 0, 0, 0.05, 0.17, 0.05), p.body);
+  head.addGeometry(BLOB, trs(0, 0.165, 0.03, 0, 0, 0, 0.068, 0.065, 0.075), p.body);
+  head.addGeometry(NUB, trs(0, 0.205, -0.01, 0, 0, 0, 0.05, 0.03, 0.06), p.sheen);
+  head.addGeometry(CONE, trs(0, 0.155, 0.12, Math.PI / 2, 0, 0, 0.028, 0.14, 0.032), p.beak);
+  for (const sx of [-1, 1]) {
+    head.addGeometry(NUB, trs(sx * 0.048, 0.188, 0.055, 0, 0, 0, 0.014, 0.014, 0.014), p.eye);
+  }
+
+  return { body, head, neckY: 0.235, neckZ: 0.045 };
+}
+
+const BUILDERS = { chicken, duck, rabbit, sheep, goat, cat, crow };
 
 function modelFor(typeId) {
   let m = MODELS.get(typeId);
@@ -97,7 +326,10 @@ function modelFor(typeId) {
   // Squash 1: the counter-rotation already solves the overhead read, so
   // flattening here would only crush a shape that is already correct.
   const material = patchFlatten(new THREE.MeshLambertMaterial({ vertexColors: true }), 1);
-  m = { body: body.build(), head: head.build(), material, neckY, neckZ };
+  // Gait comes off the TYPE rather than out of the builder: it is animation,
+  // the builder makes geometry, and a species that wants to hop rather than
+  // strut should not have to be re-modelled to say so.
+  m = { body: body.build(), head: head.build(), material, gait: type.gait, neckY, neckZ };
   MODELS.set(typeId, m);
   return m;
 }
@@ -137,6 +369,7 @@ export class AnimalBatch {
   update(t, tiltRad) {
     this._tilt.makeRotationX(tiltRad * t);
     for (const { members, model, body, head } of this.batches) {
+      const gait = model.gait;
       for (let i = 0; i < members.length; i++) {
         const animal = members[i];
         const running = animal.speed > 0.2;
@@ -145,8 +378,8 @@ export class AnimalBatch {
 
         this._root.makeTranslation(animal.x, animal.y, animal.z);
         this._yaw.makeRotationY(animal.yaw);
-        this._position.set(0, running ? Math.abs(stride) * 0.035 : 0, 0);
-        this._euler.set(running ? 0.16 : 0, 0, running ? stride * 0.09 : 0);
+        this._position.set(0, running ? Math.abs(stride) * gait.bob : 0, 0);
+        this._euler.set(running ? gait.lean : 0, 0, running ? stride * gait.roll : 0);
         this._rotation.setFromEuler(this._euler);
         this._bob.compose(this._position, this._rotation, this._scale);
 
@@ -160,7 +393,10 @@ export class AnimalBatch {
           model.neckY - peck * 0.05,
           model.neckZ + (running ? stride * 0.035 : 0) + peck * 0.02,
         );
-        this._rotation.setFromAxisAngle(_X_AXIS, peck * 1.45 - (running ? 0.12 : 0));
+        // Head up while running, by three quarters of whatever the body leans:
+        // an animal that keeps its head at rest angle while its shoulders drop
+        // is an animal running face-first at the ground.
+        this._rotation.setFromAxisAngle(_X_AXIS, peck * gait.bend - (running ? gait.lean * 0.75 : 0));
         this._neck.compose(this._position, this._rotation, this._scale);
         this._head.copy(this._body).multiply(this._neck);
         head.setMatrixAt(i, this._head);

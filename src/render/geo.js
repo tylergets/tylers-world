@@ -21,9 +21,41 @@ export class GeoBuilder {
     this.pos = []; this.norm = []; this.col = [];
     this.local = []; this.baseY = []; this.water = []; this.shore = [];
     this.index = [];
+    /** key -> { start, count, baseY }: which vertices belong to which thing. */
+    this.spans = new Map();
+    this._span = null;
   }
 
   get vertexCount() { return this.pos.length / 3; }
+
+  /**
+   * Name the vertices added between here and `end`.
+   *
+   * The merge is what makes a town a handful of draw calls, and its price has
+   * always been that nothing in it can be addressed afterwards -- which is why
+   * loose items were never allowed in (see render/ItemBatch.js). A span is the
+   * narrow exception: not a way to move a prop about, but a way to find the
+   * vertices of ONE object again on the rare frame when something happens to
+   * it. A chopped tree is that event. Its span is collapsed to a point, which
+   * costs a sub-range upload of a few hundred floats instead of re-meshing
+   * every prop in the place.
+   *
+   * `baseY` is the ground the object stands on, so a sway can pivot the thing
+   * about its own feet without re-deriving where those are.
+   */
+  begin(key, baseY = 0) {
+    this._span = { key, start: this.vertexCount, count: 0, baseY };
+    return this;
+  }
+
+  end() {
+    const span = this._span;
+    this._span = null;
+    if (!span) return this;
+    span.count = this.vertexCount - span.start;
+    if (span.count) this.spans.set(span.key, span);
+    return this;
+  }
 
   /** Append a primitive geometry, transformed into world space. */
   addGeometry(geometry, matrix, color, baseY = 0) {
@@ -88,6 +120,9 @@ export class GeoBuilder {
     if (shore) g.setAttribute('aShore', new THREE.Float32BufferAttribute(this.shore, 1));
     g.setIndex(this.index);
     g.computeBoundingSphere();
+    // Rides on the geometry rather than being returned alongside it, because
+    // the one thing a caller always has when it wants a span is the mesh.
+    if (this.spans.size) g.userData.spans = this.spans;
     return g;
   }
 }

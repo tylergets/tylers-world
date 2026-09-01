@@ -5,7 +5,7 @@
   "meta": {
     "id": "home.tyler.interior",
     "name": "Tyler's House",
-    "note": "Interior of home.player in meadowbrook.json. Hand-authored."
+    "note": "Interior of home.player in every starter world. Hand-authored: it is the same house wherever you start, which is the one thing about a new world that should not be new."
   },
   "grid": {"width":12,"height":10,"tileSize":1},
   "layers": {

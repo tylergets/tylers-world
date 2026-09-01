@@ -347,7 +347,28 @@ export function meadowbrook({
     rock: d.scatter('rock', 'rock.small', 36, ['g', 's']),
     // Last, so the birds dodge the scenery rather than the other way round:
     // trees claim tiles, and a chicken is only ever standing on one.
-    chicken: d.flock('chicken', 'chicken', 9, home[0] + 1, home[1] + 5, 5, ['g', 'c']),
+    //
+    // FOUR SPECIES, FOUR PLACES, AND NOT MANY OF ANY OF THEM. A handful per
+    // species, seeded over a wide patch, is doing something a crowd cannot:
+    // rounding a hedge and finding two rabbits is a small event, and walking
+    // through a field with twenty in it is weather. The counts are low enough
+    // that most of the island has no animal on it at all, which is the only
+    // way the parts that do can read as somewhere in particular.
+    //
+    // An animal keeps to the patch it starts in, so
+    // where a flock is seeded is the whole of what the player learns from it:
+    // ducks mean there is water here, rabbits mean nobody comes out this far,
+    // and a cat on the square means somebody feeds it. Scattering all four
+    // evenly over the island would say none of that, and would also make the
+    // three other worlds indistinguishable from this one from ten feet up.
+    chicken: d.flock('chicken', 'chicken', 4, home[0] + 1, home[1] + 5, 5, ['g', 'c']),
+    // Seeded ON the pond: water is not in `allow`, so every one of them lands
+    // on the ring of grass around it, which is exactly where a duck stands.
+    duck: d.flock('duck', 'duck', 3, cx + pond[0][0], cz + pond[0][1], 6, ['g']),
+    // The far west meadow, which otherwise has nothing in it and no reason to
+    // be walked to.
+    rabbit: d.flock('rabbit', 'rabbit', 2, cx - 17, cz - 2, 7, ['g']),
+    cat: d.flock('cat', 'cat', 1, cx + 2, cz + 13, 5, ['c', 'g']),
 
     // Foraging, sorted by where the thing would actually be: shells wash up on
     // the beach, mushrooms come up in the shade of the woods, apples fall near
@@ -499,7 +520,19 @@ export function sourwood({
     rock: d.scatter('rock', 'rock.small', 54, ['g', 's'], 4200),
     // Down in the bottomland by the old place, not up a wall: a chicken keeps
     // to the patch it starts in, so the patch has to be somewhere you walk past.
-    chicken: d.flock('chicken', 'chicken', 7, home[0] + 1, home[1] + 5, 4, ['g', 'c']),
+    chicken: d.flock('chicken', 'chicken', 3, home[0] + 1, home[1] + 5, 4, ['g', 'c']),
+    // The rest of the holler's animals are deliberately NOT beside the road.
+    // A valley is a place you have to climb around, and the reward for taking a
+    // trail up a wall should be finding something living up there -- so the
+    // sheep and the goats are seeded on the benches the trails serve, one on
+    // each side, and the only way to see either is to go up.
+    sheep: d.flock('sheep', 'sheep', 3, Math.round(creek(trails[0][0])) - 11, trails[0][0] + 4, 7, ['g']),
+    goat: d.flock('goat', 'goat', 2, Math.round(creek(trails[1][0])) + 11, trails[1][0] - 4, 8, ['g']),
+    // Crows in the shut head of the holler, where the pines are thickest.
+    crow: d.flock('crow', 'crow', 3, Math.round(axis), 18, 9, ['g']),
+    // And ducks on the creek. Gravel bars count: half a duck's day is spent on
+    // the shingle beside the water rather than in it.
+    duck: d.flock('duck', 'duck', 2, Math.round(creek(fords[1] + 6)), fords[1] + 6, 5, ['g', 's']),
 
     // A holler forages differently from an island: no shells, and the pebbles
     // are on the gravel bars in the creek bottom rather than on a beach.
@@ -520,6 +553,647 @@ export function sourwood({
       // A holler holds its haze. Pulling the fog in is most of what separates
       // "steep valley" from "field with a hill either side".
       ambience: { fog: [18, 58] },
+    }),
+  };
+}
+
+// ===========================================================================
+// TIDEWRACK -- an atoll
+// ===========================================================================
+// Meadowbrook's form and Meadowbrook's opposite: a RING of land with the sea
+// outside it and a lagoon inside. Everything follows from that one decision.
+// The town is strung out around a circle instead of gathered under a bluff, no
+// two neighbours are in sight of each other, and the middle of the map -- the
+// part every other world puts its square on -- is water you cannot cross. To
+// meet everybody here you walk the whole ring, and that is the place's entire
+// argument for existing.
+//
+// It shares the player's house with the other starters, because that is the
+// player's house. Everything else in it is its own.
+export function tidewrack({
+  seed = 0x7a1de5,
+  size = 68,
+  radius = 28,
+  // Two independent sets of harmonics, one per shore. An atoll whose lagoon
+  // echoes its coastline is a doughnut somebody stamped out: the ring never
+  // widens or narrows, and the width of the ring is the whole experience of
+  // walking it. Letting the two shores wander separately is what gives the
+  // place a broad side and a thin one.
+  wobble = [[3, 0.09, 1.4], [5, 0.06, 3.1], [8, 0.04, 0.5]],
+  lagoonWobble = [[2, 0.10, 2.7], [4, 0.07, 5.2]],
+  // The bands, as fractions of the radius, from the middle outward: lagoon
+  // water, the inner beach, the grass ring, the outer beach, then open sea.
+  // The last one has to leave the sea room to start inside the grid on every
+  // bearing -- see verifyForm -- which is what caps it well under 1.
+  bands = { lagoon: 0.24, inner: 0.34, grass: 0.76, shore: 0.88 },
+  // The dune: an offset from the centre and a radius. It sits on the north arm
+  // and it is the only high ground on the atoll, which makes it the only place
+  // you can see the shape of the place you are standing on.
+  dune = [0, -16, 4.4],
+  meta = {
+    id: 'tidewrack',
+    name: 'Tidewrack Atoll',
+    note: 'Generated by tools/genworld.mjs; safe to hand-edit.',
+  },
+} = {}) {
+  const d = new Draft(size, size, seed);
+  const cx = Math.round(size / 2), cz = Math.round(size / 2), R = radius;
+  // Everything below is placed at a FRACTION of the radius rather than at a
+  // tile offset, so a generated atoll with a different radius puts its town on
+  // the ring rather than in the lagoon. `out` is "this far out from the middle".
+  const out = (f) => Math.round(f * R);
+
+  // Both shores at once. `ro` is the bearing-corrected distance for the outer
+  // coast and `ri` the same for the lagoon; testing the inner bands first and
+  // falling through to the outer ones is what stitches them into one ring
+  // without either shore having to know the other's numbers.
+  for (let z = 0; z < d.H; z++) {
+    for (let x = 0; x < d.W; x++) {
+      const nx = (x + 0.5 - cx) / R, nz = (z + 0.5 - cz) / R;
+      const a = Math.atan2(nz, nx);
+      const dist = Math.hypot(nx, nz);
+      let out = 1, inn = 1;
+      for (const [k, amp, phase] of wobble) out += amp * Math.sin(k * a + phase);
+      for (const [k, amp, phase] of lagoonWobble) inn += amp * Math.sin(k * a + phase);
+      const ro = dist / out, ri = dist / inn;
+      d.surf[z][x] = ri < bands.lagoon ? 'w'
+        : ri < bands.inner ? 's'
+          : ro < bands.grass ? 'g'
+            : ro < bands.shore ? 's' : 'w';
+    }
+  }
+
+  // The dune, and the two-column cut up its south face. Same shape as
+  // Meadowbrook's bluff and a tenth of the size: a rise you climb for the view
+  // rather than a cliff the town lives under.
+  d.disc(d.elev, cx + dune[0], cz + dune[1], dune[2], '1');
+  for (let z = 0; z < d.H; z++) {
+    for (let x = 0; x < d.W; x++) if (d.surf[z][x] === 'w') d.elev[z][x] = '0';
+  }
+  const rampZ = d.rampNorth(cx - 1);
+  d.rampNorth(cx);
+
+  /**
+   * THE RING ROAD, and the reason it is a loop of little patches rather than a
+   * shape.
+   *
+   * `pave` takes rectangles and a ring is not one. Walking the circle and
+   * stamping a 2x2 at each step gives an unbroken road for the cost of some
+   * overlap -- and because the buildings are placed at this same radius, the
+   * road reaches every door by construction rather than by five hand-aimed
+   * paths that have to be re-aimed the moment the coastline moves.
+   */
+  const ringR = R * 0.55;
+  for (let i = 0; i < 240; i++) {
+    const a = (i / 240) * Math.PI * 2;
+    const x = Math.round(cx + Math.cos(a) * ringR), z = Math.round(cz + Math.sin(a) * ringR);
+    d.pave(x, z, x + 1, z + 1, { level: '0' });
+  }
+  // Spur from the ring road to the foot of the dune, and the apron on top.
+  d.pave(cx - 1, rampZ, cx, cz + dune[1] + Math.ceil(dune[2]), { level: '0' });
+  d.pave(cx - 4, cz + dune[1] - 4, cx + 3, cz + dune[1] + 3, { level: '1' });
+
+  // Placed at the compass points of the ring, which is the same as saying
+  // placed as far from each other as the map allows.
+  const lookout = d.placeNear('gate.dune', 'building.gate', cx + dune[0] - 2, cz + dune[1] - 1, ['c', 'g'], 7,
+    { label: 'Tidewrack Dune' }, '1');
+  const landing = d.placeNear('gate.landing', 'building.gate', cx, cz + out(0.78), ['s', 'g'], 8,
+    { label: 'Tidewrack Landing' }, '0');
+  const home = d.placeNear('home.player', 'building.home', cx - 6, cz + out(0.54), ['g'], 10,
+    { label: "Tyler's House", interior: 'worlds/interiors/home-tyler.json' }, '0');
+  const store = d.placeNear('store.driftwood', 'building.store', cx + out(0.54), cz + 2, ['g'], 10,
+    { label: 'Driftwood Stores', interior: 'worlds/interiors/store-driftwood.json' }, '0');
+  const cottage = d.placeNear('home.marnie', 'building.cottage', cx - out(0.57), cz - 3, ['g'], 10,
+    { label: "Marnie's Cottage", interior: 'worlds/interiors/home-marnie.json' }, '0');
+
+  // Doors face south, so every approach starts below its door and runs to the
+  // nearest point of the ring road.
+  d.pathL(home[0] + 1, home[1] + 3, cx - 1, cz + out(0.54), { level: '0' });
+  d.pathL(store[0] + 2, store[1] + 4, cx + out(0.5), cz + 7, { level: '0' });
+  d.pathL(cottage[0] + 1, cottage[1] + 3, cx - out(0.5), cz + 3, { level: '0' });
+  d.pathL(landing[0] + 2, landing[1] + 2, cx, cz + out(0.6), { level: '0' });
+  d.pathL(lookout[0] + 2, lookout[1] + 2, cx - 1, cz + dune[1] + 2, { level: '1' });
+
+  // THE PEOPLE. Three of them, one per arm of the ring, and none of them
+  // visible from either of the others -- which on a map with a lake in the
+  // middle of it costs nothing to arrange and is the whole reason to walk.
+  d.person({
+    id: 'folk.otto',
+    type: 'folk.tinker',
+    tile: [landing[0] + 2, landing[1] + 2],
+    facing: 'north',
+    props: { name: 'Otto', title: 'Keeps things floating', roam: 5 },
+    dialog: {
+      start: 'open',
+      nodes: {
+        open: {
+          branch: [
+            { when: { flag: 'told' }, to: 'after' },
+            { when: { visits: 4 }, to: 'fourth' },
+            { to: 'hello' },
+          ],
+        },
+        hello: {
+          text: [
+            'Mind the rope. Everything on this landing is rope or under it.',
+            "Otto. I keep what floats floating. You'll be walking the ring -- everybody does, the first day.",
+          ],
+          then: 'menu',
+        },
+        fourth: { text: 'Round again. It does not get any shorter.', then: 'menu' },
+        menu: {
+          text: 'Something you needed?',
+          choices: [
+            { text: 'Which way round is quicker?', to: 'ring' },
+            { text: "What's up on the dune?", to: 'dune' },
+            {
+              text: 'Any use for driftwood?',
+              when: { has: { type: 'item.stick', count: 3 } },
+              to: 'trade',
+            },
+            { text: "I'll walk on.", to: 'bye' },
+          ],
+        },
+        ring: {
+          text: [
+            'Neither. That is the joke of the place.',
+            'Marnie is west, the store is east, and the water in the middle means you cannot cut across to either.',
+          ],
+          do: { set: 'told' },
+          then: 'menu',
+        },
+        dune: {
+          text: 'Sand, and the only look at this place that makes sense of it. Worth the climb the once.',
+          then: 'menu',
+        },
+        trade: {
+          text: "Driftwood I can always use. There -- that's fair for three.",
+          do: [{ take: { type: 'item.stick', count: 3 } }, { coins: 24 }],
+          then: 'menu',
+        },
+        after: { text: 'Still going round, then.', then: 'menu' },
+        bye: { text: 'Aye. Mind the rope.' },
+      },
+    },
+  });
+
+  d.person({
+    id: 'folk.marnie',
+    type: 'folk.fisher',
+    tile: [cottage[0] + 1, cottage[1] + 3],
+    facing: 'south',
+    props: { name: 'Marnie', title: 'Works both shores', roam: 7 },
+    dialog: {
+      start: 'open',
+      nodes: {
+        open: {
+          branch: [
+            { when: { friend: true }, to: 'welcome' },
+            { to: 'hello' },
+          ],
+        },
+        hello: {
+          text: [
+            'You came the long way round. There is no short way.',
+            "Marnie. Cottage is mine -- go in out of the wind whenever, now I know your face.",
+          ],
+          then: 'menu',
+        },
+        welcome: { text: 'Lagoon side today. The sea has a temper on it.', then: 'menu' },
+        menu: {
+          text: 'Well?',
+          choices: [
+            {
+              text: 'Anything worth picking up out here?',
+              when: { room: { type: 'item.shell', count: 2 } },
+              to: 'gift',
+            },
+            { text: "Why is the lagoon so still?", to: 'lagoon' },
+            { text: 'Just passing.', to: 'bye' },
+          ],
+        },
+        gift: {
+          text: 'Take these. The lagoon side gives up better ones than the sea does.',
+          do: { give: { type: 'item.shell', count: 2 } },
+          then: 'menu',
+        },
+        lagoon: {
+          text: [
+            'Because the ring takes the weather and the lagoon does not.',
+            'Same water, two moods, ten steps apart. You get used to it and then you do not.',
+          ],
+          then: 'menu',
+        },
+        bye: { text: 'Mind the tide line.' },
+      },
+    },
+  });
+
+  d.person({
+    id: 'folk.yarrow',
+    type: 'folk.gardener',
+    tile: [lookout[0] + 2, lookout[1] + 2],
+    facing: 'south',
+    props: { name: 'Yarrow', title: 'Up here most days', roam: 5 },
+    dialog: {
+      start: 'open',
+      nodes: {
+        open: {
+          branch: [
+            { when: { visits: 3 }, to: 'again' },
+            { to: 'hello' },
+          ],
+        },
+        hello: {
+          text: [
+            'You climbed it. Most people look at it and carry on round.',
+            "Yarrow. I grow what will grow in sand, which is a short list and a stubborn one.",
+          ],
+          then: 'menu',
+        },
+        again: { text: 'Back up. It is a good view for thinking at.', then: 'menu' },
+        menu: {
+          text: 'Anything?',
+          choices: [
+            {
+              text: 'Anything growing up here?',
+              when: { room: { type: 'item.mushroom', count: 2 } },
+              to: 'gift',
+            },
+            { text: 'What am I looking at?', to: 'view' },
+            { text: 'Nothing. Thanks.', to: 'bye' },
+          ],
+        },
+        gift: {
+          text: 'Under the dune grass, where the sand stays damp. Take them.',
+          do: { give: { type: 'item.mushroom', count: 2 } },
+          then: 'menu',
+        },
+        view: {
+          text: [
+            'A ring, and a lake in the hole of it, and sea round the whole lot.',
+            'Otto is the smudge down at the landing. Marnie is the one you cannot see, which is west.',
+          ],
+          then: 'menu',
+        },
+        bye: { text: 'Go careful on the way down.' },
+      },
+    },
+  });
+
+  const counts = {
+    boulder: d.scatter('boulder', 'rock.large', 9, ['g', 's']),
+    palm: d.scatter('palm', 'tree.palm', 54, ['s']),
+    // Sparse, and no pines: a ring this narrow closes up entirely if it is
+    // wooded like an island, and a road you cannot see along is a road that
+    // makes the place feel small rather than long.
+    oak: d.scatter('oak', 'tree.oak', 30, ['g']),
+    rock: d.scatter('rock', 'rock.small', 40, ['g', 's']),
+
+    // No chickens anywhere on the atoll, which is the point of having four
+    // worlds: the thing you learn walking into this one is that it is not the
+    // last one. Ducks on the lagoon, crows working the tide line, a cat at the
+    // store and rabbits in the dune grass.
+    duck: d.flock('duck', 'duck', 3, cx, cz + out(0.33), 8, ['s', 'g']),
+    crow: d.flock('crow', 'crow', 3, cx + out(0.7), cz + out(0.42), 9, ['s', 'g']),
+    cat: d.flock('cat', 'cat', 1, store[0] + 2, store[1] + 6, 6, ['g', 'c']),
+    rabbit: d.flock('rabbit', 'rabbit', 2, cx + dune[0], cz + dune[1] + 7, 7, ['g']),
+
+    shell: d.litter('shell', 'item.shell', 24, ['s']),
+    stone: d.litter('stone', 'item.stone', 16, ['s']),
+    stick: d.litter('stick', 'item.stick', 18, ['s', 'g']),
+    flower: d.litter('flower', 'item.flower', 12, ['g']),
+    mushroom: d.litter('mushroom', 'item.mushroom', 8, ['g'],
+      { cx: cx + dune[0], cz: cz + dune[1], radius: 9 }),
+    apple: d.litter('apple', 'item.apple', 7, ['g'], { cx: home[0] + 1, cz: home[1] + 4, radius: 7 }),
+  };
+
+  return {
+    draft: d,
+    counts,
+    world: d.toWorld({
+      meta,
+      terrain: { form: 'island' },
+      spawn: { tile: [cx - 1, cz + out(0.54)], facing: 'south' },
+    }),
+  };
+}
+
+// ===========================================================================
+// THISTLEDOWN -- a gap
+// ===========================================================================
+// Sourwood's form with its head knocked out: a pass, open at BOTH ends, so the
+// valley is a through-route rather than a dead end. That single change makes it
+// a different place to be in. Sourwood gathers -- everything drains toward one
+// mouth and you are always somewhere along the way to it. A gap has no bottom
+// to end up at, so the road just runs, the pastures step up either side of it,
+// and what is worth finding is uphill on the benches rather than downstream.
+//
+// There is no creek. A pass sheds its water sideways, and the standing tarn
+// that replaces it does a different job: a creek is a barrier the fords cut
+// through, and the tarn is a thing to walk around and find animals at.
+export function thistledown({
+  seed = 0x7415de,
+  width = 44,
+  height = 78,
+  // Wider bottomland than Sourwood's, because everything here has to fit
+  // BESIDE the road rather than along one bank of a creek.
+  floor = 8,
+  bench = 2.4,
+  // How many rows each mouth flares over. Sourwood flares once, at the south;
+  // this flares at both ends, and the same rule holds at each -- widen slower
+  // than a tile per row or the boundary steps clean over a bench and strands
+  // it above a step with nothing beside it at the same height.
+  mouth = 20,
+  mouthRate = 0.9,
+  // The tarn, as [x offset from the axis, row as a fraction of the length,
+  // radius]. West of the road, and comfortably inside the flat: water that
+  // reaches a bench is water running up a hill.
+  tarn = [-3.0, 0.46, 3.2],
+  /**
+   * Two trails up each wall. One would do -- the benches are unbroken strips,
+   * so a single ramp makes the whole hillside walkable -- but a pass is long,
+   * and one climb per side means the far half of every bench is a long walk
+   * from the only way onto it.
+   *
+   * EVERY ONE OF THESE ROWS IS INSIDE THE FLAT MIDDLE, well clear of both
+   * mouths, and that is a rule rather than a preference. A ramp tile can only
+   * be entered from its low end, so it is a wall to anything walking ALONG the
+   * bench -- and in the flare, where each bench steps outward a little every
+   * row, a bench is often only two tiles wide and only ONE of them lines up
+   * with the row above. Put a trail on that row and the ramp takes the single
+   * column that was holding the staircase together, stranding every shelf
+   * between there and the mouth.
+   */
+  trails = [[26, -1], [46, -1], [34, 1], [52, 1]],
+  // Which row each landmark wants. `placeNear` does the rest.
+  sites = { north: 13, home: 34, store: 57, south: 65 },
+  spawnRow = 44,
+  meta = {
+    id: 'thistledown',
+    name: 'Thistledown Gap',
+    note: 'Generated by tools/genworld.mjs; safe to hand-edit.',
+  },
+} = {}) {
+  const d = new Draft(width, height, seed);
+  const axis = d.W / 2;
+  const road = Math.round(axis) + 3;
+
+  /**
+   * The bottomland's half-width at row `z`: constant through the middle, and
+   * flaring toward each mouth. Both mouths are the same function of distance
+   * from the nearer end, which is what makes the pass symmetrical in the one
+   * way that matters -- neither end is the back of the place.
+   */
+  const halfWidth = (z) => floor
+    + mouthRate * Math.max(0, mouth - z, z - (d.H - 1 - mouth));
+
+  for (let z = 0; z < d.H; z++) {
+    const fh = halfWidth(z);
+    for (let x = 0; x < d.W; x++) {
+      // Benches depend on x and on the mouth flare, never on a wandering line,
+      // for the same reason Sourwood's do: a wall that wanders is a hillside
+      // chopped into a few hundred shelves you can see and cannot reach.
+      const wall = Math.min(4, Math.max(0, Math.ceil((Math.abs(x + 0.5 - axis) - fh) / bench)));
+      d.elev[z][x] = String(wall);
+      d.surf[z][x] = 'g';
+    }
+  }
+
+  // The tarn, with a gravel rim. Drawn as two discs rather than one so the
+  // water has a shore: a pond that meets the grass at its own edge reads as a
+  // hole cut in the field.
+  const tarnZ = Math.round(d.H * tarn[1]);
+  d.disc(d.surf, axis + tarn[0], tarnZ, tarn[2] + 1.3, 's');
+  d.disc(d.surf, axis + tarn[0], tarnZ, tarn[2], 'w');
+
+  // The road, straight down the pass and two tiles wide. It is the only thing
+  // in the world that touches both mouths, so everything else hangs off it.
+  d.pave(road, 0, road + 1, d.H - 1, { level: '0', onto: ['g'] });
+
+  for (const [z, dir] of trails) d.trail(z, road - 1 + 4 * dir, dir);
+
+  const north = d.placeNear('gate.north', 'building.gate', road - 3, sites.north, ['c', 'g'], 10,
+    { label: 'Thistledown Gap' }, '0');
+  const south = d.placeNear('gate.south', 'building.gate', road - 3, sites.south, ['c', 'g'], 10,
+    { label: 'The Low Road' }, '0');
+  const home = d.placeNear('home.player', 'building.home', road - 9, sites.home, ['g'], 11,
+    { label: "Tyler's House", interior: 'worlds/interiors/home-tyler.json' }, '0');
+  const store = d.placeNear('store.wether', 'building.store', road + 4, sites.store, ['g'], 11,
+    { label: 'The Wether', interior: 'worlds/interiors/store-wether.json' }, '0');
+  const croft = d.placeNear('home.nan', 'building.cottage', road - 8, 24, ['g'], 11,
+    { label: "Nan's Croft", interior: 'worlds/interiors/home-nan.json' }, '0');
+
+  d.pathL(home[0] + 1, home[1] + 3, road, home[1] + 4, { level: '0' });
+  d.pathL(store[0] + 2, store[1] + 4, road, store[1] + 5, { level: '0' });
+  d.pathL(croft[0] + 1, croft[1] + 3, road, croft[1] + 4, { level: '0' });
+  d.pathL(north[0] + 2, north[1] + 2, road, north[1] + 3, { level: '0' });
+  d.pathL(south[0] + 2, south[1] + 2, road, south[1] + 3, { level: '0' });
+
+  // THE PEOPLE. Three, spread the length of the road, and one of them
+  // deliberately at the top of a trail: a bench you have climbed for the view
+  // is a better place to be told something than the square is.
+  d.person({
+    id: 'folk.dell',
+    type: 'folk.villager',
+    tile: [north[0] + 2, north[1] + 3],
+    facing: 'south',
+    props: { name: 'Dell', title: 'Minds the gate', roam: 6 },
+    dialog: {
+      start: 'open',
+      nodes: {
+        open: {
+          branch: [
+            { when: { flag: 'told' }, to: 'after' },
+            { when: { visits: 3 }, to: 'third' },
+            { to: 'hello' },
+          ],
+        },
+        hello: {
+          text: [
+            'Through, or stopping? Most are through.',
+            "Dell. That's the top of the gap behind me and the low road out the other end. Everything worth anything is in between.",
+          ],
+          then: 'menu',
+        },
+        third: { text: 'You are stopping, then. Good.', then: 'menu' },
+        menu: {
+          text: 'Anything else?',
+          choices: [
+            { text: "What's up on the benches?", to: 'benches' },
+            { text: 'Who else is down there?', to: 'folk' },
+            {
+              text: 'Could you use a few thistles?',
+              when: { has: { type: 'item.flower', count: 2 } },
+              to: 'trade',
+            },
+            { text: "I'll get on.", to: 'bye' },
+          ],
+        },
+        benches: {
+          text: [
+            "Nan's sheep on the west side, goats on the east, and the goats are somebody else's problem.",
+            'Trails up both walls. Take one -- the road only shows you the bottom of the place.',
+          ],
+          do: { set: 'told' },
+          then: 'menu',
+        },
+        folk: {
+          text: "Nan at the croft, halfway down. Rook sat at the tarn, where he always is. Edda keeps The Wether at the far end.",
+          then: 'menu',
+        },
+        trade: {
+          text: "Thistledown, that. Nan stuffs cushions with it and pays me to fetch it. Here.",
+          do: [{ take: { type: 'item.flower', count: 2 } }, { coins: 16 }],
+          then: 'menu',
+        },
+        after: { text: 'Wind is up the gap today. It usually is.', then: 'menu' },
+        bye: { text: 'Right you are.' },
+      },
+    },
+  });
+
+  d.person({
+    id: 'folk.nan',
+    type: 'folk.gardener',
+    tile: [croft[0] + 1, croft[1] + 3],
+    facing: 'south',
+    props: { name: 'Nan', title: 'Keeps the west bench', roam: 6 },
+    dialog: {
+      start: 'open',
+      nodes: {
+        open: {
+          branch: [
+            { when: { friend: true }, to: 'welcome' },
+            { to: 'hello' },
+          ],
+        },
+        hello: {
+          text: [
+            'Stand still a moment, they are counting you.',
+            "Nan. The croft is mine and so are the sheep on that bench. Door is open to you now we have met.",
+          ],
+          then: 'menu',
+        },
+        welcome: { text: 'Go on in. Kettle is where it always is.', then: 'menu' },
+        menu: {
+          text: 'Was there something?',
+          choices: [
+            {
+              text: 'Anything come up this week?',
+              when: { room: { type: 'item.mushroom', count: 2 } },
+              to: 'gift',
+            },
+            { text: 'Why keep them up there?', to: 'why' },
+            { text: 'Just saying hello.', to: 'bye' },
+          ],
+        },
+        gift: {
+          text: 'Under the thorn on the second bench. Take them, I have a basket.',
+          do: { give: { type: 'item.mushroom', count: 2 } },
+          then: 'menu',
+        },
+        why: {
+          text: [
+            'Grass is better up there and the wind takes the flies.',
+            'And they are somewhere I can see them from the door, which after thirty years is most of it.',
+          ],
+          then: 'menu',
+        },
+        bye: { text: 'Mind the gate on your way through.' },
+      },
+    },
+  });
+
+  d.person({
+    id: 'folk.rook',
+    type: 'folk.fisher',
+    tile: [Math.round(axis + tarn[0]) + 5, tarnZ],
+    facing: 'west',
+    props: { name: 'Rook', title: 'Sits at the tarn', roam: 5 },
+    dialog: {
+      start: 'open',
+      nodes: {
+        open: {
+          branch: [
+            { when: { visits: 5 }, to: 'regular' },
+            { to: 'hello' },
+          ],
+        },
+        hello: {
+          text: [
+            'Quietly, if you would.',
+            "Rook. There is nothing in this tarn worth catching and I have been after it for years.",
+          ],
+          then: 'menu',
+        },
+        regular: { text: 'You again. Sit if you like, it is not my water.', then: 'menu' },
+        menu: {
+          text: 'Well?',
+          choices: [
+            {
+              text: 'Found anything in the shallows?',
+              when: { room: { type: 'item.stone', count: 2 } },
+              to: 'gift',
+            },
+            { text: 'Nothing at all in there?', to: 'nothing' },
+            { text: "I'll leave you to it.", to: 'bye' },
+          ],
+        },
+        gift: {
+          text: 'Flat ones, off the rim. Best skimmers in the gap and I have no arm left for it.',
+          do: { give: { type: 'item.stone', count: 2 } },
+          then: 'menu',
+        },
+        nothing: {
+          text: [
+            'Something. Never seen it. Forty years of never seeing it.',
+            'You will hear it take a fly some evening and then you will be sat here too.',
+          ],
+          then: 'menu',
+        },
+        bye: { text: 'Aye. Quietly.' },
+      },
+    },
+  });
+
+  const counts = {
+    boulder: d.scatter('boulder', 'rock.large', 16, ['g', 's'], 4200),
+    // Thorn and scrub on the walls, thin on the pasture: a bench with a forest
+    // on it is a bench nothing can graze, and grazing is what the benches here
+    // are for.
+    pine: d.scatter('pine', 'tree.pine', 74, ['g'], 4200),
+    oak: d.scatter('oak', 'tree.oak', 58, ['g'], 4200),
+    rock: d.scatter('rock', 'rock.small', 62, ['g', 's'], 4200),
+
+    // UP, both of them, and on opposite walls. The trails are the only way onto
+    // the benches, so a flock seeded up there is a thing the map cannot show
+    // you and the road cannot walk you past -- you have to go and look.
+    sheep: d.flock('sheep', 'sheep', 4, Math.round(axis) - 13, 26, 9, ['g']),
+    goat: d.flock('goat', 'goat', 3, Math.round(axis) + 14, 50, 9, ['g']),
+    // And two on the floor, so the road is not empty between the climbs.
+    rabbit: d.flock('rabbit', 'rabbit', 2, Math.round(axis + tarn[0]), tarnZ + 7, 7, ['g']),
+    chicken: d.flock('chicken', 'chicken', 3, home[0] + 1, home[1] + 5, 4, ['g', 'c']),
+
+    stick: d.litter('stick', 'item.stick', 18, ['g']),
+    mushroom: d.litter('mushroom', 'item.mushroom', 15, ['g']),
+    // On the tarn's rim, which is the only gravel in the pass.
+    stone: d.litter('stone', 'item.stone', 14, ['s']),
+    flower: d.litter('flower', 'item.flower', 20, ['g']),
+    apple: d.litter('apple', 'item.apple', 7, ['g'], { cx: home[0] + 1, cz: home[1] + 4, radius: 7 }),
+  };
+
+  return {
+    draft: d,
+    counts,
+    world: d.toWorld({
+      meta,
+      terrain: { form: 'holler', open: ['north', 'south'] },
+      spawn: { tile: [road, spawnRow], facing: 'south' },
+      // Thinner haze than Sourwood's. A gap has wind through it and a view out
+      // of both ends, and fog that close would take away the one thing that
+      // distinguishes it from a holler.
+      ambience: { fog: [24, 72] },
     }),
   };
 }

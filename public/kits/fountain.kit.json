@@ -1,0 +1,56 @@
+{
+  "format": "tw.kit",
+  "version": 1,
+  "meta": { "id": "fountain", "name": "Fountain" },
+
+  "types": {
+    "fixture.fountain": {
+      "kind": "object",
+      "label": "Fountain",
+      "footprint": { "w": 2, "d": 2, "mask": ["##", "##"] },
+      "height": 1.35,
+      "squash": 0.34,
+
+      "palette": {
+        "stone":  "#b9b3a6",
+        "shade":  "#948e83",
+        "rim":    "#d2ccbe",
+        "water":  "#5fa8c9",
+        "foam":   "#cfeaf5",
+        "spout":  "#8fc8dd"
+      },
+
+      "parts": [
+        { "prim": "cyl", "at": [0, 0.11, 0], "size": [1.02, 0.22, 1.02], "color": "shade" },
+        { "prim": "cyl", "at": [0, 0.30, 0], "size": [0.94, 0.24, 0.94], "color": "stone" },
+        { "prim": "cyl", "at": [0, 0.44, 0], "size": [0.98, 0.08, 0.98], "color": "rim" },
+
+        { "prim": "cyl", "at": [0, 0.46, 0], "size": [0.74, 0.06, 0.74], "color": "water",
+          "anim": { "bob": { "amp": 0.012, "rate": 0.45 } } },
+
+        { "prim": "taper", "at": [0, 0.66, 0], "size": [0.16, 0.42, 0.16], "color": "stone" },
+        { "prim": "cyl",   "at": [0, 0.88, 0], "size": [0.30, 0.07, 0.30], "color": "rim" },
+
+        { "prim": "blob", "at": [0, 1.00, 0], "size": [0.10, 0.12, 0.10], "color": "foam",
+          "anim": { "pulse": { "amp": 0.22, "rate": 1.6 } } },
+
+        { "prim": "cyl", "at": [0.20, 0.92, 0], "size": [0.035, 0.30, 0.035], "color": "spout",
+          "anim": { "flow": { "amp": 0.42, "rate": 1.1, "phase": 0.0 } } },
+        { "prim": "cyl", "at": [-0.20, 0.92, 0], "size": [0.035, 0.30, 0.035], "color": "spout",
+          "anim": { "flow": { "amp": 0.42, "rate": 1.1, "phase": 0.25 } } },
+        { "prim": "cyl", "at": [0, 0.92, 0.20], "size": [0.035, 0.30, 0.035], "color": "spout",
+          "anim": { "flow": { "amp": 0.42, "rate": 1.1, "phase": 0.5 } } },
+        { "prim": "cyl", "at": [0, 0.92, -0.20], "size": [0.035, 0.30, 0.035], "color": "spout",
+          "anim": { "flow": { "amp": 0.42, "rate": 1.1, "phase": 0.75 } } }
+      ],
+
+      "state": { "wishes": 0 },
+
+      "interact": {
+        "label": "Make a wish",
+        "when": { "coins": 1 },
+        "run": "fountain.js"
+      }
+    }
+  }
+}

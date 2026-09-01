@@ -45,9 +45,33 @@ import { Dialogue } from '../src/sim/Dialogue.js';
 import { Inventory } from '../src/sim/Inventory.js';
 import { Purse } from '../src/sim/Purse.js';
 import { unreachableNodes, END } from '../src/world/dialog.js';
+import { kits } from '../src/world/kits.js';
+import { Fixtures, interactOf } from '../src/sim/Fixtures.js';
 
-const STARTS = ['worlds/meadowbrook.json', 'worlds/sourwood.json'];
-const load = (url) => new World(parseWorldFile(JSON.parse(readFileSync(new URL(`../public/${url}`, import.meta.url)))));
+const STARTS = [
+  'worlds/meadowbrook.json', 'worlds/sourwood.json',
+  'worlds/tidewrack.json', 'worlds/thistledown.json',
+];
+const read = (url) => readFileSync(new URL(`../public/${url}`, import.meta.url), 'utf8');
+
+// There is no `fetch` and no server out here, so the kit registry is pointed at
+// the disk. The same loader the game uses otherwise -- including the URL
+// resolution that finds a kit's script beside it -- so a `run` path that is
+// wrong is wrong here too, which is the whole reason to reuse it.
+kits.reader = async (url) => read(url);
+
+/**
+ * Build one place.
+ *
+ * Async only because of the kits: a world's `objects` are validated against the
+ * type registry, so anything it declares has to be registered before it parses.
+ * That is the same ordering the browser observes (see `loadWorldFile`).
+ */
+async function load(url) {
+  const raw = JSON.parse(read(url));
+  await kits.loadAll(raw.kits);
+  return new World(parseWorldFile(raw));
+}
 
 const GLYPH = {
   grass: '.', concrete: '+', sand: ':', water: '~',
@@ -62,7 +86,9 @@ const OBJ = {
 };
 
 /** Animals get their own glyph layer: they are placed by position, not footprint. */
-const ANIMAL = { chicken: 'k' };
+const ANIMAL = {
+  chicken: 'k', duck: 'd', rabbit: 'r', sheep: 'w', goat: 'g', cat: 'z', crow: 'q',
+};
 
 /** People, over the animals: an NPC stands where he was put and stays there. */
 const NPC = {
@@ -322,6 +348,54 @@ function stockedBag() {
 }
 
 /** Validate one place, and return the interior URLs its doorways point at. */
+/**
+ * Press E on every fixture in the place, repeatedly, and see what happens.
+ *
+ * The counterpart to the dialog walk above, and it exists because of the one
+ * thing a kit can do that a dialog cannot: run code. Every other part of a kit
+ * is a closed vocabulary checked at load (src/world/kit.js), and a dialog graph
+ * can be walked exhaustively without executing anything -- but a script is a
+ * script, and the only honest way to find out whether it throws on its fourth
+ * use is to use it four times.
+ *
+ * So this is not a proof, and it is not pretending to be one. It is a smoke
+ * test with a stocked bag and a full purse, and what it catches is the whole
+ * everyday class: a typo, an item id that does not exist, a runaway loop, a
+ * state key that grows without bound, an effect the host will refuse.
+ *
+ * Runs against a THROWAWAY inventory and purse. The fixture state is real and
+ * accumulates across the presses, which is the point -- a fountain that behaves
+ * differently on its tenth coin is a fountain worth pressing ten times.
+ */
+const USES = 12;
+
+function useFixtures(world) {
+  const fixtures = new Fixtures(world);
+  const targets = world.objects.filter((o) => interactOf(o.type));
+  if (!targets.length) return;
+
+  const inv = new Inventory();
+  for (const type of ['item.apple', 'item.stick', 'item.shell']) inv.add(type, 3);
+  const ctx = { inventory: inv, purse: new Purse(9999) };
+
+  for (const obj of targets) {
+    let ran = 0, said = 0, refused = 0;
+    for (let i = 0; i < USES; i++) {
+      // `target` is the same gate the HUD and the key ask, so a `when` that can
+      // never hold shows up here as a fixture nobody can ever use.
+      if (!fixtures.target(obj, ctx)) { refused++; continue; }
+      const result = fixtures.use(obj, ctx);
+      if (!result.ok) { fail(`${obj.id}: ${result.error}`); break; }
+      ran++;
+      said += result.lines.length;
+    }
+    const state = JSON.stringify(fixtures.state.get(obj.id) ?? {});
+    console.log(`  fixture ${obj.id} (${obj.type}): ${ran}/${USES} presses ran`
+      + `, ${said} lines, ends ${state}`);
+    if (!ran) fail(`${obj.id} could not be used once in ${USES} tries -- check its "when"`);
+  }
+}
+
 function check(url, world) {
   const form = world.form
     ? `${world.form.name}${world.openEdges.length ? ` open ${world.openEdges.join('/')}` : ''}`
@@ -396,6 +470,7 @@ function check(url, world) {
 
   if (world.animals.length) simulateFauna(world);
   if (world.npcs.length) simulateFolk(world);
+  useFixtures(world);
 
   // An item is stricter than an animal about where it may start, and the
   // difference is that it cannot walk out of a mistake. A chicken inside a
@@ -455,7 +530,7 @@ while (queue.length) {
 
   let world;
   try {
-    world = load(url);
+    world = await load(url);
   } catch (err) {
     fail(`${url}: ${err.message}`);
     continue;

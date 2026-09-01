@@ -90,6 +90,35 @@ export const ITEM_TYPES = {
     swatch: 0xe8c24b,
     palette: { stem: 0x4f9e3f, petal: 0xf2e6a0, petalHi: 0xfaf3cf, heart: 0xe8c24b },
   },
+
+  // ---------------------------------------------------------------- tools --
+  // A tool is an item like any other: it sits in a slot, it is worth coins, a
+  // shop will take it back. The only thing that makes it a tool is the `tool`
+  // block, which names the VERB it performs -- and nothing about what that verb
+  // MEANS is here. Which tiles a shovel goes into, how many swings a tree
+  // takes and what falls out of one are rules of the simulation and live in
+  // sim/tools.js, the same way a dialog's vocabulary lives in world/dialog.js
+  // and the machine that runs it lives in sim/Dialogue.js.
+  //
+  // STACK 1, always. Two axes in a slot is not a bigger axe.
+  'tool.axe': {
+    label: 'Axe',
+    stack: 1,
+    value: 140,
+    height: 0.34,
+    swatch: 0xb6bcc1,
+    palette: { haft: 0x8a6242, haftHi: 0x9d7350, head: 0x8f969c, edge: 0xd6dce0, band: 0x6b6f74 },
+    tool: { verb: 'chop', swings: 3 },
+  },
+  'tool.shovel': {
+    label: 'Shovel',
+    stack: 1,
+    value: 110,
+    height: 0.36,
+    swatch: 0x9aa4a9,
+    palette: { haft: 0xb98d5f, haftHi: 0xcaa070, blade: 0x8d9498, bladeHi: 0xbcc3c7, grip: 0x6b4a30 },
+    tool: { verb: 'dig' },
+  },
 };
 
 export function itemType(typeId) {
