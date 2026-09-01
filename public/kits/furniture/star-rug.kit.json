@@ -1,0 +1,51 @@
+{
+  "format": "tw.kit",
+  "version": 1,
+  "meta": {
+    "id": "turnip.star-rug",
+    "name": "Turnipwood Star Rug"
+  },
+  "types": {
+    "fixture.star-rug": {
+      "kind": "object",
+      "label": "Turnipwood Star Rug",
+      "footprint": { "w": 2, "d": 2 },
+      "height": 0.2,
+      "squash": 0.9,
+      "palette": {
+        "cloth": "#8e6fb0",
+        "clothHi": "#a98acb",
+        "pale": "#fbf7ee",
+        "accent": "#8e6fb0"
+      },
+      "parts": [
+        { "prim": "box", "at": [0, 0.02, 0], "size": [1.929, 0.04, 1.885], "color": "cloth" },
+        { "prim": "box", "at": [0, 0.045, 0], "size": [1.769, 0.016, 1.725], "color": "clothHi" },
+        { "prim": "box", "at": [0, 0.054, 0], "size": [1.169, 0.014, 0.07], "color": "accent" },
+        { "prim": "box", "at": [0, 0.054, 0], "rot": [0, 22.5, 0], "size": [1.169, 0.014, 0.07], "color": "accent" },
+        { "prim": "box", "at": [0, 0.054, 0], "rot": [0, 45, 0], "size": [1.169, 0.014, 0.07], "color": "accent" },
+        { "prim": "box", "at": [0, 0.054, 0], "rot": [0, 67.5, 0], "size": [1.169, 0.014, 0.07], "color": "accent" },
+        { "prim": "box", "at": [0, 0.054, 0], "rot": [0, 90, 0], "size": [1.169, 0.014, 0.07], "color": "accent" },
+        { "prim": "box", "at": [0, 0.054, 0], "rot": [0, 112.5, 0], "size": [1.169, 0.014, 0.07], "color": "accent" },
+        { "prim": "box", "at": [0, 0.054, 0], "rot": [0, 135, 0], "size": [1.169, 0.014, 0.07], "color": "accent" },
+        { "prim": "box", "at": [0, 0.054, 0], "rot": [0, 157.5, 0], "size": [1.169, 0.014, 0.07], "color": "accent" },
+        { "prim": "cyl", "at": [0, 0.062, 0], "size": [0.188, 0.014, 0.188], "color": "pale" }
+      ]
+    },
+    "kititem.star-rug": {
+      "kind": "item",
+      "label": "Turnipwood Star Rug",
+      "value": 535,
+      "stack": 1,
+      "swatch": "#9c658b",
+      "badge": "crate",
+      "furniture": "fixture.star-rug",
+      "palette": {
+        "wrap": "#d9c7a4",
+        "wrapHi": "#eee1c7",
+        "strap": "#8a6242",
+        "mark": "#9c658b"
+      }
+    }
+  }
+}

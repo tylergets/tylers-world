@@ -1,0 +1,44 @@
+{
+  "format": "tw.kit",
+  "version": 1,
+  "meta": {
+    "id": "turnip.round-dining-table",
+    "name": "Coppervale Round Dining Table"
+  },
+  "types": {
+    "fixture.round-dining-table": {
+      "kind": "object",
+      "label": "Coppervale Round Dining Table",
+      "footprint": { "w": 2, "d": 2 },
+      "height": 0.83,
+      "squash": 0.34,
+      "palette": {
+        "wood": "#a9763f",
+        "woodHi": "#c6924f",
+        "woodDark": "#7a5329"
+      },
+      "parts": [
+        { "prim": "cyl", "at": [0, 0.05, 0], "size": [0.484, 0.1, 0.484], "color": "woodDark" },
+        { "prim": "taper", "at": [0, 0.37, 0], "size": [0.13, 0.611, 0.13], "color": "wood" },
+        { "prim": "cyl", "at": [0, 0.661, 0], "size": [0.2, 0.06, 0.2], "color": "woodHi" },
+        { "prim": "cyl", "at": [0, 0.761, 0], "size": [0.851, 0.1, 0.807], "color": "wood" },
+        { "prim": "cyl", "at": [0, 0.816, 0], "size": [0.801, 0.02, 0.757], "color": "woodHi" }
+      ]
+    },
+    "kititem.round-dining-table": {
+      "kind": "item",
+      "label": "Coppervale Round Dining Table",
+      "value": 595,
+      "stack": 1,
+      "swatch": "#c67741",
+      "badge": "table",
+      "furniture": "fixture.round-dining-table",
+      "palette": {
+        "wrap": "#d9c7a4",
+        "wrapHi": "#eee1c7",
+        "strap": "#8a6242",
+        "mark": "#c67741"
+      }
+    }
+  }
+}

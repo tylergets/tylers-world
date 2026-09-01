@@ -1,0 +1,59 @@
+{
+  "format": "tw.kit",
+  "version": 1,
+  "meta": {
+    "id": "turnip.rabbit-hutch",
+    "name": "Fenrush Rabbit Hutch"
+  },
+  "types": {
+    "fixture.rabbit-hutch": {
+      "kind": "object",
+      "label": "Fenrush Rabbit Hutch",
+      "footprint": { "w": 2, "d": 1 },
+      "height": 1.13,
+      "squash": 0.3,
+      "palette": {
+        "wood": "#d9bb7a",
+        "woodHi": "#ecd69c",
+        "woodDark": "#a8873f",
+        "clothHi": "#bda87a",
+        "metal": "#9d9384"
+      },
+      "parts": [
+        { "prim": "box", "at": [-0.655, 0.17, -0.238], "size": [0.09, 0.34, 0.09], "color": "woodDark" },
+        { "prim": "box", "at": [0.655, 0.17, -0.238], "size": [0.09, 0.34, 0.09], "color": "woodDark" },
+        { "prim": "box", "at": [-0.655, 0.17, 0.238], "size": [0.09, 0.34, 0.09], "color": "woodDark" },
+        { "prim": "box", "at": [0.655, 0.17, 0.238], "size": [0.09, 0.34, 0.09], "color": "woodDark" },
+        { "prim": "box", "at": [0, 0.688, 0], "size": [1.45, 0.695, 0.616], "color": "wood" },
+        { "prim": "box", "at": [0, 1.085, 0], "size": [1.57, 0.08, 0.736], "color": "woodHi" },
+        { "prim": "cyl", "at": [-0.632, 0.688, 0.318], "size": [0.012, 0.615, 0.012], "color": "metal" },
+        { "prim": "cyl", "at": [-0.532, 0.688, 0.318], "size": [0.012, 0.615, 0.012], "color": "metal" },
+        { "prim": "cyl", "at": [-0.432, 0.688, 0.318], "size": [0.012, 0.615, 0.012], "color": "metal" },
+        { "prim": "cyl", "at": [-0.332, 0.688, 0.318], "size": [0.012, 0.615, 0.012], "color": "metal" },
+        { "prim": "cyl", "at": [-0.232, 0.688, 0.318], "size": [0.012, 0.615, 0.012], "color": "metal" },
+        { "prim": "cyl", "at": [-0.132, 0.688, 0.318], "size": [0.012, 0.615, 0.012], "color": "metal" },
+        { "prim": "cyl", "at": [-0.032, 0.688, 0.318], "size": [0.012, 0.615, 0.012], "color": "metal" },
+        { "prim": "cyl", "at": [0.068, 0.688, 0.318], "size": [0.012, 0.615, 0.012], "color": "metal" },
+        { "prim": "cyl", "at": [0.168, 0.688, 0.318], "size": [0.012, 0.615, 0.012], "color": "metal" },
+        { "prim": "box", "at": [0.464, 0.688, 0.318], "size": [0.435, 0.635, 0.04], "color": "woodHi" },
+        { "prim": "cyl", "at": [0.609, 0.688, 0.348], "rot": [90, 0, 0], "size": [0.026, 0.045, 0.026], "color": "metal" },
+        { "prim": "box", "at": [0, 0.4, 0], "size": [1.35, 0.06, 0.516], "color": "clothHi" }
+      ]
+    },
+    "kititem.rabbit-hutch": {
+      "kind": "item",
+      "label": "Fenrush Rabbit Hutch",
+      "value": 415,
+      "stack": 1,
+      "swatch": "#bc9847",
+      "badge": "plant",
+      "furniture": "fixture.rabbit-hutch",
+      "palette": {
+        "wrap": "#d9c7a4",
+        "wrapHi": "#eee1c7",
+        "strap": "#8a6242",
+        "mark": "#bc9847"
+      }
+    }
+  }
+}

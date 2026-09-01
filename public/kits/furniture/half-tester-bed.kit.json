@@ -1,0 +1,64 @@
+{
+  "format": "tw.kit",
+  "version": 1,
+  "meta": {
+    "id": "turnip.half-tester-bed",
+    "name": "Turnipwood Half-Tester Bed"
+  },
+  "types": {
+    "fixture.half-tester-bed": {
+      "kind": "object",
+      "label": "Turnipwood Half-Tester Bed",
+      "footprint": { "w": 2, "d": 3 },
+      "height": 1.7,
+      "squash": 0.34,
+      "palette": {
+        "wood": "#e8dcc4",
+        "woodHi": "#f6eeda",
+        "woodDark": "#c3b394",
+        "cloth": "#8e6fb0",
+        "clothHi": "#a98acb",
+        "pale": "#fbf7ee"
+      },
+      "parts": [
+        { "prim": "box", "at": [0, 0.16, 0], "size": [1.757, 0.32, 2.624], "color": "woodDark" },
+        { "prim": "box", "at": [-0.798, 0.05, -1.212], "size": [0.12, 0.1, 0.12], "color": "wood" },
+        { "prim": "box", "at": [0.798, 0.05, -1.212], "size": [0.12, 0.1, 0.12], "color": "wood" },
+        { "prim": "box", "at": [-0.798, 0.05, 1.212], "size": [0.12, 0.1, 0.12], "color": "wood" },
+        { "prim": "box", "at": [0.798, 0.05, 1.212], "size": [0.12, 0.1, 0.12], "color": "wood" },
+        { "prim": "box", "at": [0, 0.45, 0.1], "size": [1.657, 0.26, 2.364], "color": "pale" },
+        { "prim": "box", "at": [0, 0.61, 0.499], "size": [1.707, 0.14, 1.47], "color": "cloth" },
+        { "prim": "box", "at": [0, 0.65, -0.236], "size": [1.707, 0.06, 0.12], "color": "clothHi" },
+        { "prim": "box", "at": [-0.386, 0.66, -0.972], "size": [0.703, 0.18, 0.42], "color": "pale" },
+        { "prim": "box", "at": [0.386, 0.66, -0.972], "size": [0.703, 0.18, 0.42], "color": "pale" },
+        { "prim": "box", "at": [0, 0.53, -1.262], "size": [1.757, 0.86, 0.14], "color": "cloth" },
+        { "prim": "blob", "at": [-0.457, 0.516, -1.182], "size": [0.035, 0.035, 0.02], "color": "clothHi" },
+        { "prim": "blob", "at": [0, 0.516, -1.182], "size": [0.035, 0.035, 0.02], "color": "clothHi" },
+        { "prim": "blob", "at": [0.457, 0.516, -1.182], "size": [0.035, 0.035, 0.02], "color": "clothHi" },
+        { "prim": "cyl", "at": [-0.808, 0.85, -1.222], "size": [0.05, 1.7, 0.05], "color": "wood" },
+        { "prim": "cyl", "at": [0.808, 0.85, -1.222], "size": [0.05, 1.7, 0.05], "color": "wood" },
+        { "prim": "cyl", "at": [-0.808, 0.85, 1.222], "size": [0.05, 1.7, 0.05], "color": "wood" },
+        { "prim": "cyl", "at": [0.808, 0.85, 1.222], "size": [0.05, 1.7, 0.05], "color": "wood" },
+        { "prim": "box", "at": [0, 1.66, -1.222], "size": [1.757, 0.08, 0.08], "color": "woodHi" },
+        { "prim": "box", "at": [0, 1.66, 1.222], "size": [1.757, 0.08, 0.08], "color": "woodHi" },
+        { "prim": "box", "at": [-0.808, 1.66, 0], "size": [0.08, 0.08, 2.624], "color": "woodHi" },
+        { "prim": "box", "at": [0.808, 1.66, 0], "size": [0.08, 0.08, 2.624], "color": "woodHi" }
+      ]
+    },
+    "kititem.half-tester-bed": {
+      "kind": "item",
+      "label": "Turnipwood Half-Tester Bed",
+      "value": 1845,
+      "stack": 1,
+      "swatch": "#7b78b2",
+      "badge": "bed",
+      "furniture": "fixture.half-tester-bed",
+      "palette": {
+        "wrap": "#d9c7a4",
+        "wrapHi": "#eee1c7",
+        "strap": "#8a6242",
+        "mark": "#7b78b2"
+      }
+    }
+  }
+}

@@ -1,0 +1,64 @@
+{
+  "format": "tw.kit",
+  "version": 1,
+  "meta": {
+    "id": "turnip.roll-top-desk",
+    "name": "Coppervale Roll-Top Desk"
+  },
+  "types": {
+    "fixture.roll-top-desk": {
+      "kind": "object",
+      "label": "Coppervale Roll-Top Desk",
+      "footprint": { "w": 2, "d": 1 },
+      "height": 1.55,
+      "squash": 0.34,
+      "palette": {
+        "wood": "#a9763f",
+        "woodHi": "#c6924f",
+        "woodDark": "#7a5329",
+        "dark": "#3f2d18",
+        "metal": "#b5713c"
+      },
+      "parts": [
+        { "prim": "box", "at": [-0.745, 0.374, 0], "size": [0.44, 0.708, 0.719], "color": "wood" },
+        { "prim": "box", "at": [-0.745, 0.04, 0], "size": [0.48, 0.08, 0.759], "color": "woodDark" },
+        { "prim": "box", "at": [-0.745, 0.135, 0.35], "size": [0.36, 0.12, 0.04], "color": "woodHi" },
+        { "prim": "cyl", "at": [-0.745, 0.135, 0.39], "rot": [0, 0, 90], "size": [0.025, 0.12, 0.025], "color": "metal" },
+        { "prim": "box", "at": [-0.745, 0.367, 0.35], "size": [0.36, 0.12, 0.04], "color": "woodHi" },
+        { "prim": "cyl", "at": [-0.745, 0.367, 0.39], "rot": [0, 0, 90], "size": [0.025, 0.12, 0.025], "color": "metal" },
+        { "prim": "box", "at": [-0.745, 0.599, 0.35], "size": [0.36, 0.12, 0.04], "color": "woodHi" },
+        { "prim": "cyl", "at": [-0.745, 0.599, 0.39], "rot": [0, 0, 90], "size": [0.025, 0.12, 0.025], "color": "metal" },
+        { "prim": "box", "at": [0.745, 0.374, 0], "size": [0.44, 0.708, 0.719], "color": "wood" },
+        { "prim": "box", "at": [0.745, 0.04, 0], "size": [0.48, 0.08, 0.759], "color": "woodDark" },
+        { "prim": "box", "at": [0.745, 0.135, 0.35], "size": [0.36, 0.12, 0.04], "color": "woodHi" },
+        { "prim": "cyl", "at": [0.745, 0.135, 0.39], "rot": [0, 0, 90], "size": [0.025, 0.12, 0.025], "color": "metal" },
+        { "prim": "box", "at": [0.745, 0.367, 0.35], "size": [0.36, 0.12, 0.04], "color": "woodHi" },
+        { "prim": "cyl", "at": [0.745, 0.367, 0.39], "rot": [0, 0, 90], "size": [0.025, 0.12, 0.025], "color": "metal" },
+        { "prim": "box", "at": [0.745, 0.599, 0.35], "size": [0.36, 0.12, 0.04], "color": "woodHi" },
+        { "prim": "cyl", "at": [0.745, 0.599, 0.39], "rot": [0, 0, 90], "size": [0.025, 0.12, 0.025], "color": "metal" },
+        { "prim": "box", "at": [0, 0.788, 0], "size": [1.971, 0.08, 0.799], "color": "wood" },
+        { "prim": "box", "at": [0, 0.838, 0], "size": [1.811, 0.02, 0.639], "color": "woodHi" },
+        { "prim": "box", "at": [0, 1.168, -0.26], "size": [1.911, 0.62, 0.24], "color": "wood" },
+        { "prim": "box", "at": [-0.552, 1.188, -0.16], "size": [0.394, 0.4, 0.03], "color": "dark" },
+        { "prim": "box", "at": [0, 1.188, -0.16], "size": [0.394, 0.4, 0.03], "color": "dark" },
+        { "prim": "box", "at": [0.552, 1.188, -0.16], "size": [0.394, 0.4, 0.03], "color": "dark" },
+        { "prim": "box", "at": [0, 1.508, -0.26], "size": [2.011, 0.07, 0.3], "color": "woodHi" }
+      ]
+    },
+    "kititem.roll-top-desk": {
+      "kind": "item",
+      "label": "Coppervale Roll-Top Desk",
+      "value": 1120,
+      "stack": 1,
+      "swatch": "#b16a3d",
+      "badge": "table",
+      "furniture": "fixture.roll-top-desk",
+      "palette": {
+        "wrap": "#d9c7a4",
+        "wrapHi": "#eee1c7",
+        "strap": "#8a6242",
+        "mark": "#b16a3d"
+      }
+    }
+  }
+}

@@ -1,0 +1,65 @@
+{
+  "format": "tw.kit",
+  "version": 1,
+  "meta": {
+    "id": "turnip.kitchen-hutch",
+    "name": "Hollowmilk Kitchen Hutch"
+  },
+  "types": {
+    "fixture.kitchen-hutch": {
+      "kind": "object",
+      "label": "Hollowmilk Kitchen Hutch",
+      "footprint": { "w": 2, "d": 1 },
+      "height": 2.05,
+      "squash": 0.34,
+      "palette": {
+        "wood": "#f2ece0",
+        "woodHi": "#fdfaf2",
+        "woodDark": "#cfc7b6",
+        "pale": "#ffffff",
+        "metal": "#b6bcc1"
+      },
+      "parts": [
+        { "prim": "box", "at": [0, 0.06, 0], "size": [1.896, 0.12, 0.68], "color": "woodDark" },
+        { "prim": "box", "at": [0, 0.512, 0], "size": [1.856, 0.784, 0.64], "color": "wood" },
+        { "prim": "box", "at": [0, 0.944, 0], "size": [1.906, 0.08, 0.69], "color": "woodHi" },
+        { "prim": "box", "at": [0, 0.263, 0.33], "size": [1.716, 0.166, 0.04], "color": "woodHi" },
+        { "prim": "cyl", "at": [-0.445, 0.263, 0.36], "rot": [0, 0, 90], "size": [0.024, 0.13, 0.024], "color": "metal" },
+        { "prim": "cyl", "at": [0.445, 0.263, 0.36], "rot": [0, 0, 90], "size": [0.024, 0.13, 0.024], "color": "metal" },
+        { "prim": "box", "at": [-0.464, 0.62, 0.33], "size": [0.838, 0.467, 0.04], "color": "woodHi" },
+        { "prim": "box", "at": [-0.464, 0.62, 0.35], "size": [0.698, 0.307, 0.02], "color": "wood" },
+        { "prim": "cyl", "at": [-0.146, 0.62, 0.37], "rot": [90, 0, 0], "size": [0.03, 0.05, 0.03], "color": "metal" },
+        { "prim": "box", "at": [0.464, 0.62, 0.33], "size": [0.838, 0.467, 0.04], "color": "woodHi" },
+        { "prim": "box", "at": [0.464, 0.62, 0.35], "size": [0.698, 0.307, 0.02], "color": "wood" },
+        { "prim": "cyl", "at": [0.146, 0.62, 0.37], "rot": [90, 0, 0], "size": [0.03, 0.05, 0.03], "color": "metal" },
+        { "prim": "box", "at": [0, 1.479, -0.192], "size": [1.796, 0.95, 0.05], "color": "woodDark" },
+        { "prim": "box", "at": [-0.858, 1.479, -0.077], "size": [0.06, 0.95, 0.352], "color": "wood" },
+        { "prim": "box", "at": [0.858, 1.479, -0.077], "size": [0.06, 0.95, 0.352], "color": "wood" },
+        { "prim": "box", "at": [0, 1.099, -0.077], "size": [1.696, 0.05, 0.32], "color": "wood" },
+        { "prim": "cyl", "at": [-0.483, 1.219, -0.141], "rot": [90, 0, 0], "size": [0.12, 0.025, 0.12], "color": "pale" },
+        { "prim": "cyl", "at": [0, 1.219, -0.141], "rot": [90, 0, 0], "size": [0.12, 0.025, 0.12], "color": "pale" },
+        { "prim": "cyl", "at": [0.483, 1.219, -0.141], "rot": [90, 0, 0], "size": [0.12, 0.025, 0.12], "color": "pale" },
+        { "prim": "box", "at": [0, 1.916, -0.077], "size": [1.696, 0.05, 0.32], "color": "wood" },
+        { "prim": "cyl", "at": [-0.483, 2.036, -0.141], "rot": [90, 0, 0], "size": [0.12, 0.025, 0.12], "color": "pale" },
+        { "prim": "cyl", "at": [0, 2.036, -0.141], "rot": [90, 0, 0], "size": [0.12, 0.025, 0.12], "color": "pale" },
+        { "prim": "cyl", "at": [0.483, 2.036, -0.141], "rot": [90, 0, 0], "size": [0.12, 0.025, 0.12], "color": "pale" },
+        { "prim": "box", "at": [0, 2.004, -0.077], "size": [1.876, 0.08, 0.397], "color": "woodHi" }
+      ]
+    },
+    "kititem.kitchen-hutch": {
+      "kind": "item",
+      "label": "Hollowmilk Kitchen Hutch",
+      "value": 1345,
+      "stack": 1,
+      "swatch": "#657086",
+      "badge": "counter",
+      "furniture": "fixture.kitchen-hutch",
+      "palette": {
+        "wrap": "#d9c7a4",
+        "wrapHi": "#eee1c7",
+        "strap": "#8a6242",
+        "mark": "#657086"
+      }
+    }
+  }
+}

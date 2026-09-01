@@ -1,0 +1,55 @@
+{
+  "format": "tw.kit",
+  "version": 1,
+  "meta": {
+    "id": "turnip.counting-house-chair",
+    "name": "Inkthorn Counting-House Chair"
+  },
+  "types": {
+    "fixture.counting-house-chair": {
+      "kind": "object",
+      "label": "Inkthorn Counting-House Chair",
+      "footprint": { "w": 1, "d": 1 },
+      "height": 1.1,
+      "squash": 0.34,
+      "palette": {
+        "wood": "#3a2f2a",
+        "woodHi": "#54443c",
+        "woodDark": "#241d1a",
+        "metal": "#c8a24a"
+      },
+      "parts": [
+        { "prim": "box", "at": [-0.232, 0.218, -0.223], "size": [0.075, 0.437, 0.075], "color": "woodDark" },
+        { "prim": "box", "at": [0.232, 0.218, -0.223], "size": [0.075, 0.437, 0.075], "color": "woodDark" },
+        { "prim": "box", "at": [-0.232, 0.218, 0.223], "size": [0.075, 0.437, 0.075], "color": "woodDark" },
+        { "prim": "box", "at": [0.232, 0.218, 0.223], "size": [0.075, 0.437, 0.075], "color": "woodDark" },
+        { "prim": "box", "at": [0, 0.482, 0], "size": [0.604, 0.09, 0.586], "color": "wood" },
+        { "prim": "cyl", "at": [-0.232, 0.785, -0.223], "size": [0.03, 0.518, 0.03], "color": "woodDark" },
+        { "prim": "cyl", "at": [0.232, 0.785, -0.223], "size": [0.03, 0.518, 0.03], "color": "woodDark" },
+        { "prim": "box", "at": [0, 1.044, -0.223], "size": [0.604, 0.1, 0.06], "color": "woodHi" },
+        { "prim": "cyl", "at": [-0.17, 0.785, -0.223], "size": [0.018, 0.518, 0.018], "color": "wood" },
+        { "prim": "cyl", "at": [-0.085, 0.785, -0.223], "size": [0.018, 0.518, 0.018], "color": "wood" },
+        { "prim": "cyl", "at": [0, 0.785, -0.223], "size": [0.018, 0.518, 0.018], "color": "wood" },
+        { "prim": "cyl", "at": [0.085, 0.785, -0.223], "size": [0.018, 0.518, 0.018], "color": "wood" },
+        { "prim": "cyl", "at": [0.17, 0.785, -0.223], "size": [0.018, 0.518, 0.018], "color": "wood" },
+        { "prim": "cyl", "at": [0, 0.03, 0], "size": [0.254, 0.06, 0.246], "color": "metal" },
+        { "prim": "cyl", "at": [0, 0.218, 0], "size": [0.05, 0.437, 0.05], "color": "metal" }
+      ]
+    },
+    "kititem.counting-house-chair": {
+      "kind": "item",
+      "label": "Inkthorn Counting-House Chair",
+      "value": 555,
+      "stack": 1,
+      "swatch": "#c69334",
+      "badge": "chair",
+      "furniture": "fixture.counting-house-chair",
+      "palette": {
+        "wrap": "#d9c7a4",
+        "wrapHi": "#eee1c7",
+        "strap": "#8a6242",
+        "mark": "#c69334"
+      }
+    }
+  }
+}

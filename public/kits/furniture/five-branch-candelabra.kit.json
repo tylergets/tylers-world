@@ -1,0 +1,61 @@
+{
+  "format": "tw.kit",
+  "version": 1,
+  "meta": {
+    "id": "turnip.five-branch-candelabra",
+    "name": "Turnipwood Five-Branch Candelabra"
+  },
+  "types": {
+    "fixture.five-branch-candelabra": {
+      "kind": "object",
+      "label": "Turnipwood Five-Branch Candelabra",
+      "footprint": { "w": 1, "d": 1 },
+      "height": 1.46,
+      "squash": 0.3,
+      "palette": {
+        "pale": "#fbf7ee",
+        "metal": "#b9a98d",
+        "accent": "#8e6fb0"
+      },
+      "parts": [
+        { "prim": "cyl", "at": [0, 0.04, 0], "size": [0.16, 0.08, 0.16], "color": "metal" },
+        { "prim": "cyl", "at": [0, 0.601, 0], "size": [0.03, 1.069, 0.03], "color": "metal" },
+        { "prim": "box", "at": [0.12, 1.096, 0], "size": [0.2, 0.03, 0.03], "color": "metal" },
+        { "prim": "cyl", "at": [0.2, 1.176, 0], "size": [0.04, 0.05, 0.04], "color": "metal" },
+        { "prim": "cyl", "at": [0.2, 1.31, 0], "size": [0.02, 0.18, 0.02], "color": "pale" },
+        { "prim": "blob", "at": [0.2, 1.417, 0], "size": [0.026, 0.042, 0.026], "color": "accent", "anim": { "pulse": { "amp": 0.3, "rate": 1.9, "phase": 0 } } },
+        { "prim": "box", "at": [0.037, 1.096, 0.114], "rot": [0, -72, 0], "size": [0.2, 0.03, 0.03], "color": "metal" },
+        { "prim": "cyl", "at": [0.062, 1.176, 0.19], "size": [0.04, 0.05, 0.04], "color": "metal" },
+        { "prim": "cyl", "at": [0.062, 1.31, 0.19], "size": [0.02, 0.18, 0.02], "color": "pale" },
+        { "prim": "blob", "at": [0.062, 1.417, 0.19], "size": [0.026, 0.042, 0.026], "color": "accent", "anim": { "pulse": { "amp": 0.3, "rate": 1.9, "phase": 0.31 } } },
+        { "prim": "box", "at": [-0.097, 1.096, 0.071], "rot": [0, -144, 0], "size": [0.2, 0.03, 0.03], "color": "metal" },
+        { "prim": "cyl", "at": [-0.162, 1.176, 0.118], "size": [0.04, 0.05, 0.04], "color": "metal" },
+        { "prim": "cyl", "at": [-0.162, 1.31, 0.118], "size": [0.02, 0.18, 0.02], "color": "pale" },
+        { "prim": "blob", "at": [-0.162, 1.417, 0.118], "size": [0.026, 0.042, 0.026], "color": "accent", "anim": { "pulse": { "amp": 0.3, "rate": 1.9, "phase": 0.62 } } },
+        { "prim": "box", "at": [-0.097, 1.096, -0.071], "rot": [0, -216, 0], "size": [0.2, 0.03, 0.03], "color": "metal" },
+        { "prim": "cyl", "at": [-0.162, 1.176, -0.118], "size": [0.04, 0.05, 0.04], "color": "metal" },
+        { "prim": "cyl", "at": [-0.162, 1.31, -0.118], "size": [0.02, 0.18, 0.02], "color": "pale" },
+        { "prim": "blob", "at": [-0.162, 1.417, -0.118], "size": [0.026, 0.042, 0.026], "color": "accent", "anim": { "pulse": { "amp": 0.3, "rate": 1.9, "phase": 0.9299999999999999 } } },
+        { "prim": "box", "at": [0.037, 1.096, -0.114], "rot": [0, -288, 0], "size": [0.2, 0.03, 0.03], "color": "metal" },
+        { "prim": "cyl", "at": [0.062, 1.176, -0.19], "size": [0.04, 0.05, 0.04], "color": "metal" },
+        { "prim": "cyl", "at": [0.062, 1.31, -0.19], "size": [0.02, 0.18, 0.02], "color": "pale" },
+        { "prim": "blob", "at": [0.062, 1.417, -0.19], "size": [0.026, 0.042, 0.026], "color": "accent", "anim": { "pulse": { "amp": 0.3, "rate": 1.9, "phase": 1.24 } } }
+      ]
+    },
+    "kititem.five-branch-candelabra": {
+      "kind": "item",
+      "label": "Turnipwood Five-Branch Candelabra",
+      "value": 675,
+      "stack": 1,
+      "swatch": "#b08f8a",
+      "badge": "crate",
+      "furniture": "fixture.five-branch-candelabra",
+      "palette": {
+        "wrap": "#d9c7a4",
+        "wrapHi": "#eee1c7",
+        "strap": "#8a6242",
+        "mark": "#b08f8a"
+      }
+    }
+  }
+}

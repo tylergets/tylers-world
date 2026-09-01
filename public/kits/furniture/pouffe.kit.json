@@ -1,0 +1,47 @@
+{
+  "format": "tw.kit",
+  "version": 1,
+  "meta": {
+    "id": "turnip.pouffe",
+    "name": "Rosewick Pouffe"
+  },
+  "types": {
+    "fixture.pouffe": {
+      "kind": "object",
+      "label": "Rosewick Pouffe",
+      "footprint": { "w": 1, "d": 1 },
+      "height": 0.43,
+      "squash": 0.34,
+      "palette": {
+        "wood": "#8f4a3c",
+        "woodDark": "#653228",
+        "cloth": "#e0b7ad",
+        "clothHi": "#f2d5cd"
+      },
+      "parts": [
+        { "prim": "cyl", "at": [0.226, 0.127, 0], "rot": [0, 0, -3], "size": [0.05, 0.254, 0.05], "color": "woodDark" },
+        { "prim": "cyl", "at": [0, 0.127, 0.226], "rot": [3, 0, 0], "size": [0.05, 0.254, 0.05], "color": "woodDark" },
+        { "prim": "cyl", "at": [-0.226, 0.127, 0], "rot": [0, 0, 3], "size": [0.05, 0.254, 0.05], "color": "woodDark" },
+        { "prim": "cyl", "at": [0, 0.127, -0.226], "rot": [-3, 0, 0], "size": [0.05, 0.254, 0.05], "color": "woodDark" },
+        { "prim": "cyl", "at": [0, 0.294, 0], "size": [0.314, 0.08, 0.314], "color": "wood" },
+        { "prim": "cyl", "at": [0, 0.369, 0], "size": [0.301, 0.08, 0.301], "color": "cloth" },
+        { "prim": "blob", "at": [0, 0.409, 0], "size": [0.063, 0.02, 0.063], "color": "clothHi" }
+      ]
+    },
+    "kititem.pouffe": {
+      "kind": "item",
+      "label": "Rosewick Pouffe",
+      "value": 160,
+      "stack": 1,
+      "swatch": "#c0744d",
+      "badge": "chair",
+      "furniture": "fixture.pouffe",
+      "palette": {
+        "wrap": "#d9c7a4",
+        "wrapHi": "#eee1c7",
+        "strap": "#8a6242",
+        "mark": "#c0744d"
+      }
+    }
+  }
+}

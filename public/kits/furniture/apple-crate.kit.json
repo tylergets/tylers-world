@@ -1,0 +1,46 @@
+{
+  "format": "tw.kit",
+  "version": 1,
+  "meta": {
+    "id": "turnip.apple-crate",
+    "name": "Fenrush Apple Crate"
+  },
+  "types": {
+    "fixture.apple-crate": {
+      "kind": "object",
+      "label": "Fenrush Apple Crate",
+      "footprint": { "w": 1, "d": 1 },
+      "height": 0.52,
+      "squash": 0.34,
+      "palette": {
+        "wood": "#d9bb7a",
+        "woodHi": "#ecd69c",
+        "woodDark": "#a8873f"
+      },
+      "parts": [
+        { "prim": "box", "at": [0, 0.217, 0], "size": [0.82, 0.433, 0.608], "color": "wood" },
+        { "prim": "box", "at": [0, 0.087, 0.309], "size": [0.83, 0.087, 0.02], "color": "woodHi" },
+        { "prim": "box", "at": [0, 0.217, 0.309], "size": [0.83, 0.087, 0.02], "color": "woodHi" },
+        { "prim": "box", "at": [0, 0.346, 0.309], "size": [0.83, 0.087, 0.02], "color": "woodHi" },
+        { "prim": "box", "at": [0, 0.473, 0], "size": [0.87, 0.08, 0.658], "color": "woodHi" },
+        { "prim": "box", "at": [0, 0.217, 0.316], "rot": [0, 0, 40], "size": [1.099, 0.055, 0.02], "color": "woodDark" },
+        { "prim": "box", "at": [0, 0.217, 0.316], "rot": [0, 0, -40], "size": [1.099, 0.055, 0.02], "color": "woodDark" }
+      ]
+    },
+    "kititem.apple-crate": {
+      "kind": "item",
+      "label": "Fenrush Apple Crate",
+      "value": 75,
+      "stack": 1,
+      "swatch": "#ad893c",
+      "badge": "crate",
+      "furniture": "fixture.apple-crate",
+      "palette": {
+        "wrap": "#d9c7a4",
+        "wrapHi": "#eee1c7",
+        "strap": "#8a6242",
+        "mark": "#ad893c"
+      }
+    }
+  }
+}

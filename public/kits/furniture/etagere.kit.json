@@ -1,0 +1,51 @@
+{
+  "format": "tw.kit",
+  "version": 1,
+  "meta": {
+    "id": "turnip.etagere",
+    "name": "Hollowmilk Etagere"
+  },
+  "types": {
+    "fixture.etagere": {
+      "kind": "object",
+      "label": "Hollowmilk Etagere",
+      "footprint": { "w": 2, "d": 1 },
+      "height": 1.68,
+      "squash": 0.34,
+      "palette": {
+        "wood": "#f2ece0",
+        "woodHi": "#fdfaf2",
+        "accent": "#4f79b0"
+      },
+      "parts": [
+        { "prim": "cyl", "at": [-0.862, 0.797, -0.168], "size": [0.035, 1.594, 0.035], "color": "wood" },
+        { "prim": "cyl", "at": [-0.862, 0.797, 0.168], "size": [0.035, 1.594, 0.035], "color": "wood" },
+        { "prim": "cyl", "at": [0.862, 0.797, -0.168], "size": [0.035, 1.594, 0.035], "color": "wood" },
+        { "prim": "cyl", "at": [0.862, 0.797, 0.168], "size": [0.035, 1.594, 0.035], "color": "wood" },
+        { "prim": "box", "at": [0, 0.1, 0], "size": [1.683, 0.055, 0.406], "color": "wood" },
+        { "prim": "box", "at": [0, 0.565, 0], "size": [1.683, 0.055, 0.406], "color": "wood" },
+        { "prim": "taper", "at": [0.404, 0.665, 0], "size": [0.08, 0.14, 0.08], "color": "accent" },
+        { "prim": "box", "at": [0, 1.029, 0], "size": [1.683, 0.055, 0.406], "color": "wood" },
+        { "prim": "taper", "at": [0.404, 1.129, 0], "size": [0.08, 0.14, 0.08], "color": "accent" },
+        { "prim": "box", "at": [0, 1.494, 0], "size": [1.683, 0.055, 0.406], "color": "wood" },
+        { "prim": "taper", "at": [0.404, 1.594, 0], "size": [0.08, 0.14, 0.08], "color": "accent" },
+        { "prim": "box", "at": [0, 1.644, 0], "size": [1.883, 0.07, 0.506], "color": "woodHi" }
+      ]
+    },
+    "kititem.etagere": {
+      "kind": "item",
+      "label": "Hollowmilk Etagere",
+      "value": 710,
+      "stack": 1,
+      "swatch": "#61738c",
+      "badge": "shelf",
+      "furniture": "fixture.etagere",
+      "palette": {
+        "wrap": "#d9c7a4",
+        "wrapHi": "#eee1c7",
+        "strap": "#8a6242",
+        "mark": "#61738c"
+      }
+    }
+  }
+}

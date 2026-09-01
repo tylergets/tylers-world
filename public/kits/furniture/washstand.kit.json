@@ -1,0 +1,54 @@
+{
+  "format": "tw.kit",
+  "version": 1,
+  "meta": {
+    "id": "turnip.washstand",
+    "name": "Hollowmilk Washstand"
+  },
+  "types": {
+    "fixture.washstand": {
+      "kind": "object",
+      "label": "Hollowmilk Washstand",
+      "footprint": { "w": 1, "d": 1 },
+      "height": 1.28,
+      "squash": 0.34,
+      "palette": {
+        "wood": "#f2ece0",
+        "woodHi": "#fdfaf2",
+        "woodDark": "#cfc7b6",
+        "pale": "#ffffff",
+        "metal": "#b6bcc1",
+        "accent": "#4f79b0",
+        "glass": "#dceaf4"
+      },
+      "parts": [
+        { "prim": "box", "at": [0, 0.384, 0], "size": [0.718, 0.767, 0.508], "color": "wood" },
+        { "prim": "box", "at": [0, 0.05, 0], "size": [0.748, 0.1, 0.538], "color": "woodDark" },
+        { "prim": "box", "at": [0, 0.817, 0], "size": [0.788, 0.08, 0.568], "color": "pale" },
+        { "prim": "cyl", "at": [0, 0.897, 0.02], "size": [0.215, 0.11, 0.215], "color": "pale" },
+        { "prim": "cyl", "at": [0, 0.937, 0.02], "size": [0.172, 0.04, 0.172], "color": "glass", "anim": { "bob": { "amp": 0.008, "rate": 0.5 } } },
+        { "prim": "box", "at": [0, 1.067, -0.224], "size": [0.778, 0.42, 0.05], "color": "woodHi" },
+        { "prim": "cyl", "at": [0, 1.007, -0.154], "size": [0.02, 0.16, 0.02], "color": "metal" },
+        { "prim": "box", "at": [0, 0.353, 0.264], "size": [0.578, 0.46, 0.04], "color": "woodHi" },
+        { "prim": "cyl", "at": [0, 0.353, 0.294], "rot": [90, 0, 0], "size": [0.03, 0.05, 0.03], "color": "metal" },
+        { "prim": "taper", "at": [0.215, 1.007, -0.102], "rot": [180, 0, 0], "size": [0.08, 0.22, 0.08], "color": "accent" },
+        { "prim": "cyl", "at": [0.215, 1.127, -0.102], "size": [0.05, 0.05, 0.05], "color": "accent" }
+      ]
+    },
+    "kititem.washstand": {
+      "kind": "item",
+      "label": "Hollowmilk Washstand",
+      "value": 625,
+      "stack": 1,
+      "swatch": "#618bb5",
+      "badge": "stove",
+      "furniture": "fixture.washstand",
+      "palette": {
+        "wrap": "#d9c7a4",
+        "wrapHi": "#eee1c7",
+        "strap": "#8a6242",
+        "mark": "#618bb5"
+      }
+    }
+  }
+}

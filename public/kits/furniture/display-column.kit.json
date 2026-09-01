@@ -1,0 +1,42 @@
+{
+  "format": "tw.kit",
+  "version": 1,
+  "meta": {
+    "id": "turnip.display-column",
+    "name": "Hollowmilk Display Column"
+  },
+  "types": {
+    "fixture.display-column": {
+      "kind": "object",
+      "label": "Hollowmilk Display Column",
+      "footprint": { "w": 1, "d": 1 },
+      "height": 1.05,
+      "squash": 0.3,
+      "palette": {
+        "pale": "#ffffff",
+        "metal": "#b6bcc1"
+      },
+      "parts": [
+        { "prim": "box", "at": [0, 0.06, 0], "size": [0.6, 0.12, 0.6], "color": "metal" },
+        { "prim": "box", "at": [0, 0.15, 0], "size": [0.528, 0.08, 0.528], "color": "pale" },
+        { "prim": "cyl", "at": [0, 0.552, 0], "size": [0.24, 0.803, 0.24], "color": "pale" },
+        { "prim": "box", "at": [0, 1.004, 0], "size": [0.6, 0.09, 0.6], "color": "metal" }
+      ]
+    },
+    "kititem.display-column": {
+      "kind": "item",
+      "label": "Hollowmilk Display Column",
+      "value": 455,
+      "stack": 1,
+      "swatch": "#8097b2",
+      "badge": "crate",
+      "furniture": "fixture.display-column",
+      "palette": {
+        "wrap": "#d9c7a4",
+        "wrapHi": "#eee1c7",
+        "strap": "#8a6242",
+        "mark": "#8097b2"
+      }
+    }
+  }
+}

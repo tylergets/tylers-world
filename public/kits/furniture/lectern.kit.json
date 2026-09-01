@@ -1,0 +1,45 @@
+{
+  "format": "tw.kit",
+  "version": 1,
+  "meta": {
+    "id": "turnip.lectern",
+    "name": "Coppervale Lectern"
+  },
+  "types": {
+    "fixture.lectern": {
+      "kind": "object",
+      "label": "Coppervale Lectern",
+      "footprint": { "w": 1, "d": 1 },
+      "height": 1.32,
+      "squash": 0.3,
+      "palette": {
+        "wood": "#a9763f",
+        "woodHi": "#c6924f",
+        "woodDark": "#7a5329",
+        "pale": "#f0e6d2"
+      },
+      "parts": [
+        { "prim": "box", "at": [0, 0.05, 0], "size": [0.44, 0.1, 0.4], "color": "woodDark" },
+        { "prim": "taper", "at": [0, 0.632, 0], "size": [0.07, 1.163, 0.07], "color": "wood" },
+        { "prim": "box", "at": [0, 1.265, 0], "rot": [-22, 0, 0], "size": [0.52, 0.05, 0.36], "color": "wood" },
+        { "prim": "box", "at": [0, 1.305, 0.04], "rot": [-22, 0, 0], "size": [0.44, 0.03, 0.3], "color": "pale" },
+        { "prim": "box", "at": [0, 1.205, 0.16], "size": [0.5, 0.04, 0.04], "color": "woodHi" }
+      ]
+    },
+    "kititem.lectern": {
+      "kind": "item",
+      "label": "Coppervale Lectern",
+      "value": 485,
+      "stack": 1,
+      "swatch": "#a7765c",
+      "badge": "plant",
+      "furniture": "fixture.lectern",
+      "palette": {
+        "wrap": "#d9c7a4",
+        "wrapHi": "#eee1c7",
+        "strap": "#8a6242",
+        "mark": "#a7765c"
+      }
+    }
+  }
+}

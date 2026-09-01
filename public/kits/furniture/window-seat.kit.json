@@ -1,0 +1,46 @@
+{
+  "format": "tw.kit",
+  "version": 1,
+  "meta": {
+    "id": "turnip.window-seat",
+    "name": "Hollowmilk Window Seat"
+  },
+  "types": {
+    "fixture.window-seat": {
+      "kind": "object",
+      "label": "Hollowmilk Window Seat",
+      "footprint": { "w": 2, "d": 1 },
+      "height": 0.64,
+      "squash": 0.34,
+      "palette": {
+        "wood": "#f2ece0",
+        "woodHi": "#fdfaf2",
+        "woodDark": "#cfc7b6",
+        "cloth": "#5878ab"
+      },
+      "parts": [
+        { "prim": "box", "at": [0, 0.225, 0], "size": [1.827, 0.449, 0.48], "color": "wood" },
+        { "prim": "box", "at": [0, 0.05, 0], "size": [1.867, 0.1, 0.52], "color": "woodDark" },
+        { "prim": "box", "at": [0, 0.499, 0], "size": [1.897, 0.1, 0.55], "color": "woodHi" },
+        { "prim": "box", "at": [-0.438, 0.225, 0.23], "size": [0.658, 0.269, 0.03], "color": "woodDark" },
+        { "prim": "box", "at": [0.438, 0.225, 0.23], "size": [0.658, 0.269, 0.03], "color": "woodDark" },
+        { "prim": "box", "at": [0, 0.599, 0], "size": [1.707, 0.08, 0.4], "color": "cloth" }
+      ]
+    },
+    "kititem.window-seat": {
+      "kind": "item",
+      "label": "Hollowmilk Window Seat",
+      "value": 395,
+      "stack": 1,
+      "swatch": "#717385",
+      "badge": "chair",
+      "furniture": "fixture.window-seat",
+      "palette": {
+        "wrap": "#d9c7a4",
+        "wrapHi": "#eee1c7",
+        "strap": "#8a6242",
+        "mark": "#717385"
+      }
+    }
+  }
+}

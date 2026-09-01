@@ -1,0 +1,48 @@
+{
+  "format": "tw.kit",
+  "version": 1,
+  "meta": {
+    "id": "turnip.fire-basket",
+    "name": "Turnipwood Fire Basket"
+  },
+  "types": {
+    "fixture.fire-basket": {
+      "kind": "object",
+      "label": "Turnipwood Fire Basket",
+      "footprint": { "w": 1, "d": 1 },
+      "height": 0.59,
+      "squash": 0.32,
+      "palette": {
+        "pale": "#fbf7ee",
+        "dark": "#5a4a63",
+        "metal": "#b9a98d",
+        "accent": "#8e6fb0"
+      },
+      "parts": [
+        { "prim": "cyl", "at": [0.2, 0.147, 0], "rot": [0, 0, -12], "size": [0.024, 0.324, 0.024], "color": "metal" },
+        { "prim": "cyl", "at": [-0.1, 0.147, 0.173], "rot": [10.392, 0, 6], "size": [0.024, 0.324, 0.024], "color": "metal" },
+        { "prim": "cyl", "at": [-0.1, 0.147, -0.173], "rot": [-10.392, 0, 6], "size": [0.024, 0.324, 0.024], "color": "metal" },
+        { "prim": "taper", "at": [0, 0.383, 0], "size": [0.3, 0.26, 0.3], "color": "metal" },
+        { "prim": "cyl", "at": [0, 0.432, 0], "size": [0.29, 0.05, 0.29], "color": "dark" },
+        { "prim": "blob", "at": [-0.09, 0.481, 0], "size": [0.08, 0.1, 0.08], "color": "accent", "anim": { "pulse": { "amp": 0.34, "rate": 2.2, "phase": 0 } } },
+        { "prim": "blob", "at": [0, 0.481, 0], "size": [0.08, 0.1, 0.08], "color": "pale", "anim": { "pulse": { "amp": 0.34, "rate": 2.2, "phase": 0.33 } } },
+        { "prim": "blob", "at": [0.09, 0.481, 0], "size": [0.08, 0.1, 0.08], "color": "accent", "anim": { "pulse": { "amp": 0.34, "rate": 2.2, "phase": 0.66 } } }
+      ]
+    },
+    "kititem.fire-basket": {
+      "kind": "item",
+      "label": "Turnipwood Fire Basket",
+      "value": 430,
+      "stack": 1,
+      "swatch": "#8e7ea8",
+      "badge": "stove",
+      "furniture": "fixture.fire-basket",
+      "palette": {
+        "wrap": "#d9c7a4",
+        "wrapHi": "#eee1c7",
+        "strap": "#8a6242",
+        "mark": "#8e7ea8"
+      }
+    }
+  }
+}

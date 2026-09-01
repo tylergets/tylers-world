@@ -1,0 +1,53 @@
+{
+  "format": "tw.kit",
+  "version": 1,
+  "meta": {
+    "id": "turnip.plate-shelf",
+    "name": "Fenrush Plate Shelf"
+  },
+  "types": {
+    "fixture.plate-shelf": {
+      "kind": "object",
+      "label": "Fenrush Plate Shelf",
+      "footprint": { "w": 2, "d": 1 },
+      "height": 1.39,
+      "squash": 0.34,
+      "palette": {
+        "wood": "#d9bb7a",
+        "woodHi": "#ecd69c",
+        "woodDark": "#a8873f",
+        "pale": "#f7efd9"
+      },
+      "parts": [
+        { "prim": "box", "at": [0, 0.648, -0.195], "size": [1.806, 1.296, 0.05], "color": "woodDark" },
+        { "prim": "box", "at": [-0.893, 0.648, 0], "size": [0.08, 1.296, 0.449], "color": "wood" },
+        { "prim": "box", "at": [0.893, 0.648, 0], "size": [0.08, 1.296, 0.449], "color": "wood" },
+        { "prim": "box", "at": [0, 0.1, 0], "size": [1.726, 0.055, 0.399], "color": "wood" },
+        { "prim": "box", "at": [0, 0.648, 0], "size": [1.726, 0.055, 0.399], "color": "wood" },
+        { "prim": "cyl", "at": [-0.483, 0.788, -0.108], "rot": [90, 0, 0], "size": [0.11, 0.025, 0.11], "color": "pale" },
+        { "prim": "cyl", "at": [0, 0.788, -0.108], "rot": [90, 0, 0], "size": [0.11, 0.025, 0.11], "color": "pale" },
+        { "prim": "cyl", "at": [0.483, 0.788, -0.108], "rot": [90, 0, 0], "size": [0.11, 0.025, 0.11], "color": "pale" },
+        { "prim": "box", "at": [0, 1.196, 0], "size": [1.726, 0.055, 0.399], "color": "wood" },
+        { "prim": "cyl", "at": [-0.483, 1.336, -0.108], "rot": [90, 0, 0], "size": [0.11, 0.025, 0.11], "color": "pale" },
+        { "prim": "cyl", "at": [0, 1.336, -0.108], "rot": [90, 0, 0], "size": [0.11, 0.025, 0.11], "color": "pale" },
+        { "prim": "cyl", "at": [0.483, 1.336, -0.108], "rot": [90, 0, 0], "size": [0.11, 0.025, 0.11], "color": "pale" },
+        { "prim": "box", "at": [0, 1.346, 0], "size": [1.926, 0.07, 0.499], "color": "woodHi" }
+      ]
+    },
+    "kititem.plate-shelf": {
+      "kind": "item",
+      "label": "Fenrush Plate Shelf",
+      "value": 340,
+      "stack": 1,
+      "swatch": "#a28343",
+      "badge": "shelf",
+      "furniture": "fixture.plate-shelf",
+      "palette": {
+        "wrap": "#d9c7a4",
+        "wrapHi": "#eee1c7",
+        "strap": "#8a6242",
+        "mark": "#a28343"
+      }
+    }
+  }
+}

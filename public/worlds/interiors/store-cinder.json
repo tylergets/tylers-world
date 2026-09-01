@@ -215,6 +215,7 @@
         "title": "The Cinder Shop"
       },
       "shop": {
+        "hours": {"open": 8, "close": 19},
         "name": "Cinder & Sundry",
         "markup": 1.28,
         "buyRate": 0.66,

@@ -1,0 +1,48 @@
+{
+  "format": "tw.kit",
+  "version": 1,
+  "meta": {
+    "id": "turnip.footstool",
+    "name": "Turnipwood Footstool"
+  },
+  "types": {
+    "fixture.footstool": {
+      "kind": "object",
+      "label": "Turnipwood Footstool",
+      "footprint": { "w": 1, "d": 1 },
+      "height": 0.42,
+      "squash": 0.34,
+      "palette": {
+        "wood": "#e8dcc4",
+        "woodDark": "#c3b394",
+        "cloth": "#8e6fb0",
+        "clothHi": "#a98acb"
+      },
+      "parts": [
+        { "prim": "cyl", "at": [0.159, 0.118, 0], "rot": [0, 0, -4], "size": [0.032, 0.236, 0.032], "color": "woodDark" },
+        { "prim": "cyl", "at": [0, 0.118, 0.159], "rot": [4, 0, 0], "size": [0.032, 0.236, 0.032], "color": "woodDark" },
+        { "prim": "cyl", "at": [-0.159, 0.118, 0], "rot": [0, 0, 4], "size": [0.032, 0.236, 0.032], "color": "woodDark" },
+        { "prim": "cyl", "at": [0, 0.118, -0.159], "rot": [-4, 0, 0], "size": [0.032, 0.236, 0.032], "color": "woodDark" },
+        { "prim": "cyl", "at": [0, 0.08, 0], "size": [0.15, 0.025, 0.15], "color": "woodDark" },
+        { "prim": "box", "at": [0, 0.276, 0], "size": [0.442, 0.08, 0.442], "color": "wood" },
+        { "prim": "box", "at": [0, 0.351, 0], "size": [0.42, 0.08, 0.42], "color": "cloth" },
+        { "prim": "blob", "at": [0, 0.391, 0], "size": [0.044, 0.02, 0.044], "color": "clothHi" }
+      ]
+    },
+    "kititem.footstool": {
+      "kind": "item",
+      "label": "Turnipwood Footstool",
+      "value": 125,
+      "stack": 1,
+      "swatch": "#9e7d8b",
+      "badge": "chair",
+      "furniture": "fixture.footstool",
+      "palette": {
+        "wrap": "#d9c7a4",
+        "wrapHi": "#eee1c7",
+        "strap": "#8a6242",
+        "mark": "#9e7d8b"
+      }
+    }
+  }
+}

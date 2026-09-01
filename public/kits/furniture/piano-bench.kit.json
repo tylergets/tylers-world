@@ -1,0 +1,46 @@
+{
+  "format": "tw.kit",
+  "version": 1,
+  "meta": {
+    "id": "turnip.piano-bench",
+    "name": "Fenrush Piano Bench"
+  },
+  "types": {
+    "fixture.piano-bench": {
+      "kind": "object",
+      "label": "Fenrush Piano Bench",
+      "footprint": { "w": 2, "d": 1 },
+      "height": 0.65,
+      "squash": 0.34,
+      "palette": {
+        "wood": "#d9bb7a",
+        "woodHi": "#ecd69c",
+        "woodDark": "#a8873f",
+        "cloth": "#9c8a5e"
+      },
+      "parts": [
+        { "prim": "box", "at": [-0.45, 0.23, 0], "size": [0.1, 0.46, 0.086], "color": "woodDark" },
+        { "prim": "box", "at": [0.45, 0.23, 0], "size": [0.1, 0.46, 0.086], "color": "woodDark" },
+        { "prim": "box", "at": [0, 0.138, 0], "size": [0.84, 0.06, 0.06], "color": "woodDark" },
+        { "prim": "box", "at": [0, 0.51, 0], "size": [1.18, 0.1, 0.432], "color": "wood" },
+        { "prim": "box", "at": [0, 0.57, 0], "size": [1.08, 0.02, 0.352], "color": "woodHi" },
+        { "prim": "box", "at": [0, 0.61, 0], "size": [1.06, 0.08, 0.352], "color": "cloth" }
+      ]
+    },
+    "kititem.piano-bench": {
+      "kind": "item",
+      "label": "Fenrush Piano Bench",
+      "value": 180,
+      "stack": 1,
+      "swatch": "#b2823c",
+      "badge": "chair",
+      "furniture": "fixture.piano-bench",
+      "palette": {
+        "wrap": "#d9c7a4",
+        "wrapHi": "#eee1c7",
+        "strap": "#8a6242",
+        "mark": "#b2823c"
+      }
+    }
+  }
+}

@@ -1,0 +1,47 @@
+{
+  "format": "tw.kit",
+  "version": 1,
+  "meta": {
+    "id": "turnip.aspidistra",
+    "name": "Sootpine Aspidistra"
+  },
+  "types": {
+    "fixture.aspidistra": {
+      "kind": "object",
+      "label": "Sootpine Aspidistra",
+      "footprint": { "w": 1, "d": 1 },
+      "height": 0.84,
+      "squash": 0.34,
+      "palette": {
+        "dark": "#221f1c",
+        "accent": "#d8763a",
+        "leaf": "#4f8a4a"
+      },
+      "parts": [
+        { "prim": "taper", "at": [0, 0.192, 0], "size": [0.288, 0.385, 0.288], "color": "accent" },
+        { "prim": "cyl", "at": [0, 0.385, 0], "size": [0.308, 0.05, 0.308], "color": "accent" },
+        { "prim": "cyl", "at": [0, 0.405, 0], "size": [0.248, 0.04, 0.248], "color": "dark" },
+        { "prim": "blob", "at": [0.12, 0.545, 0], "size": [0.16, 0.128, 0.16], "color": "accent", "anim": { "pulse": { "amp": 0.1, "rate": 0.35, "phase": 0 } } },
+        { "prim": "blob", "at": [0.037, 0.625, 0.114], "size": [0.16, 0.128, 0.16], "color": "leaf", "anim": { "pulse": { "amp": 0.1, "rate": 0.41, "phase": 0.2 } } },
+        { "prim": "blob", "at": [-0.097, 0.705, 0.071], "size": [0.16, 0.128, 0.16], "color": "accent", "anim": { "pulse": { "amp": 0.1, "rate": 0.47, "phase": 0.4 } } },
+        { "prim": "blob", "at": [-0.097, 0.545, -0.071], "size": [0.16, 0.128, 0.16], "color": "leaf", "anim": { "pulse": { "amp": 0.1, "rate": 0.35, "phase": 0.6000000000000001 } } },
+        { "prim": "blob", "at": [0.037, 0.625, -0.114], "size": [0.16, 0.128, 0.16], "color": "accent", "anim": { "pulse": { "amp": 0.1, "rate": 0.41, "phase": 0.8 } } }
+      ]
+    },
+    "kititem.aspidistra": {
+      "kind": "item",
+      "label": "Sootpine Aspidistra",
+      "value": 200,
+      "stack": 1,
+      "swatch": "#ac8f42",
+      "badge": "plant",
+      "furniture": "fixture.aspidistra",
+      "palette": {
+        "wrap": "#d9c7a4",
+        "wrapHi": "#eee1c7",
+        "strap": "#8a6242",
+        "mark": "#ac8f42"
+      }
+    }
+  }
+}

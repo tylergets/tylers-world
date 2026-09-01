@@ -1,0 +1,66 @@
+{
+  "format": "tw.kit",
+  "version": 1,
+  "meta": {
+    "id": "turnip.lattice-screen",
+    "name": "Fenrush Lattice Screen"
+  },
+  "types": {
+    "fixture.lattice-screen": {
+      "kind": "object",
+      "label": "Fenrush Lattice Screen",
+      "footprint": { "w": 2, "d": 1 },
+      "height": 1.63,
+      "squash": 0.3,
+      "palette": {
+        "wood": "#d9bb7a",
+        "woodHi": "#ecd69c",
+        "woodDark": "#a8873f"
+      },
+      "parts": [
+        { "prim": "box", "at": [-0.602, 0.81, -0.08], "rot": [0, 18, 0], "size": [0.64, 1.621, 0.06], "color": "wood" },
+        { "prim": "box", "at": [-0.602, 0.324, -0.06], "rot": [0, 18, 0], "size": [0.54, 0.04, 0.03], "color": "woodHi" },
+        { "prim": "box", "at": [-0.602, 0.648, -0.06], "rot": [0, 18, 0], "size": [0.54, 0.04, 0.03], "color": "woodHi" },
+        { "prim": "box", "at": [-0.602, 0.972, -0.06], "rot": [0, 18, 0], "size": [0.54, 0.04, 0.03], "color": "woodHi" },
+        { "prim": "box", "at": [-0.602, 1.296, -0.06], "rot": [0, 18, 0], "size": [0.54, 0.04, 0.03], "color": "woodHi" },
+        { "prim": "box", "at": [-0.781, 0.891, -0.06], "rot": [0, 18, 0], "size": [0.04, 1.167, 0.03], "color": "woodHi" },
+        { "prim": "box", "at": [-0.602, 0.891, -0.06], "rot": [0, 18, 0], "size": [0.04, 1.167, 0.03], "color": "woodHi" },
+        { "prim": "box", "at": [-0.422, 0.891, -0.06], "rot": [0, 18, 0], "size": [0.04, 1.167, 0.03], "color": "woodHi" },
+        { "prim": "box", "at": [-0.602, 0.04, -0.08], "rot": [0, 18, 0], "size": [0.68, 0.08, 0.16], "color": "woodDark" },
+        { "prim": "box", "at": [0, 0.81, 0.08], "rot": [0, -18, 0], "size": [0.64, 1.621, 0.06], "color": "wood" },
+        { "prim": "box", "at": [0, 0.324, 0.1], "rot": [0, -18, 0], "size": [0.54, 0.04, 0.03], "color": "woodHi" },
+        { "prim": "box", "at": [0, 0.648, 0.1], "rot": [0, -18, 0], "size": [0.54, 0.04, 0.03], "color": "woodHi" },
+        { "prim": "box", "at": [0, 0.972, 0.1], "rot": [0, -18, 0], "size": [0.54, 0.04, 0.03], "color": "woodHi" },
+        { "prim": "box", "at": [0, 1.296, 0.1], "rot": [0, -18, 0], "size": [0.54, 0.04, 0.03], "color": "woodHi" },
+        { "prim": "box", "at": [-0.179, 0.891, 0.1], "rot": [0, -18, 0], "size": [0.04, 1.167, 0.03], "color": "woodHi" },
+        { "prim": "box", "at": [0, 0.891, 0.1], "rot": [0, -18, 0], "size": [0.04, 1.167, 0.03], "color": "woodHi" },
+        { "prim": "box", "at": [0.179, 0.891, 0.1], "rot": [0, -18, 0], "size": [0.04, 1.167, 0.03], "color": "woodHi" },
+        { "prim": "box", "at": [0, 0.04, 0.08], "rot": [0, -18, 0], "size": [0.68, 0.08, 0.16], "color": "woodDark" },
+        { "prim": "box", "at": [0.602, 0.81, -0.08], "rot": [0, 18, 0], "size": [0.64, 1.621, 0.06], "color": "wood" },
+        { "prim": "box", "at": [0.602, 0.324, -0.06], "rot": [0, 18, 0], "size": [0.54, 0.04, 0.03], "color": "woodHi" },
+        { "prim": "box", "at": [0.602, 0.648, -0.06], "rot": [0, 18, 0], "size": [0.54, 0.04, 0.03], "color": "woodHi" },
+        { "prim": "box", "at": [0.602, 0.972, -0.06], "rot": [0, 18, 0], "size": [0.54, 0.04, 0.03], "color": "woodHi" },
+        { "prim": "box", "at": [0.602, 1.296, -0.06], "rot": [0, 18, 0], "size": [0.54, 0.04, 0.03], "color": "woodHi" },
+        { "prim": "box", "at": [0.422, 0.891, -0.06], "rot": [0, 18, 0], "size": [0.04, 1.167, 0.03], "color": "woodHi" },
+        { "prim": "box", "at": [0.602, 0.891, -0.06], "rot": [0, 18, 0], "size": [0.04, 1.167, 0.03], "color": "woodHi" },
+        { "prim": "box", "at": [0.781, 0.891, -0.06], "rot": [0, 18, 0], "size": [0.04, 1.167, 0.03], "color": "woodHi" },
+        { "prim": "box", "at": [0.602, 0.04, -0.08], "rot": [0, 18, 0], "size": [0.68, 0.08, 0.16], "color": "woodDark" }
+      ]
+    },
+    "kititem.lattice-screen": {
+      "kind": "item",
+      "label": "Fenrush Lattice Screen",
+      "value": 425,
+      "stack": 1,
+      "swatch": "#a1914c",
+      "badge": "crate",
+      "furniture": "fixture.lattice-screen",
+      "palette": {
+        "wrap": "#d9c7a4",
+        "wrapHi": "#eee1c7",
+        "strap": "#8a6242",
+        "mark": "#a1914c"
+      }
+    }
+  }
+}

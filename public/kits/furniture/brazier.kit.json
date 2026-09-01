@@ -1,0 +1,48 @@
+{
+  "format": "tw.kit",
+  "version": 1,
+  "meta": {
+    "id": "turnip.brazier",
+    "name": "Meadowash Brazier"
+  },
+  "types": {
+    "fixture.brazier": {
+      "kind": "object",
+      "label": "Meadowash Brazier",
+      "footprint": { "w": 1, "d": 1 },
+      "height": 0.7,
+      "squash": 0.32,
+      "palette": {
+        "pale": "#f4f1e6",
+        "dark": "#5f6350",
+        "metal": "#a9ada0",
+        "accent": "#6f9c5a"
+      },
+      "parts": [
+        { "prim": "cyl", "at": [0.2, 0.182, 0], "rot": [0, 0, -12], "size": [0.024, 0.401, 0.024], "color": "metal" },
+        { "prim": "cyl", "at": [-0.1, 0.182, 0.173], "rot": [10.392, 0, 6], "size": [0.024, 0.401, 0.024], "color": "metal" },
+        { "prim": "cyl", "at": [-0.1, 0.182, -0.173], "rot": [-10.392, 0, 6], "size": [0.024, 0.401, 0.024], "color": "metal" },
+        { "prim": "taper", "at": [0, 0.474, 0], "size": [0.3, 0.26, 0.3], "color": "metal" },
+        { "prim": "cyl", "at": [0, 0.535, 0], "size": [0.29, 0.05, 0.29], "color": "dark" },
+        { "prim": "blob", "at": [-0.09, 0.596, 0], "size": [0.08, 0.1, 0.08], "color": "accent", "anim": { "pulse": { "amp": 0.34, "rate": 2.2, "phase": 0 } } },
+        { "prim": "blob", "at": [0, 0.596, 0], "size": [0.08, 0.1, 0.08], "color": "pale", "anim": { "pulse": { "amp": 0.34, "rate": 2.2, "phase": 0.33 } } },
+        { "prim": "blob", "at": [0.09, 0.596, 0], "size": [0.08, 0.1, 0.08], "color": "accent", "anim": { "pulse": { "amp": 0.34, "rate": 2.2, "phase": 0.66 } } }
+      ]
+    },
+    "kititem.brazier": {
+      "kind": "item",
+      "label": "Meadowash Brazier",
+      "value": 360,
+      "stack": 1,
+      "swatch": "#7b9a73",
+      "badge": "stove",
+      "furniture": "fixture.brazier",
+      "palette": {
+        "wrap": "#d9c7a4",
+        "wrapHi": "#eee1c7",
+        "strap": "#8a6242",
+        "mark": "#7b9a73"
+      }
+    }
+  }
+}

@@ -1,0 +1,55 @@
+{
+  "format": "tw.kit",
+  "version": 1,
+  "meta": {
+    "id": "turnip.upholstered-bed",
+    "name": "Sootpine Upholstered Bed"
+  },
+  "types": {
+    "fixture.upholstered-bed": {
+      "kind": "object",
+      "label": "Sootpine Upholstered Bed",
+      "footprint": { "w": 2, "d": 3 },
+      "height": 0.96,
+      "squash": 0.34,
+      "palette": {
+        "wood": "#4a4640",
+        "woodDark": "#332f2b",
+        "cloth": "#6d7480",
+        "clothHi": "#8b929c",
+        "pale": "#dcd8cf"
+      },
+      "parts": [
+        { "prim": "box", "at": [0, 0.16, 0], "size": [1.671, 0.32, 2.833], "color": "woodDark" },
+        { "prim": "box", "at": [-0.755, 0.05, -1.316], "size": [0.12, 0.1, 0.12], "color": "wood" },
+        { "prim": "box", "at": [0.755, 0.05, -1.316], "size": [0.12, 0.1, 0.12], "color": "wood" },
+        { "prim": "box", "at": [-0.755, 0.05, 1.316], "size": [0.12, 0.1, 0.12], "color": "wood" },
+        { "prim": "box", "at": [0.755, 0.05, 1.316], "size": [0.12, 0.1, 0.12], "color": "wood" },
+        { "prim": "box", "at": [0, 0.45, 0.1], "size": [1.571, 0.26, 2.573], "color": "pale" },
+        { "prim": "box", "at": [0, 0.61, 0.538], "size": [1.621, 0.14, 1.586], "color": "cloth" },
+        { "prim": "box", "at": [0, 0.65, -0.255], "size": [1.621, 0.06, 0.12], "color": "clothHi" },
+        { "prim": "box", "at": [-0.368, 0.66, -1.076], "size": [0.668, 0.18, 0.42], "color": "pale" },
+        { "prim": "box", "at": [0.368, 0.66, -1.076], "size": [0.668, 0.18, 0.42], "color": "pale" },
+        { "prim": "box", "at": [0, 0.53, -1.366], "size": [1.671, 0.86, 0.14], "color": "cloth" },
+        { "prim": "blob", "at": [-0.434, 0.516, -1.286], "size": [0.035, 0.035, 0.02], "color": "clothHi" },
+        { "prim": "blob", "at": [0, 0.516, -1.286], "size": [0.035, 0.035, 0.02], "color": "clothHi" },
+        { "prim": "blob", "at": [0.434, 0.516, -1.286], "size": [0.035, 0.035, 0.02], "color": "clothHi" }
+      ]
+    },
+    "kititem.upholstered-bed": {
+      "kind": "item",
+      "label": "Sootpine Upholstered Bed",
+      "value": 1230,
+      "stack": 1,
+      "swatch": "#a97c69",
+      "badge": "bed",
+      "furniture": "fixture.upholstered-bed",
+      "palette": {
+        "wrap": "#d9c7a4",
+        "wrapHi": "#eee1c7",
+        "strap": "#8a6242",
+        "mark": "#a97c69"
+      }
+    }
+  }
+}

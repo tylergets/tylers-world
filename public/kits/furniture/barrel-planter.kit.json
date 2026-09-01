@@ -1,0 +1,51 @@
+{
+  "format": "tw.kit",
+  "version": 1,
+  "meta": {
+    "id": "turnip.barrel-planter",
+    "name": "Meadowash Barrel Planter"
+  },
+  "types": {
+    "fixture.barrel-planter": {
+      "kind": "object",
+      "label": "Meadowash Barrel Planter",
+      "footprint": { "w": 1, "d": 1 },
+      "height": 0.9,
+      "squash": 0.34,
+      "palette": {
+        "wood": "#d6cdb6",
+        "dark": "#5f6350",
+        "metal": "#a9ada0",
+        "accent": "#6f9c5a",
+        "leaf": "#63b84e"
+      },
+      "parts": [
+        { "prim": "taper", "at": [0, 0.14, 0], "rot": [180, 0, 0], "size": [0.35, 0.28, 0.35], "color": "wood" },
+        { "prim": "taper", "at": [0, 0.42, 0], "size": [0.35, 0.28, 0.35], "color": "wood" },
+        { "prim": "cyl", "at": [0, 0.093, 0], "size": [0.322, 0.045, 0.322], "color": "metal" },
+        { "prim": "cyl", "at": [0, 0.28, 0], "size": [0.357, 0.045, 0.357], "color": "metal" },
+        { "prim": "cyl", "at": [0, 0.466, 0], "size": [0.322, 0.045, 0.322], "color": "metal" },
+        { "prim": "cyl", "at": [0, 0.58, 0], "size": [0.287, 0.05, 0.287], "color": "dark" },
+        { "prim": "blob", "at": [0.119, 0.72, 0], "size": [0.13, 0.11, 0.13], "color": "accent", "anim": { "pulse": { "amp": 0.12, "rate": 0.4, "phase": 0 } } },
+        { "prim": "blob", "at": [0, 0.79, 0.119], "size": [0.13, 0.11, 0.13], "color": "leaf", "anim": { "pulse": { "amp": 0.12, "rate": 0.4, "phase": 0.25 } } },
+        { "prim": "blob", "at": [-0.119, 0.72, 0], "size": [0.13, 0.11, 0.13], "color": "accent", "anim": { "pulse": { "amp": 0.12, "rate": 0.4, "phase": 0.5 } } },
+        { "prim": "blob", "at": [0, 0.79, -0.119], "size": [0.13, 0.11, 0.13], "color": "leaf", "anim": { "pulse": { "amp": 0.12, "rate": 0.4, "phase": 0.75 } } }
+      ]
+    },
+    "kititem.barrel-planter": {
+      "kind": "item",
+      "label": "Meadowash Barrel Planter",
+      "value": 230,
+      "stack": 1,
+      "swatch": "#82894e",
+      "badge": "crate",
+      "furniture": "fixture.barrel-planter",
+      "palette": {
+        "wrap": "#d9c7a4",
+        "wrapHi": "#eee1c7",
+        "strap": "#8a6242",
+        "mark": "#82894e"
+      }
+    }
+  }
+}

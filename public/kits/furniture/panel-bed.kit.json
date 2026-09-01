@@ -1,0 +1,55 @@
+{
+  "format": "tw.kit",
+  "version": 1,
+  "meta": {
+    "id": "turnip.panel-bed",
+    "name": "Turnipwood Panel Bed"
+  },
+  "types": {
+    "fixture.panel-bed": {
+      "kind": "object",
+      "label": "Turnipwood Panel Bed",
+      "footprint": { "w": 2, "d": 3 },
+      "height": 1.05,
+      "squash": 0.34,
+      "palette": {
+        "wood": "#e8dcc4",
+        "woodHi": "#f6eeda",
+        "woodDark": "#c3b394",
+        "cloth": "#8e6fb0",
+        "clothHi": "#a98acb",
+        "pale": "#fbf7ee"
+      },
+      "parts": [
+        { "prim": "box", "at": [0, 0.16, 0], "size": [1.748, 0.32, 2.572], "color": "woodDark" },
+        { "prim": "box", "at": [-0.794, 0.05, -1.186], "size": [0.12, 0.1, 0.12], "color": "wood" },
+        { "prim": "box", "at": [0.794, 0.05, -1.186], "size": [0.12, 0.1, 0.12], "color": "wood" },
+        { "prim": "box", "at": [-0.794, 0.05, 1.186], "size": [0.12, 0.1, 0.12], "color": "wood" },
+        { "prim": "box", "at": [0.794, 0.05, 1.186], "size": [0.12, 0.1, 0.12], "color": "wood" },
+        { "prim": "box", "at": [0, 0.45, 0.1], "size": [1.648, 0.26, 2.312], "color": "pale" },
+        { "prim": "box", "at": [0, 0.61, 0.489], "size": [1.698, 0.14, 1.44], "color": "cloth" },
+        { "prim": "box", "at": [0, 0.65, -0.231], "size": [1.698, 0.06, 0.12], "color": "clothHi" },
+        { "prim": "box", "at": [0, 0.66, -0.946], "size": [1.119, 0.18, 0.42], "color": "pale" },
+        { "prim": "box", "at": [0, 0.53, -1.236], "size": [1.748, 0.86, 0.11], "color": "wood" },
+        { "prim": "box", "at": [0, 1, -1.236], "size": [1.798, 0.1, 0.16], "color": "woodHi" },
+        { "prim": "box", "at": [0, 0.56, 1.236], "size": [1.748, 0.48, 0.1], "color": "wood" },
+        { "prim": "box", "at": [0, 0.82, 1.236], "size": [1.798, 0.07, 0.14], "color": "woodHi" }
+      ]
+    },
+    "kititem.panel-bed": {
+      "kind": "item",
+      "label": "Turnipwood Panel Bed",
+      "value": 1120,
+      "stack": 1,
+      "swatch": "#7b78b2",
+      "badge": "bed",
+      "furniture": "fixture.panel-bed",
+      "palette": {
+        "wrap": "#d9c7a4",
+        "wrapHi": "#eee1c7",
+        "strap": "#8a6242",
+        "mark": "#7b78b2"
+      }
+    }
+  }
+}

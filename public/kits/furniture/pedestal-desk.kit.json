@@ -1,0 +1,59 @@
+{
+  "format": "tw.kit",
+  "version": 1,
+  "meta": {
+    "id": "turnip.pedestal-desk",
+    "name": "Inkthorn Pedestal Desk"
+  },
+  "types": {
+    "fixture.pedestal-desk": {
+      "kind": "object",
+      "label": "Inkthorn Pedestal Desk",
+      "footprint": { "w": 2, "d": 1 },
+      "height": 0.88,
+      "squash": 0.34,
+      "palette": {
+        "wood": "#3a2f2a",
+        "woodHi": "#54443c",
+        "woodDark": "#241d1a",
+        "cloth": "#7a3f4a",
+        "metal": "#c8a24a"
+      },
+      "parts": [
+        { "prim": "box", "at": [-0.736, 0.386, 0], "size": [0.44, 0.733, 0.753], "color": "wood" },
+        { "prim": "box", "at": [-0.736, 0.04, 0], "size": [0.48, 0.08, 0.793], "color": "woodDark" },
+        { "prim": "box", "at": [-0.736, 0.139, 0.366], "size": [0.36, 0.125, 0.04], "color": "woodHi" },
+        { "prim": "cyl", "at": [-0.736, 0.139, 0.406], "rot": [0, 0, 90], "size": [0.025, 0.12, 0.025], "color": "metal" },
+        { "prim": "box", "at": [-0.736, 0.379, 0.366], "size": [0.36, 0.125, 0.04], "color": "woodHi" },
+        { "prim": "cyl", "at": [-0.736, 0.379, 0.406], "rot": [0, 0, 90], "size": [0.025, 0.12, 0.025], "color": "metal" },
+        { "prim": "box", "at": [-0.736, 0.618, 0.366], "size": [0.36, 0.125, 0.04], "color": "woodHi" },
+        { "prim": "cyl", "at": [-0.736, 0.618, 0.406], "rot": [0, 0, 90], "size": [0.025, 0.12, 0.025], "color": "metal" },
+        { "prim": "box", "at": [0.736, 0.386, 0], "size": [0.44, 0.733, 0.753], "color": "wood" },
+        { "prim": "box", "at": [0.736, 0.04, 0], "size": [0.48, 0.08, 0.793], "color": "woodDark" },
+        { "prim": "box", "at": [0.736, 0.139, 0.366], "size": [0.36, 0.125, 0.04], "color": "woodHi" },
+        { "prim": "cyl", "at": [0.736, 0.139, 0.406], "rot": [0, 0, 90], "size": [0.025, 0.12, 0.025], "color": "metal" },
+        { "prim": "box", "at": [0.736, 0.379, 0.366], "size": [0.36, 0.125, 0.04], "color": "woodHi" },
+        { "prim": "cyl", "at": [0.736, 0.379, 0.406], "rot": [0, 0, 90], "size": [0.025, 0.12, 0.025], "color": "metal" },
+        { "prim": "box", "at": [0.736, 0.618, 0.366], "size": [0.36, 0.125, 0.04], "color": "woodHi" },
+        { "prim": "cyl", "at": [0.736, 0.618, 0.406], "rot": [0, 0, 90], "size": [0.025, 0.12, 0.025], "color": "metal" },
+        { "prim": "box", "at": [0, 0.813, 0], "size": [1.952, 0.08, 0.833], "color": "wood" },
+        { "prim": "box", "at": [0, 0.863, 0], "size": [1.792, 0.02, 0.673], "color": "cloth" }
+      ]
+    },
+    "kititem.pedestal-desk": {
+      "kind": "item",
+      "label": "Inkthorn Pedestal Desk",
+      "value": 1315,
+      "stack": 1,
+      "swatch": "#b18d34",
+      "badge": "table",
+      "furniture": "fixture.pedestal-desk",
+      "palette": {
+        "wrap": "#d9c7a4",
+        "wrapHi": "#eee1c7",
+        "strap": "#8a6242",
+        "mark": "#b18d34"
+      }
+    }
+  }
+}

@@ -1,0 +1,56 @@
+{
+  "format": "tw.kit",
+  "version": 1,
+  "meta": {
+    "id": "turnip.display-case",
+    "name": "Hollowmilk Display Case"
+  },
+  "types": {
+    "fixture.display-case": {
+      "kind": "object",
+      "label": "Hollowmilk Display Case",
+      "footprint": { "w": 3, "d": 1 },
+      "height": 1.09,
+      "squash": 0.34,
+      "palette": {
+        "wood": "#f2ece0",
+        "woodHi": "#fdfaf2",
+        "pale": "#ffffff",
+        "dark": "#7e7768",
+        "metal": "#b6bcc1",
+        "accent": "#4f79b0",
+        "glass": "#dceaf4"
+      },
+      "parts": [
+        { "prim": "box", "at": [0, 0.05, 0.02], "size": [2.76, 0.1, 0.588], "color": "dark" },
+        { "prim": "box", "at": [0, 0.518, 0], "size": [2.84, 0.937, 0.648], "color": "wood" },
+        { "prim": "box", "at": [0, 1.037, 0], "size": [3, 0.1, 0.788], "color": "woodHi" },
+        { "prim": "box", "at": [0, 0.562, 0.334], "size": [2.64, 0.637, 0.03], "color": "glass" },
+        { "prim": "box", "at": [-0.852, 0.562, 0.334], "size": [0.04, 0.656, 0.04], "color": "metal" },
+        { "prim": "box", "at": [0, 0.562, 0.334], "size": [0.04, 0.656, 0.04], "color": "metal" },
+        { "prim": "box", "at": [0.852, 0.562, 0.334], "size": [0.04, 0.656, 0.04], "color": "metal" },
+        { "prim": "box", "at": [0, 0.318, 0], "size": [2.6, 0.05, 0.448], "color": "woodHi" },
+        { "prim": "blob", "at": [-1.022, 0.393, 0], "size": [0.07, 0.05, 0.07], "color": "pale" },
+        { "prim": "blob", "at": [-0.511, 0.393, 0], "size": [0.07, 0.05, 0.07], "color": "accent" },
+        { "prim": "blob", "at": [0, 0.393, 0], "size": [0.07, 0.05, 0.07], "color": "pale" },
+        { "prim": "blob", "at": [0.511, 0.393, 0], "size": [0.07, 0.05, 0.07], "color": "accent" },
+        { "prim": "blob", "at": [1.022, 0.393, 0], "size": [0.07, 0.05, 0.07], "color": "pale" }
+      ]
+    },
+    "kititem.display-case": {
+      "kind": "item",
+      "label": "Hollowmilk Display Case",
+      "value": 1415,
+      "stack": 1,
+      "swatch": "#8397ab",
+      "badge": "counter",
+      "furniture": "fixture.display-case",
+      "palette": {
+        "wrap": "#d9c7a4",
+        "wrapHi": "#eee1c7",
+        "strap": "#8a6242",
+        "mark": "#8397ab"
+      }
+    }
+  }
+}

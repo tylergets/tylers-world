@@ -1,0 +1,56 @@
+{
+  "format": "tw.kit",
+  "version": 1,
+  "meta": {
+    "id": "turnip.spindleback-chair",
+    "name": "Fenrush Spindleback Chair"
+  },
+  "types": {
+    "fixture.spindleback-chair": {
+      "kind": "object",
+      "label": "Fenrush Spindleback Chair",
+      "footprint": { "w": 1, "d": 1 },
+      "height": 1.1,
+      "squash": 0.34,
+      "palette": {
+        "wood": "#d9bb7a",
+        "woodHi": "#ecd69c",
+        "woodDark": "#a8873f",
+        "clothHi": "#bda87a"
+      },
+      "parts": [
+        { "prim": "box", "at": [-0.236, 0.227, -0.239], "size": [0.075, 0.454, 0.075], "color": "woodDark" },
+        { "prim": "box", "at": [0.236, 0.227, -0.239], "size": [0.075, 0.454, 0.075], "color": "woodDark" },
+        { "prim": "box", "at": [-0.236, 0.227, 0.239], "size": [0.075, 0.454, 0.075], "color": "woodDark" },
+        { "prim": "box", "at": [0.236, 0.227, 0.239], "size": [0.075, 0.454, 0.075], "color": "woodDark" },
+        { "prim": "box", "at": [0, 0.136, -0.239], "size": [0.451, 0.04, 0.04], "color": "woodDark" },
+        { "prim": "box", "at": [0, 0.136, 0.239], "size": [0.451, 0.04, 0.04], "color": "woodDark" },
+        { "prim": "box", "at": [0, 0.499, 0], "size": [0.611, 0.09, 0.619], "color": "wood" },
+        { "prim": "box", "at": [0, 0.554, 0], "size": [0.521, 0.025, 0.529], "color": "clothHi" },
+        { "prim": "cyl", "at": [-0.236, 0.796, -0.239], "size": [0.03, 0.504, 0.03], "color": "woodDark" },
+        { "prim": "cyl", "at": [0.236, 0.796, -0.239], "size": [0.03, 0.504, 0.03], "color": "woodDark" },
+        { "prim": "box", "at": [0, 1.048, -0.239], "size": [0.611, 0.1, 0.06], "color": "woodHi" },
+        { "prim": "cyl", "at": [-0.173, 0.796, -0.239], "size": [0.018, 0.504, 0.018], "color": "wood" },
+        { "prim": "cyl", "at": [-0.086, 0.796, -0.239], "size": [0.018, 0.504, 0.018], "color": "wood" },
+        { "prim": "cyl", "at": [0, 0.796, -0.239], "size": [0.018, 0.504, 0.018], "color": "wood" },
+        { "prim": "cyl", "at": [0.086, 0.796, -0.239], "size": [0.018, 0.504, 0.018], "color": "wood" },
+        { "prim": "cyl", "at": [0.173, 0.796, -0.239], "size": [0.018, 0.504, 0.018], "color": "wood" }
+      ]
+    },
+    "kititem.spindleback-chair": {
+      "kind": "item",
+      "label": "Fenrush Spindleback Chair",
+      "value": 145,
+      "stack": 1,
+      "swatch": "#bb8940",
+      "badge": "chair",
+      "furniture": "fixture.spindleback-chair",
+      "palette": {
+        "wrap": "#d9c7a4",
+        "wrapHi": "#eee1c7",
+        "strap": "#8a6242",
+        "mark": "#bb8940"
+      }
+    }
+  }
+}

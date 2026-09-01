@@ -1,0 +1,48 @@
+{
+  "format": "tw.kit",
+  "version": 1,
+  "meta": {
+    "id": "turnip.rubber-plant",
+    "name": "Beechbark Rubber Plant"
+  },
+  "types": {
+    "fixture.rubber-plant": {
+      "kind": "object",
+      "label": "Beechbark Rubber Plant",
+      "footprint": { "w": 1, "d": 1 },
+      "height": 1.52,
+      "squash": 0.34,
+      "palette": {
+        "woodDark": "#8a6242",
+        "dark": "#5c412c",
+        "accent": "#d08a3c",
+        "leaf": "#5f9e45"
+      },
+      "parts": [
+        { "prim": "taper", "at": [0, 0.177, 0], "size": [0.285, 0.355, 0.285], "color": "accent" },
+        { "prim": "cyl", "at": [0, 0.355, 0], "size": [0.305, 0.05, 0.305], "color": "accent" },
+        { "prim": "cyl", "at": [0, 0.375, 0], "size": [0.245, 0.04, 0.245], "color": "dark" },
+        { "prim": "cyl", "at": [0, 0.695, 0], "size": [0.05, 0.62, 0.05], "color": "woodDark" },
+        { "prim": "blob", "at": [0.14, 1.115, 0], "size": [0.22, 0.176, 0.22], "color": "accent", "anim": { "pulse": { "amp": 0.1, "rate": 0.35, "phase": 0 } } },
+        { "prim": "blob", "at": [0, 1.225, 0.14], "size": [0.22, 0.176, 0.22], "color": "leaf", "anim": { "pulse": { "amp": 0.1, "rate": 0.41, "phase": 0.2 } } },
+        { "prim": "blob", "at": [-0.14, 1.335, 0], "size": [0.22, 0.176, 0.22], "color": "accent", "anim": { "pulse": { "amp": 0.1, "rate": 0.47, "phase": 0.4 } } },
+        { "prim": "blob", "at": [0, 1.115, -0.14], "size": [0.22, 0.176, 0.22], "color": "leaf", "anim": { "pulse": { "amp": 0.1, "rate": 0.35, "phase": 0.6000000000000001 } } }
+      ]
+    },
+    "kititem.rubber-plant": {
+      "kind": "item",
+      "label": "Beechbark Rubber Plant",
+      "value": 300,
+      "stack": 1,
+      "swatch": "#a79b43",
+      "badge": "plant",
+      "furniture": "fixture.rubber-plant",
+      "palette": {
+        "wrap": "#d9c7a4",
+        "wrapHi": "#eee1c7",
+        "strap": "#8a6242",
+        "mark": "#a79b43"
+      }
+    }
+  }
+}

@@ -1,0 +1,48 @@
+{
+  "format": "tw.kit",
+  "version": 1,
+  "meta": {
+    "id": "turnip.painters-easel",
+    "name": "Meadowash Painter's Easel"
+  },
+  "types": {
+    "fixture.painters-easel": {
+      "kind": "object",
+      "label": "Meadowash Painter's Easel",
+      "footprint": { "w": 1, "d": 1 },
+      "height": 1.54,
+      "squash": 0.3,
+      "palette": {
+        "wood": "#d6cdb6",
+        "woodDark": "#a89d84",
+        "clothHi": "#a9c290",
+        "pale": "#f4f1e6",
+        "metal": "#a9ada0"
+      },
+      "parts": [
+        { "prim": "cyl", "at": [-0.24, 0.75, -0.1], "rot": [7, 0, 9], "size": [0.028, 1.562, 0.028], "color": "wood" },
+        { "prim": "cyl", "at": [0.24, 0.75, -0.1], "rot": [7, 0, -9], "size": [0.028, 1.562, 0.028], "color": "wood" },
+        { "prim": "cyl", "at": [0, 0.718, 0.3], "rot": [-15, 0, 0], "size": [0.028, 1.499, 0.028], "color": "woodDark" },
+        { "prim": "box", "at": [0, 0.531, -0.13], "size": [0.58, 0.05, 0.13], "color": "wood" },
+        { "prim": "box", "at": [0, 0.937, -0.12], "rot": [6, 0, 0], "size": [0.5, 0.62, 0.03], "color": "pale" },
+        { "prim": "box", "at": [0, 0.937, -0.14], "rot": [6, 0, 0], "size": [0.42, 0.5, 0.012], "color": "clothHi" },
+        { "prim": "box", "at": [0, 1.296, -0.1], "size": [0.1, 0.05, 0.06], "color": "metal" }
+      ]
+    },
+    "kititem.painters-easel": {
+      "kind": "item",
+      "label": "Meadowash Painter's Easel",
+      "value": 360,
+      "stack": 1,
+      "swatch": "#6f9573",
+      "badge": "plant",
+      "furniture": "fixture.painters-easel",
+      "palette": {
+        "wrap": "#d9c7a4",
+        "wrapHi": "#eee1c7",
+        "strap": "#8a6242",
+        "mark": "#6f9573"
+      }
+    }
+  }
+}

@@ -242,6 +242,7 @@
         "title": "Keeps the store"
       },
       "shop": {
+        "hours": {"open": 8, "close": 19},
         "name": "Marla's Shelves",
         "markup": 1.5,
         "buyRate": 0.5,

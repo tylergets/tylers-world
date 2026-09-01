@@ -1,0 +1,52 @@
+{
+  "format": "tw.kit",
+  "version": 1,
+  "meta": {
+    "id": "turnip.kitchen-chair",
+    "name": "Beechbark Kitchen Chair"
+  },
+  "types": {
+    "fixture.kitchen-chair": {
+      "kind": "object",
+      "label": "Beechbark Kitchen Chair",
+      "footprint": { "w": 1, "d": 1 },
+      "height": 1.14,
+      "squash": 0.34,
+      "palette": {
+        "wood": "#c08b55",
+        "woodHi": "#d8a870",
+        "woodDark": "#8a6242"
+      },
+      "parts": [
+        { "prim": "box", "at": [-0.241, 0.225, -0.221], "size": [0.075, 0.451, 0.075], "color": "woodDark" },
+        { "prim": "box", "at": [0.241, 0.225, -0.221], "size": [0.075, 0.451, 0.075], "color": "woodDark" },
+        { "prim": "box", "at": [-0.241, 0.225, 0.221], "size": [0.075, 0.451, 0.075], "color": "woodDark" },
+        { "prim": "box", "at": [0.241, 0.225, 0.221], "size": [0.075, 0.451, 0.075], "color": "woodDark" },
+        { "prim": "box", "at": [0, 0.135, -0.221], "size": [0.462, 0.04, 0.04], "color": "woodDark" },
+        { "prim": "box", "at": [0, 0.135, 0.221], "size": [0.462, 0.04, 0.04], "color": "woodDark" },
+        { "prim": "box", "at": [0, 0.496, 0], "size": [0.622, 0.09, 0.581], "color": "wood" },
+        { "prim": "cyl", "at": [-0.241, 0.81, -0.221], "size": [0.03, 0.539, 0.03], "color": "woodDark" },
+        { "prim": "cyl", "at": [0.241, 0.81, -0.221], "size": [0.03, 0.539, 0.03], "color": "woodDark" },
+        { "prim": "box", "at": [0, 1.08, -0.221], "size": [0.622, 0.1, 0.06], "color": "woodHi" },
+        { "prim": "box", "at": [-0.162, 0.81, -0.221], "size": [0.124, 0.539, 0.03], "color": "wood" },
+        { "prim": "box", "at": [0, 0.81, -0.221], "size": [0.124, 0.539, 0.03], "color": "wood" },
+        { "prim": "box", "at": [0.162, 0.81, -0.221], "size": [0.124, 0.539, 0.03], "color": "wood" }
+      ]
+    },
+    "kititem.kitchen-chair": {
+      "kind": "item",
+      "label": "Beechbark Kitchen Chair",
+      "value": 120,
+      "stack": 1,
+      "swatch": "#ca8441",
+      "badge": "chair",
+      "furniture": "fixture.kitchen-chair",
+      "palette": {
+        "wrap": "#d9c7a4",
+        "wrapHi": "#eee1c7",
+        "strap": "#8a6242",
+        "mark": "#ca8441"
+      }
+    }
+  }
+}

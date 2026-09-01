@@ -1,0 +1,57 @@
+{
+  "format": "tw.kit",
+  "version": 1,
+  "meta": {
+    "id": "turnip.birdcage-stand",
+    "name": "Turnipwood Birdcage Stand"
+  },
+  "types": {
+    "fixture.birdcage-stand": {
+      "kind": "object",
+      "label": "Turnipwood Birdcage Stand",
+      "footprint": { "w": 1, "d": 1 },
+      "height": 1.62,
+      "squash": 0.3,
+      "palette": {
+        "wood": "#e8dcc4",
+        "woodHi": "#f6eeda",
+        "woodDark": "#c3b394",
+        "metal": "#b9a98d",
+        "accent": "#8e6fb0"
+      },
+      "parts": [
+        { "prim": "cyl", "at": [0, 0.05, 0], "size": [0.23, 0.1, 0.23], "color": "woodDark" },
+        { "prim": "cyl", "at": [0, 0.829, 0], "size": [0.04, 1.558, 0.04], "color": "wood" },
+        { "prim": "box", "at": [0.11, 1.591, 0], "size": [0.28, 0.045, 0.045], "color": "metal" },
+        { "prim": "cyl", "at": [0.24, 1.492, 0], "size": [0.012, 0.14, 0.012], "color": "metal" },
+        { "prim": "cyl", "at": [0.24, 0.828, 0], "size": [0.19, 0.05, 0.19], "color": "woodHi", "anim": { "bob": { "amp": 0.02, "rate": 0.5 } } },
+        { "prim": "cyl", "at": [0.41, 1.028, 0], "size": [0.011, 0.42, 0.011], "color": "metal", "anim": { "bob": { "amp": 0.02, "rate": 0.5 } } },
+        { "prim": "cyl", "at": [0.36, 1.028, 0.12], "size": [0.011, 0.42, 0.011], "color": "metal", "anim": { "bob": { "amp": 0.02, "rate": 0.5 } } },
+        { "prim": "cyl", "at": [0.24, 1.028, 0.17], "size": [0.011, 0.42, 0.011], "color": "metal", "anim": { "bob": { "amp": 0.02, "rate": 0.5 } } },
+        { "prim": "cyl", "at": [0.12, 1.028, 0.12], "size": [0.011, 0.42, 0.011], "color": "metal", "anim": { "bob": { "amp": 0.02, "rate": 0.5 } } },
+        { "prim": "cyl", "at": [0.07, 1.028, 0], "size": [0.011, 0.42, 0.011], "color": "metal", "anim": { "bob": { "amp": 0.02, "rate": 0.5 } } },
+        { "prim": "cyl", "at": [0.12, 1.028, -0.12], "size": [0.011, 0.42, 0.011], "color": "metal", "anim": { "bob": { "amp": 0.02, "rate": 0.5 } } },
+        { "prim": "cyl", "at": [0.24, 1.028, -0.17], "size": [0.011, 0.42, 0.011], "color": "metal", "anim": { "bob": { "amp": 0.02, "rate": 0.5 } } },
+        { "prim": "cyl", "at": [0.36, 1.028, -0.12], "size": [0.011, 0.42, 0.011], "color": "metal", "anim": { "bob": { "amp": 0.02, "rate": 0.5 } } },
+        { "prim": "cone", "at": [0.24, 1.308, 0], "size": [0.19, 0.18, 0.19], "color": "metal", "anim": { "bob": { "amp": 0.02, "rate": 0.5 } } },
+        { "prim": "cyl", "at": [0.24, 1.008, 0], "size": [0.15, 0.014, 0.15], "color": "wood", "anim": { "bob": { "amp": 0.02, "rate": 0.5 } } },
+        { "prim": "blob", "at": [0.24, 1.088, 0], "size": [0.055, 0.065, 0.055], "color": "accent", "anim": { "bob": { "amp": 0.035, "rate": 0.9 } } }
+      ]
+    },
+    "kititem.birdcage-stand": {
+      "kind": "item",
+      "label": "Turnipwood Birdcage Stand",
+      "value": 700,
+      "stack": 1,
+      "swatch": "#a28390",
+      "badge": "plant",
+      "furniture": "fixture.birdcage-stand",
+      "palette": {
+        "wrap": "#d9c7a4",
+        "wrapHi": "#eee1c7",
+        "strap": "#8a6242",
+        "mark": "#a28390"
+      }
+    }
+  }
+}

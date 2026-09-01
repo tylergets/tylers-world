@@ -1,0 +1,54 @@
+{
+  "format": "tw.kit",
+  "version": 1,
+  "meta": {
+    "id": "turnip.captains-bed",
+    "name": "Coppervale Captain's Bed"
+  },
+  "types": {
+    "fixture.captains-bed": {
+      "kind": "object",
+      "label": "Coppervale Captain's Bed",
+      "footprint": { "w": 2, "d": 3 },
+      "height": 1.05,
+      "squash": 0.34,
+      "palette": {
+        "wood": "#a9763f",
+        "woodHi": "#c6924f",
+        "woodDark": "#7a5329",
+        "cloth": "#6f6350",
+        "clothHi": "#8d8067",
+        "pale": "#f0e6d2",
+        "metal": "#b5713c"
+      },
+      "parts": [
+        { "prim": "box", "at": [0, 0.1, 0], "size": [1.769, 0.2, 2.591], "color": "woodDark" },
+        { "prim": "box", "at": [0, 0.1, -0.622], "size": [1.669, 0.14, 0.04], "color": "woodHi" },
+        { "prim": "cyl", "at": [0, 0.1, -0.622], "rot": [0, 0, 90], "size": [0.025, 0.14, 0.025], "color": "metal" },
+        { "prim": "box", "at": [0, 0.1, 0.622], "size": [1.669, 0.14, 0.04], "color": "woodHi" },
+        { "prim": "cyl", "at": [0, 0.1, 0.622], "rot": [0, 0, 90], "size": [0.025, 0.14, 0.025], "color": "metal" },
+        { "prim": "box", "at": [0, 0.33, 0.1], "size": [1.669, 0.26, 2.331], "color": "pale" },
+        { "prim": "box", "at": [0, 0.49, 0.492], "size": [1.719, 0.14, 1.451], "color": "cloth" },
+        { "prim": "box", "at": [0, 0.53, -0.233], "size": [1.719, 0.06, 0.12], "color": "clothHi" },
+        { "prim": "box", "at": [0, 0.54, -0.955], "size": [1.132, 0.18, 0.42], "color": "pale" },
+        { "prim": "box", "at": [0, 0.53, -1.245], "size": [1.769, 0.86, 0.11], "color": "wood" },
+        { "prim": "box", "at": [0, 1, -1.245], "size": [1.819, 0.1, 0.16], "color": "woodHi" }
+      ]
+    },
+    "kititem.captains-bed": {
+      "kind": "item",
+      "label": "Coppervale Captain's Bed",
+      "value": 1080,
+      "stack": 1,
+      "swatch": "#a07566",
+      "badge": "bed",
+      "furniture": "fixture.captains-bed",
+      "palette": {
+        "wrap": "#d9c7a4",
+        "wrapHi": "#eee1c7",
+        "strap": "#8a6242",
+        "mark": "#a07566"
+      }
+    }
+  }
+}

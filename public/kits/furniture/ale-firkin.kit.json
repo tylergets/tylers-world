@@ -1,0 +1,47 @@
+{
+  "format": "tw.kit",
+  "version": 1,
+  "meta": {
+    "id": "turnip.ale-firkin",
+    "name": "Inkthorn Ale Firkin"
+  },
+  "types": {
+    "fixture.ale-firkin": {
+      "kind": "object",
+      "label": "Inkthorn Ale Firkin",
+      "footprint": { "w": 1, "d": 1 },
+      "height": 0.67,
+      "squash": 0.34,
+      "palette": {
+        "wood": "#3a2f2a",
+        "woodHi": "#54443c",
+        "metal": "#c8a24a"
+      },
+      "parts": [
+        { "prim": "taper", "at": [0, 0.156, 0], "rot": [180, 0, 0], "size": [0.262, 0.312, 0.262], "color": "wood" },
+        { "prim": "taper", "at": [0, 0.468, 0], "size": [0.262, 0.312, 0.262], "color": "wood" },
+        { "prim": "cyl", "at": [0, 0.104, 0], "size": [0.241, 0.045, 0.241], "color": "metal" },
+        { "prim": "cyl", "at": [0, 0.312, 0], "size": [0.267, 0.045, 0.267], "color": "metal" },
+        { "prim": "cyl", "at": [0, 0.52, 0], "size": [0.241, 0.045, 0.241], "color": "metal" },
+        { "prim": "cyl", "at": [0, 0.644, 0], "size": [0.214, 0.05, 0.214], "color": "woodHi" },
+        { "prim": "cyl", "at": [0, 0.2, 0.235], "rot": [90, 0, 0], "size": [0.025, 0.14, 0.025], "color": "metal" },
+        { "prim": "box", "at": [0, 0.162, 0.256], "size": [0.05, 0.08, 0.05], "color": "metal" }
+      ]
+    },
+    "kititem.ale-firkin": {
+      "kind": "item",
+      "label": "Inkthorn Ale Firkin",
+      "value": 285,
+      "stack": 1,
+      "swatch": "#b98d2e",
+      "badge": "crate",
+      "furniture": "fixture.ale-firkin",
+      "palette": {
+        "wrap": "#d9c7a4",
+        "wrapHi": "#eee1c7",
+        "strap": "#8a6242",
+        "mark": "#b98d2e"
+      }
+    }
+  }
+}

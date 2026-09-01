@@ -1,0 +1,44 @@
+{
+  "format": "tw.kit",
+  "version": 1,
+  "meta": {
+    "id": "turnip.anvil-and-block",
+    "name": "Sootpine Anvil and Block"
+  },
+  "types": {
+    "fixture.anvil-and-block": {
+      "kind": "object",
+      "label": "Sootpine Anvil and Block",
+      "footprint": { "w": 1, "d": 1 },
+      "height": 0.78,
+      "squash": 0.34,
+      "palette": {
+        "wood": "#4a4640",
+        "woodDark": "#332f2b",
+        "metal": "#9aa0a6"
+      },
+      "parts": [
+        { "prim": "box", "at": [0, 0.2, 0], "size": [0.44, 0.4, 0.44], "color": "woodDark" },
+        { "prim": "box", "at": [0, 0.44, 0], "size": [0.5, 0.09, 0.46], "color": "wood" },
+        { "prim": "box", "at": [0, 0.56, 0], "size": [0.42, 0.16, 0.22], "color": "metal" },
+        { "prim": "box", "at": [0, 0.66, 0], "size": [0.6, 0.08, 0.26], "color": "metal" },
+        { "prim": "cone", "at": [0.36, 0.66, 0], "rot": [0, 0, -90], "size": [0.09, 0.24, 0.09], "color": "metal" }
+      ]
+    },
+    "kititem.anvil-and-block": {
+      "kind": "item",
+      "label": "Sootpine Anvil and Block",
+      "value": 760,
+      "stack": 1,
+      "swatch": "#ba7846",
+      "badge": "stove",
+      "furniture": "fixture.anvil-and-block",
+      "palette": {
+        "wrap": "#d9c7a4",
+        "wrapHi": "#eee1c7",
+        "strap": "#8a6242",
+        "mark": "#ba7846"
+      }
+    }
+  }
+}

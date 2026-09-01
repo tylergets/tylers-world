@@ -1,0 +1,44 @@
+{
+  "format": "tw.kit",
+  "version": 1,
+  "meta": {
+    "id": "turnip.hall-bench",
+    "name": "Beechbark Hall Bench"
+  },
+  "types": {
+    "fixture.hall-bench": {
+      "kind": "object",
+      "label": "Beechbark Hall Bench",
+      "footprint": { "w": 2, "d": 1 },
+      "height": 0.57,
+      "squash": 0.34,
+      "palette": {
+        "wood": "#c08b55",
+        "woodHi": "#d8a870",
+        "woodDark": "#8a6242"
+      },
+      "parts": [
+        { "prim": "box", "at": [-0.75, 0.22, 0], "size": [0.1, 0.441, 0.095], "color": "woodDark" },
+        { "prim": "box", "at": [0.75, 0.22, 0], "size": [0.1, 0.441, 0.095], "color": "woodDark" },
+        { "prim": "box", "at": [0, 0.132, 0], "size": [1.441, 0.06, 0.06], "color": "woodDark" },
+        { "prim": "box", "at": [0, 0.491, 0], "size": [1.781, 0.1, 0.476], "color": "wood" },
+        { "prim": "box", "at": [0, 0.551, 0], "size": [1.681, 0.02, 0.396], "color": "woodHi" }
+      ]
+    },
+    "kititem.hall-bench": {
+      "kind": "item",
+      "label": "Beechbark Hall Bench",
+      "value": 290,
+      "stack": 1,
+      "swatch": "#c17d3d",
+      "badge": "chair",
+      "furniture": "fixture.hall-bench",
+      "palette": {
+        "wrap": "#d9c7a4",
+        "wrapHi": "#eee1c7",
+        "strap": "#8a6242",
+        "mark": "#c17d3d"
+      }
+    }
+  }
+}

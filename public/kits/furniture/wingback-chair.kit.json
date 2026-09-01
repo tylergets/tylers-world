@@ -1,0 +1,60 @@
+{
+  "format": "tw.kit",
+  "version": 1,
+  "meta": {
+    "id": "turnip.wingback-chair",
+    "name": "Turnipwood Wingback Chair"
+  },
+  "types": {
+    "fixture.wingback-chair": {
+      "kind": "object",
+      "label": "Turnipwood Wingback Chair",
+      "footprint": { "w": 1, "d": 1 },
+      "height": 1.29,
+      "squash": 0.34,
+      "palette": {
+        "wood": "#e8dcc4",
+        "woodHi": "#f6eeda",
+        "woodDark": "#c3b394",
+        "cloth": "#8e6fb0",
+        "clothHi": "#a98acb"
+      },
+      "parts": [
+        { "prim": "box", "at": [-0.3, 0.23, -0.286], "size": [0.075, 0.46, 0.075], "color": "woodDark" },
+        { "prim": "box", "at": [0.3, 0.23, -0.286], "size": [0.075, 0.46, 0.075], "color": "woodDark" },
+        { "prim": "box", "at": [-0.3, 0.23, 0.286], "size": [0.075, 0.46, 0.075], "color": "woodDark" },
+        { "prim": "box", "at": [0.3, 0.23, 0.286], "size": [0.075, 0.46, 0.075], "color": "woodDark" },
+        { "prim": "box", "at": [0, 0.138, -0.286], "size": [0.579, 0.04, 0.04], "color": "woodDark" },
+        { "prim": "box", "at": [0, 0.138, 0.286], "size": [0.579, 0.04, 0.04], "color": "woodDark" },
+        { "prim": "box", "at": [0, 0.505, 0], "size": [0.739, 0.09, 0.712], "color": "wood" },
+        { "prim": "box", "at": [0, 0.58, 0.01], "size": [0.639, 0.07, 0.592], "color": "cloth" },
+        { "prim": "cyl", "at": [-0.3, 0.891, -0.286], "size": [0.03, 0.682, 0.03], "color": "woodDark" },
+        { "prim": "cyl", "at": [0.3, 0.891, -0.286], "size": [0.03, 0.682, 0.03], "color": "woodDark" },
+        { "prim": "box", "at": [0, 1.232, -0.286], "size": [0.739, 0.1, 0.06], "color": "woodHi" },
+        { "prim": "box", "at": [0, 0.891, -0.266], "size": [0.659, 0.682, 0.09], "color": "cloth" },
+        { "prim": "box", "at": [0, 1.178, -0.266], "size": [0.599, 0.06, 0.1], "color": "clothHi" },
+        { "prim": "box", "at": [-0.34, 1.028, -0.126], "size": [0.08, 0.409, 0.3], "color": "cloth" },
+        { "prim": "box", "at": [0.34, 1.028, -0.126], "size": [0.08, 0.409, 0.3], "color": "cloth" },
+        { "prim": "box", "at": [-0.35, 0.71, -0.03], "size": [0.07, 0.055, 0.592], "color": "woodHi" },
+        { "prim": "cyl", "at": [-0.35, 0.6, 0.236], "size": [0.023, 0.22, 0.023], "color": "woodDark" },
+        { "prim": "box", "at": [0.35, 0.71, -0.03], "size": [0.07, 0.055, 0.592], "color": "woodHi" },
+        { "prim": "cyl", "at": [0.35, 0.6, 0.236], "size": [0.023, 0.22, 0.023], "color": "woodDark" }
+      ]
+    },
+    "kititem.wingback-chair": {
+      "kind": "item",
+      "label": "Turnipwood Wingback Chair",
+      "value": 675,
+      "stack": 1,
+      "swatch": "#a17389",
+      "badge": "chair",
+      "furniture": "fixture.wingback-chair",
+      "palette": {
+        "wrap": "#d9c7a4",
+        "wrapHi": "#eee1c7",
+        "strap": "#8a6242",
+        "mark": "#a17389"
+      }
+    }
+  }
+}

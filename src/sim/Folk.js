@@ -20,10 +20,12 @@ export class Folk {
     this.#syncGrudges();
   }
 
-  update(dt) {
+  update(dt, clock = null) {
     this.#syncGrudges();
-    for (const npc of this.npcs) npc.update(dt, this.world);
+    for (const npc of this.npcs) npc.update(dt, this.world, clock);
   }
+
+  syncClock(clock) { for (const npc of this.npcs) npc.syncClock(clock); }
 
   #syncGrudges() {
     for (const npc of this.npcs) npc.grudge = this.friends?.grudgeLevel(npc.id) ?? 0;
@@ -52,7 +54,7 @@ export class Folk {
   nearest(x, z, range) {
     let best = null, bestD = range * range;
     for (const npc of this.npcs) {
-      if (!npc.talkable) continue;
+      if (!npc.talkable || !npc.available) continue;
       const d = (npc.x - x) ** 2 + (npc.z - z) ** 2;
       if (d <= bestD) { best = npc; bestD = d; }
     }

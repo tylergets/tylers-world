@@ -1,0 +1,47 @@
+{
+  "format": "tw.kit",
+  "version": 1,
+  "meta": {
+    "id": "turnip.serving-counter",
+    "name": "Meadowash Serving Counter"
+  },
+  "types": {
+    "fixture.serving-counter": {
+      "kind": "object",
+      "label": "Meadowash Serving Counter",
+      "footprint": { "w": 3, "d": 1 },
+      "height": 1.06,
+      "squash": 0.34,
+      "palette": {
+        "wood": "#d6cdb6",
+        "woodHi": "#e9e2ce",
+        "woodDark": "#a89d84",
+        "dark": "#5f6350"
+      },
+      "parts": [
+        { "prim": "box", "at": [0, 0.05, 0.02], "size": [2.796, 0.1, 0.619], "color": "dark" },
+        { "prim": "box", "at": [0, 0.503, 0], "size": [2.876, 0.906, 0.679], "color": "wood" },
+        { "prim": "box", "at": [0, 1.006, 0], "size": [3.036, 0.1, 0.819], "color": "woodHi" },
+        { "prim": "box", "at": [-0.892, 0.507, 0.349], "size": [0.809, 0.562, 0.03], "color": "woodDark" },
+        { "prim": "box", "at": [0, 0.507, 0.349], "size": [0.809, 0.562, 0.03], "color": "woodDark" },
+        { "prim": "box", "at": [0.892, 0.507, 0.349], "size": [0.809, 0.562, 0.03], "color": "woodDark" },
+        { "prim": "box", "at": [0, 0.308, -0.109], "size": [2.576, 0.05, 0.271], "color": "woodHi" }
+      ]
+    },
+    "kititem.serving-counter": {
+      "kind": "item",
+      "label": "Meadowash Serving Counter",
+      "value": 855,
+      "stack": 1,
+      "swatch": "#97ac76",
+      "badge": "counter",
+      "furniture": "fixture.serving-counter",
+      "palette": {
+        "wrap": "#d9c7a4",
+        "wrapHi": "#eee1c7",
+        "strap": "#8a6242",
+        "mark": "#97ac76"
+      }
+    }
+  }
+}

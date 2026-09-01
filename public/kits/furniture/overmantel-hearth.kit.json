@@ -1,0 +1,51 @@
+{
+  "format": "tw.kit",
+  "version": 1,
+  "meta": {
+    "id": "turnip.overmantel-hearth",
+    "name": "Hollowmilk Overmantel Hearth"
+  },
+  "types": {
+    "fixture.overmantel-hearth": {
+      "kind": "object",
+      "label": "Hollowmilk Overmantel Hearth",
+      "footprint": { "w": 2, "d": 1 },
+      "height": 1.95,
+      "squash": 0.32,
+      "palette": {
+        "wood": "#f2ece0",
+        "woodHi": "#fdfaf2",
+        "woodDark": "#cfc7b6",
+        "pale": "#ffffff",
+        "dark": "#7e7768",
+        "metal": "#b6bcc1",
+        "accent": "#4f79b0"
+      },
+      "parts": [
+        { "prim": "box", "at": [0, 0.597, -0.052], "size": [1.82, 1.194, 0.517], "color": "metal" },
+        { "prim": "box", "at": [0, 0.406, 0.052], "size": [1.001, 0.716, 0.362], "color": "dark" },
+        { "prim": "box", "at": [0, 1.254, 0], "size": [1.96, 0.12, 0.657], "color": "wood" },
+        { "prim": "box", "at": [0, 1.634, -0.083], "size": [1.274, 0.62, 0.07], "color": "woodHi" },
+        { "prim": "cyl", "at": [-0.14, 0.13, 0.062], "rot": [0, 0, 90], "size": [0.075, 0.42, 0.075], "color": "woodDark" },
+        { "prim": "cyl", "at": [0.14, 0.13, 0.062], "rot": [0, 0, 90], "size": [0.075, 0.42, 0.075], "color": "woodDark" },
+        { "prim": "blob", "at": [0, 0.26, 0.062], "size": [0.2, 0.24, 0.13], "color": "accent", "anim": { "pulse": { "amp": 0.26, "rate": 1.7 } } },
+        { "prim": "blob", "at": [0, 0.38, 0.062], "size": [0.11, 0.15, 0.08], "color": "pale", "anim": { "pulse": { "amp": 0.34, "rate": 2.3, "phase": 0.4 } } }
+      ]
+    },
+    "kititem.overmantel-hearth": {
+      "kind": "item",
+      "label": "Hollowmilk Overmantel Hearth",
+      "value": 1570,
+      "stack": 1,
+      "swatch": "#6784a8",
+      "badge": "stove",
+      "furniture": "fixture.overmantel-hearth",
+      "palette": {
+        "wrap": "#d9c7a4",
+        "wrapHi": "#eee1c7",
+        "strap": "#8a6242",
+        "mark": "#6784a8"
+      }
+    }
+  }
+}

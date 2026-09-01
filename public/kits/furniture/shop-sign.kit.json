@@ -1,0 +1,50 @@
+{
+  "format": "tw.kit",
+  "version": 1,
+  "meta": {
+    "id": "turnip.shop-sign",
+    "name": "Beechbark Shop Sign"
+  },
+  "types": {
+    "fixture.shop-sign": {
+      "kind": "object",
+      "label": "Beechbark Shop Sign",
+      "footprint": { "w": 1, "d": 1 },
+      "height": 1.8,
+      "squash": 0.3,
+      "palette": {
+        "wood": "#c08b55",
+        "woodHi": "#d8a870",
+        "woodDark": "#8a6242",
+        "pale": "#f6eede",
+        "dark": "#5c412c",
+        "metal": "#b08d3f"
+      },
+      "parts": [
+        { "prim": "box", "at": [0, 0.06, 0], "size": [0.44, 0.12, 0.34], "color": "woodDark" },
+        { "prim": "cyl", "at": [0, 0.82, 0], "size": [0.045, 1.641, 0.045], "color": "wood" },
+        { "prim": "box", "at": [0, 1.411, 0], "size": [0.66, 0.34, 0.05], "color": "woodHi" },
+        { "prim": "box", "at": [0, 1.411, 0.035], "size": [0.54, 0.22, 0.01], "color": "pale" },
+        { "prim": "box", "at": [0, 1.351, 0.045], "size": [0.4, 0.025, 0.005], "color": "dark" },
+        { "prim": "box", "at": [0, 1.411, 0.045], "size": [0.4, 0.025, 0.005], "color": "dark" },
+        { "prim": "box", "at": [0, 1.471, 0.045], "size": [0.4, 0.025, 0.005], "color": "dark" },
+        { "prim": "cone", "at": [0, 1.731, 0], "size": [0.05, 0.12, 0.05], "color": "metal" }
+      ]
+    },
+    "kititem.shop-sign": {
+      "kind": "item",
+      "label": "Beechbark Shop Sign",
+      "value": 290,
+      "stack": 1,
+      "swatch": "#d0a16a",
+      "badge": "crate",
+      "furniture": "fixture.shop-sign",
+      "palette": {
+        "wrap": "#d9c7a4",
+        "wrapHi": "#eee1c7",
+        "strap": "#8a6242",
+        "mark": "#d0a16a"
+      }
+    }
+  }
+}

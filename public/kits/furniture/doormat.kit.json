@@ -1,0 +1,49 @@
+{
+  "format": "tw.kit",
+  "version": 1,
+  "meta": {
+    "id": "turnip.doormat",
+    "name": "Meadowash Doormat"
+  },
+  "types": {
+    "fixture.doormat": {
+      "kind": "object",
+      "label": "Meadowash Doormat",
+      "footprint": { "w": 1, "d": 1 },
+      "height": 0.2,
+      "squash": 0.9,
+      "palette": {
+        "cloth": "#8faa74",
+        "clothHi": "#a9c290",
+        "pale": "#f4f1e6",
+        "accent": "#6f9c5a"
+      },
+      "parts": [
+        { "prim": "box", "at": [0, 0.02, 0], "size": [0.875, 0.04, 0.697], "color": "cloth" },
+        { "prim": "box", "at": [0, 0.045, 0], "size": [0.715, 0.016, 0.537], "color": "clothHi" },
+        { "prim": "box", "at": [0, 0.054, -0.251], "size": [0.675, 0.014, 0.042], "color": "accent" },
+        { "prim": "box", "at": [0, 0.054, -0.167], "size": [0.675, 0.014, 0.042], "color": "pale" },
+        { "prim": "box", "at": [0, 0.054, -0.084], "size": [0.675, 0.014, 0.042], "color": "accent" },
+        { "prim": "box", "at": [0, 0.054, 0], "size": [0.675, 0.014, 0.042], "color": "pale" },
+        { "prim": "box", "at": [0, 0.054, 0.084], "size": [0.675, 0.014, 0.042], "color": "accent" },
+        { "prim": "box", "at": [0, 0.054, 0.167], "size": [0.675, 0.014, 0.042], "color": "pale" },
+        { "prim": "box", "at": [0, 0.054, 0.251], "size": [0.675, 0.014, 0.042], "color": "accent" }
+      ]
+    },
+    "kititem.doormat": {
+      "kind": "item",
+      "label": "Meadowash Doormat",
+      "value": 85,
+      "stack": 1,
+      "swatch": "#898155",
+      "badge": "crate",
+      "furniture": "fixture.doormat",
+      "palette": {
+        "wrap": "#d9c7a4",
+        "wrapHi": "#eee1c7",
+        "strap": "#8a6242",
+        "mark": "#898155"
+      }
+    }
+  }
+}

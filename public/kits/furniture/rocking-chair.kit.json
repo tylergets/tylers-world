@@ -1,0 +1,58 @@
+{
+  "format": "tw.kit",
+  "version": 1,
+  "meta": {
+    "id": "turnip.rocking-chair",
+    "name": "Rosewick Rocking Chair"
+  },
+  "types": {
+    "fixture.rocking-chair": {
+      "kind": "object",
+      "label": "Rosewick Rocking Chair",
+      "footprint": { "w": 1, "d": 1 },
+      "height": 1.18,
+      "squash": 0.34,
+      "palette": {
+        "wood": "#8f4a3c",
+        "woodHi": "#ab6150",
+        "woodDark": "#653228"
+      },
+      "parts": [
+        { "prim": "box", "at": [-0.245, 0.216, -0.232], "size": [0.075, 0.433, 0.075], "color": "woodDark" },
+        { "prim": "box", "at": [0.245, 0.216, -0.232], "size": [0.075, 0.433, 0.075], "color": "woodDark" },
+        { "prim": "box", "at": [-0.245, 0.216, 0.232], "size": [0.075, 0.433, 0.075], "color": "woodDark" },
+        { "prim": "box", "at": [0.245, 0.216, 0.232], "size": [0.075, 0.433, 0.075], "color": "woodDark" },
+        { "prim": "box", "at": [0, 0.13, -0.232], "size": [0.47, 0.04, 0.04], "color": "woodDark" },
+        { "prim": "box", "at": [0, 0.13, 0.232], "size": [0.47, 0.04, 0.04], "color": "woodDark" },
+        { "prim": "box", "at": [0, 0.478, 0], "size": [0.63, 0.09, 0.604], "color": "wood" },
+        { "prim": "cyl", "at": [-0.245, 0.822, -0.232], "size": [0.03, 0.599, 0.03], "color": "woodDark" },
+        { "prim": "cyl", "at": [0.245, 0.822, -0.232], "size": [0.03, 0.599, 0.03], "color": "woodDark" },
+        { "prim": "box", "at": [0, 1.121, -0.232], "size": [0.63, 0.1, 0.06], "color": "woodHi" },
+        { "prim": "box", "at": [-0.164, 0.822, -0.232], "size": [0.126, 0.599, 0.03], "color": "wood" },
+        { "prim": "box", "at": [0, 0.822, -0.232], "size": [0.126, 0.599, 0.03], "color": "wood" },
+        { "prim": "box", "at": [0.164, 0.822, -0.232], "size": [0.126, 0.599, 0.03], "color": "wood" },
+        { "prim": "box", "at": [-0.295, 0.683, -0.03], "size": [0.07, 0.055, 0.484], "color": "woodHi" },
+        { "prim": "cyl", "at": [-0.295, 0.573, 0.182], "size": [0.023, 0.22, 0.023], "color": "woodDark" },
+        { "prim": "box", "at": [0.295, 0.683, -0.03], "size": [0.07, 0.055, 0.484], "color": "woodHi" },
+        { "prim": "cyl", "at": [0.295, 0.573, 0.182], "size": [0.023, 0.22, 0.023], "color": "woodDark" },
+        { "prim": "box", "at": [-0.245, 0.035, 0], "size": [0.05, 0.07, 0.944], "color": "woodHi" },
+        { "prim": "box", "at": [0.245, 0.035, 0], "size": [0.05, 0.07, 0.944], "color": "woodHi" }
+      ]
+    },
+    "kititem.rocking-chair": {
+      "kind": "item",
+      "label": "Rosewick Rocking Chair",
+      "value": 355,
+      "stack": 1,
+      "swatch": "#c26b4b",
+      "badge": "chair",
+      "furniture": "fixture.rocking-chair",
+      "palette": {
+        "wrap": "#d9c7a4",
+        "wrapHi": "#eee1c7",
+        "strap": "#8a6242",
+        "mark": "#c26b4b"
+      }
+    }
+  }
+}

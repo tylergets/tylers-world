@@ -1,0 +1,49 @@
+{
+  "format": "tw.kit",
+  "version": 1,
+  "meta": {
+    "id": "turnip.whatnot",
+    "name": "Rosewick Whatnot"
+  },
+  "types": {
+    "fixture.whatnot": {
+      "kind": "object",
+      "label": "Rosewick Whatnot",
+      "footprint": { "w": 2, "d": 1 },
+      "height": 1.58,
+      "squash": 0.34,
+      "palette": {
+        "wood": "#8f4a3c",
+        "woodHi": "#ab6150",
+        "accent": "#c4614c"
+      },
+      "parts": [
+        { "prim": "box", "at": [-0.876, 0.746, 0], "rot": [0, 0, -5], "size": [0.08, 1.492, 0.428], "color": "wood" },
+        { "prim": "box", "at": [0.876, 0.746, 0], "rot": [0, 0, 5], "size": [0.08, 1.492, 0.428], "color": "wood" },
+        { "prim": "box", "at": [0, 0.1, 0], "size": [1.652, 0.055, 0.378], "color": "wood" },
+        { "prim": "box", "at": [0, 0.531, 0], "size": [1.564, 0.055, 0.378], "color": "wood" },
+        { "prim": "taper", "at": [0.375, 0.631, 0], "size": [0.08, 0.14, 0.08], "color": "accent" },
+        { "prim": "box", "at": [0, 0.961, 0], "size": [1.476, 0.055, 0.378], "color": "wood" },
+        { "prim": "taper", "at": [0.354, 1.061, 0], "size": [0.08, 0.14, 0.08], "color": "accent" },
+        { "prim": "box", "at": [0, 1.392, 0], "size": [1.388, 0.055, 0.378], "color": "wood" },
+        { "prim": "taper", "at": [0.333, 1.492, 0], "size": [0.08, 0.14, 0.08], "color": "accent" },
+        { "prim": "box", "at": [0, 1.542, 0], "size": [1.912, 0.07, 0.478], "color": "woodHi" }
+      ]
+    },
+    "kititem.whatnot": {
+      "kind": "item",
+      "label": "Rosewick Whatnot",
+      "value": 620,
+      "stack": 1,
+      "swatch": "#aa644e",
+      "badge": "shelf",
+      "furniture": "fixture.whatnot",
+      "palette": {
+        "wrap": "#d9c7a4",
+        "wrapHi": "#eee1c7",
+        "strap": "#8a6242",
+        "mark": "#aa644e"
+      }
+    }
+  }
+}

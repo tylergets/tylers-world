@@ -1,0 +1,60 @@
+{
+  "format": "tw.kit",
+  "version": 1,
+  "meta": {
+    "id": "turnip.bar-cart",
+    "name": "Inkthorn Bar Cart"
+  },
+  "types": {
+    "fixture.bar-cart": {
+      "kind": "object",
+      "label": "Inkthorn Bar Cart",
+      "footprint": { "w": 1, "d": 1 },
+      "height": 1.2,
+      "squash": 0.34,
+      "palette": {
+        "wood": "#3a2f2a",
+        "woodHi": "#54443c",
+        "dark": "#171210",
+        "metal": "#c8a24a",
+        "accent": "#c9a227",
+        "glass": "#9fb6bd"
+      },
+      "parts": [
+        { "prim": "cyl", "at": [-0.303, 0.452, -0.204], "size": [0.024, 0.803, 0.024], "color": "metal" },
+        { "prim": "cyl", "at": [0.303, 0.452, -0.204], "size": [0.024, 0.803, 0.024], "color": "metal" },
+        { "prim": "cyl", "at": [-0.303, 0.452, 0.204], "size": [0.024, 0.803, 0.024], "color": "metal" },
+        { "prim": "cyl", "at": [0.303, 0.452, 0.204], "size": [0.024, 0.803, 0.024], "color": "metal" },
+        { "prim": "box", "at": [0, 0.2, 0], "size": [0.686, 0.05, 0.488], "color": "wood" },
+        { "prim": "box", "at": [0, 0.863, 0], "size": [0.686, 0.05, 0.488], "color": "woodHi" },
+        { "prim": "cyl", "at": [-0.303, 0.06, -0.204], "rot": [0, 0, 90], "size": [0.06, 0.035, 0.06], "color": "dark" },
+        { "prim": "cyl", "at": [0.303, 0.06, -0.204], "rot": [0, 0, 90], "size": [0.06, 0.035, 0.06], "color": "dark" },
+        { "prim": "cyl", "at": [-0.303, 0.06, 0.204], "rot": [0, 0, 90], "size": [0.06, 0.035, 0.06], "color": "dark" },
+        { "prim": "cyl", "at": [0.303, 0.06, 0.204], "rot": [0, 0, 90], "size": [0.06, 0.035, 0.06], "color": "dark" },
+        { "prim": "cyl", "at": [0, 0.893, -0.204], "rot": [0, 0, 90], "size": [0.014, 0.606, 0.014], "color": "metal" },
+        { "prim": "cyl", "at": [0, 0.893, 0.204], "rot": [0, 0, 90], "size": [0.014, 0.606, 0.014], "color": "metal" },
+        { "prim": "cyl", "at": [-0.16, 0.943, 0.05], "size": [0.042, 0.2, 0.042], "color": "glass" },
+        { "prim": "cyl", "at": [-0.16, 1.083, 0.05], "size": [0.016, 0.1, 0.016], "color": "glass" },
+        { "prim": "cyl", "at": [0, 0.943, 0.05], "size": [0.042, 0.2, 0.042], "color": "accent" },
+        { "prim": "cyl", "at": [0, 1.083, 0.05], "size": [0.016, 0.1, 0.016], "color": "accent" },
+        { "prim": "cyl", "at": [0.16, 0.943, 0.05], "size": [0.042, 0.2, 0.042], "color": "glass" },
+        { "prim": "cyl", "at": [0.16, 1.083, 0.05], "size": [0.016, 0.1, 0.016], "color": "glass" }
+      ]
+    },
+    "kititem.bar-cart": {
+      "kind": "item",
+      "label": "Inkthorn Bar Cart",
+      "value": 785,
+      "stack": 1,
+      "swatch": "#b39b4f",
+      "badge": "shelf",
+      "furniture": "fixture.bar-cart",
+      "palette": {
+        "wrap": "#d9c7a4",
+        "wrapHi": "#eee1c7",
+        "strap": "#8a6242",
+        "mark": "#b39b4f"
+      }
+    }
+  }
+}

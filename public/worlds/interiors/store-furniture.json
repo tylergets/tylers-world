@@ -5,9 +5,13 @@
   "meta": {
     "id": "store.furniture.interior",
     "name": "Turnip & Timber",
-    "note": "A furniture shop with a rotating daily floor selection."
+    "note": "A furniture shop with a rotating daily floor drawn from a 300-piece catalogue."
   },
-  "grid": { "width": 12, "height": 10, "tileSize": 1 },
+  "grid": {
+    "width": 12,
+    "height": 10,
+    "tileSize": 1
+  },
   "ambience": {
     "sky": "#1d211c",
     "sun": 0.9,
@@ -15,7 +19,10 @@
     "hemiSky": "#fff0d2"
   },
   "zones": {
-    "back": { "owner": "keep.alder", "label": "behind the counter" }
+    "back": {
+      "owner": "keep.alder",
+      "label": "behind the counter"
+    }
   },
   "layers": {
     "surface": {
@@ -80,15 +87,76 @@
     }
   },
   "objects": [
-    { "id": "counter", "type": "furn.counter", "tile": [4, 3], "props": { "label": "Order Counter" } },
-    { "id": "chair.back", "type": "furn.chair", "tile": [8, 2], "rotation": 180 },
-    { "id": "bed.display", "type": "furn.bed", "tile": [1, 5], "rotation": 0 },
-    { "id": "table.display", "type": "furn.table", "tile": [5, 5] },
-    { "id": "chair.display", "type": "furn.chair", "tile": [7, 6], "rotation": 270 },
-    { "id": "shelf.display", "type": "furn.shelf", "tile": [9, 4], "rotation": 90 },
-    { "id": "stove.display", "type": "furn.stove", "tile": [8, 8] },
-    { "id": "plant.display", "type": "furn.plant", "tile": [1, 8] },
-    { "id": "crate.stock", "type": "furn.crate", "tile": [1, 1] }
+    {
+      "id": "counter",
+      "type": "furn.counter",
+      "tile": [4, 3],
+      "props": { "label": "Order Counter" }
+    },
+    {
+      "id": "crate.stock",
+      "type": "furn.crate",
+      "tile": [1, 1]
+    },
+    {
+      "id": "clock.back",
+      "type": "fixture.longcase-clock",
+      "tile": [10, 1]
+    },
+    {
+      "id": "chair.back",
+      "type": "fixture.captains-chair",
+      "tile": [8, 2],
+      "rotation": 180
+    },
+    {
+      "id": "mirror.display",
+      "type": "fixture.cheval-mirror",
+      "tile": [1, 3]
+    },
+    {
+      "id": "shelf.display",
+      "type": "fixture.bookcase",
+      "tile": [9, 4],
+      "rotation": 90
+    },
+    {
+      "id": "bed.display",
+      "type": "fixture.four-poster-bed",
+      "tile": [1, 5]
+    },
+    {
+      "id": "table.display",
+      "type": "fixture.round-dining-table",
+      "tile": [5, 5]
+    },
+    {
+      "id": "chair.display",
+      "type": "fixture.windsor-chair",
+      "tile": [7, 6],
+      "rotation": 270
+    },
+    {
+      "id": "wardrobe.display",
+      "type": "fixture.wardrobe",
+      "tile": [10, 4],
+      "rotation": 90
+    },
+    {
+      "id": "plant.display",
+      "type": "fixture.potted-palm",
+      "tile": [1, 8]
+    },
+    {
+      "id": "lamp.display",
+      "type": "fixture.standard-lamp",
+      "tile": [3, 7]
+    },
+    {
+      "id": "stove.display",
+      "type": "fixture.kitchen-range",
+      "tile": [8, 8]
+    }
   ],
   "npcs": [
     {
@@ -96,13 +164,17 @@
       "type": "folk.shopkeep",
       "tile": [5, 2],
       "facing": "south",
-      "props": { "name": "Alder", "title": "Deals in rooms" },
+      "props": {
+        "name": "Alder",
+        "title": "Deals in rooms"
+      },
       "shop": {
+        "hours": { "open": 9, "close": 18 },
         "name": "Today's Floor",
         "markup": 1.15,
         "buyRate": 0.4,
         "takes": [],
-        "daily": 4,
+        "daily": 10,
         "stock": [
           { "type": "furnitem.bed", "count": 1 },
           { "type": "furnitem.table", "count": 1 },
@@ -111,7 +183,307 @@
           { "type": "furnitem.counter", "count": 1 },
           { "type": "furnitem.stove", "count": 1 },
           { "type": "furnitem.plant", "count": 1 },
-          { "type": "furnitem.crate", "count": 1 }
+          { "type": "furnitem.crate", "count": 1 },
+          { "type": "kititem.ale-firkin", "count": 1 },
+          { "type": "kititem.aloe-pot", "count": 1 },
+          { "type": "kititem.anvil-and-block", "count": 1 },
+          { "type": "kititem.apothecary-chest", "count": 1 },
+          { "type": "kititem.apple-crate", "count": 1 },
+          { "type": "kititem.aquarium", "count": 1 },
+          { "type": "kititem.aspidistra", "count": 1 },
+          { "type": "kititem.aviary", "count": 1 },
+          { "type": "kititem.bar-cart", "count": 1 },
+          { "type": "kititem.bar-counter", "count": 1 },
+          { "type": "kititem.bar-stool", "count": 1 },
+          { "type": "kititem.barrel-planter", "count": 1 },
+          { "type": "kititem.bedside-lamp", "count": 1 },
+          { "type": "kititem.bellows-stand", "count": 1 },
+          { "type": "kititem.birdbath", "count": 1 },
+          { "type": "kititem.birdcage-stand", "count": 1 },
+          { "type": "kititem.blanket-chest", "count": 1 },
+          { "type": "kititem.book-trolley", "count": 1 },
+          { "type": "kititem.bookcase", "count": 1 },
+          { "type": "kititem.boot-bench", "count": 1 },
+          { "type": "kititem.boot-scraper", "count": 1 },
+          { "type": "kititem.border-rug", "count": 1 },
+          { "type": "kititem.bottle-crate", "count": 1 },
+          { "type": "kititem.bracket-clock", "count": 1 },
+          { "type": "kititem.brass-birdcage", "count": 1 },
+          { "type": "kititem.brass-fire-screen", "count": 1 },
+          { "type": "kititem.brazier", "count": 1 },
+          { "type": "kititem.bread-oven", "count": 1 },
+          { "type": "kititem.buffet", "count": 1 },
+          { "type": "kititem.bureau", "count": 1 },
+          { "type": "kititem.butchers-block", "count": 1 },
+          { "type": "kititem.butter-churn", "count": 1 },
+          { "type": "kititem.camelback-sofa", "count": 1 },
+          { "type": "kititem.candelabra", "count": 1 },
+          { "type": "kititem.candle-table", "count": 1 },
+          { "type": "kititem.candlestand", "count": 1 },
+          { "type": "kititem.canopy-bed", "count": 1 },
+          { "type": "kititem.captains-bed", "count": 1 },
+          { "type": "kititem.captains-chair", "count": 1 },
+          { "type": "kititem.card-table", "count": 1 },
+          { "type": "kititem.carriage-clock", "count": 1 },
+          { "type": "kititem.carver-chair", "count": 1 },
+          { "type": "kititem.celestial-globe", "count": 1 },
+          { "type": "kititem.chaise-longue", "count": 1 },
+          { "type": "kititem.chest-of-drawers", "count": 1 },
+          { "type": "kititem.chesterfield", "count": 1 },
+          { "type": "kititem.cheval-mirror", "count": 1 },
+          { "type": "kititem.chevron-rug", "count": 1 },
+          { "type": "kititem.china-cabinet", "count": 1 },
+          { "type": "kititem.church-pew", "count": 1 },
+          { "type": "kititem.cider-cask", "count": 1 },
+          { "type": "kititem.clerks-desk", "count": 1 },
+          { "type": "kititem.clothes-airer", "count": 1 },
+          { "type": "kititem.club-sofa", "count": 1 },
+          { "type": "kititem.coal-scuttle", "count": 1 },
+          { "type": "kititem.coat-tree", "count": 1 },
+          { "type": "kititem.cobblers-bench", "count": 1 },
+          { "type": "kititem.cobblers-stool", "count": 1 },
+          { "type": "kititem.coffer", "count": 1 },
+          { "type": "kititem.conductors-stand", "count": 1 },
+          { "type": "kititem.console-table", "count": 1 },
+          { "type": "kititem.cook-stove", "count": 1 },
+          { "type": "kititem.corner-chair", "count": 1 },
+          { "type": "kititem.corner-cupboard", "count": 1 },
+          { "type": "kititem.corner-shelf", "count": 1 },
+          { "type": "kititem.cottage-bed", "count": 1 },
+          { "type": "kititem.cottage-bench", "count": 1 },
+          { "type": "kititem.cottage-shelf", "count": 1 },
+          { "type": "kititem.counting-house-chair", "count": 1 },
+          { "type": "kititem.courtyard-fountain", "count": 1 },
+          { "type": "kititem.cradle", "count": 1 },
+          { "type": "kititem.credenza", "count": 1 },
+          { "type": "kititem.crested-cheval-mirror", "count": 1 },
+          { "type": "kititem.cross-back-chair", "count": 1 },
+          { "type": "kititem.curio-cabinet", "count": 1 },
+          { "type": "kititem.curio-column", "count": 1 },
+          { "type": "kititem.davenport-desk", "count": 1 },
+          { "type": "kititem.day-bed", "count": 1 },
+          { "type": "kititem.display-case", "count": 1 },
+          { "type": "kititem.display-column", "count": 1 },
+          { "type": "kititem.dolls-house", "count": 1 },
+          { "type": "kititem.doormat", "count": 1 },
+          { "type": "kititem.dovecote", "count": 1 },
+          { "type": "kititem.dowry-chest", "count": 1 },
+          { "type": "kititem.draught-screen", "count": 1 },
+          { "type": "kititem.dresser", "count": 1 },
+          { "type": "kititem.dressing-screen", "count": 1 },
+          { "type": "kititem.dressing-stool", "count": 1 },
+          { "type": "kititem.dressing-table", "count": 1 },
+          { "type": "kititem.drinks-cart", "count": 1 },
+          { "type": "kititem.drop-leaf-table", "count": 1 },
+          { "type": "kititem.drum-floor-lamp", "count": 1 },
+          { "type": "kititem.escritoire", "count": 1 },
+          { "type": "kititem.etagere", "count": 1 },
+          { "type": "kititem.farmhouse-table", "count": 1 },
+          { "type": "kititem.fire-basket", "count": 1 },
+          { "type": "kititem.fire-irons", "count": 1 },
+          { "type": "kititem.fire-screen", "count": 1 },
+          { "type": "kititem.fireside-chair", "count": 1 },
+          { "type": "kititem.fish-tank-stand", "count": 1 },
+          { "type": "kititem.five-branch-candelabra", "count": 1 },
+          { "type": "kititem.floor-loom", "count": 1 },
+          { "type": "kititem.folding-screen", "count": 1 },
+          { "type": "kititem.footstool", "count": 1 },
+          { "type": "kititem.four-fold-screen", "count": 1 },
+          { "type": "kititem.four-poster-bed", "count": 1 },
+          { "type": "kititem.games-table", "count": 1 },
+          { "type": "kititem.garden-bench", "count": 1 },
+          { "type": "kititem.garden-cart", "count": 1 },
+          { "type": "kititem.garden-screen", "count": 1 },
+          { "type": "kititem.gateleg-table", "count": 1 },
+          { "type": "kititem.gilt-mirror", "count": 1 },
+          { "type": "kititem.glazed-screen", "count": 1 },
+          { "type": "kititem.globe-lamp", "count": 1 },
+          { "type": "kititem.grain-bin", "count": 1 },
+          { "type": "kititem.grandmother-clock", "count": 1 },
+          { "type": "kititem.great-wheel", "count": 1 },
+          { "type": "kititem.half-tester-bed", "count": 1 },
+          { "type": "kititem.hall-bench", "count": 1 },
+          { "type": "kititem.hall-chair", "count": 1 },
+          { "type": "kititem.hall-lantern", "count": 1 },
+          { "type": "kititem.hall-mirror", "count": 1 },
+          { "type": "kititem.hall-runner", "count": 1 },
+          { "type": "kititem.hall-table", "count": 1 },
+          { "type": "kititem.hat-stand", "count": 1 },
+          { "type": "kititem.hearth-rug", "count": 1 },
+          { "type": "kititem.hip-bath", "count": 1 },
+          { "type": "kititem.jardiniere", "count": 1 },
+          { "type": "kititem.joiners-bench", "count": 1 },
+          { "type": "kititem.kindling-basket", "count": 1 },
+          { "type": "kititem.kitchen-chair", "count": 1 },
+          { "type": "kititem.kitchen-hutch", "count": 1 },
+          { "type": "kititem.kitchen-island", "count": 1 },
+          { "type": "kititem.kitchen-range", "count": 1 },
+          { "type": "kititem.kitchen-table", "count": 1 },
+          { "type": "kititem.kitchen-trolley", "count": 1 },
+          { "type": "kititem.knole-sofa", "count": 1 },
+          { "type": "kititem.ladder-shelf", "count": 1 },
+          { "type": "kititem.ladderback-chair", "count": 1 },
+          { "type": "kititem.lattice-rug", "count": 1 },
+          { "type": "kititem.lattice-screen", "count": 1 },
+          { "type": "kititem.laundry-basket", "count": 1 },
+          { "type": "kititem.laundry-trough", "count": 1 },
+          { "type": "kititem.lectern", "count": 1 },
+          { "type": "kititem.library-shelves", "count": 1 },
+          { "type": "kititem.library-steps", "count": 1 },
+          { "type": "kititem.linen-press", "count": 1 },
+          { "type": "kititem.log-basket", "count": 1 },
+          { "type": "kititem.longcase-clock", "count": 1 },
+          { "type": "kititem.loveseat", "count": 1 },
+          { "type": "kititem.low-bookcase", "count": 1 },
+          { "type": "kititem.lowboy", "count": 1 },
+          { "type": "kititem.magazine-rack", "count": 1 },
+          { "type": "kititem.mantel-clock", "count": 1 },
+          { "type": "kititem.marble-bust", "count": 1 },
+          { "type": "kititem.marble-washstand", "count": 1 },
+          { "type": "kititem.marquetry-table", "count": 1 },
+          { "type": "kititem.medallion-rug", "count": 1 },
+          { "type": "kititem.medicine-cabinet", "count": 1 },
+          { "type": "kititem.milking-stool", "count": 1 },
+          { "type": "kititem.mirrored-wardrobe", "count": 1 },
+          { "type": "kititem.music-stand", "count": 1 },
+          { "type": "kititem.nest-of-tables", "count": 1 },
+          { "type": "kititem.nursery-stool", "count": 1 },
+          { "type": "kititem.nursing-chair", "count": 1 },
+          { "type": "kititem.oak-barrel", "count": 1 },
+          { "type": "kititem.occasional-table", "count": 1 },
+          { "type": "kititem.open-hearth", "count": 1 },
+          { "type": "kititem.open-shelving", "count": 1 },
+          { "type": "kititem.overmantel-hearth", "count": 1 },
+          { "type": "kititem.packing-crate", "count": 1 },
+          { "type": "kititem.painters-easel", "count": 1 },
+          { "type": "kititem.pan-rack", "count": 1 },
+          { "type": "kititem.panel-bed", "count": 1 },
+          { "type": "kititem.panelled-screen", "count": 1 },
+          { "type": "kititem.pantry-cupboard", "count": 1 },
+          { "type": "kititem.parlour-fountain", "count": 1 },
+          { "type": "kititem.parlour-settee", "count": 1 },
+          { "type": "kititem.parlour-stove", "count": 1 },
+          { "type": "kititem.pedestal-basin", "count": 1 },
+          { "type": "kititem.pedestal-desk", "count": 1 },
+          { "type": "kititem.pedestal-table", "count": 1 },
+          { "type": "kititem.pet-run", "count": 1 },
+          { "type": "kititem.piano-bench", "count": 1 },
+          { "type": "kititem.piano-stool", "count": 1 },
+          { "type": "kititem.pickling-barrel", "count": 1 },
+          { "type": "kititem.plant-stand", "count": 1 },
+          { "type": "kititem.plant-trolley", "count": 1 },
+          { "type": "kititem.plate-rack", "count": 1 },
+          { "type": "kititem.plate-shelf", "count": 1 },
+          { "type": "kititem.pot-belly-stove", "count": 1 },
+          { "type": "kititem.potted-fern", "count": 1 },
+          { "type": "kititem.potted-palm", "count": 1 },
+          { "type": "kititem.potters-bench", "count": 1 },
+          { "type": "kititem.pouffe", "count": 1 },
+          { "type": "kititem.prayer-rug", "count": 1 },
+          { "type": "kititem.rabbit-hutch", "count": 1 },
+          { "type": "kititem.rag-rug", "count": 1 },
+          { "type": "kititem.rain-barrel", "count": 1 },
+          { "type": "kititem.reading-desk", "count": 1 },
+          { "type": "kititem.reading-lamp", "count": 1 },
+          { "type": "kititem.reading-stand", "count": 1 },
+          { "type": "kititem.refectory-table", "count": 1 },
+          { "type": "kititem.regulator-clock", "count": 1 },
+          { "type": "kititem.rocking-chair", "count": 1 },
+          { "type": "kititem.rocking-crib", "count": 1 },
+          { "type": "kititem.roll-top-bath", "count": 1 },
+          { "type": "kititem.roll-top-desk", "count": 1 },
+          { "type": "kititem.round-dining-table", "count": 1 },
+          { "type": "kititem.round-rug", "count": 1 },
+          { "type": "kititem.round-wall-mirror", "count": 1 },
+          { "type": "kititem.rubber-plant", "count": 1 },
+          { "type": "kititem.rush-seat-chair", "count": 1 },
+          { "type": "kititem.rush-stool", "count": 1 },
+          { "type": "kititem.salt-tub", "count": 1 },
+          { "type": "kititem.scullery-shelf", "count": 1 },
+          { "type": "kititem.scullery-sink", "count": 1 },
+          { "type": "kititem.sea-chest", "count": 1 },
+          { "type": "kititem.secretary-desk", "count": 1 },
+          { "type": "kititem.serving-counter", "count": 1 },
+          { "type": "kititem.serving-trolley", "count": 1 },
+          { "type": "kititem.settee", "count": 1 },
+          { "type": "kititem.settle-bench", "count": 1 },
+          { "type": "kititem.sewing-table", "count": 1 },
+          { "type": "kititem.shaving-mirror", "count": 1 },
+          { "type": "kititem.shield-back-chair", "count": 1 },
+          { "type": "kititem.shoe-rack", "count": 1 },
+          { "type": "kititem.shop-counter", "count": 1 },
+          { "type": "kititem.shop-sign", "count": 1 },
+          { "type": "kititem.sideboard", "count": 1 },
+          { "type": "kititem.single-bed", "count": 1 },
+          { "type": "kititem.skirted-sofa", "count": 1 },
+          { "type": "kititem.slat-bed", "count": 1 },
+          { "type": "kititem.sleigh-bed", "count": 1 },
+          { "type": "kititem.slipper-bath", "count": 1 },
+          { "type": "kititem.slipper-chair", "count": 1 },
+          { "type": "kititem.spider-plant", "count": 1 },
+          { "type": "kititem.spindle-bed", "count": 1 },
+          { "type": "kititem.spindleback-chair", "count": 1 },
+          { "type": "kititem.spinning-stool", "count": 1 },
+          { "type": "kititem.spinning-wheel", "count": 1 },
+          { "type": "kititem.splay-leg-chair", "count": 1 },
+          { "type": "kititem.square-plinth", "count": 1 },
+          { "type": "kititem.standard-lamp", "count": 1 },
+          { "type": "kititem.standing-banner", "count": 1 },
+          { "type": "kititem.star-rug", "count": 1 },
+          { "type": "kititem.station-clock", "count": 1 },
+          { "type": "kititem.statue-stand", "count": 1 },
+          { "type": "kititem.step-stool", "count": 1 },
+          { "type": "kititem.stone-birdbath", "count": 1 },
+          { "type": "kititem.stone-fireplace", "count": 1 },
+          { "type": "kititem.stone-planter", "count": 1 },
+          { "type": "kititem.storage-bench", "count": 1 },
+          { "type": "kititem.storm-lantern-stand", "count": 1 },
+          { "type": "kititem.striped-runner", "count": 1 },
+          { "type": "kititem.studio-easel", "count": 1 },
+          { "type": "kititem.study-desk", "count": 1 },
+          { "type": "kititem.table-lamp", "count": 1 },
+          { "type": "kititem.table-loom", "count": 1 },
+          { "type": "kititem.tall-bookcase", "count": 1 },
+          { "type": "kititem.tallboy", "count": 1 },
+          { "type": "kititem.tavern-stool", "count": 1 },
+          { "type": "kititem.tea-caddy-chest", "count": 1 },
+          { "type": "kititem.tea-table", "count": 1 },
+          { "type": "kititem.tea-trolley", "count": 1 },
+          { "type": "kititem.terrestrial-globe", "count": 1 },
+          { "type": "kititem.three-seat-sofa", "count": 1 },
+          { "type": "kititem.till-counter", "count": 1 },
+          { "type": "kititem.tool-chest", "count": 1 },
+          { "type": "kititem.towel-rail", "count": 1 },
+          { "type": "kititem.toy-chest", "count": 1 },
+          { "type": "kititem.trade-counter", "count": 1 },
+          { "type": "kititem.trestle-bench", "count": 1 },
+          { "type": "kititem.trestle-table", "count": 1 },
+          { "type": "kititem.tripod-lamp", "count": 1 },
+          { "type": "kititem.trundle-bed", "count": 1 },
+          { "type": "kititem.trunk", "count": 1 },
+          { "type": "kititem.two-seat-sofa", "count": 1 },
+          { "type": "kititem.two-tier-plant-stand", "count": 1 },
+          { "type": "kititem.umbrella-stand", "count": 1 },
+          { "type": "kititem.upholstered-bed", "count": 1 },
+          { "type": "kititem.urn-on-plinth", "count": 1 },
+          { "type": "kititem.vanity-mirror", "count": 1 },
+          { "type": "kititem.vanity-unit", "count": 1 },
+          { "type": "kititem.wall-clock", "count": 1 },
+          { "type": "kititem.wardrobe", "count": 1 },
+          { "type": "kititem.wash-basin", "count": 1 },
+          { "type": "kititem.washstand", "count": 1 },
+          { "type": "kititem.water-butt", "count": 1 },
+          { "type": "kititem.weavers-bench", "count": 1 },
+          { "type": "kititem.weighing-counter", "count": 1 },
+          { "type": "kititem.welsh-dresser", "count": 1 },
+          { "type": "kititem.whatnot", "count": 1 },
+          { "type": "kititem.window-seat", "count": 1 },
+          { "type": "kititem.windsor-chair", "count": 1 },
+          { "type": "kititem.wine-rack", "count": 1 },
+          { "type": "kititem.wingback-chair", "count": 1 },
+          { "type": "kititem.workbench", "count": 1 },
+          { "type": "kititem.writing-desk", "count": 1 },
+          { "type": "kititem.writing-table", "count": 1 }
         ]
       },
       "dialog": {
@@ -119,8 +491,17 @@
         "nodes": {
           "open": {
             "branch": [
-              { "when": { "not": { "flag": "met" } }, "to": "hello" },
-              { "to": "again" }
+              {
+                "when": {
+                  "not": {
+                    "flag": "met"
+                  }
+                },
+                "to": "hello"
+              },
+              {
+                "to": "again"
+              }
             ]
           },
           "hello": {
@@ -128,28 +509,74 @@
               "Alder. Tables, chairs, and the occasional thing nobody ordered.",
               "I put a few pieces out each morning. Tomorrow's floor will be different."
             ],
-            "do": { "set": "met" },
+            "do": {
+              "set": "met"
+            },
             "then": "menu"
           },
-          "again": { "text": "Today's pieces are still today's pieces.", "then": "menu" },
+          "again": {
+            "text": "Today's pieces are still today's pieces.",
+            "then": "menu"
+          },
           "menu": {
             "text": "See anything your rooms are missing?",
             "choices": [
-              { "text": "Show me today's floor.", "do": { "shop": true }, "to": "after" },
-              { "text": "How do I set it up?", "to": "placing" },
-              { "text": "I'll look again tomorrow.", "to": "bye" }
+              {
+                "text": "Show me today's floor.",
+                "do": {
+                  "shop": true
+                },
+                "to": "after"
+              },
+              {
+                "text": "How big is the catalogue?",
+                "to": "catalogue"
+              },
+              {
+                "text": "How do I set it up?",
+                "to": "placing"
+              },
+              {
+                "text": "I'll look again tomorrow.",
+                "to": "bye"
+              }
             ]
           },
           "placing": {
             "text": "Select the flat-pack in your bag, face a clear patch of floor, and press Q. It will build facing the same way you are.",
             "then": "menu"
           },
-          "after": { "text": "Once it leaves the floor, that piece is yours.", "then": "menu" },
-          "bye": { "text": "Rooms take time. No sense rushing one." }
+          "after": {
+            "text": "Once it leaves the floor, that piece is yours.",
+            "then": "menu"
+          },
+          "bye": {
+            "text": "Rooms take time. No sense rushing one."
+          },
+          "catalogue": {
+            "text": [
+              "Three hundred pieces in the book, and ten of them on the floor at a time.",
+              "No, I will not fetch one. Come back tomorrow and it might be out."
+            ],
+            "then": "menu"
+          }
         }
       }
     }
   ],
-  "exits": [ { "tile": [5, 9] }, { "tile": [6, 9] } ],
-  "spawn": { "tile": [6, 8], "facing": "north" }
+  "exits": [
+    {
+      "tile": [5, 9]
+    },
+    {
+      "tile": [6, 9]
+    }
+  ],
+  "spawn": {
+    "tile": [6, 8],
+    "facing": "north"
+  },
+  "kits": [
+    "kits/turnip-catalog.kit.json"
+  ]
 }

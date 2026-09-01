@@ -1,0 +1,44 @@
+{
+  "format": "tw.kit",
+  "version": 1,
+  "meta": {
+    "id": "turnip.statue-stand",
+    "name": "Meadowash Statue Stand"
+  },
+  "types": {
+    "fixture.statue-stand": {
+      "kind": "object",
+      "label": "Meadowash Statue Stand",
+      "footprint": { "w": 1, "d": 1 },
+      "height": 1.41,
+      "squash": 0.3,
+      "palette": {
+        "woodHi": "#e9e2ce",
+        "pale": "#f4f1e6",
+        "metal": "#a9ada0"
+      },
+      "parts": [
+        { "prim": "box", "at": [0, 0.06, 0], "size": [0.7, 0.12, 0.7], "color": "metal" },
+        { "prim": "box", "at": [0, 0.15, 0], "size": [0.616, 0.08, 0.616], "color": "pale" },
+        { "prim": "box", "at": [0, 0.725, 0], "size": [0.504, 1.054, 0.504], "color": "pale" },
+        { "prim": "box", "at": [0, 1.318, 0], "size": [0.7, 0.09, 0.7], "color": "metal" },
+        { "prim": "box", "at": [0, 1.378, 0], "size": [0.588, 0.06, 0.588], "color": "woodHi" }
+      ]
+    },
+    "kititem.statue-stand": {
+      "kind": "item",
+      "label": "Meadowash Statue Stand",
+      "value": 380,
+      "stack": 1,
+      "swatch": "#93ac7d",
+      "badge": "crate",
+      "furniture": "fixture.statue-stand",
+      "palette": {
+        "wrap": "#d9c7a4",
+        "wrapHi": "#eee1c7",
+        "strap": "#8a6242",
+        "mark": "#93ac7d"
+      }
+    }
+  }
+}

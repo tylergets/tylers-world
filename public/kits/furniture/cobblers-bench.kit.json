@@ -1,0 +1,55 @@
+{
+  "format": "tw.kit",
+  "version": 1,
+  "meta": {
+    "id": "turnip.cobblers-bench",
+    "name": "Rosewick Cobbler's Bench"
+  },
+  "types": {
+    "fixture.cobblers-bench": {
+      "kind": "object",
+      "label": "Rosewick Cobbler's Bench",
+      "footprint": { "w": 2, "d": 1 },
+      "height": 1.39,
+      "squash": 0.34,
+      "palette": {
+        "wood": "#8f4a3c",
+        "woodHi": "#ab6150",
+        "woodDark": "#653228",
+        "metal": "#c2a35c"
+      },
+      "parts": [
+        { "prim": "box", "at": [-0.557, 0.334, -0.247], "size": [0.12, 0.668, 0.12], "color": "woodDark" },
+        { "prim": "box", "at": [0.557, 0.334, -0.247], "size": [0.12, 0.668, 0.12], "color": "woodDark" },
+        { "prim": "box", "at": [-0.557, 0.334, 0.247], "size": [0.12, 0.668, 0.12], "color": "woodDark" },
+        { "prim": "box", "at": [0.557, 0.334, 0.247], "size": [0.12, 0.668, 0.12], "color": "woodDark" },
+        { "prim": "box", "at": [0, 0.2, 0], "size": [1.154, 0.07, 0.353], "color": "woodDark" },
+        { "prim": "box", "at": [0, 0.728, 0], "size": [1.354, 0.12, 0.693], "color": "wood" },
+        { "prim": "box", "at": [0, 0.798, 0], "size": [1.214, 0.02, 0.573], "color": "woodHi" },
+        { "prim": "box", "at": [-0.515, 0.688, 0.367], "size": [0.24, 0.18, 0.1], "color": "metal" },
+        { "prim": "cyl", "at": [-0.515, 0.608, 0.427], "rot": [0, 0, 90], "size": [0.02, 0.22, 0.02], "color": "metal" },
+        { "prim": "box", "at": [0, 1.088, -0.307], "size": [1.354, 0.6, 0.05], "color": "woodHi" },
+        { "prim": "cyl", "at": [-0.487, 1.068, -0.247], "size": [0.018, 0.34, 0.018], "color": "metal" },
+        { "prim": "cyl", "at": [-0.244, 1.068, -0.247], "size": [0.018, 0.34, 0.018], "color": "metal" },
+        { "prim": "cyl", "at": [0, 1.068, -0.247], "size": [0.018, 0.34, 0.018], "color": "metal" },
+        { "prim": "cyl", "at": [0.244, 1.068, -0.247], "size": [0.018, 0.34, 0.018], "color": "metal" },
+        { "prim": "cyl", "at": [0.487, 1.068, -0.247], "size": [0.018, 0.34, 0.018], "color": "metal" }
+      ]
+    },
+    "kititem.cobblers-bench": {
+      "kind": "item",
+      "label": "Rosewick Cobbler's Bench",
+      "value": 735,
+      "stack": 1,
+      "swatch": "#ae6b51",
+      "badge": "stove",
+      "furniture": "fixture.cobblers-bench",
+      "palette": {
+        "wrap": "#d9c7a4",
+        "wrapHi": "#eee1c7",
+        "strap": "#8a6242",
+        "mark": "#ae6b51"
+      }
+    }
+  }
+}

@@ -1,0 +1,54 @@
+{
+  "format": "tw.kit",
+  "version": 1,
+  "meta": {
+    "id": "turnip.windsor-chair",
+    "name": "Coppervale Windsor Chair"
+  },
+  "types": {
+    "fixture.windsor-chair": {
+      "kind": "object",
+      "label": "Coppervale Windsor Chair",
+      "footprint": { "w": 1, "d": 1 },
+      "height": 1.09,
+      "squash": 0.34,
+      "palette": {
+        "wood": "#a9763f",
+        "woodHi": "#c6924f",
+        "woodDark": "#7a5329"
+      },
+      "parts": [
+        { "prim": "box", "at": [-0.244, 0.213, -0.223], "rot": [8, 0, -8], "size": [0.075, 0.426, 0.075], "color": "woodDark" },
+        { "prim": "box", "at": [0.244, 0.213, -0.223], "rot": [8, 0, 8], "size": [0.075, 0.426, 0.075], "color": "woodDark" },
+        { "prim": "box", "at": [-0.244, 0.213, 0.223], "rot": [-8, 0, -8], "size": [0.075, 0.426, 0.075], "color": "woodDark" },
+        { "prim": "box", "at": [0.244, 0.213, 0.223], "rot": [-8, 0, 8], "size": [0.075, 0.426, 0.075], "color": "woodDark" },
+        { "prim": "cyl", "at": [0, 0.471, 0], "size": [0.314, 0.09, 0.293], "color": "wood" },
+        { "prim": "cyl", "at": [-0.244, 0.774, -0.223], "size": [0.03, 0.516, 0.03], "color": "woodDark" },
+        { "prim": "cyl", "at": [0.244, 0.774, -0.223], "size": [0.03, 0.516, 0.03], "color": "woodDark" },
+        { "prim": "box", "at": [0, 1.032, -0.223], "size": [0.628, 0.1, 0.06], "color": "woodHi" },
+        { "prim": "cyl", "at": [-0.192, 0.774, -0.223], "size": [0.018, 0.516, 0.018], "color": "wood" },
+        { "prim": "cyl", "at": [-0.128, 0.774, -0.223], "size": [0.018, 0.516, 0.018], "color": "wood" },
+        { "prim": "cyl", "at": [-0.064, 0.774, -0.223], "size": [0.018, 0.516, 0.018], "color": "wood" },
+        { "prim": "cyl", "at": [0, 0.774, -0.223], "size": [0.018, 0.516, 0.018], "color": "wood" },
+        { "prim": "cyl", "at": [0.064, 0.774, -0.223], "size": [0.018, 0.516, 0.018], "color": "wood" },
+        { "prim": "cyl", "at": [0.128, 0.774, -0.223], "size": [0.018, 0.516, 0.018], "color": "wood" },
+        { "prim": "cyl", "at": [0.192, 0.774, -0.223], "size": [0.018, 0.516, 0.018], "color": "wood" }
+      ]
+    },
+    "kititem.windsor-chair": {
+      "kind": "item",
+      "label": "Coppervale Windsor Chair",
+      "value": 210,
+      "stack": 1,
+      "swatch": "#c6703d",
+      "badge": "chair",
+      "furniture": "fixture.windsor-chair",
+      "palette": {
+        "wrap": "#d9c7a4",
+        "wrapHi": "#eee1c7",
+        "strap": "#8a6242",
+        "mark": "#c6703d"
+      }
+    }
+  }
+}

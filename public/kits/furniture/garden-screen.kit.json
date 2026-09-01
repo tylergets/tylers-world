@@ -1,0 +1,66 @@
+{
+  "format": "tw.kit",
+  "version": 1,
+  "meta": {
+    "id": "turnip.garden-screen",
+    "name": "Seaglass Garden Screen"
+  },
+  "types": {
+    "fixture.garden-screen": {
+      "kind": "object",
+      "label": "Seaglass Garden Screen",
+      "footprint": { "w": 2, "d": 1 },
+      "height": 1.94,
+      "squash": 0.3,
+      "palette": {
+        "wood": "#a6a89c",
+        "woodHi": "#c2c4b8",
+        "woodDark": "#7b7d73"
+      },
+      "parts": [
+        { "prim": "box", "at": [-0.602, 0.968, -0.08], "rot": [0, 18, 0], "size": [0.64, 1.937, 0.06], "color": "wood" },
+        { "prim": "box", "at": [-0.602, 0.387, -0.06], "rot": [0, 18, 0], "size": [0.54, 0.04, 0.03], "color": "woodHi" },
+        { "prim": "box", "at": [-0.602, 0.775, -0.06], "rot": [0, 18, 0], "size": [0.54, 0.04, 0.03], "color": "woodHi" },
+        { "prim": "box", "at": [-0.602, 1.162, -0.06], "rot": [0, 18, 0], "size": [0.54, 0.04, 0.03], "color": "woodHi" },
+        { "prim": "box", "at": [-0.602, 1.549, -0.06], "rot": [0, 18, 0], "size": [0.54, 0.04, 0.03], "color": "woodHi" },
+        { "prim": "box", "at": [-0.781, 1.065, -0.06], "rot": [0, 18, 0], "size": [0.04, 1.394, 0.03], "color": "woodHi" },
+        { "prim": "box", "at": [-0.602, 1.065, -0.06], "rot": [0, 18, 0], "size": [0.04, 1.394, 0.03], "color": "woodHi" },
+        { "prim": "box", "at": [-0.422, 1.065, -0.06], "rot": [0, 18, 0], "size": [0.04, 1.394, 0.03], "color": "woodHi" },
+        { "prim": "box", "at": [-0.602, 0.04, -0.08], "rot": [0, 18, 0], "size": [0.68, 0.08, 0.16], "color": "woodDark" },
+        { "prim": "box", "at": [0, 0.968, 0.08], "rot": [0, -18, 0], "size": [0.64, 1.937, 0.06], "color": "wood" },
+        { "prim": "box", "at": [0, 0.387, 0.1], "rot": [0, -18, 0], "size": [0.54, 0.04, 0.03], "color": "woodHi" },
+        { "prim": "box", "at": [0, 0.775, 0.1], "rot": [0, -18, 0], "size": [0.54, 0.04, 0.03], "color": "woodHi" },
+        { "prim": "box", "at": [0, 1.162, 0.1], "rot": [0, -18, 0], "size": [0.54, 0.04, 0.03], "color": "woodHi" },
+        { "prim": "box", "at": [0, 1.549, 0.1], "rot": [0, -18, 0], "size": [0.54, 0.04, 0.03], "color": "woodHi" },
+        { "prim": "box", "at": [-0.179, 1.065, 0.1], "rot": [0, -18, 0], "size": [0.04, 1.394, 0.03], "color": "woodHi" },
+        { "prim": "box", "at": [0, 1.065, 0.1], "rot": [0, -18, 0], "size": [0.04, 1.394, 0.03], "color": "woodHi" },
+        { "prim": "box", "at": [0.179, 1.065, 0.1], "rot": [0, -18, 0], "size": [0.04, 1.394, 0.03], "color": "woodHi" },
+        { "prim": "box", "at": [0, 0.04, 0.08], "rot": [0, -18, 0], "size": [0.68, 0.08, 0.16], "color": "woodDark" },
+        { "prim": "box", "at": [0.602, 0.968, -0.08], "rot": [0, 18, 0], "size": [0.64, 1.937, 0.06], "color": "wood" },
+        { "prim": "box", "at": [0.602, 0.387, -0.06], "rot": [0, 18, 0], "size": [0.54, 0.04, 0.03], "color": "woodHi" },
+        { "prim": "box", "at": [0.602, 0.775, -0.06], "rot": [0, 18, 0], "size": [0.54, 0.04, 0.03], "color": "woodHi" },
+        { "prim": "box", "at": [0.602, 1.162, -0.06], "rot": [0, 18, 0], "size": [0.54, 0.04, 0.03], "color": "woodHi" },
+        { "prim": "box", "at": [0.602, 1.549, -0.06], "rot": [0, 18, 0], "size": [0.54, 0.04, 0.03], "color": "woodHi" },
+        { "prim": "box", "at": [0.422, 1.065, -0.06], "rot": [0, 18, 0], "size": [0.04, 1.394, 0.03], "color": "woodHi" },
+        { "prim": "box", "at": [0.602, 1.065, -0.06], "rot": [0, 18, 0], "size": [0.04, 1.394, 0.03], "color": "woodHi" },
+        { "prim": "box", "at": [0.781, 1.065, -0.06], "rot": [0, 18, 0], "size": [0.04, 1.394, 0.03], "color": "woodHi" },
+        { "prim": "box", "at": [0.602, 0.04, -0.08], "rot": [0, 18, 0], "size": [0.68, 0.08, 0.16], "color": "woodDark" }
+      ]
+    },
+    "kititem.garden-screen": {
+      "kind": "item",
+      "label": "Seaglass Garden Screen",
+      "value": 545,
+      "stack": 1,
+      "swatch": "#56948e",
+      "badge": "crate",
+      "furniture": "fixture.garden-screen",
+      "palette": {
+        "wrap": "#d9c7a4",
+        "wrapHi": "#eee1c7",
+        "strap": "#8a6242",
+        "mark": "#56948e"
+      }
+    }
+  }
+}

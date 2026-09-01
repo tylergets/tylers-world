@@ -1,0 +1,55 @@
+{
+  "format": "tw.kit",
+  "version": 1,
+  "meta": {
+    "id": "turnip.chest-of-drawers",
+    "name": "Beechbark Chest of Drawers"
+  },
+  "types": {
+    "fixture.chest-of-drawers": {
+      "kind": "object",
+      "label": "Beechbark Chest of Drawers",
+      "footprint": { "w": 2, "d": 1 },
+      "height": 1.17,
+      "squash": 0.34,
+      "palette": {
+        "wood": "#c08b55",
+        "woodHi": "#d8a870",
+        "woodDark": "#8a6242",
+        "metal": "#b08d3f"
+      },
+      "parts": [
+        { "prim": "box", "at": [0, 0.06, 0], "size": [1.561, 0.12, 0.679], "color": "woodDark" },
+        { "prim": "box", "at": [0, 0.601, 0], "size": [1.521, 0.962, 0.639], "color": "wood" },
+        { "prim": "box", "at": [0, 1.122, 0], "size": [1.571, 0.08, 0.689], "color": "woodHi" },
+        { "prim": "box", "at": [0, 0.273, 0.33], "size": [1.381, 0.185, 0.04], "color": "woodHi" },
+        { "prim": "cyl", "at": [-0.365, 0.273, 0.36], "rot": [0, 0, 90], "size": [0.024, 0.13, 0.024], "color": "metal" },
+        { "prim": "cyl", "at": [0.365, 0.273, 0.36], "rot": [0, 0, 90], "size": [0.024, 0.13, 0.024], "color": "metal" },
+        { "prim": "box", "at": [0, 0.498, 0.33], "size": [1.381, 0.185, 0.04], "color": "woodHi" },
+        { "prim": "cyl", "at": [-0.365, 0.498, 0.36], "rot": [0, 0, 90], "size": [0.024, 0.13, 0.024], "color": "metal" },
+        { "prim": "cyl", "at": [0.365, 0.498, 0.36], "rot": [0, 0, 90], "size": [0.024, 0.13, 0.024], "color": "metal" },
+        { "prim": "box", "at": [0, 0.723, 0.33], "size": [1.381, 0.185, 0.04], "color": "woodHi" },
+        { "prim": "cyl", "at": [-0.365, 0.723, 0.36], "rot": [0, 0, 90], "size": [0.024, 0.13, 0.024], "color": "metal" },
+        { "prim": "cyl", "at": [0.365, 0.723, 0.36], "rot": [0, 0, 90], "size": [0.024, 0.13, 0.024], "color": "metal" },
+        { "prim": "box", "at": [0, 0.949, 0.33], "size": [1.381, 0.185, 0.04], "color": "woodHi" },
+        { "prim": "cyl", "at": [-0.365, 0.949, 0.36], "rot": [0, 0, 90], "size": [0.024, 0.13, 0.024], "color": "metal" },
+        { "prim": "cyl", "at": [0.365, 0.949, 0.36], "rot": [0, 0, 90], "size": [0.024, 0.13, 0.024], "color": "metal" }
+      ]
+    },
+    "kititem.chest-of-drawers": {
+      "kind": "item",
+      "label": "Beechbark Chest of Drawers",
+      "value": 640,
+      "stack": 1,
+      "swatch": "#b57b3e",
+      "badge": "counter",
+      "furniture": "fixture.chest-of-drawers",
+      "palette": {
+        "wrap": "#d9c7a4",
+        "wrapHi": "#eee1c7",
+        "strap": "#8a6242",
+        "mark": "#b57b3e"
+      }
+    }
+  }
+}

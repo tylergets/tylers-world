@@ -1,0 +1,48 @@
+{
+  "format": "tw.kit",
+  "version": 1,
+  "meta": {
+    "id": "turnip.umbrella-stand",
+    "name": "Sootpine Umbrella Stand"
+  },
+  "types": {
+    "fixture.umbrella-stand": {
+      "kind": "object",
+      "label": "Sootpine Umbrella Stand",
+      "footprint": { "w": 1, "d": 1 },
+      "height": 1.07,
+      "squash": 0.34,
+      "palette": {
+        "wood": "#4a4640",
+        "woodHi": "#656057",
+        "woodDark": "#332f2b",
+        "cloth": "#6d7480",
+        "dark": "#221f1c",
+        "accent": "#d8763a"
+      },
+      "parts": [
+        { "prim": "cyl", "at": [0, 0.03, 0], "size": [0.24, 0.06, 0.24], "color": "dark" },
+        { "prim": "cyl", "at": [0, 0.328, 0], "size": [0.2, 0.655, 0.2], "color": "wood" },
+        { "prim": "cyl", "at": [0, 0.655, 0], "size": [0.22, 0.05, 0.22], "color": "woodHi" },
+        { "prim": "cyl", "at": [0.05, 0.616, 0.03], "rot": [7, 0, -9], "size": [0.03, 0.9, 0.03], "color": "cloth" },
+        { "prim": "cyl", "at": [-0.05, 0.59, -0.03], "rot": [-6, 0, 8], "size": [0.024, 0.84, 0.024], "color": "accent" },
+        { "prim": "blob", "at": [0.09, 0.93, 0.06], "size": [0.035, 0.035, 0.035], "color": "woodDark" }
+      ]
+    },
+    "kititem.umbrella-stand": {
+      "kind": "item",
+      "label": "Sootpine Umbrella Stand",
+      "value": 210,
+      "stack": 1,
+      "swatch": "#c07e4c",
+      "badge": "shelf",
+      "furniture": "fixture.umbrella-stand",
+      "palette": {
+        "wrap": "#d9c7a4",
+        "wrapHi": "#eee1c7",
+        "strap": "#8a6242",
+        "mark": "#c07e4c"
+      }
+    }
+  }
+}

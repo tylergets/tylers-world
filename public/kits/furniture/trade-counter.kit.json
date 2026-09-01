@@ -1,0 +1,49 @@
+{
+  "format": "tw.kit",
+  "version": 1,
+  "meta": {
+    "id": "turnip.trade-counter",
+    "name": "Fenrush Trade Counter"
+  },
+  "types": {
+    "fixture.trade-counter": {
+      "kind": "object",
+      "label": "Fenrush Trade Counter",
+      "footprint": { "w": 3, "d": 1 },
+      "height": 1.08,
+      "squash": 0.34,
+      "palette": {
+        "wood": "#d9bb7a",
+        "woodHi": "#ecd69c",
+        "woodDark": "#a8873f",
+        "dark": "#5c4a24"
+      },
+      "parts": [
+        { "prim": "box", "at": [0, 0.05, 0.02], "size": [2.734, 0.1, 0.58], "color": "dark" },
+        { "prim": "box", "at": [0, 0.515, 0], "size": [2.814, 0.93, 0.64], "color": "wood" },
+        { "prim": "box", "at": [0, 1.03, 0], "size": [2.974, 0.1, 0.78], "color": "woodHi" },
+        { "prim": "box", "at": [-1.045, 0.521, 0.33], "size": [0.453, 0.576, 0.03], "color": "woodDark" },
+        { "prim": "box", "at": [-0.523, 0.521, 0.33], "size": [0.453, 0.576, 0.03], "color": "woodDark" },
+        { "prim": "box", "at": [0, 0.521, 0.33], "size": [0.453, 0.576, 0.03], "color": "woodDark" },
+        { "prim": "box", "at": [0.523, 0.521, 0.33], "size": [0.453, 0.576, 0.03], "color": "woodDark" },
+        { "prim": "box", "at": [1.045, 0.521, 0.33], "size": [0.453, 0.576, 0.03], "color": "woodDark" },
+        { "prim": "box", "at": [0, 0.316, -0.102], "size": [2.514, 0.05, 0.256], "color": "woodHi" }
+      ]
+    },
+    "kititem.trade-counter": {
+      "kind": "item",
+      "label": "Fenrush Trade Counter",
+      "value": 775,
+      "stack": 1,
+      "swatch": "#c5a662",
+      "badge": "counter",
+      "furniture": "fixture.trade-counter",
+      "palette": {
+        "wrap": "#d9c7a4",
+        "wrapHi": "#eee1c7",
+        "strap": "#8a6242",
+        "mark": "#c5a662"
+      }
+    }
+  }
+}

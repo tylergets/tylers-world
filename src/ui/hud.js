@@ -65,11 +65,13 @@ const ROWS = [
   ['here', 'here'],
   ['zone', 'floor'],
   ['item', 'take'],
+  ['furniture', 'pack'],
   ['tool', 'use'],
   // A fixture's key text is written by its kit ("Make a wish"), so this label
   // is only what the row says before one is ever in front of you.
   ['fixture', 'use'],
   ['npc', 'talk'],
+  ['errand', 'errand'],
   ['portal', ''],
   // Whatever a fixture last said. Last in the column because it is the only row
   // here that is not a readout of the present -- it is a thing that happened.
@@ -645,6 +647,8 @@ export class Hud {
     const item = what?.kind === 'take' ? what.item : null;
     const npc = what?.kind === 'talk' ? what.npc : null;
     const fixture = what?.kind === 'use' ? what.fixture : null;
+    const furniture = what?.kind === 'pack' ? what.object : null;
+    this.#set('furniture', furniture ? objectType(furniture.type).label : null);
 
     // The key text comes from the kit file and the value is the thing itself,
     // so the row reads "Make a wish   Fountain". A fixture is the only prompt
@@ -669,9 +673,12 @@ export class Hud {
     // too -- an angry man has no stock as far as you are concerned.
     const friends = game.player.friends;
     const angry = npc && friends.hates(npc.id);
-    const mood = !npc ? '' : angry ? ' · angry' : friends.has(npc.id) ? ' · friend' : '';
-    this.#set('npc', npc ? `${npc.name}${mood}` : null,
-      npc?.shop && !angry ? 'trade' : 'talk');
+    const mood = !npc ? '' : angry ? ' · angry' : friends.tier(npc.id) !== 'stranger'
+      ? ` · ${friends.tier(npc.id)}` : '';
+    const activity = npc?.activity ? ` · ${npc.activity}` : '';
+    this.#set('npc', npc ? `${npc.name}${mood}${activity}` : null,
+      npc?.shop && !angry ? (npc.shopAvailable ? 'trade' : 'closed') : 'talk');
+    this.#set('errand', game.errands?.summary() ?? null);
     this.#toolRow(game);
   }
 

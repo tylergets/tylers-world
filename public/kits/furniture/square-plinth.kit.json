@@ -1,0 +1,44 @@
+{
+  "format": "tw.kit",
+  "version": 1,
+  "meta": {
+    "id": "turnip.square-plinth",
+    "name": "Sootpine Square Plinth"
+  },
+  "types": {
+    "fixture.square-plinth": {
+      "kind": "object",
+      "label": "Sootpine Square Plinth",
+      "footprint": { "w": 1, "d": 1 },
+      "height": 1.18,
+      "squash": 0.3,
+      "palette": {
+        "woodHi": "#656057",
+        "pale": "#dcd8cf",
+        "metal": "#9aa0a6"
+      },
+      "parts": [
+        { "prim": "box", "at": [0, 0.06, 0], "size": [0.6, 0.12, 0.6], "color": "metal" },
+        { "prim": "box", "at": [0, 0.15, 0], "size": [0.528, 0.08, 0.528], "color": "pale" },
+        { "prim": "box", "at": [0, 0.598, 0], "size": [0.432, 0.87, 0.432], "color": "pale" },
+        { "prim": "box", "at": [0, 1.088, 0], "size": [0.6, 0.09, 0.6], "color": "metal" },
+        { "prim": "box", "at": [0, 1.148, 0], "size": [0.504, 0.06, 0.504], "color": "woodHi" }
+      ]
+    },
+    "kititem.square-plinth": {
+      "kind": "item",
+      "label": "Sootpine Square Plinth",
+      "value": 385,
+      "stack": 1,
+      "swatch": "#d59569",
+      "badge": "crate",
+      "furniture": "fixture.square-plinth",
+      "palette": {
+        "wrap": "#d9c7a4",
+        "wrapHi": "#eee1c7",
+        "strap": "#8a6242",
+        "mark": "#d59569"
+      }
+    }
+  }
+}

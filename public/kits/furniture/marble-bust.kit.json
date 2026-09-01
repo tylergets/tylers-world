@@ -1,0 +1,46 @@
+{
+  "format": "tw.kit",
+  "version": 1,
+  "meta": {
+    "id": "turnip.marble-bust",
+    "name": "Turnipwood Marble Bust"
+  },
+  "types": {
+    "fixture.marble-bust": {
+      "kind": "object",
+      "label": "Turnipwood Marble Bust",
+      "footprint": { "w": 1, "d": 1 },
+      "height": 1.58,
+      "squash": 0.3,
+      "palette": {
+        "woodHi": "#f6eeda",
+        "pale": "#fbf7ee",
+        "metal": "#b9a98d"
+      },
+      "parts": [
+        { "prim": "box", "at": [0, 0.06, 0], "size": [0.6, 0.12, 0.6], "color": "metal" },
+        { "prim": "box", "at": [0, 0.15, 0], "size": [0.528, 0.08, 0.528], "color": "pale" },
+        { "prim": "box", "at": [0, 0.583, 0], "size": [0.432, 0.847, 0.432], "color": "pale" },
+        { "prim": "box", "at": [0, 1.059, 0], "size": [0.6, 0.09, 0.6], "color": "metal" },
+        { "prim": "cyl", "at": [0, 1.179, 0], "size": [0.144, 0.16, 0.144], "color": "pale" },
+        { "prim": "blob", "at": [0, 1.359, 0], "size": [0.12, 0.149, 0.12], "color": "pale" },
+        { "prim": "blob", "at": [0, 1.499, -0.038], "size": [0.101, 0.072, 0.082], "color": "woodHi" }
+      ]
+    },
+    "kititem.marble-bust": {
+      "kind": "item",
+      "label": "Turnipwood Marble Bust",
+      "value": 935,
+      "stack": 1,
+      "swatch": "#a790b2",
+      "badge": "crate",
+      "furniture": "fixture.marble-bust",
+      "palette": {
+        "wrap": "#d9c7a4",
+        "wrapHi": "#eee1c7",
+        "strap": "#8a6242",
+        "mark": "#a790b2"
+      }
+    }
+  }
+}

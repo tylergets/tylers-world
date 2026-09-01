@@ -1,0 +1,44 @@
+{
+  "format": "tw.kit",
+  "version": 1,
+  "meta": {
+    "id": "turnip.tea-table",
+    "name": "Rosewick Tea Table"
+  },
+  "types": {
+    "fixture.tea-table": {
+      "kind": "object",
+      "label": "Rosewick Tea Table",
+      "footprint": { "w": 2, "d": 2 },
+      "height": 0.76,
+      "squash": 0.34,
+      "palette": {
+        "wood": "#8f4a3c",
+        "woodHi": "#ab6150",
+        "woodDark": "#653228"
+      },
+      "parts": [
+        { "prim": "cyl", "at": [0, 0.05, 0], "size": [0.358, 0.1, 0.358], "color": "woodDark" },
+        { "prim": "taper", "at": [0, 0.334, 0], "size": [0.13, 0.542, 0.13], "color": "wood" },
+        { "prim": "cyl", "at": [0, 0.592, 0], "size": [0.2, 0.06, 0.2], "color": "woodHi" },
+        { "prim": "cyl", "at": [0, 0.692, 0], "size": [0.597, 0.1, 0.618], "color": "wood" },
+        { "prim": "cyl", "at": [0, 0.747, 0], "size": [0.547, 0.02, 0.568], "color": "woodHi" }
+      ]
+    },
+    "kititem.tea-table": {
+      "kind": "item",
+      "label": "Rosewick Tea Table",
+      "value": 435,
+      "stack": 1,
+      "swatch": "#c2714f",
+      "badge": "table",
+      "furniture": "fixture.tea-table",
+      "palette": {
+        "wrap": "#d9c7a4",
+        "wrapHi": "#eee1c7",
+        "strap": "#8a6242",
+        "mark": "#c2714f"
+      }
+    }
+  }
+}

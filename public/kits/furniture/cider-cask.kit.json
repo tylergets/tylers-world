@@ -1,0 +1,48 @@
+{
+  "format": "tw.kit",
+  "version": 1,
+  "meta": {
+    "id": "turnip.cider-cask",
+    "name": "Coppervale Cider Cask"
+  },
+  "types": {
+    "fixture.cider-cask": {
+      "kind": "object",
+      "label": "Coppervale Cider Cask",
+      "footprint": { "w": 1, "d": 1 },
+      "height": 0.85,
+      "squash": 0.34,
+      "palette": {
+        "wood": "#a9763f",
+        "woodHi": "#c6924f",
+        "metal": "#b5713c"
+      },
+      "parts": [
+        { "prim": "taper", "at": [0, 0.201, 0], "rot": [180, 0, 0], "size": [0.352, 0.401, 0.352], "color": "wood" },
+        { "prim": "taper", "at": [0, 0.602, 0], "size": [0.352, 0.401, 0.352], "color": "wood" },
+        { "prim": "cyl", "at": [0, 0.1, 0], "size": [0.319, 0.045, 0.319], "color": "metal" },
+        { "prim": "cyl", "at": [0, 0.301, 0], "size": [0.345, 0.045, 0.345], "color": "metal" },
+        { "prim": "cyl", "at": [0, 0.501, 0], "size": [0.345, 0.045, 0.345], "color": "metal" },
+        { "prim": "cyl", "at": [0, 0.702, 0], "size": [0.319, 0.045, 0.319], "color": "metal" },
+        { "prim": "cyl", "at": [0, 0.822, 0], "size": [0.288, 0.05, 0.288], "color": "woodHi" },
+        { "prim": "cyl", "at": [0, 0.257, 0.316], "rot": [90, 0, 0], "size": [0.025, 0.14, 0.025], "color": "metal" },
+        { "prim": "box", "at": [0, 0.209, 0.345], "size": [0.05, 0.08, 0.05], "color": "metal" }
+      ]
+    },
+    "kititem.cider-cask": {
+      "kind": "item",
+      "label": "Coppervale Cider Cask",
+      "value": 285,
+      "stack": 1,
+      "swatch": "#b96a37",
+      "badge": "crate",
+      "furniture": "fixture.cider-cask",
+      "palette": {
+        "wrap": "#d9c7a4",
+        "wrapHi": "#eee1c7",
+        "strap": "#8a6242",
+        "mark": "#b96a37"
+      }
+    }
+  }
+}

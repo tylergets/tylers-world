@@ -1,0 +1,47 @@
+{
+  "format": "tw.kit",
+  "version": 1,
+  "meta": {
+    "id": "turnip.fire-irons",
+    "name": "Inkthorn Fire Irons"
+  },
+  "types": {
+    "fixture.fire-irons": {
+      "kind": "object",
+      "label": "Inkthorn Fire Irons",
+      "footprint": { "w": 1, "d": 1 },
+      "height": 0.95,
+      "squash": 0.34,
+      "palette": {
+        "dark": "#171210",
+        "metal": "#c8a24a"
+      },
+      "parts": [
+        { "prim": "cyl", "at": [0, 0.03, 0], "size": [0.19, 0.06, 0.19], "color": "metal" },
+        { "prim": "cyl", "at": [0, 0.426, 0], "size": [0.024, 0.852, 0.024], "color": "metal" },
+        { "prim": "blob", "at": [0, 0.892, 0], "size": [0.05, 0.05, 0.05], "color": "metal" },
+        { "prim": "cyl", "at": [0.12, 0.392, 0], "rot": [0, 0, -4], "size": [0.014, 0.733, 0.014], "color": "dark" },
+        { "prim": "box", "at": [0.13, 0.05, 0], "size": [0.05, 0.06, 0.1], "color": "dark" },
+        { "prim": "cyl", "at": [-0.06, 0.392, 0.104], "rot": [3.464, 0, 2], "size": [0.014, 0.733, 0.014], "color": "dark" },
+        { "prim": "box", "at": [-0.065, 0.05, 0.113], "rot": [0, -120, 0], "size": [0.05, 0.06, 0.1], "color": "dark" },
+        { "prim": "cyl", "at": [-0.06, 0.392, -0.104], "rot": [-3.464, 0, 2], "size": [0.014, 0.733, 0.014], "color": "dark" },
+        { "prim": "box", "at": [-0.065, 0.05, -0.113], "rot": [0, -240, 0], "size": [0.05, 0.06, 0.1], "color": "dark" }
+      ]
+    },
+    "kititem.fire-irons": {
+      "kind": "item",
+      "label": "Inkthorn Fire Irons",
+      "value": 390,
+      "stack": 1,
+      "swatch": "#b79b47",
+      "badge": "crate",
+      "furniture": "fixture.fire-irons",
+      "palette": {
+        "wrap": "#d9c7a4",
+        "wrapHi": "#eee1c7",
+        "strap": "#8a6242",
+        "mark": "#b79b47"
+      }
+    }
+  }
+}

@@ -1,0 +1,56 @@
+{
+  "format": "tw.kit",
+  "version": 1,
+  "meta": {
+    "id": "turnip.tea-trolley",
+    "name": "Hollowmilk Tea Trolley"
+  },
+  "types": {
+    "fixture.tea-trolley": {
+      "kind": "object",
+      "label": "Hollowmilk Tea Trolley",
+      "footprint": { "w": 1, "d": 1 },
+      "height": 1.2,
+      "squash": 0.34,
+      "palette": {
+        "wood": "#f2ece0",
+        "woodHi": "#fdfaf2",
+        "pale": "#ffffff",
+        "dark": "#7e7768",
+        "metal": "#b6bcc1",
+        "accent": "#4f79b0"
+      },
+      "parts": [
+        { "prim": "cyl", "at": [-0.292, 0.433, -0.221], "size": [0.024, 0.765, 0.024], "color": "metal" },
+        { "prim": "cyl", "at": [0.292, 0.433, -0.221], "size": [0.024, 0.765, 0.024], "color": "metal" },
+        { "prim": "cyl", "at": [-0.292, 0.433, 0.221], "size": [0.024, 0.765, 0.024], "color": "metal" },
+        { "prim": "cyl", "at": [0.292, 0.433, 0.221], "size": [0.024, 0.765, 0.024], "color": "metal" },
+        { "prim": "box", "at": [0, 0.2, 0], "size": [0.664, 0.05, 0.522], "color": "wood" },
+        { "prim": "box", "at": [0, 0.825, 0], "size": [0.664, 0.05, 0.522], "color": "woodHi" },
+        { "prim": "cyl", "at": [-0.292, 0.06, -0.221], "rot": [0, 0, 90], "size": [0.06, 0.035, 0.06], "color": "dark" },
+        { "prim": "cyl", "at": [0.292, 0.06, -0.221], "rot": [0, 0, 90], "size": [0.06, 0.035, 0.06], "color": "dark" },
+        { "prim": "cyl", "at": [-0.292, 0.06, 0.221], "rot": [0, 0, 90], "size": [0.06, 0.035, 0.06], "color": "dark" },
+        { "prim": "cyl", "at": [0.292, 0.06, 0.221], "rot": [0, 0, 90], "size": [0.06, 0.035, 0.06], "color": "dark" },
+        { "prim": "cyl", "at": [0, 0.925, -0.221], "rot": [0, 0, 90], "size": [0.02, 0.531, 0.02], "color": "metal" },
+        { "prim": "blob", "at": [-0.14, 0.885, -0.04], "size": [0.09, 0.07, 0.09], "color": "pale" },
+        { "prim": "cyl", "at": [0.12, 0.855, 0.02], "size": [0.07, 0.05, 0.07], "color": "pale" },
+        { "prim": "cyl", "at": [0.12, 0.905, 0.02], "size": [0.09, 0.02, 0.09], "color": "accent" }
+      ]
+    },
+    "kititem.tea-trolley": {
+      "kind": "item",
+      "label": "Hollowmilk Tea Trolley",
+      "value": 505,
+      "stack": 1,
+      "swatch": "#6781a3",
+      "badge": "shelf",
+      "furniture": "fixture.tea-trolley",
+      "palette": {
+        "wrap": "#d9c7a4",
+        "wrapHi": "#eee1c7",
+        "strap": "#8a6242",
+        "mark": "#6781a3"
+      }
+    }
+  }
+}

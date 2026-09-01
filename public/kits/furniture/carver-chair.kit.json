@@ -1,0 +1,54 @@
+{
+  "format": "tw.kit",
+  "version": 1,
+  "meta": {
+    "id": "turnip.carver-chair",
+    "name": "Inkthorn Carver Chair"
+  },
+  "types": {
+    "fixture.carver-chair": {
+      "kind": "object",
+      "label": "Inkthorn Carver Chair",
+      "footprint": { "w": 1, "d": 1 },
+      "height": 1.16,
+      "squash": 0.34,
+      "palette": {
+        "wood": "#3a2f2a",
+        "woodHi": "#54443c",
+        "woodDark": "#241d1a"
+      },
+      "parts": [
+        { "prim": "box", "at": [-0.275, 0.215, -0.221], "size": [0.075, 0.43, 0.075], "color": "woodDark" },
+        { "prim": "box", "at": [0.275, 0.215, -0.221], "size": [0.075, 0.43, 0.075], "color": "woodDark" },
+        { "prim": "box", "at": [-0.275, 0.215, 0.221], "size": [0.075, 0.43, 0.075], "color": "woodDark" },
+        { "prim": "box", "at": [0.275, 0.215, 0.221], "size": [0.075, 0.43, 0.075], "color": "woodDark" },
+        { "prim": "box", "at": [0, 0.129, -0.221], "size": [0.53, 0.04, 0.04], "color": "woodDark" },
+        { "prim": "box", "at": [0, 0.129, 0.221], "size": [0.53, 0.04, 0.04], "color": "woodDark" },
+        { "prim": "box", "at": [0, 0.475, 0], "size": [0.69, 0.09, 0.581], "color": "wood" },
+        { "prim": "cyl", "at": [-0.275, 0.814, -0.221], "size": [0.03, 0.586, 0.03], "color": "woodDark" },
+        { "prim": "cyl", "at": [0.275, 0.814, -0.221], "size": [0.03, 0.586, 0.03], "color": "woodDark" },
+        { "prim": "box", "at": [0, 1.107, -0.221], "size": [0.69, 0.1, 0.06], "color": "woodHi" },
+        { "prim": "box", "at": [0, 0.814, -0.221], "size": [0.57, 0.586, 0.04], "color": "wood" },
+        { "prim": "box", "at": [-0.325, 0.68, -0.03], "size": [0.07, 0.055, 0.461], "color": "woodHi" },
+        { "prim": "cyl", "at": [-0.325, 0.57, 0.171], "size": [0.023, 0.22, 0.023], "color": "woodDark" },
+        { "prim": "box", "at": [0.325, 0.68, -0.03], "size": [0.07, 0.055, 0.461], "color": "woodHi" },
+        { "prim": "cyl", "at": [0.325, 0.57, 0.171], "size": [0.023, 0.22, 0.023], "color": "woodDark" }
+      ]
+    },
+    "kititem.carver-chair": {
+      "kind": "item",
+      "label": "Inkthorn Carver Chair",
+      "value": 475,
+      "stack": 1,
+      "swatch": "#c69334",
+      "badge": "chair",
+      "furniture": "fixture.carver-chair",
+      "palette": {
+        "wrap": "#d9c7a4",
+        "wrapHi": "#eee1c7",
+        "strap": "#8a6242",
+        "mark": "#c69334"
+      }
+    }
+  }
+}

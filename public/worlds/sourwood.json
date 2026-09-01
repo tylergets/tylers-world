@@ -279,7 +279,7 @@
   },
   "objects": [
     {"id":"gate.mouth","type":"building.gate","tile":[22,72],"props":{"label":"Sourwood Holler"}},
-    {"id":"home.holler","type":"building.home","tile":[13,36],"props":{"label":"The Old Place","interior":"worlds/interiors/home-holler.json"}},
+    {"id":"home.holler","type":"building.home","tile":[13,36],"props":{"label":"The Old Place","interior":"worlds/interiors/home-holler.json","playerHome":true}},
     {"id":"store.branch","type":"building.store","tile":[25,60],"props":{"label":"Branch Store","interior":"worlds/interiors/store-branch.json"}},
     {"id":"store.furniture","type":"building.furniture","tile":[26,66],"props":{"label":"Turnip & Timber","interior":"worlds/interiors/store-furniture.json"}},
     {"id":"boulder.0","type":"rock.large","tile":[25,47],"rotation":270},
@@ -575,7 +575,133 @@
     {"id":"duck.1","type":"duck","tile":[19,52]}
   ],
   "npcs": [
-
+    {
+      "id": "folk.eldra",
+      "type": "folk.villager",
+      "tile": [
+        15,
+        39
+      ],
+      "facing": "north",
+      "props": {
+        "name": "Eldra",
+        "title": "Holler Carpenter",
+        "voice": {
+          "pitch": 0.82,
+          "rate": 19,
+          "timbre": "sawtooth"
+        }
+      },
+      "dialog": {
+        "start": "hello",
+        "nodes": {
+          "hello": {
+            "text": "Eldra. Old holler timber talks before it breaks. Yours says the stone is deep and the house can climb without spreading into the creek.",
+            "then": "menu"
+          },
+          "menu": {
+            "text": "The footprint stays exactly where it is. We build upward, and every new floor is yours to use.",
+            "choices": [
+              {
+                "text": "Add a second story — 1800 coin.",
+                "when": {
+                  "houseStories": 1,
+                  "coins": 1800
+                },
+                "do": [
+                  {
+                    "coins": -1800
+                  },
+                  {
+                    "houseStories": 2
+                  }
+                ],
+                "to": "second"
+              },
+              {
+                "text": "I need 1800 coin for the second story.",
+                "when": {
+                  "all": [
+                    {
+                      "houseStories": 1
+                    },
+                    {
+                      "not": {
+                        "coins": 1800
+                      }
+                    }
+                  ]
+                },
+                "to": "short"
+              },
+              {
+                "text": "Add a third story — 3600 coin.",
+                "when": {
+                  "houseStories": 2,
+                  "coins": 3600
+                },
+                "do": [
+                  {
+                    "coins": -3600
+                  },
+                  {
+                    "houseStories": 3
+                  }
+                ],
+                "to": "third"
+              },
+              {
+                "text": "I need 3600 coin for the third story.",
+                "when": {
+                  "all": [
+                    {
+                      "houseStories": 2
+                    },
+                    {
+                      "not": {
+                        "coins": 3600
+                      }
+                    }
+                  ]
+                },
+                "to": "short"
+              },
+              {
+                "text": "Is the house finished?",
+                "when": {
+                  "houseStories": 3
+                },
+                "to": "complete"
+              },
+              {
+                "text": "Not today.",
+                "to": "endline"
+              }
+            ]
+          },
+          "second": {
+            "text": "Two stories, sound and square. The new stair is ready inside.",
+            "then": "end"
+          },
+          "third": {
+            "text": "Three stories. Roof raised, chimney drawn, top floor ready. That house is complete.",
+            "then": "end"
+          },
+          "complete": {
+            "text": "Complete at three stories. Any higher and it stops being a house and starts arguing with the weather.",
+            "then": "end"
+          },
+          "short": {
+            "text": "Keep the plan. Come back when the purse is ready; the ground will not move.",
+            "then": "end"
+          },
+          "endline": {
+            "text": "No harm done. A measured house waits better than people do.",
+            "then": "end"
+          }
+        }
+      }
+    }
   ],
   "items": [
     {"id":"stick.0","type":"item.stick","tile":[36,35]},

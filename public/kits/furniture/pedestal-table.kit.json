@@ -1,0 +1,46 @@
+{
+  "format": "tw.kit",
+  "version": 1,
+  "meta": {
+    "id": "turnip.pedestal-table",
+    "name": "Turnipwood Pedestal Table"
+  },
+  "types": {
+    "fixture.pedestal-table": {
+      "kind": "object",
+      "label": "Turnipwood Pedestal Table",
+      "footprint": { "w": 2, "d": 2 },
+      "height": 0.83,
+      "squash": 0.34,
+      "palette": {
+        "wood": "#e8dcc4",
+        "woodHi": "#f6eeda",
+        "woodDark": "#c3b394",
+        "accent": "#8e6fb0"
+      },
+      "parts": [
+        { "prim": "cyl", "at": [0, 0.05, 0], "size": [0.481, 0.1, 0.481], "color": "woodDark" },
+        { "prim": "taper", "at": [0, 0.361, 0], "size": [0.13, 0.593, 0.13], "color": "wood" },
+        { "prim": "cyl", "at": [0, 0.643, 0], "size": [0.2, 0.06, 0.2], "color": "woodHi" },
+        { "prim": "cyl", "at": [0, 0.743, 0], "size": [0.801, 0.1, 0.832], "color": "wood" },
+        { "prim": "cyl", "at": [0, 0.798, 0], "size": [0.751, 0.02, 0.782], "color": "woodHi" },
+        { "prim": "cyl", "at": [0, 0.818, 0], "size": [0.353, 0.02, 0.353], "color": "accent" }
+      ]
+    },
+    "kititem.pedestal-table": {
+      "kind": "item",
+      "label": "Turnipwood Pedestal Table",
+      "value": 760,
+      "stack": 1,
+      "swatch": "#a17a8d",
+      "badge": "table",
+      "furniture": "fixture.pedestal-table",
+      "palette": {
+        "wrap": "#d9c7a4",
+        "wrapHi": "#eee1c7",
+        "strap": "#8a6242",
+        "mark": "#a17a8d"
+      }
+    }
+  }
+}

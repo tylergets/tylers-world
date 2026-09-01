@@ -1,0 +1,51 @@
+{
+  "format": "tw.kit",
+  "version": 1,
+  "meta": {
+    "id": "turnip.hall-runner",
+    "name": "Coppervale Hall Runner"
+  },
+  "types": {
+    "fixture.hall-runner": {
+      "kind": "object",
+      "label": "Coppervale Hall Runner",
+      "footprint": { "w": 1, "d": 3 },
+      "height": 0.2,
+      "squash": 0.9,
+      "palette": {
+        "cloth": "#6f6350",
+        "clothHi": "#8d8067",
+        "accent": "#c96a35"
+      },
+      "parts": [
+        { "prim": "box", "at": [0, 0.02, 0], "size": [0.941, 0.04, 2.654], "color": "cloth" },
+        { "prim": "box", "at": [0, 0.045, 0], "size": [0.781, 0.016, 2.494], "color": "clothHi" },
+        { "prim": "box", "at": [-0.339, 0.054, 0], "size": [0.028, 0.014, 2.414], "color": "accent" },
+        { "prim": "box", "at": [0, 0.054, -0.956], "size": [0.701, 0.014, 0.08], "color": "accent" },
+        { "prim": "box", "at": [-0.169, 0.054, 0], "size": [0.028, 0.014, 2.414], "color": "accent" },
+        { "prim": "box", "at": [0, 0.054, -0.478], "size": [0.701, 0.014, 0.08], "color": "accent" },
+        { "prim": "box", "at": [0, 0.054, 0], "size": [0.028, 0.014, 2.414], "color": "accent" },
+        { "prim": "box", "at": [0, 0.054, 0], "size": [0.701, 0.014, 0.08], "color": "accent" },
+        { "prim": "box", "at": [0.169, 0.054, 0], "size": [0.028, 0.014, 2.414], "color": "accent" },
+        { "prim": "box", "at": [0, 0.054, 0.478], "size": [0.701, 0.014, 0.08], "color": "accent" },
+        { "prim": "box", "at": [0.339, 0.054, 0], "size": [0.028, 0.014, 2.414], "color": "accent" },
+        { "prim": "box", "at": [0, 0.054, 0.956], "size": [0.701, 0.014, 0.08], "color": "accent" }
+      ]
+    },
+    "kititem.hall-runner": {
+      "kind": "item",
+      "label": "Coppervale Hall Runner",
+      "value": 320,
+      "stack": 1,
+      "swatch": "#c1623f",
+      "badge": "crate",
+      "furniture": "fixture.hall-runner",
+      "palette": {
+        "wrap": "#d9c7a4",
+        "wrapHi": "#eee1c7",
+        "strap": "#8a6242",
+        "mark": "#c1623f"
+      }
+    }
+  }
+}

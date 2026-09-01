@@ -1,0 +1,51 @@
+{
+  "format": "tw.kit",
+  "version": 1,
+  "meta": {
+    "id": "turnip.marble-washstand",
+    "name": "Seaglass Marble Washstand"
+  },
+  "types": {
+    "fixture.marble-washstand": {
+      "kind": "object",
+      "label": "Seaglass Marble Washstand",
+      "footprint": { "w": 1, "d": 1 },
+      "height": 1.3,
+      "squash": 0.34,
+      "palette": {
+        "wood": "#a6a89c",
+        "woodHi": "#c2c4b8",
+        "woodDark": "#7b7d73",
+        "pale": "#eef2ee",
+        "metal": "#8f969c",
+        "glass": "#bfe0ea"
+      },
+      "parts": [
+        { "prim": "box", "at": [0, 0.393, 0], "size": [0.743, 0.785, 0.478], "color": "wood" },
+        { "prim": "box", "at": [0, 0.05, 0], "size": [0.773, 0.1, 0.508], "color": "woodDark" },
+        { "prim": "box", "at": [0, 0.835, 0], "size": [0.813, 0.08, 0.538], "color": "pale" },
+        { "prim": "cyl", "at": [0, 0.915, 0.02], "size": [0.223, 0.11, 0.223], "color": "pale" },
+        { "prim": "cyl", "at": [0, 0.955, 0.02], "size": [0.178, 0.04, 0.178], "color": "glass", "anim": { "bob": { "amp": 0.008, "rate": 0.5 } } },
+        { "prim": "box", "at": [0, 1.085, -0.209], "size": [0.803, 0.42, 0.05], "color": "woodHi" },
+        { "prim": "cyl", "at": [0, 1.025, -0.139], "size": [0.02, 0.16, 0.02], "color": "metal" },
+        { "prim": "box", "at": [0, 0.361, 0.249], "size": [0.603, 0.471, 0.04], "color": "woodHi" },
+        { "prim": "cyl", "at": [0, 0.361, 0.279], "rot": [90, 0, 0], "size": [0.03, 0.05, 0.03], "color": "metal" }
+      ]
+    },
+    "kititem.marble-washstand": {
+      "kind": "item",
+      "label": "Seaglass Marble Washstand",
+      "value": 670,
+      "stack": 1,
+      "swatch": "#579dae",
+      "badge": "stove",
+      "furniture": "fixture.marble-washstand",
+      "palette": {
+        "wrap": "#d9c7a4",
+        "wrapHi": "#eee1c7",
+        "strap": "#8a6242",
+        "mark": "#579dae"
+      }
+    }
+  }
+}

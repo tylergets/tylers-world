@@ -1,0 +1,43 @@
+{
+  "format": "tw.kit",
+  "version": 1,
+  "meta": {
+    "id": "turnip.salt-tub",
+    "name": "Fenrush Salt Tub"
+  },
+  "types": {
+    "fixture.salt-tub": {
+      "kind": "object",
+      "label": "Fenrush Salt Tub",
+      "footprint": { "w": 1, "d": 1 },
+      "height": 0.52,
+      "squash": 0.34,
+      "palette": {
+        "wood": "#d9bb7a",
+        "woodHi": "#ecd69c",
+        "metal": "#9d9384"
+      },
+      "parts": [
+        { "prim": "cyl", "at": [0, 0.237, 0], "size": [0.256, 0.474, 0.256], "color": "wood" },
+        { "prim": "cyl", "at": [0, 0.118, 0], "size": [0.267, 0.045, 0.267], "color": "metal" },
+        { "prim": "cyl", "at": [0, 0.355, 0], "size": [0.267, 0.045, 0.267], "color": "metal" },
+        { "prim": "cyl", "at": [0, 0.494, 0], "size": [0.251, 0.05, 0.251], "color": "woodHi" }
+      ]
+    },
+    "kititem.salt-tub": {
+      "kind": "item",
+      "label": "Fenrush Salt Tub",
+      "value": 115,
+      "stack": 1,
+      "swatch": "#af833a",
+      "badge": "crate",
+      "furniture": "fixture.salt-tub",
+      "palette": {
+        "wrap": "#d9c7a4",
+        "wrapHi": "#eee1c7",
+        "strap": "#8a6242",
+        "mark": "#af833a"
+      }
+    }
+  }
+}

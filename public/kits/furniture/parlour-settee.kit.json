@@ -1,0 +1,53 @@
+{
+  "format": "tw.kit",
+  "version": 1,
+  "meta": {
+    "id": "turnip.parlour-settee",
+    "name": "Hollowmilk Parlour Settee"
+  },
+  "types": {
+    "fixture.parlour-settee": {
+      "kind": "object",
+      "label": "Hollowmilk Parlour Settee",
+      "footprint": { "w": 3, "d": 1 },
+      "height": 0.98,
+      "squash": 0.34,
+      "palette": {
+        "woodHi": "#fdfaf2",
+        "woodDark": "#cfc7b6",
+        "cloth": "#5878ab",
+        "clothHi": "#7d9bc9"
+      },
+      "parts": [
+        { "prim": "box", "at": [-0.835, 0.06, -0.237], "size": [0.1, 0.12, 0.1], "color": "woodDark" },
+        { "prim": "box", "at": [0.835, 0.06, -0.237], "size": [0.1, 0.12, 0.1], "color": "woodDark" },
+        { "prim": "box", "at": [-0.835, 0.06, 0.237], "size": [0.1, 0.12, 0.1], "color": "woodDark" },
+        { "prim": "box", "at": [0.835, 0.06, 0.237], "size": [0.1, 0.12, 0.1], "color": "woodDark" },
+        { "prim": "box", "at": [0, 0.26, 0.02], "size": [1.85, 0.28, 0.694], "color": "cloth" },
+        { "prim": "box", "at": [-0.402, 0.48, 0.03], "size": [0.755, 0.16, 0.514], "color": "cloth" },
+        { "prim": "box", "at": [0.402, 0.48, 0.03], "size": [0.755, 0.16, 0.514], "color": "clothHi" },
+        { "prim": "box", "at": [0, 0.632, -0.257], "size": [1.89, 0.62, 0.2], "color": "cloth" },
+        { "prim": "box", "at": [0, 0.93, -0.257], "size": [1.89, 0.08, 0.24], "color": "woodHi" },
+        { "prim": "box", "at": [-0.895, 0.6, 0.02], "size": [0.07, 0.06, 0.654], "color": "woodHi" },
+        { "prim": "cyl", "at": [-0.895, 0.42, 0.257], "size": [0.026, 0.36, 0.026], "color": "woodDark" },
+        { "prim": "box", "at": [0.895, 0.6, 0.02], "size": [0.07, 0.06, 0.654], "color": "woodHi" },
+        { "prim": "cyl", "at": [0.895, 0.42, 0.257], "size": [0.026, 0.36, 0.026], "color": "woodDark" }
+      ]
+    },
+    "kititem.parlour-settee": {
+      "kind": "item",
+      "label": "Hollowmilk Parlour Settee",
+      "value": 840,
+      "stack": 1,
+      "swatch": "#6f6e9b",
+      "badge": "chair",
+      "furniture": "fixture.parlour-settee",
+      "palette": {
+        "wrap": "#d9c7a4",
+        "wrapHi": "#eee1c7",
+        "strap": "#8a6242",
+        "mark": "#6f6e9b"
+      }
+    }
+  }
+}

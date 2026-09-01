@@ -233,6 +233,7 @@
         "title": "The Wether"
       },
       "shop": {
+        "hours": {"open": 8, "close": 19},
         "name": "Wool & Provisions",
         "markup": 1.35,
         "buyRate": 0.62,

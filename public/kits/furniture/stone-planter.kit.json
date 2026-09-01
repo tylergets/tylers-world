@@ -1,0 +1,49 @@
+{
+  "format": "tw.kit",
+  "version": 1,
+  "meta": {
+    "id": "turnip.stone-planter",
+    "name": "Hollowmilk Stone Planter"
+  },
+  "types": {
+    "fixture.stone-planter": {
+      "kind": "object",
+      "label": "Hollowmilk Stone Planter",
+      "footprint": { "w": 1, "d": 1 },
+      "height": 0.87,
+      "squash": 0.34,
+      "palette": {
+        "pale": "#ffffff",
+        "dark": "#7e7768",
+        "metal": "#b6bcc1",
+        "accent": "#4f79b0",
+        "leaf": "#6aa85c"
+      },
+      "parts": [
+        { "prim": "taper", "at": [0, 0.211, 0], "size": [0.312, 0.421, 0.312], "color": "metal" },
+        { "prim": "cyl", "at": [0, 0.421, 0], "size": [0.332, 0.05, 0.332], "color": "pale" },
+        { "prim": "cyl", "at": [0, 0.441, 0], "size": [0.269, 0.04, 0.269], "color": "dark" },
+        { "prim": "blob", "at": [0.12, 0.581, 0], "size": [0.16, 0.128, 0.16], "color": "accent", "anim": { "pulse": { "amp": 0.1, "rate": 0.35, "phase": 0 } } },
+        { "prim": "blob", "at": [0.037, 0.661, 0.114], "size": [0.16, 0.128, 0.16], "color": "leaf", "anim": { "pulse": { "amp": 0.1, "rate": 0.41, "phase": 0.2 } } },
+        { "prim": "blob", "at": [-0.097, 0.741, 0.071], "size": [0.16, 0.128, 0.16], "color": "accent", "anim": { "pulse": { "amp": 0.1, "rate": 0.47, "phase": 0.4 } } },
+        { "prim": "blob", "at": [-0.097, 0.581, -0.071], "size": [0.16, 0.128, 0.16], "color": "leaf", "anim": { "pulse": { "amp": 0.1, "rate": 0.35, "phase": 0.6000000000000001 } } },
+        { "prim": "blob", "at": [0.037, 0.661, -0.114], "size": [0.16, 0.128, 0.16], "color": "accent", "anim": { "pulse": { "amp": 0.1, "rate": 0.41, "phase": 0.8 } } }
+      ]
+    },
+    "kititem.stone-planter": {
+      "kind": "item",
+      "label": "Hollowmilk Stone Planter",
+      "value": 310,
+      "stack": 1,
+      "swatch": "#57918b",
+      "badge": "plant",
+      "furniture": "fixture.stone-planter",
+      "palette": {
+        "wrap": "#d9c7a4",
+        "wrapHi": "#eee1c7",
+        "strap": "#8a6242",
+        "mark": "#57918b"
+      }
+    }
+  }
+}

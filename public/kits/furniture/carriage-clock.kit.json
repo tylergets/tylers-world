@@ -1,0 +1,47 @@
+{
+  "format": "tw.kit",
+  "version": 1,
+  "meta": {
+    "id": "turnip.carriage-clock",
+    "name": "Meadowash Carriage Clock"
+  },
+  "types": {
+    "fixture.carriage-clock": {
+      "kind": "object",
+      "label": "Meadowash Carriage Clock",
+      "footprint": { "w": 1, "d": 1 },
+      "height": 0.45,
+      "squash": 0.3,
+      "palette": {
+        "wood": "#d6cdb6",
+        "woodHi": "#e9e2ce",
+        "woodDark": "#a89d84",
+        "pale": "#f4f1e6",
+        "dark": "#5f6350"
+      },
+      "parts": [
+        { "prim": "box", "at": [0, 0.06, 0], "size": [0.5, 0.12, 0.3], "color": "woodDark" },
+        { "prim": "box", "at": [0, 0.223, 0], "size": [0.42, 0.321, 0.24], "color": "wood" },
+        { "prim": "cyl", "at": [0, 0.25, 0.13], "rot": [90, 0, 0], "size": [0.15, 0.02, 0.15], "color": "pale" },
+        { "prim": "box", "at": [0, 0.277, 0.15], "size": [0.02, 0.1, 0.012], "color": "dark" },
+        { "prim": "box", "at": [0.05, 0.25, 0.15], "size": [0.09, 0.02, 0.012], "color": "dark" },
+        { "prim": "box", "at": [0, 0.42, 0], "size": [0.46, 0.06, 0.28], "color": "woodHi" }
+      ]
+    },
+    "kititem.carriage-clock": {
+      "kind": "item",
+      "label": "Meadowash Carriage Clock",
+      "value": 315,
+      "stack": 1,
+      "swatch": "#889650",
+      "badge": "crate",
+      "furniture": "fixture.carriage-clock",
+      "palette": {
+        "wrap": "#d9c7a4",
+        "wrapHi": "#eee1c7",
+        "strap": "#8a6242",
+        "mark": "#889650"
+      }
+    }
+  }
+}

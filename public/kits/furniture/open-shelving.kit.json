@@ -1,0 +1,47 @@
+{
+  "format": "tw.kit",
+  "version": 1,
+  "meta": {
+    "id": "turnip.open-shelving",
+    "name": "Sootpine Open Shelving"
+  },
+  "types": {
+    "fixture.open-shelving": {
+      "kind": "object",
+      "label": "Sootpine Open Shelving",
+      "footprint": { "w": 2, "d": 1 },
+      "height": 2.03,
+      "squash": 0.34,
+      "palette": {
+        "wood": "#4a4640",
+        "woodHi": "#656057"
+      },
+      "parts": [
+        { "prim": "cyl", "at": [-0.86, 0.97, -0.156], "size": [0.035, 1.94, 0.035], "color": "wood" },
+        { "prim": "cyl", "at": [-0.86, 0.97, 0.156], "size": [0.035, 1.94, 0.035], "color": "wood" },
+        { "prim": "cyl", "at": [0.86, 0.97, -0.156], "size": [0.035, 1.94, 0.035], "color": "wood" },
+        { "prim": "cyl", "at": [0.86, 0.97, 0.156], "size": [0.035, 1.94, 0.035], "color": "wood" },
+        { "prim": "box", "at": [0, 0.1, 0], "size": [1.68, 0.055, 0.382], "color": "wood" },
+        { "prim": "box", "at": [0, 0.68, 0], "size": [1.68, 0.055, 0.382], "color": "wood" },
+        { "prim": "box", "at": [0, 1.26, 0], "size": [1.68, 0.055, 0.382], "color": "wood" },
+        { "prim": "box", "at": [0, 1.84, 0], "size": [1.68, 0.055, 0.382], "color": "wood" },
+        { "prim": "box", "at": [0, 1.99, 0], "size": [1.88, 0.07, 0.482], "color": "woodHi" }
+      ]
+    },
+    "kititem.open-shelving": {
+      "kind": "item",
+      "label": "Sootpine Open Shelving",
+      "value": 530,
+      "stack": 1,
+      "swatch": "#b67143",
+      "badge": "shelf",
+      "furniture": "fixture.open-shelving",
+      "palette": {
+        "wrap": "#d9c7a4",
+        "wrapHi": "#eee1c7",
+        "strap": "#8a6242",
+        "mark": "#b67143"
+      }
+    }
+  }
+}

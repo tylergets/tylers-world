@@ -1,0 +1,50 @@
+{
+  "format": "tw.kit",
+  "version": 1,
+  "meta": {
+    "id": "turnip.candle-table",
+    "name": "Fenrush Candle Table"
+  },
+  "types": {
+    "fixture.candle-table": {
+      "kind": "object",
+      "label": "Fenrush Candle Table",
+      "footprint": { "w": 1, "d": 1 },
+      "height": 1.09,
+      "squash": 0.34,
+      "palette": {
+        "wood": "#d9bb7a",
+        "woodHi": "#ecd69c",
+        "woodDark": "#a8873f",
+        "pale": "#f7efd9",
+        "metal": "#9d9384",
+        "accent": "#b8923a"
+      },
+      "parts": [
+        { "prim": "cyl", "at": [0, 0.05, 0], "size": [0.275, 0.1, 0.275], "color": "woodDark" },
+        { "prim": "taper", "at": [0, 0.337, 0], "size": [0.13, 0.549, 0.13], "color": "wood" },
+        { "prim": "cyl", "at": [0, 0.599, 0], "size": [0.2, 0.06, 0.2], "color": "woodHi" },
+        { "prim": "cyl", "at": [0, 0.699, 0], "size": [0.458, 0.1, 0.467], "color": "wood" },
+        { "prim": "cyl", "at": [0, 0.754, 0], "size": [0.408, 0.02, 0.417], "color": "woodHi" },
+        { "prim": "cyl", "at": [0.256, 0.809, -0.224], "size": [0.05, 0.05, 0.05], "color": "metal" },
+        { "prim": "cyl", "at": [0.256, 0.929, -0.224], "size": [0.022, 0.2, 0.022], "color": "pale" },
+        { "prim": "blob", "at": [0.256, 1.049, -0.224], "size": [0.025, 0.04, 0.025], "color": "accent", "anim": { "pulse": { "amp": 0.3, "rate": 2.1 } } }
+      ]
+    },
+    "kititem.candle-table": {
+      "kind": "item",
+      "label": "Fenrush Candle Table",
+      "value": 250,
+      "stack": 1,
+      "swatch": "#bb8f44",
+      "badge": "table",
+      "furniture": "fixture.candle-table",
+      "palette": {
+        "wrap": "#d9c7a4",
+        "wrapHi": "#eee1c7",
+        "strap": "#8a6242",
+        "mark": "#bb8f44"
+      }
+    }
+  }
+}

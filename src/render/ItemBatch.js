@@ -371,6 +371,7 @@ const BUILDERS = {
   'item.stone': stone,
   'item.shell': shell,
   'item.flower': flower,
+  'item.dried-flower': flower,
   'furnitem.bed': furniture,
   'furnitem.table': furniture,
   'furnitem.chair': furniture,
@@ -408,13 +409,60 @@ export function itemModel(typeId) {
   return modelFor(typeId);
 }
 
+/**
+ * Primitive name -> shared geometry, for an item that came out of a kit file.
+ *
+ * The same table props.js keeps for kit FIXTURES, and deliberately a second
+ * copy rather than an import: these are the item cameras' primitives, built at
+ * the tessellation this file has always used (an eight-sided cylinder, a
+ * two-subdivision ball) because an item is looked at from a hand's length and a
+ * fountain is looked at from across a plaza. Sharing one table would mean one
+ * of the two silently changing detail.
+ */
+const KIT_PRIM = {
+  box: BOX, cyl: CYL, taper: CYL, cone: CONE, pyr: CONE, blob: BLOB, chunk: BLOB,
+};
+
+/** A kit item's own model: its parts list, baked exactly as props.js bakes one. */
+function kitParts(type) {
+  const g = new GeoBuilder();
+  for (const part of type.parts) {
+    const [px, py, pz] = part.at;
+    const [rx, ry, rz] = part.rot;
+    const [sx, sy, sz] = part.size;
+    g.addGeometry(KIT_PRIM[part.prim], trs(px, py, pz, rx, ry, rz, sx, sy, sz), type.palette[part.color]);
+  }
+  return g;
+}
+
+/**
+ * The builder for one item type, whether it shipped with the game or arrived
+ * in a file.
+ *
+ * The fallback order is the argument this file's `furniture` builder already
+ * makes, extended to a catalogue three hundred pieces long: a flat-pack is a
+ * wrapped board with a strap round it, and that is TRUE of a kit sofa in the
+ * same way it is true of the built-in bed. So an item with a `furniture` link
+ * and no model of its own gets the parcel -- one geometry shared by the whole
+ * catalogue, distinguished by the colour of its mark, which is exactly what
+ * makes three hundred flat-packs legible instead of three hundred silhouettes
+ * nobody can tell apart at 40 pixels. An item that ships `parts` has asked for
+ * a shape of its own and gets one.
+ */
+function builderFor(typeId, type) {
+  const built = BUILDERS[typeId];
+  if (built) return built;
+  if (type.parts?.length) return () => kitParts(type);
+  if (type.furniture) return furniture;
+  throw new Error(`No mesh builder for item type "${typeId}"`);
+}
+
 function modelFor(typeId) {
   let m = MODELS.get(typeId);
   if (m) return m;
 
   const type = itemType(typeId);
-  const build = BUILDERS[typeId];
-  if (!build) throw new Error(`No mesh builder for item type "${typeId}"`);
+  const build = builderFor(typeId, type);
 
   m = {
     geometry: build(type.palette).build(),

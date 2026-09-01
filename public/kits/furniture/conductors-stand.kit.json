@@ -1,0 +1,46 @@
+{
+  "format": "tw.kit",
+  "version": 1,
+  "meta": {
+    "id": "turnip.conductors-stand",
+    "name": "Hollowmilk Conductor's Stand"
+  },
+  "types": {
+    "fixture.conductors-stand": {
+      "kind": "object",
+      "label": "Hollowmilk Conductor's Stand",
+      "footprint": { "w": 1, "d": 1 },
+      "height": 1.52,
+      "squash": 0.3,
+      "palette": {
+        "dark": "#7e7768",
+        "metal": "#b6bcc1"
+      },
+      "parts": [
+        { "prim": "cyl", "at": [0.16, 0.1, 0], "rot": [0, 0, -34], "size": [0.016, 0.2, 0.016], "color": "metal" },
+        { "prim": "cyl", "at": [-0.08, 0.1, 0.139], "rot": [29.445, 0, 17], "size": [0.016, 0.2, 0.016], "color": "metal" },
+        { "prim": "cyl", "at": [-0.08, 0.1, -0.139], "rot": [-29.445, 0, 17], "size": [0.016, 0.2, 0.016], "color": "metal" },
+        { "prim": "cyl", "at": [0, 0.65, 0], "size": [0.02, 1.301, 0.02], "color": "metal" },
+        { "prim": "box", "at": [0, 1.361, 0.02], "rot": [-24, 0, 0], "size": [0.42, 0.3, 0.02], "color": "metal" },
+        { "prim": "box", "at": [0, 1.281, 0.05], "rot": [-24, 0, 0], "size": [0.38, 0.02, 0.01], "color": "dark" },
+        { "prim": "box", "at": [0, 1.361, 0.05], "rot": [-24, 0, 0], "size": [0.38, 0.02, 0.01], "color": "dark" },
+        { "prim": "box", "at": [0, 1.441, 0.05], "rot": [-24, 0, 0], "size": [0.38, 0.02, 0.01], "color": "dark" }
+      ]
+    },
+    "kititem.conductors-stand": {
+      "kind": "item",
+      "label": "Hollowmilk Conductor's Stand",
+      "value": 385,
+      "stack": 1,
+      "swatch": "#5b7fa8",
+      "badge": "plant",
+      "furniture": "fixture.conductors-stand",
+      "palette": {
+        "wrap": "#d9c7a4",
+        "wrapHi": "#eee1c7",
+        "strap": "#8a6242",
+        "mark": "#5b7fa8"
+      }
+    }
+  }
+}

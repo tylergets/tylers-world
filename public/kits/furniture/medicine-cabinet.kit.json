@@ -1,0 +1,50 @@
+{
+  "format": "tw.kit",
+  "version": 1,
+  "meta": {
+    "id": "turnip.medicine-cabinet",
+    "name": "Hollowmilk Medicine Cabinet"
+  },
+  "types": {
+    "fixture.medicine-cabinet": {
+      "kind": "object",
+      "label": "Hollowmilk Medicine Cabinet",
+      "footprint": { "w": 1, "d": 1 },
+      "height": 1.04,
+      "squash": 0.34,
+      "palette": {
+        "wood": "#f2ece0",
+        "woodHi": "#fdfaf2",
+        "woodDark": "#cfc7b6",
+        "metal": "#b6bcc1",
+        "glass": "#dceaf4"
+      },
+      "parts": [
+        { "prim": "box", "at": [-0.269, 0.07, -0.202], "size": [0.09, 0.14, 0.09], "color": "woodDark" },
+        { "prim": "box", "at": [0.269, 0.07, -0.202], "size": [0.09, 0.14, 0.09], "color": "woodDark" },
+        { "prim": "box", "at": [-0.269, 0.07, 0.202], "size": [0.09, 0.14, 0.09], "color": "woodDark" },
+        { "prim": "box", "at": [0.269, 0.07, 0.202], "size": [0.09, 0.14, 0.09], "color": "woodDark" },
+        { "prim": "box", "at": [0, 0.548, 0], "size": [0.738, 0.815, 0.604], "color": "wood" },
+        { "prim": "box", "at": [0, 0.995, 0], "size": [0.788, 0.08, 0.654], "color": "woodHi" },
+        { "prim": "box", "at": [0, 0.543, 0.312], "size": [0.578, 0.725, 0.04], "color": "woodHi" },
+        { "prim": "box", "at": [0, 0.543, 0.332], "size": [0.458, 0.605, 0.02], "color": "glass" },
+        { "prim": "cyl", "at": [0.208, 0.543, 0.352], "rot": [90, 0, 0], "size": [0.03, 0.05, 0.03], "color": "metal" }
+      ]
+    },
+    "kititem.medicine-cabinet": {
+      "kind": "item",
+      "label": "Hollowmilk Medicine Cabinet",
+      "value": 515,
+      "stack": 1,
+      "swatch": "#657086",
+      "badge": "counter",
+      "furniture": "fixture.medicine-cabinet",
+      "palette": {
+        "wrap": "#d9c7a4",
+        "wrapHi": "#eee1c7",
+        "strap": "#8a6242",
+        "mark": "#657086"
+      }
+    }
+  }
+}

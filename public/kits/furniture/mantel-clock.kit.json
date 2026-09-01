@@ -1,0 +1,48 @@
+{
+  "format": "tw.kit",
+  "version": 1,
+  "meta": {
+    "id": "turnip.mantel-clock",
+    "name": "Coppervale Mantel Clock"
+  },
+  "types": {
+    "fixture.mantel-clock": {
+      "kind": "object",
+      "label": "Coppervale Mantel Clock",
+      "footprint": { "w": 1, "d": 1 },
+      "height": 0.63,
+      "squash": 0.3,
+      "palette": {
+        "wood": "#a9763f",
+        "woodHi": "#c6924f",
+        "woodDark": "#7a5329",
+        "pale": "#f0e6d2",
+        "dark": "#3f2d18"
+      },
+      "parts": [
+        { "prim": "box", "at": [0, 0.06, 0], "size": [0.5, 0.12, 0.3], "color": "woodDark" },
+        { "prim": "box", "at": [0, 0.296, 0], "size": [0.42, 0.426, 0.24], "color": "wood" },
+        { "prim": "cyl", "at": [0, 0.509, 0], "rot": [90, 0, 0], "size": [0.21, 0.24, 0.21], "color": "wood" },
+        { "prim": "cyl", "at": [0, 0.332, 0.13], "rot": [90, 0, 0], "size": [0.15, 0.02, 0.15], "color": "pale" },
+        { "prim": "box", "at": [0, 0.367, 0.15], "size": [0.02, 0.1, 0.012], "color": "dark" },
+        { "prim": "box", "at": [0.05, 0.332, 0.15], "size": [0.09, 0.02, 0.012], "color": "dark" },
+        { "prim": "box", "at": [0, 0.557, 0], "size": [0.46, 0.06, 0.28], "color": "woodHi" }
+      ]
+    },
+    "kititem.mantel-clock": {
+      "kind": "item",
+      "label": "Coppervale Mantel Clock",
+      "value": 530,
+      "stack": 1,
+      "swatch": "#c07739",
+      "badge": "crate",
+      "furniture": "fixture.mantel-clock",
+      "palette": {
+        "wrap": "#d9c7a4",
+        "wrapHi": "#eee1c7",
+        "strap": "#8a6242",
+        "mark": "#c07739"
+      }
+    }
+  }
+}

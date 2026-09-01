@@ -1,0 +1,49 @@
+{
+  "format": "tw.kit",
+  "version": 1,
+  "meta": {
+    "id": "turnip.rag-rug",
+    "name": "Beechbark Rag Rug"
+  },
+  "types": {
+    "fixture.rag-rug": {
+      "kind": "object",
+      "label": "Beechbark Rag Rug",
+      "footprint": { "w": 2, "d": 2 },
+      "height": 0.2,
+      "squash": 0.9,
+      "palette": {
+        "cloth": "#d9c7a4",
+        "clothHi": "#eee1c7",
+        "pale": "#f6eede",
+        "accent": "#d08a3c"
+      },
+      "parts": [
+        { "prim": "box", "at": [0, 0.02, 0], "size": [1.506, 0.04, 1.068], "color": "cloth" },
+        { "prim": "box", "at": [0, 0.045, 0], "size": [1.346, 0.016, 0.908], "color": "clothHi" },
+        { "prim": "box", "at": [0, 0.054, -0.384], "size": [1.306, 0.014, 0.064], "color": "accent" },
+        { "prim": "box", "at": [0, 0.054, -0.256], "size": [1.306, 0.014, 0.064], "color": "pale" },
+        { "prim": "box", "at": [0, 0.054, -0.128], "size": [1.306, 0.014, 0.064], "color": "accent" },
+        { "prim": "box", "at": [0, 0.054, 0], "size": [1.306, 0.014, 0.064], "color": "pale" },
+        { "prim": "box", "at": [0, 0.054, 0.128], "size": [1.306, 0.014, 0.064], "color": "accent" },
+        { "prim": "box", "at": [0, 0.054, 0.256], "size": [1.306, 0.014, 0.064], "color": "pale" },
+        { "prim": "box", "at": [0, 0.054, 0.384], "size": [1.306, 0.014, 0.064], "color": "accent" }
+      ]
+    },
+    "kititem.rag-rug": {
+      "kind": "item",
+      "label": "Beechbark Rag Rug",
+      "value": 175,
+      "stack": 1,
+      "swatch": "#c57543",
+      "badge": "crate",
+      "furniture": "fixture.rag-rug",
+      "palette": {
+        "wrap": "#d9c7a4",
+        "wrapHi": "#eee1c7",
+        "strap": "#8a6242",
+        "mark": "#c57543"
+      }
+    }
+  }
+}

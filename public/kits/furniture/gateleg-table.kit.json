@@ -1,0 +1,46 @@
+{
+  "format": "tw.kit",
+  "version": 1,
+  "meta": {
+    "id": "turnip.gateleg-table",
+    "name": "Beechbark Gateleg Table"
+  },
+  "types": {
+    "fixture.gateleg-table": {
+      "kind": "object",
+      "label": "Beechbark Gateleg Table",
+      "footprint": { "w": 2, "d": 2 },
+      "height": 0.83,
+      "squash": 0.34,
+      "palette": {
+        "wood": "#c08b55",
+        "woodHi": "#d8a870",
+        "woodDark": "#8a6242"
+      },
+      "parts": [
+        { "prim": "box", "at": [0, 0.355, -0.715], "rot": [0, 0, 38], "size": [1.451, 0.08, 0.08], "color": "woodDark" },
+        { "prim": "box", "at": [0, 0.355, -0.715], "rot": [0, 0, -38], "size": [1.451, 0.08, 0.08], "color": "woodDark" },
+        { "prim": "box", "at": [0, 0.355, 0.715], "rot": [0, 0, 38], "size": [1.451, 0.08, 0.08], "color": "woodDark" },
+        { "prim": "box", "at": [0, 0.355, 0.715], "rot": [0, 0, -38], "size": [1.451, 0.08, 0.08], "color": "woodDark" },
+        { "prim": "box", "at": [0, 0.369, 0], "size": [0.08, 0.08, 1.349], "color": "woodDark" },
+        { "prim": "box", "at": [0, 0.76, 0], "size": [1.612, 0.1, 1.689], "color": "wood" },
+        { "prim": "box", "at": [0, 0.815, 0], "size": [1.492, 0.02, 1.569], "color": "woodHi" }
+      ]
+    },
+    "kititem.gateleg-table": {
+      "kind": "item",
+      "label": "Beechbark Gateleg Table",
+      "value": 505,
+      "stack": 1,
+      "swatch": "#ca8a46",
+      "badge": "table",
+      "furniture": "fixture.gateleg-table",
+      "palette": {
+        "wrap": "#d9c7a4",
+        "wrapHi": "#eee1c7",
+        "strap": "#8a6242",
+        "mark": "#ca8a46"
+      }
+    }
+  }
+}

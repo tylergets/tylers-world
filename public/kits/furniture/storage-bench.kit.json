@@ -1,0 +1,44 @@
+{
+  "format": "tw.kit",
+  "version": 1,
+  "meta": {
+    "id": "turnip.storage-bench",
+    "name": "Turnipwood Storage Bench"
+  },
+  "types": {
+    "fixture.storage-bench": {
+      "kind": "object",
+      "label": "Turnipwood Storage Bench",
+      "footprint": { "w": 2, "d": 1 },
+      "height": 0.56,
+      "squash": 0.34,
+      "palette": {
+        "wood": "#e8dcc4",
+        "woodHi": "#f6eeda",
+        "woodDark": "#c3b394"
+      },
+      "parts": [
+        { "prim": "box", "at": [0, 0.229, 0], "size": [1.873, 0.459, 0.482], "color": "wood" },
+        { "prim": "box", "at": [0, 0.05, 0], "size": [1.913, 0.1, 0.522], "color": "woodDark" },
+        { "prim": "box", "at": [0, 0.509, 0], "size": [1.943, 0.1, 0.552], "color": "woodHi" },
+        { "prim": "box", "at": [-0.45, 0.229, 0.231], "size": [0.674, 0.275, 0.03], "color": "woodDark" },
+        { "prim": "box", "at": [0.45, 0.229, 0.231], "size": [0.674, 0.275, 0.03], "color": "woodDark" }
+      ]
+    },
+    "kititem.storage-bench": {
+      "kind": "item",
+      "label": "Turnipwood Storage Bench",
+      "value": 545,
+      "stack": 1,
+      "swatch": "#986c85",
+      "badge": "chair",
+      "furniture": "fixture.storage-bench",
+      "palette": {
+        "wrap": "#d9c7a4",
+        "wrapHi": "#eee1c7",
+        "strap": "#8a6242",
+        "mark": "#986c85"
+      }
+    }
+  }
+}

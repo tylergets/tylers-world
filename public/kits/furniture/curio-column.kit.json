@@ -1,0 +1,42 @@
+{
+  "format": "tw.kit",
+  "version": 1,
+  "meta": {
+    "id": "turnip.curio-column",
+    "name": "Inkthorn Curio Column"
+  },
+  "types": {
+    "fixture.curio-column": {
+      "kind": "object",
+      "label": "Inkthorn Curio Column",
+      "footprint": { "w": 1, "d": 1 },
+      "height": 1.32,
+      "squash": 0.3,
+      "palette": {
+        "pale": "#e6ddcb",
+        "metal": "#c8a24a"
+      },
+      "parts": [
+        { "prim": "box", "at": [0, 0.06, 0], "size": [0.5, 0.12, 0.5], "color": "metal" },
+        { "prim": "box", "at": [0, 0.15, 0], "size": [0.44, 0.08, 0.44], "color": "pale" },
+        { "prim": "cyl", "at": [0, 0.697, 0], "size": [0.2, 1.013, 0.2], "color": "pale" },
+        { "prim": "box", "at": [0, 1.267, 0], "size": [0.5, 0.09, 0.5], "color": "metal" }
+      ]
+    },
+    "kititem.curio-column": {
+      "kind": "item",
+      "label": "Inkthorn Curio Column",
+      "value": 600,
+      "stack": 1,
+      "swatch": "#cbb05d",
+      "badge": "crate",
+      "furniture": "fixture.curio-column",
+      "palette": {
+        "wrap": "#d9c7a4",
+        "wrapHi": "#eee1c7",
+        "strap": "#8a6242",
+        "mark": "#cbb05d"
+      }
+    }
+  }
+}

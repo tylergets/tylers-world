@@ -1,0 +1,44 @@
+{
+  "format": "tw.kit",
+  "version": 1,
+  "meta": {
+    "id": "turnip.coffer",
+    "name": "Coppervale Coffer"
+  },
+  "types": {
+    "fixture.coffer": {
+      "kind": "object",
+      "label": "Coppervale Coffer",
+      "footprint": { "w": 1, "d": 1 },
+      "height": 0.6,
+      "squash": 0.34,
+      "palette": {
+        "wood": "#a9763f",
+        "woodHi": "#c6924f",
+        "metal": "#b5713c"
+      },
+      "parts": [
+        { "prim": "box", "at": [0, 0.244, 0], "size": [0.808, 0.488, 0.552], "color": "wood" },
+        { "prim": "box", "at": [0, 0.528, 0], "size": [0.858, 0.08, 0.602], "color": "woodHi" },
+        { "prim": "box", "at": [-0.243, 0.268, 0], "size": [0.05, 0.648, 0.572], "color": "metal" },
+        { "prim": "box", "at": [0.243, 0.268, 0], "size": [0.05, 0.648, 0.572], "color": "metal" },
+        { "prim": "box", "at": [0, 0.42, 0.296], "size": [0.13, 0.13, 0.03], "color": "metal" }
+      ]
+    },
+    "kititem.coffer": {
+      "kind": "item",
+      "label": "Coppervale Coffer",
+      "value": 430,
+      "stack": 1,
+      "swatch": "#b77039",
+      "badge": "crate",
+      "furniture": "fixture.coffer",
+      "palette": {
+        "wrap": "#d9c7a4",
+        "wrapHi": "#eee1c7",
+        "strap": "#8a6242",
+        "mark": "#b77039"
+      }
+    }
+  }
+}

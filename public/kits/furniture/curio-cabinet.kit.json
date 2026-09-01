@@ -1,0 +1,47 @@
+{
+  "format": "tw.kit",
+  "version": 1,
+  "meta": {
+    "id": "turnip.curio-cabinet",
+    "name": "Seaglass Curio Cabinet"
+  },
+  "types": {
+    "fixture.curio-cabinet": {
+      "kind": "object",
+      "label": "Seaglass Curio Cabinet",
+      "footprint": { "w": 1, "d": 1 },
+      "height": 1.74,
+      "squash": 0.34,
+      "palette": {
+        "wood": "#a6a89c",
+        "woodHi": "#c2c4b8",
+        "woodDark": "#7b7d73",
+        "metal": "#8f969c",
+        "glass": "#bfe0ea"
+      },
+      "parts": [
+        { "prim": "box", "at": [0, 0.06, 0], "size": [0.9, 0.12, 0.654], "color": "woodDark" },
+        { "prim": "box", "at": [0, 0.889, 0], "size": [0.86, 1.538, 0.614], "color": "wood" },
+        { "prim": "box", "at": [0, 1.698, 0], "size": [0.91, 0.08, 0.664], "color": "woodHi" },
+        { "prim": "box", "at": [0, 0.884, 0.317], "size": [0.7, 1.448, 0.04], "color": "woodHi" },
+        { "prim": "box", "at": [0, 0.884, 0.337], "size": [0.58, 1.328, 0.02], "color": "glass" },
+        { "prim": "cyl", "at": [0.252, 0.884, 0.357], "rot": [90, 0, 0], "size": [0.03, 0.05, 0.03], "color": "metal" }
+      ]
+    },
+    "kititem.curio-cabinet": {
+      "kind": "item",
+      "label": "Seaglass Curio Cabinet",
+      "value": 870,
+      "stack": 1,
+      "swatch": "#5c837f",
+      "badge": "counter",
+      "furniture": "fixture.curio-cabinet",
+      "palette": {
+        "wrap": "#d9c7a4",
+        "wrapHi": "#eee1c7",
+        "strap": "#8a6242",
+        "mark": "#5c837f"
+      }
+    }
+  }
+}

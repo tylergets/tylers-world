@@ -1,0 +1,51 @@
+{
+  "format": "tw.kit",
+  "version": 1,
+  "meta": {
+    "id": "turnip.weighing-counter",
+    "name": "Sootpine Weighing Counter"
+  },
+  "types": {
+    "fixture.weighing-counter": {
+      "kind": "object",
+      "label": "Sootpine Weighing Counter",
+      "footprint": { "w": 3, "d": 1 },
+      "height": 1.28,
+      "squash": 0.34,
+      "palette": {
+        "wood": "#4a4640",
+        "woodHi": "#656057",
+        "woodDark": "#332f2b",
+        "dark": "#221f1c",
+        "metal": "#9aa0a6"
+      },
+      "parts": [
+        { "prim": "box", "at": [0, 0.05, 0.02], "size": [2.605, 0.1, 0.62], "color": "dark" },
+        { "prim": "box", "at": [0, 0.53, 0], "size": [2.685, 0.961, 0.68], "color": "wood" },
+        { "prim": "box", "at": [0, 1.061, 0], "size": [2.845, 0.1, 0.82], "color": "woodHi" },
+        { "prim": "box", "at": [-0.828, 0.538, 0.35], "size": [0.745, 0.596, 0.03], "color": "woodDark" },
+        { "prim": "box", "at": [0, 0.538, 0.35], "size": [0.745, 0.596, 0.03], "color": "woodDark" },
+        { "prim": "box", "at": [0.828, 0.538, 0.35], "size": [0.745, 0.596, 0.03], "color": "woodDark" },
+        { "prim": "cyl", "at": [-0.859, 1.161, 0], "size": [0.03, 0.2, 0.03], "color": "metal" },
+        { "prim": "box", "at": [-0.859, 1.261, 0], "size": [0.36, 0.02, 0.03], "color": "metal" },
+        { "prim": "cyl", "at": [-1.019, 1.201, 0], "size": [0.08, 0.02, 0.08], "color": "metal" },
+        { "prim": "cyl", "at": [-0.699, 1.201, 0], "size": [0.08, 0.02, 0.08], "color": "metal" }
+      ]
+    },
+    "kititem.weighing-counter": {
+      "kind": "item",
+      "label": "Sootpine Weighing Counter",
+      "value": 1110,
+      "stack": 1,
+      "swatch": "#d89562",
+      "badge": "counter",
+      "furniture": "fixture.weighing-counter",
+      "palette": {
+        "wrap": "#d9c7a4",
+        "wrapHi": "#eee1c7",
+        "strap": "#8a6242",
+        "mark": "#d89562"
+      }
+    }
+  }
+}

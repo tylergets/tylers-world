@@ -1,0 +1,61 @@
+{
+  "format": "tw.kit",
+  "version": 1,
+  "meta": {
+    "id": "turnip.spindle-bed",
+    "name": "Beechbark Spindle Bed"
+  },
+  "types": {
+    "fixture.spindle-bed": {
+      "kind": "object",
+      "label": "Beechbark Spindle Bed",
+      "footprint": { "w": 2, "d": 3 },
+      "height": 1,
+      "squash": 0.34,
+      "palette": {
+        "wood": "#c08b55",
+        "woodHi": "#d8a870",
+        "woodDark": "#8a6242",
+        "cloth": "#d9c7a4",
+        "clothHi": "#eee1c7",
+        "pale": "#f6eede"
+      },
+      "parts": [
+        { "prim": "box", "at": [0, 0.16, 0], "size": [1.786, 0.32, 2.831], "color": "woodDark" },
+        { "prim": "box", "at": [-0.813, 0.05, -1.315], "size": [0.12, 0.1, 0.12], "color": "wood" },
+        { "prim": "box", "at": [0.813, 0.05, -1.315], "size": [0.12, 0.1, 0.12], "color": "wood" },
+        { "prim": "box", "at": [-0.813, 0.05, 1.315], "size": [0.12, 0.1, 0.12], "color": "wood" },
+        { "prim": "box", "at": [0.813, 0.05, 1.315], "size": [0.12, 0.1, 0.12], "color": "wood" },
+        { "prim": "box", "at": [0, 0.45, 0.1], "size": [1.686, 0.26, 2.571], "color": "pale" },
+        { "prim": "box", "at": [0, 0.61, 0.538], "size": [1.736, 0.14, 1.585], "color": "cloth" },
+        { "prim": "box", "at": [0, 0.65, -0.255], "size": [1.736, 0.06, 0.12], "color": "clothHi" },
+        { "prim": "box", "at": [0, 0.66, -1.075], "size": [1.143, 0.18, 0.42], "color": "pale" },
+        { "prim": "cyl", "at": [-0.833, 0.53, -1.365], "size": [0.05, 0.86, 0.05], "color": "wood" },
+        { "prim": "cyl", "at": [0.833, 0.53, -1.365], "size": [0.05, 0.86, 0.05], "color": "wood" },
+        { "prim": "cyl", "at": [-0.68, 0.53, -1.365], "size": [0.02, 0.72, 0.02], "color": "woodHi" },
+        { "prim": "cyl", "at": [-0.453, 0.53, -1.365], "size": [0.02, 0.72, 0.02], "color": "woodHi" },
+        { "prim": "cyl", "at": [-0.227, 0.53, -1.365], "size": [0.02, 0.72, 0.02], "color": "woodHi" },
+        { "prim": "cyl", "at": [0, 0.53, -1.365], "size": [0.02, 0.72, 0.02], "color": "woodHi" },
+        { "prim": "cyl", "at": [0.227, 0.53, -1.365], "size": [0.02, 0.72, 0.02], "color": "woodHi" },
+        { "prim": "cyl", "at": [0.453, 0.53, -1.365], "size": [0.02, 0.72, 0.02], "color": "woodHi" },
+        { "prim": "cyl", "at": [0.68, 0.53, -1.365], "size": [0.02, 0.72, 0.02], "color": "woodHi" },
+        { "prim": "box", "at": [0, 0.96, -1.365], "size": [1.786, 0.08, 0.08], "color": "woodHi" }
+      ]
+    },
+    "kititem.spindle-bed": {
+      "kind": "item",
+      "label": "Beechbark Spindle Bed",
+      "value": 720,
+      "stack": 1,
+      "swatch": "#a4886a",
+      "badge": "bed",
+      "furniture": "fixture.spindle-bed",
+      "palette": {
+        "wrap": "#d9c7a4",
+        "wrapHi": "#eee1c7",
+        "strap": "#8a6242",
+        "mark": "#a4886a"
+      }
+    }
+  }
+}

@@ -1,0 +1,50 @@
+{
+  "format": "tw.kit",
+  "version": 1,
+  "meta": {
+    "id": "turnip.studio-easel",
+    "name": "Inkthorn Studio Easel"
+  },
+  "types": {
+    "fixture.studio-easel": {
+      "kind": "object",
+      "label": "Inkthorn Studio Easel",
+      "footprint": { "w": 1, "d": 1 },
+      "height": 1.71,
+      "squash": 0.3,
+      "palette": {
+        "wood": "#3a2f2a",
+        "woodHi": "#54443c",
+        "woodDark": "#241d1a",
+        "pale": "#e6ddcb",
+        "metal": "#c8a24a",
+        "accent": "#c9a227"
+      },
+      "parts": [
+        { "prim": "cyl", "at": [-0.24, 0.835, -0.1], "rot": [7, 0, 9], "size": [0.028, 1.74, 0.028], "color": "wood" },
+        { "prim": "cyl", "at": [0.24, 0.835, -0.1], "rot": [7, 0, -9], "size": [0.028, 1.74, 0.028], "color": "wood" },
+        { "prim": "cyl", "at": [0, 0.8, 0.3], "rot": [-15, 0, 0], "size": [0.028, 1.671, 0.028], "color": "woodDark" },
+        { "prim": "box", "at": [0, 0.592, -0.13], "size": [0.58, 0.05, 0.13], "color": "wood" },
+        { "prim": "box", "at": [0, 1.044, -0.12], "rot": [6, 0, 0], "size": [0.5, 0.62, 0.03], "color": "pale" },
+        { "prim": "box", "at": [0, 1.044, -0.14], "rot": [6, 0, 0], "size": [0.42, 0.5, 0.012], "color": "accent" },
+        { "prim": "box", "at": [0, 1.444, -0.1], "size": [0.1, 0.05, 0.06], "color": "metal" },
+        { "prim": "blob", "at": [0.22, 0.626, -0.06], "size": [0.12, 0.015, 0.09], "color": "woodHi" }
+      ]
+    },
+    "kititem.studio-easel": {
+      "kind": "item",
+      "label": "Inkthorn Studio Easel",
+      "value": 730,
+      "stack": 1,
+      "swatch": "#a79953",
+      "badge": "plant",
+      "furniture": "fixture.studio-easel",
+      "palette": {
+        "wrap": "#d9c7a4",
+        "wrapHi": "#eee1c7",
+        "strap": "#8a6242",
+        "mark": "#a79953"
+      }
+    }
+  }
+}

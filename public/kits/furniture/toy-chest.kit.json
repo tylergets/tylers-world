@@ -1,0 +1,50 @@
+{
+  "format": "tw.kit",
+  "version": 1,
+  "meta": {
+    "id": "turnip.toy-chest",
+    "name": "Hollowmilk Toy Chest"
+  },
+  "types": {
+    "fixture.toy-chest": {
+      "kind": "object",
+      "label": "Hollowmilk Toy Chest",
+      "footprint": { "w": 1, "d": 1 },
+      "height": 0.64,
+      "squash": 0.34,
+      "palette": {
+        "wood": "#f2ece0",
+        "woodHi": "#fdfaf2",
+        "woodDark": "#cfc7b6",
+        "metal": "#b6bcc1"
+      },
+      "parts": [
+        { "prim": "box", "at": [-0.326, 0.035, -0.198], "size": [0.1, 0.07, 0.1], "color": "woodDark" },
+        { "prim": "box", "at": [0.326, 0.035, -0.198], "size": [0.1, 0.07, 0.1], "color": "woodDark" },
+        { "prim": "box", "at": [-0.326, 0.035, 0.198], "size": [0.1, 0.07, 0.1], "color": "woodDark" },
+        { "prim": "box", "at": [0.326, 0.035, 0.198], "size": [0.1, 0.07, 0.1], "color": "woodDark" },
+        { "prim": "box", "at": [0, 0.311, 0], "size": [0.813, 0.482, 0.556], "color": "wood" },
+        { "prim": "box", "at": [0, 0.166, 0.283], "size": [0.823, 0.096, 0.02], "color": "woodHi" },
+        { "prim": "box", "at": [0, 0.311, 0.283], "size": [0.823, 0.096, 0.02], "color": "woodHi" },
+        { "prim": "box", "at": [0, 0.455, 0.283], "size": [0.823, 0.096, 0.02], "color": "woodHi" },
+        { "prim": "box", "at": [0, 0.592, 0], "size": [0.863, 0.08, 0.606], "color": "woodHi" },
+        { "prim": "box", "at": [0, 0.484, 0.298], "size": [0.13, 0.13, 0.03], "color": "metal" }
+      ]
+    },
+    "kititem.toy-chest": {
+      "kind": "item",
+      "label": "Hollowmilk Toy Chest",
+      "value": 330,
+      "stack": 1,
+      "swatch": "#6c7985",
+      "badge": "crate",
+      "furniture": "fixture.toy-chest",
+      "palette": {
+        "wrap": "#d9c7a4",
+        "wrapHi": "#eee1c7",
+        "strap": "#8a6242",
+        "mark": "#6c7985"
+      }
+    }
+  }
+}

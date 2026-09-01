@@ -1,0 +1,76 @@
+{
+  "format": "tw.world",
+  "version": 1,
+  "kind": "interior",
+  "meta": {
+    "id": "home.player.floor2",
+    "role": "player-home",
+    "name": "Second Floor",
+    "note": "Shared usable second floor for the player home variants."
+  },
+  "grid": {"width":12,"height":10,"tileSize":1},
+  "layers": {
+    "surface": {
+      "palette": {"#":"wall","w":"floor.wood","r":"rug"},
+      "data": [
+        "############",
+        "#wwwwwwwwww#",
+        "#wwwwwwwwww#",
+        "#wwwwwwwwww#",
+        "#wwwwwwwwww#",
+        "#wwrrrrwwww#",
+        "#wwrrrrwwww#",
+        "#wwwwwwwwww#",
+        "#wwwwwwwwww#",
+        "#####ww#####"
+      ]
+    },
+    "elevation": {
+      "palette": {"0":"0","4":"4"},
+      "data": [
+        "444444444444",
+        "400000000004",
+        "400000000004",
+        "400000000004",
+        "400000000004",
+        "400000000004",
+        "400000000004",
+        "400000000004",
+        "400000000004",
+        "444440044444"
+      ]
+    },
+    "flags": {
+      "palette": {".":"none"},
+      "data": [
+        "............",
+        "............",
+        "............",
+        "............",
+        "............",
+        "............",
+        "............",
+        "............",
+        "............",
+        "............"
+      ]
+    }
+  },
+  "objects": [
+    {"id":"bed.guest","type":"furn.bed","tile":[1,1]},
+    {"id":"shelf","type":"furn.shelf","tile":[4,1]},
+    {"id":"table","type":"furn.table","tile":[2,5]},
+    {"id":"chair","type":"furn.chair","tile":[4,6],"rotation":180},
+    {"id":"plant","type":"furn.plant","tile":[10,8]},
+    {"id":"stairs.up","type":"furn.stairs","tile":[8,2],"props":{"label":"Third Floor","interior":"worlds/interiors/home-upper-3.json","requiresHouseStories":3}}
+  ],
+  "items": [
+    {"id":"flower.window","type":"item.flower","tile":[7,2]},
+    {"id":"apple.table","type":"item.apple","tile":[3,4]}
+  ],
+  "exits": [
+    {"tile":[5,9],"label":"Downstairs"},
+    {"tile":[6,9],"label":"Downstairs"}
+  ],
+  "spawn": {"tile":[6,8],"facing":"north"}
+}

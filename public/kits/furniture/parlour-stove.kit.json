@@ -1,0 +1,46 @@
+{
+  "format": "tw.kit",
+  "version": 1,
+  "meta": {
+    "id": "turnip.parlour-stove",
+    "name": "Beechbark Parlour Stove"
+  },
+  "types": {
+    "fixture.parlour-stove": {
+      "kind": "object",
+      "label": "Beechbark Parlour Stove",
+      "footprint": { "w": 1, "d": 1 },
+      "height": 1.96,
+      "squash": 0.32,
+      "palette": {
+        "dark": "#5c412c",
+        "metal": "#b08d3f",
+        "accent": "#d08a3c"
+      },
+      "parts": [
+        { "prim": "cyl", "at": [0, 0.06, 0], "size": [0.3, 0.12, 0.3], "color": "dark" },
+        { "prim": "blob", "at": [0, 0.419, 0], "size": [0.32, 0.3, 0.32], "color": "metal" },
+        { "prim": "cyl", "at": [0, 0.771, 0], "size": [0.2, 0.308, 0.2], "color": "metal" },
+        { "prim": "cyl", "at": [0, 0.958, 0], "size": [0.24, 0.05, 0.24], "color": "dark" },
+        { "prim": "cyl", "at": [0, 1.522, 0], "size": [0.07, 0.86, 0.07], "color": "dark" },
+        { "prim": "cyl", "at": [0, 0.397, 0.3], "rot": [90, 0, 0], "size": [0.11, 0.03, 0.11], "color": "dark" },
+        { "prim": "blob", "at": [0, 0.397, 0.29], "size": [0.07, 0.07, 0.03], "color": "accent", "anim": { "pulse": { "amp": 0.3, "rate": 1.8 } } }
+      ]
+    },
+    "kititem.parlour-stove": {
+      "kind": "item",
+      "label": "Beechbark Parlour Stove",
+      "value": 790,
+      "stack": 1,
+      "swatch": "#b78f60",
+      "badge": "stove",
+      "furniture": "fixture.parlour-stove",
+      "palette": {
+        "wrap": "#d9c7a4",
+        "wrapHi": "#eee1c7",
+        "strap": "#8a6242",
+        "mark": "#b78f60"
+      }
+    }
+  }
+}

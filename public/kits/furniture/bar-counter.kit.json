@@ -1,0 +1,49 @@
+{
+  "format": "tw.kit",
+  "version": 1,
+  "meta": {
+    "id": "turnip.bar-counter",
+    "name": "Inkthorn Bar Counter"
+  },
+  "types": {
+    "fixture.bar-counter": {
+      "kind": "object",
+      "label": "Inkthorn Bar Counter",
+      "footprint": { "w": 3, "d": 1 },
+      "height": 1.48,
+      "squash": 0.34,
+      "palette": {
+        "wood": "#3a2f2a",
+        "woodHi": "#54443c",
+        "woodDark": "#241d1a",
+        "dark": "#171210",
+        "metal": "#c8a24a"
+      },
+      "parts": [
+        { "prim": "box", "at": [0, 0.05, 0.02], "size": [2.738, 0.1, 0.608], "color": "dark" },
+        { "prim": "box", "at": [0, 0.53, 0], "size": [2.818, 0.96, 0.668], "color": "wood" },
+        { "prim": "box", "at": [0, 1.06, 0], "size": [2.978, 0.1, 0.808], "color": "woodHi" },
+        { "prim": "box", "at": [0, 1.14, -0.274], "size": [2.818, 0.16, 0.1], "color": "woodHi" },
+        { "prim": "cyl", "at": [0, 0.269, 0.364], "rot": [0, 0, 90], "size": [0.03, 2.418, 0.03], "color": "metal" },
+        { "prim": "box", "at": [-0.846, 0.576, 0.344], "size": [0.676, 0.48, 0.03], "color": "woodDark" },
+        { "prim": "box", "at": [0, 0.576, 0.344], "size": [0.676, 0.48, 0.03], "color": "woodDark" },
+        { "prim": "box", "at": [0.846, 0.576, 0.344], "size": [0.676, 0.48, 0.03], "color": "woodDark" }
+      ]
+    },
+    "kititem.bar-counter": {
+      "kind": "item",
+      "label": "Inkthorn Bar Counter",
+      "value": 1805,
+      "stack": 1,
+      "swatch": "#cfb057",
+      "badge": "counter",
+      "furniture": "fixture.bar-counter",
+      "palette": {
+        "wrap": "#d9c7a4",
+        "wrapHi": "#eee1c7",
+        "strap": "#8a6242",
+        "mark": "#cfb057"
+      }
+    }
+  }
+}

@@ -1,0 +1,58 @@
+{
+  "format": "tw.kit",
+  "version": 1,
+  "meta": {
+    "id": "turnip.sideboard",
+    "name": "Rosewick Sideboard"
+  },
+  "types": {
+    "fixture.sideboard": {
+      "kind": "object",
+      "label": "Rosewick Sideboard",
+      "footprint": { "w": 3, "d": 1 },
+      "height": 1.04,
+      "squash": 0.34,
+      "palette": {
+        "wood": "#8f4a3c",
+        "woodHi": "#ab6150",
+        "woodDark": "#653228",
+        "metal": "#c2a35c"
+      },
+      "parts": [
+        { "prim": "box", "at": [-1.187, 0.08, -0.218], "size": [0.09, 0.16, 0.09], "color": "woodDark" },
+        { "prim": "box", "at": [1.187, 0.08, -0.218], "size": [0.09, 0.16, 0.09], "color": "woodDark" },
+        { "prim": "box", "at": [-1.187, 0.08, 0.218], "size": [0.09, 0.16, 0.09], "color": "woodDark" },
+        { "prim": "box", "at": [1.187, 0.08, 0.218], "size": [0.09, 0.16, 0.09], "color": "woodDark" },
+        { "prim": "box", "at": [0, 0.56, 0], "size": [2.575, 0.8, 0.636], "color": "wood" },
+        { "prim": "box", "at": [0, 1, 0], "size": [2.625, 0.08, 0.686], "color": "woodHi" },
+        { "prim": "box", "at": [0, 0.253, 0.328], "size": [2.435, 0.066, 0.04], "color": "woodHi" },
+        { "prim": "cyl", "at": [-0.618, 0.253, 0.358], "rot": [0, 0, 90], "size": [0.024, 0.13, 0.024], "color": "metal" },
+        { "prim": "cyl", "at": [0.618, 0.253, 0.358], "rot": [0, 0, 90], "size": [0.024, 0.13, 0.024], "color": "metal" },
+        { "prim": "box", "at": [0, 0.359, 0.328], "size": [2.435, 0.066, 0.04], "color": "woodHi" },
+        { "prim": "cyl", "at": [-0.618, 0.359, 0.358], "rot": [0, 0, 90], "size": [0.024, 0.13, 0.024], "color": "metal" },
+        { "prim": "cyl", "at": [0.618, 0.359, 0.358], "rot": [0, 0, 90], "size": [0.024, 0.13, 0.024], "color": "metal" },
+        { "prim": "box", "at": [-0.644, 0.671, 0.328], "size": [1.197, 0.478, 0.04], "color": "woodHi" },
+        { "prim": "box", "at": [-0.644, 0.671, 0.348], "size": [1.057, 0.318, 0.02], "color": "wood" },
+        { "prim": "cyl", "at": [-0.189, 0.671, 0.368], "rot": [90, 0, 0], "size": [0.03, 0.05, 0.03], "color": "metal" },
+        { "prim": "box", "at": [0.644, 0.671, 0.328], "size": [1.197, 0.478, 0.04], "color": "woodHi" },
+        { "prim": "box", "at": [0.644, 0.671, 0.348], "size": [1.057, 0.318, 0.02], "color": "wood" },
+        { "prim": "cyl", "at": [0.189, 0.671, 0.368], "rot": [90, 0, 0], "size": [0.03, 0.05, 0.03], "color": "metal" }
+      ]
+    },
+    "kititem.sideboard": {
+      "kind": "item",
+      "label": "Rosewick Sideboard",
+      "value": 1325,
+      "stack": 1,
+      "swatch": "#ae6148",
+      "badge": "counter",
+      "furniture": "fixture.sideboard",
+      "palette": {
+        "wrap": "#d9c7a4",
+        "wrapHi": "#eee1c7",
+        "strap": "#8a6242",
+        "mark": "#ae6148"
+      }
+    }
+  }
+}

@@ -1,0 +1,47 @@
+{
+  "format": "tw.kit",
+  "version": 1,
+  "meta": {
+    "id": "turnip.spider-plant",
+    "name": "Seaglass Spider Plant"
+  },
+  "types": {
+    "fixture.spider-plant": {
+      "kind": "object",
+      "label": "Seaglass Spider Plant",
+      "footprint": { "w": 1, "d": 1 },
+      "height": 0.84,
+      "squash": 0.34,
+      "palette": {
+        "dark": "#414a4a",
+        "accent": "#3f97a4",
+        "leaf": "#5aa87d"
+      },
+      "parts": [
+        { "prim": "taper", "at": [0, 0.177, 0], "size": [0.257, 0.354, 0.257], "color": "accent" },
+        { "prim": "cyl", "at": [0, 0.354, 0], "size": [0.277, 0.05, 0.277], "color": "accent" },
+        { "prim": "cyl", "at": [0, 0.374, 0], "size": [0.221, 0.04, 0.221], "color": "dark" },
+        { "prim": "cone", "at": [0.07, 0.614, 0], "rot": [0, 0, -9], "size": [0.05, 0.44, 0.05], "color": "leaf", "anim": { "pulse": { "amp": 0.08, "rate": 0.3, "phase": 0 } } },
+        { "prim": "cone", "at": [0.022, 0.614, 0.067], "rot": [8.56, 0, -2.781], "size": [0.05, 0.44, 0.05], "color": "leaf", "anim": { "pulse": { "amp": 0.08, "rate": 0.3, "phase": 0.2 } } },
+        { "prim": "cone", "at": [-0.057, 0.614, 0.041], "rot": [5.29, 0, 7.281], "size": [0.05, 0.44, 0.05], "color": "leaf", "anim": { "pulse": { "amp": 0.08, "rate": 0.3, "phase": 0.4 } } },
+        { "prim": "cone", "at": [-0.057, 0.614, -0.041], "rot": [-5.29, 0, 7.281], "size": [0.05, 0.44, 0.05], "color": "leaf", "anim": { "pulse": { "amp": 0.08, "rate": 0.3, "phase": 0.6000000000000001 } } },
+        { "prim": "cone", "at": [0.022, 0.614, -0.067], "rot": [-8.56, 0, -2.781], "size": [0.05, 0.44, 0.05], "color": "leaf", "anim": { "pulse": { "amp": 0.08, "rate": 0.3, "phase": 0.8 } } }
+      ]
+    },
+    "kititem.spider-plant": {
+      "kind": "item",
+      "label": "Seaglass Spider Plant",
+      "value": 170,
+      "stack": 1,
+      "swatch": "#4da483",
+      "badge": "plant",
+      "furniture": "fixture.spider-plant",
+      "palette": {
+        "wrap": "#d9c7a4",
+        "wrapHi": "#eee1c7",
+        "strap": "#8a6242",
+        "mark": "#4da483"
+      }
+    }
+  }
+}

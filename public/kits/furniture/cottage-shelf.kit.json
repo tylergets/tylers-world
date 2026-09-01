@@ -1,0 +1,45 @@
+{
+  "format": "tw.kit",
+  "version": 1,
+  "meta": {
+    "id": "turnip.cottage-shelf",
+    "name": "Seaglass Cottage Shelf"
+  },
+  "types": {
+    "fixture.cottage-shelf": {
+      "kind": "object",
+      "label": "Seaglass Cottage Shelf",
+      "footprint": { "w": 2, "d": 1 },
+      "height": 1.03,
+      "squash": 0.34,
+      "palette": {
+        "wood": "#a6a89c",
+        "woodHi": "#c2c4b8",
+        "woodDark": "#7b7d73"
+      },
+      "parts": [
+        { "prim": "box", "at": [0, 0.468, -0.197], "size": [1.777, 0.936, 0.05], "color": "woodDark" },
+        { "prim": "box", "at": [-0.879, 0.468, 0], "size": [0.08, 0.936, 0.453], "color": "wood" },
+        { "prim": "box", "at": [0.879, 0.468, 0], "size": [0.08, 0.936, 0.453], "color": "wood" },
+        { "prim": "box", "at": [0, 0.1, 0], "size": [1.697, 0.055, 0.403], "color": "wood" },
+        { "prim": "box", "at": [0, 0.836, 0], "size": [1.697, 0.055, 0.403], "color": "wood" },
+        { "prim": "box", "at": [0, 0.986, 0], "size": [1.897, 0.07, 0.503], "color": "woodHi" }
+      ]
+    },
+    "kititem.cottage-shelf": {
+      "kind": "item",
+      "label": "Seaglass Cottage Shelf",
+      "value": 275,
+      "stack": 1,
+      "swatch": "#578685",
+      "badge": "shelf",
+      "furniture": "fixture.cottage-shelf",
+      "palette": {
+        "wrap": "#d9c7a4",
+        "wrapHi": "#eee1c7",
+        "strap": "#8a6242",
+        "mark": "#578685"
+      }
+    }
+  }
+}

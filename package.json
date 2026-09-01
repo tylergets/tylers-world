@@ -6,8 +6,12 @@
   "description": "A dual-view (2D top-down / 3D isometric) browser world prototype.",
   "scripts": {
     "dev": "vite",
+    "predev": "npm run catalog",
     "build": "vite build",
+    "prebuild": "npm run catalog",
     "preview": "vite preview",
+    "catalog": "node tools/catalog.mjs",
+    "catalog:new": "node tools/make-catalog.mjs",
     "genworld": "node tools/genworld.mjs",
     "checkworld": "node tools/checkworld.mjs",
     "shoot": "node tools/shoot.mjs"

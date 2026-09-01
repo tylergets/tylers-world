@@ -1,0 +1,53 @@
+{
+  "format": "tw.kit",
+  "version": 1,
+  "meta": {
+    "id": "turnip.book-trolley",
+    "name": "Sootpine Book Trolley"
+  },
+  "types": {
+    "fixture.book-trolley": {
+      "kind": "object",
+      "label": "Sootpine Book Trolley",
+      "footprint": { "w": 1, "d": 1 },
+      "height": 1.3,
+      "squash": 0.34,
+      "palette": {
+        "wood": "#4a4640",
+        "woodHi": "#656057",
+        "dark": "#221f1c",
+        "metal": "#9aa0a6"
+      },
+      "parts": [
+        { "prim": "cyl", "at": [-0.288, 0.508, -0.209], "size": [0.024, 0.916, 0.024], "color": "metal" },
+        { "prim": "cyl", "at": [0.288, 0.508, -0.209], "size": [0.024, 0.916, 0.024], "color": "metal" },
+        { "prim": "cyl", "at": [-0.288, 0.508, 0.209], "size": [0.024, 0.916, 0.024], "color": "metal" },
+        { "prim": "cyl", "at": [0.288, 0.508, 0.209], "size": [0.024, 0.916, 0.024], "color": "metal" },
+        { "prim": "box", "at": [0, 0.2, 0], "size": [0.657, 0.05, 0.499], "color": "wood" },
+        { "prim": "box", "at": [0, 0.588, 0], "size": [0.657, 0.05, 0.499], "color": "wood" },
+        { "prim": "box", "at": [0, 0.976, 0], "size": [0.657, 0.05, 0.499], "color": "woodHi" },
+        { "prim": "cyl", "at": [-0.288, 0.06, -0.209], "rot": [0, 0, 90], "size": [0.06, 0.035, 0.06], "color": "dark" },
+        { "prim": "cyl", "at": [0.288, 0.06, -0.209], "rot": [0, 0, 90], "size": [0.06, 0.035, 0.06], "color": "dark" },
+        { "prim": "cyl", "at": [-0.288, 0.06, 0.209], "rot": [0, 0, 90], "size": [0.06, 0.035, 0.06], "color": "dark" },
+        { "prim": "cyl", "at": [0.288, 0.06, 0.209], "rot": [0, 0, 90], "size": [0.06, 0.035, 0.06], "color": "dark" },
+        { "prim": "cyl", "at": [0, 1.006, -0.209], "rot": [0, 0, 90], "size": [0.014, 0.577, 0.014], "color": "metal" },
+        { "prim": "cyl", "at": [0, 1.006, 0.209], "rot": [0, 0, 90], "size": [0.014, 0.577, 0.014], "color": "metal" }
+      ]
+    },
+    "kititem.book-trolley": {
+      "kind": "item",
+      "label": "Sootpine Book Trolley",
+      "value": 440,
+      "stack": 1,
+      "swatch": "#bc805a",
+      "badge": "shelf",
+      "furniture": "fixture.book-trolley",
+      "palette": {
+        "wrap": "#d9c7a4",
+        "wrapHi": "#eee1c7",
+        "strap": "#8a6242",
+        "mark": "#bc805a"
+      }
+    }
+  }
+}

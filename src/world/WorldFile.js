@@ -196,6 +196,12 @@ function parseShop(raw, path) {
       throw new WorldFileError(`"${key}" must be a non-negative number`, path);
     }
   }
+  if (raw.hours !== undefined) {
+    const { open, close } = raw.hours ?? {};
+    if (![open, close].every((n) => typeof n === 'number' && n >= 0 && n <= 24) || open === close) {
+      throw new WorldFileError('"hours" must be { open, close } with distinct hours from 0 to 24', path);
+    }
+  }
   if (raw.takes !== undefined) {
     if (!Array.isArray(raw.takes)) throw new WorldFileError('"takes" must be an array of item types', path);
     for (const t of raw.takes) {
@@ -223,6 +229,61 @@ function parseShop(raw, path) {
     }
   });
   return raw;
+}
+
+function parseSchedule(raw, width, height, path) {
+  if (raw === undefined) return [];
+  if (!Array.isArray(raw) || !raw.length) throw new WorldFileError('"schedule" must be a non-empty array', path);
+  const seen = new Set();
+  return raw.map((row, i) => {
+    const p = `${path}[${i}]`;
+    if (row === null || typeof row !== 'object' || Array.isArray(row)) throw new WorldFileError('a schedule row must be an object', p);
+    if (typeof row.at !== 'number' || row.at < 0 || row.at >= 24 || seen.has(row.at)) {
+      throw new WorldFileError('"at" must be a unique hour from 0 up to 24', p);
+    }
+    seen.add(row.at);
+    if (!Array.isArray(row.tile) || row.tile.length !== 2 || !row.tile.every(Number.isInteger)) {
+      throw new WorldFileError('"tile" must be [x, z] integers', p);
+    }
+    if (row.tile[0] < 0 || row.tile[1] < 0 || row.tile[0] >= width || row.tile[1] >= height) {
+      throw new WorldFileError('schedule tile is outside the grid', p);
+    }
+    const facing = row.facing ?? 'south';
+    if (DIR_FROM_NAME[facing] === undefined) throw new WorldFileError(`unknown facing "${facing}"`, p);
+    if (row.activity !== undefined && typeof row.activity !== 'string') throw new WorldFileError('"activity" must be a string', p);
+    if (row.available !== undefined && typeof row.available !== 'boolean') throw new WorldFileError('"available" must be boolean', p);
+    return { at: row.at, tile: [...row.tile], facing: DIR_FROM_NAME[facing], activity: row.activity ?? null, available: row.available ?? true };
+  }).sort((a, b) => a.at - b.at);
+}
+
+function parseErrands(raw, path) {
+  if (raw === undefined) return [];
+  if (!Array.isArray(raw)) throw new WorldFileError('"errands" must be an array', path);
+  const ids = new Set();
+  const kinds = ['gather', 'fish', 'process', 'change'];
+  return raw.map((e, i) => {
+    const p = `${path}[${i}]`;
+    if (!e || typeof e !== 'object' || Array.isArray(e)) throw new WorldFileError('an errand must be an object', p);
+    if (typeof e.id !== 'string' || !e.id || ids.has(e.id)) throw new WorldFileError('"id" must be a unique non-empty string', p);
+    ids.add(e.id);
+    if (typeof e.title !== 'string' || !e.title) throw new WorldFileError('"title" must be a non-empty string', p);
+    const objective = e.objective;
+    if (!objective || !kinds.includes(objective.kind) || !Number.isInteger(objective.count) || objective.count < 1) {
+      throw new WorldFileError(`objective needs kind (${kinds.join(', ')}) and a positive count`, p);
+    }
+    if (objective.item && !ITEM_TYPES[objective.item]) throw new WorldFileError(`unknown item type "${objective.item}"`, p);
+    // A processing errand may point into an interior kit that is loaded only
+    // when that room opens. Validate the reference shape here; the place graph
+    // checker is the layer that can see both files at once.
+    if (objective.fixture !== undefined && (typeof objective.fixture !== 'string' || !objective.fixture)) {
+      throw new WorldFileError('objective fixture must be a non-empty type id', p);
+    }
+    const reward = e.reward ?? {};
+    if (reward.coins !== undefined && (!Number.isInteger(reward.coins) || reward.coins < 0)) throw new WorldFileError('reward coins must be a non-negative integer', p);
+    if (reward.relationship !== undefined && (!Number.isInteger(reward.relationship) || reward.relationship < 0)) throw new WorldFileError('reward relationship must be a non-negative integer', p);
+    if (reward.item && (!ITEM_TYPES[reward.item.type] || !Number.isInteger(reward.item.count) || reward.item.count < 1)) throw new WorldFileError('reward item must be a known { type, count }', p);
+    return { id: e.id, title: e.title, objective: { ...objective }, reward: { ...reward } };
+  });
 }
 
 /** True if any effect anywhere in a script opens the trade interface. */
@@ -420,6 +481,13 @@ export function parseWorldFile(raw) {
         throw new WorldFileError(`type "${type}" has no '+' doorway cell, so props.interior can never be reached`, path);
       }
     }
+    if (props.requiresHouseStories !== undefined
+      && (!Number.isInteger(props.requiresHouseStories) || props.requiresHouseStories < 1 || props.requiresHouseStories > 3)) {
+      throw new WorldFileError('"props.requiresHouseStories" must be a house tier from 1 to 3', path);
+    }
+    if (props.playerHome !== undefined && typeof props.playerHome !== 'boolean') {
+      throw new WorldFileError('"props.playerHome" must be true or false', path);
+    }
 
     objects.push({
       id, type, rotation,
@@ -525,6 +593,8 @@ export function parseWorldFile(raw) {
     }
 
     const shop = p.shop === undefined ? null : parseShop(p.shop, `${path}.shop`);
+    const schedule = parseSchedule(p.schedule, width, height, `${path}.schedule`);
+    const errands = parseErrands(p.errands, `${path}.errands`);
     // A dialog that opens a shop on an NPC who has none would put an empty
     // counter on screen with a "buy" heading over it. Catch it in the file.
     if (dialog && !shop && dialogOpensShop(dialog)) {
@@ -534,7 +604,7 @@ export function parseWorldFile(raw) {
     npcs.push({
       id, type, tile: [ax, az],
       facing: DIR_FROM_NAME[facingName],
-      dialog, shop,
+      dialog, shop, schedule, errands,
       props: p.props ?? {},
     });
   });

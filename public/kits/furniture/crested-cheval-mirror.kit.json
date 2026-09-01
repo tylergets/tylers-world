@@ -1,0 +1,48 @@
+{
+  "format": "tw.kit",
+  "version": 1,
+  "meta": {
+    "id": "turnip.crested-cheval-mirror",
+    "name": "Rosewick Crested Cheval Mirror"
+  },
+  "types": {
+    "fixture.crested-cheval-mirror": {
+      "kind": "object",
+      "label": "Rosewick Crested Cheval Mirror",
+      "footprint": { "w": 1, "d": 1 },
+      "height": 1.65,
+      "squash": 0.3,
+      "palette": {
+        "wood": "#8f4a3c",
+        "woodHi": "#ab6150",
+        "woodDark": "#653228",
+        "glass": "#eddad6"
+      },
+      "parts": [
+        { "prim": "box", "at": [-0.252, 0.04, 0], "size": [0.1, 0.08, 0.42], "color": "woodDark" },
+        { "prim": "cyl", "at": [-0.252, 0.822, 0], "size": [0.035, 1.644, 0.035], "color": "wood" },
+        { "prim": "box", "at": [0.252, 0.04, 0], "size": [0.1, 0.08, 0.42], "color": "woodDark" },
+        { "prim": "cyl", "at": [0.252, 0.822, 0], "size": [0.035, 1.644, 0.035], "color": "wood" },
+        { "prim": "box", "at": [0, 0.263, 0], "size": [0.494, 0.06, 0.06], "color": "wood" },
+        { "prim": "box", "at": [0, 0.954, 0], "rot": [-6, 0, 0], "size": [0.484, 1.151, 0.06], "color": "woodHi" },
+        { "prim": "box", "at": [0, 0.954, 0.045], "rot": [-6, 0, 0], "size": [0.394, 1.019, 0.02], "color": "glass" },
+        { "prim": "box", "at": [0, 1.562, -0.02], "size": [0.504, 0.08, 0.07], "color": "woodHi" }
+      ]
+    },
+    "kititem.crested-cheval-mirror": {
+      "kind": "item",
+      "label": "Rosewick Crested Cheval Mirror",
+      "value": 795,
+      "stack": 1,
+      "swatch": "#b0817a",
+      "badge": "crate",
+      "furniture": "fixture.crested-cheval-mirror",
+      "palette": {
+        "wrap": "#d9c7a4",
+        "wrapHi": "#eee1c7",
+        "strap": "#8a6242",
+        "mark": "#b0817a"
+      }
+    }
+  }
+}

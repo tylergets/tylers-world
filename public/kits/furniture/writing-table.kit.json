@@ -1,0 +1,50 @@
+{
+  "format": "tw.kit",
+  "version": 1,
+  "meta": {
+    "id": "turnip.writing-table",
+    "name": "Meadowash Writing Table"
+  },
+  "types": {
+    "fixture.writing-table": {
+      "kind": "object",
+      "label": "Meadowash Writing Table",
+      "footprint": { "w": 2, "d": 1 },
+      "height": 0.87,
+      "squash": 0.34,
+      "palette": {
+        "wood": "#d6cdb6",
+        "woodHi": "#e9e2ce",
+        "woodDark": "#a89d84",
+        "metal": "#a9ada0"
+      },
+      "parts": [
+        { "prim": "box", "at": [-0.71, 0.377, -0.24], "size": [0.11, 0.754, 0.11], "color": "woodDark" },
+        { "prim": "box", "at": [0.71, 0.377, -0.24], "size": [0.11, 0.754, 0.11], "color": "woodDark" },
+        { "prim": "box", "at": [-0.71, 0.377, 0.24], "size": [0.11, 0.754, 0.11], "color": "woodDark" },
+        { "prim": "box", "at": [0.71, 0.377, 0.24], "size": [0.11, 0.754, 0.11], "color": "woodDark" },
+        { "prim": "box", "at": [0, 0.614, -0.28], "size": [1.38, 0.1, 0.06], "color": "wood" },
+        { "prim": "box", "at": [0, 0.614, 0.28], "size": [1.38, 0.1, 0.06], "color": "wood" },
+        { "prim": "box", "at": [0, 0.804, 0], "size": [1.7, 0.1, 0.76], "color": "wood" },
+        { "prim": "box", "at": [0, 0.859, 0], "size": [1.58, 0.02, 0.64], "color": "woodHi" },
+        { "prim": "box", "at": [0, 0.614, 0.35], "size": [0.85, 0.14, 0.05], "color": "woodHi" },
+        { "prim": "cyl", "at": [0, 0.614, 0.39], "rot": [90, 0, 0], "size": [0.03, 0.05, 0.03], "color": "metal" }
+      ]
+    },
+    "kititem.writing-table": {
+      "kind": "item",
+      "label": "Meadowash Writing Table",
+      "value": 470,
+      "stack": 1,
+      "swatch": "#8e9658",
+      "badge": "table",
+      "furniture": "fixture.writing-table",
+      "palette": {
+        "wrap": "#d9c7a4",
+        "wrapHi": "#eee1c7",
+        "strap": "#8a6242",
+        "mark": "#8e9658"
+      }
+    }
+  }
+}

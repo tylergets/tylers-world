@@ -1,0 +1,47 @@
+{
+  "format": "tw.kit",
+  "version": 1,
+  "meta": {
+    "id": "turnip.corner-shelf",
+    "name": "Turnipwood Corner Shelf"
+  },
+  "types": {
+    "fixture.corner-shelf": {
+      "kind": "object",
+      "label": "Turnipwood Corner Shelf",
+      "footprint": { "w": 1, "d": 1 },
+      "height": 1.52,
+      "squash": 0.34,
+      "palette": {
+        "wood": "#e8dcc4",
+        "woodHi": "#f6eeda",
+        "woodDark": "#c3b394"
+      },
+      "parts": [
+        { "prim": "box", "at": [0, 0.715, -0.195], "size": [0.849, 1.43, 0.05], "color": "woodDark" },
+        { "prim": "box", "at": [-0.414, 0.715, 0], "size": [0.08, 1.43, 0.451], "color": "wood" },
+        { "prim": "box", "at": [0.414, 0.715, 0], "size": [0.08, 1.43, 0.451], "color": "wood" },
+        { "prim": "box", "at": [0, 0.1, 0], "size": [0.769, 0.055, 0.401], "color": "wood" },
+        { "prim": "box", "at": [0, 0.51, 0], "size": [0.769, 0.055, 0.401], "color": "wood" },
+        { "prim": "box", "at": [0, 0.92, 0], "size": [0.769, 0.055, 0.401], "color": "wood" },
+        { "prim": "box", "at": [0, 1.33, 0], "size": [0.769, 0.055, 0.401], "color": "wood" },
+        { "prim": "box", "at": [0, 1.48, 0], "size": [0.969, 0.07, 0.501], "color": "woodHi" }
+      ]
+    },
+    "kititem.corner-shelf": {
+      "kind": "item",
+      "label": "Turnipwood Corner Shelf",
+      "value": 440,
+      "stack": 1,
+      "swatch": "#886d8c",
+      "badge": "shelf",
+      "furniture": "fixture.corner-shelf",
+      "palette": {
+        "wrap": "#d9c7a4",
+        "wrapHi": "#eee1c7",
+        "strap": "#8a6242",
+        "mark": "#886d8c"
+      }
+    }
+  }
+}

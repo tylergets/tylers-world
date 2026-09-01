@@ -1,0 +1,66 @@
+{
+  "format": "tw.kit",
+  "version": 1,
+  "meta": {
+    "id": "turnip.four-poster-bed",
+    "name": "Inkthorn Four-Poster Bed"
+  },
+  "types": {
+    "fixture.four-poster-bed": {
+      "kind": "object",
+      "label": "Inkthorn Four-Poster Bed",
+      "footprint": { "w": 2, "d": 3 },
+      "height": 2,
+      "squash": 0.34,
+      "palette": {
+        "wood": "#3a2f2a",
+        "woodHi": "#54443c",
+        "woodDark": "#241d1a",
+        "cloth": "#7a3f4a",
+        "clothHi": "#9b5762",
+        "pale": "#e6ddcb"
+      },
+      "parts": [
+        { "prim": "box", "at": [0, 0.16, 0], "size": [1.751, 0.32, 2.81], "color": "woodDark" },
+        { "prim": "box", "at": [-0.795, 0.05, -1.305], "size": [0.12, 0.1, 0.12], "color": "wood" },
+        { "prim": "box", "at": [0.795, 0.05, -1.305], "size": [0.12, 0.1, 0.12], "color": "wood" },
+        { "prim": "box", "at": [-0.795, 0.05, 1.305], "size": [0.12, 0.1, 0.12], "color": "wood" },
+        { "prim": "box", "at": [0.795, 0.05, 1.305], "size": [0.12, 0.1, 0.12], "color": "wood" },
+        { "prim": "box", "at": [0, 0.45, 0.1], "size": [1.651, 0.26, 2.55], "color": "pale" },
+        { "prim": "box", "at": [0, 0.61, 0.534], "size": [1.701, 0.14, 1.574], "color": "cloth" },
+        { "prim": "box", "at": [0, 0.65, -0.253], "size": [1.701, 0.06, 0.12], "color": "clothHi" },
+        { "prim": "box", "at": [-0.385, 0.66, -1.065], "size": [0.7, 0.18, 0.42], "color": "pale" },
+        { "prim": "box", "at": [0.385, 0.66, -1.065], "size": [0.7, 0.18, 0.42], "color": "pale" },
+        { "prim": "box", "at": [0, 0.53, -1.355], "size": [1.751, 0.86, 0.11], "color": "wood" },
+        { "prim": "box", "at": [0, 1, -1.355], "size": [1.801, 0.1, 0.16], "color": "woodHi" },
+        { "prim": "cyl", "at": [-0.805, 1, -1.315], "size": [0.05, 2, 0.05], "color": "wood" },
+        { "prim": "cyl", "at": [0.805, 1, -1.315], "size": [0.05, 2, 0.05], "color": "wood" },
+        { "prim": "cyl", "at": [-0.805, 1, 1.315], "size": [0.05, 2, 0.05], "color": "wood" },
+        { "prim": "cyl", "at": [0.805, 1, 1.315], "size": [0.05, 2, 0.05], "color": "wood" },
+        { "prim": "box", "at": [0, 1.96, -1.315], "size": [1.751, 0.08, 0.08], "color": "woodHi" },
+        { "prim": "box", "at": [0, 1.96, 1.315], "size": [1.751, 0.08, 0.08], "color": "woodHi" },
+        { "prim": "box", "at": [-0.805, 1.96, 0], "size": [0.08, 0.08, 2.81], "color": "woodHi" },
+        { "prim": "box", "at": [0.805, 1.96, 0], "size": [0.08, 0.08, 2.81], "color": "woodHi" },
+        { "prim": "box", "at": [-0.775, 1.24, -1.265], "size": [0.14, 1.32, 0.14], "color": "cloth" },
+        { "prim": "box", "at": [0.775, 1.24, -1.265], "size": [0.14, 1.32, 0.14], "color": "cloth" },
+        { "prim": "box", "at": [-0.775, 1.24, 1.265], "size": [0.14, 1.32, 0.14], "color": "cloth" },
+        { "prim": "box", "at": [0.775, 1.24, 1.265], "size": [0.14, 1.32, 0.14], "color": "cloth" }
+      ]
+    },
+    "kititem.four-poster-bed": {
+      "kind": "item",
+      "label": "Inkthorn Four-Poster Bed",
+      "value": 2185,
+      "stack": 1,
+      "swatch": "#a0975d",
+      "badge": "bed",
+      "furniture": "fixture.four-poster-bed",
+      "palette": {
+        "wrap": "#d9c7a4",
+        "wrapHi": "#eee1c7",
+        "strap": "#8a6242",
+        "mark": "#a0975d"
+      }
+    }
+  }
+}

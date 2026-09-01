@@ -1,0 +1,57 @@
+{
+  "format": "tw.kit",
+  "version": 1,
+  "meta": {
+    "id": "turnip.dovecote",
+    "name": "Hollowmilk Dovecote"
+  },
+  "types": {
+    "fixture.dovecote": {
+      "kind": "object",
+      "label": "Hollowmilk Dovecote",
+      "footprint": { "w": 2, "d": 1 },
+      "height": 1.24,
+      "squash": 0.3,
+      "palette": {
+        "wood": "#f2ece0",
+        "woodHi": "#fdfaf2",
+        "woodDark": "#cfc7b6",
+        "metal": "#b6bcc1"
+      },
+      "parts": [
+        { "prim": "box", "at": [-0.685, 0.17, -0.224], "size": [0.09, 0.34, 0.09], "color": "woodDark" },
+        { "prim": "box", "at": [0.685, 0.17, -0.224], "size": [0.09, 0.34, 0.09], "color": "woodDark" },
+        { "prim": "box", "at": [-0.685, 0.17, 0.224], "size": [0.09, 0.34, 0.09], "color": "woodDark" },
+        { "prim": "box", "at": [0.685, 0.17, 0.224], "size": [0.09, 0.34, 0.09], "color": "woodDark" },
+        { "prim": "box", "at": [0, 0.741, 0], "size": [1.51, 0.802, 0.588], "color": "wood" },
+        { "prim": "box", "at": [0, 1.192, 0], "size": [1.63, 0.08, 0.708], "color": "woodHi" },
+        { "prim": "cyl", "at": [-0.658, 0.741, 0.304], "size": [0.012, 0.722, 0.012], "color": "metal" },
+        { "prim": "cyl", "at": [-0.554, 0.741, 0.304], "size": [0.012, 0.722, 0.012], "color": "metal" },
+        { "prim": "cyl", "at": [-0.45, 0.741, 0.304], "size": [0.012, 0.722, 0.012], "color": "metal" },
+        { "prim": "cyl", "at": [-0.346, 0.741, 0.304], "size": [0.012, 0.722, 0.012], "color": "metal" },
+        { "prim": "cyl", "at": [-0.242, 0.741, 0.304], "size": [0.012, 0.722, 0.012], "color": "metal" },
+        { "prim": "cyl", "at": [-0.138, 0.741, 0.304], "size": [0.012, 0.722, 0.012], "color": "metal" },
+        { "prim": "cyl", "at": [-0.034, 0.741, 0.304], "size": [0.012, 0.722, 0.012], "color": "metal" },
+        { "prim": "cyl", "at": [0.07, 0.741, 0.304], "size": [0.012, 0.722, 0.012], "color": "metal" },
+        { "prim": "cyl", "at": [0.174, 0.741, 0.304], "size": [0.012, 0.722, 0.012], "color": "metal" },
+        { "prim": "box", "at": [0.483, 0.741, 0.304], "size": [0.453, 0.742, 0.04], "color": "woodHi" },
+        { "prim": "cyl", "at": [0.634, 0.741, 0.334], "rot": [90, 0, 0], "size": [0.026, 0.045, 0.026], "color": "metal" }
+      ]
+    },
+    "kititem.dovecote": {
+      "kind": "item",
+      "label": "Hollowmilk Dovecote",
+      "value": 710,
+      "stack": 1,
+      "swatch": "#7b8990",
+      "badge": "plant",
+      "furniture": "fixture.dovecote",
+      "palette": {
+        "wrap": "#d9c7a4",
+        "wrapHi": "#eee1c7",
+        "strap": "#8a6242",
+        "mark": "#7b8990"
+      }
+    }
+  }
+}

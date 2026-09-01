@@ -1,0 +1,45 @@
+{
+  "format": "tw.kit",
+  "version": 1,
+  "meta": {
+    "id": "turnip.birdbath",
+    "name": "Meadowash Birdbath"
+  },
+  "types": {
+    "fixture.birdbath": {
+      "kind": "object",
+      "label": "Meadowash Birdbath",
+      "footprint": { "w": 1, "d": 1 },
+      "height": 1.14,
+      "squash": 0.34,
+      "palette": {
+        "pale": "#f4f1e6",
+        "metal": "#a9ada0",
+        "accent": "#6f9c5a",
+        "glass": "#dcecdf"
+      },
+      "parts": [
+        { "prim": "cyl", "at": [0, 0.06, 0], "size": [0.32, 0.12, 0.32], "color": "metal" },
+        { "prim": "taper", "at": [0, 0.478, 0], "size": [0.1, 0.823, 0.1], "color": "metal" },
+        { "prim": "cyl", "at": [0, 0.957, 0], "size": [0.42, 0.12, 0.42], "color": "pale" },
+        { "prim": "cyl", "at": [0, 0.997, 0], "size": [0.35, 0.04, 0.35], "color": "glass", "anim": { "bob": { "amp": 0.012, "rate": 0.5 } } },
+        { "prim": "blob", "at": [0.16, 1.077, 0.08], "size": [0.07, 0.06, 0.05], "color": "accent", "anim": { "bob": { "amp": 0.03, "rate": 0.9 } } }
+      ]
+    },
+    "kititem.birdbath": {
+      "kind": "item",
+      "label": "Meadowash Birdbath",
+      "value": 410,
+      "stack": 1,
+      "swatch": "#639a78",
+      "badge": "stove",
+      "furniture": "fixture.birdbath",
+      "palette": {
+        "wrap": "#d9c7a4",
+        "wrapHi": "#eee1c7",
+        "strap": "#8a6242",
+        "mark": "#639a78"
+      }
+    }
+  }
+}

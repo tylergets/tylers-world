@@ -1,0 +1,46 @@
+{
+  "format": "tw.kit",
+  "version": 1,
+  "meta": {
+    "id": "turnip.music-stand",
+    "name": "Sootpine Music Stand"
+  },
+  "types": {
+    "fixture.music-stand": {
+      "kind": "object",
+      "label": "Sootpine Music Stand",
+      "footprint": { "w": 1, "d": 1 },
+      "height": 1.43,
+      "squash": 0.3,
+      "palette": {
+        "dark": "#221f1c",
+        "metal": "#9aa0a6"
+      },
+      "parts": [
+        { "prim": "cyl", "at": [0.16, 0.1, 0], "rot": [0, 0, -34], "size": [0.016, 0.2, 0.016], "color": "metal" },
+        { "prim": "cyl", "at": [-0.08, 0.1, 0.139], "rot": [29.445, 0, 17], "size": [0.016, 0.2, 0.016], "color": "metal" },
+        { "prim": "cyl", "at": [-0.08, 0.1, -0.139], "rot": [-29.445, 0, 17], "size": [0.016, 0.2, 0.016], "color": "metal" },
+        { "prim": "cyl", "at": [0, 0.61, 0], "size": [0.02, 1.22, 0.02], "color": "metal" },
+        { "prim": "box", "at": [0, 1.28, 0.02], "rot": [-24, 0, 0], "size": [0.42, 0.3, 0.02], "color": "metal" },
+        { "prim": "box", "at": [0, 1.2, 0.05], "rot": [-24, 0, 0], "size": [0.38, 0.02, 0.01], "color": "dark" },
+        { "prim": "box", "at": [0, 1.28, 0.05], "rot": [-24, 0, 0], "size": [0.38, 0.02, 0.01], "color": "dark" },
+        { "prim": "box", "at": [0, 1.36, 0.05], "rot": [-24, 0, 0], "size": [0.38, 0.02, 0.01], "color": "dark" }
+      ]
+    },
+    "kititem.music-stand": {
+      "kind": "item",
+      "label": "Sootpine Music Stand",
+      "value": 285,
+      "stack": 1,
+      "swatch": "#b07e5f",
+      "badge": "plant",
+      "furniture": "fixture.music-stand",
+      "palette": {
+        "wrap": "#d9c7a4",
+        "wrapHi": "#eee1c7",
+        "strap": "#8a6242",
+        "mark": "#b07e5f"
+      }
+    }
+  }
+}

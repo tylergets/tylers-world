@@ -1,0 +1,56 @@
+{
+  "format": "tw.kit",
+  "version": 1,
+  "meta": {
+    "id": "turnip.corner-chair",
+    "name": "Fenrush Corner Chair"
+  },
+  "types": {
+    "fixture.corner-chair": {
+      "kind": "object",
+      "label": "Fenrush Corner Chair",
+      "footprint": { "w": 1, "d": 1 },
+      "height": 1.1,
+      "squash": 0.34,
+      "palette": {
+        "wood": "#d9bb7a",
+        "woodHi": "#ecd69c",
+        "woodDark": "#a8873f"
+      },
+      "parts": [
+        { "prim": "box", "at": [-0.25, 0.215, -0.234], "size": [0.075, 0.43, 0.075], "color": "woodDark" },
+        { "prim": "box", "at": [0.25, 0.215, -0.234], "size": [0.075, 0.43, 0.075], "color": "woodDark" },
+        { "prim": "box", "at": [-0.25, 0.215, 0.234], "size": [0.075, 0.43, 0.075], "color": "woodDark" },
+        { "prim": "box", "at": [0.25, 0.215, 0.234], "size": [0.075, 0.43, 0.075], "color": "woodDark" },
+        { "prim": "box", "at": [0, 0.129, -0.234], "size": [0.48, 0.04, 0.04], "color": "woodDark" },
+        { "prim": "box", "at": [0, 0.129, 0.234], "size": [0.48, 0.04, 0.04], "color": "woodDark" },
+        { "prim": "cyl", "at": [0, 0.475, 0], "size": [0.32, 0.09, 0.304], "color": "wood" },
+        { "prim": "cyl", "at": [-0.25, 0.782, -0.234], "size": [0.03, 0.524, 0.03], "color": "woodDark" },
+        { "prim": "cyl", "at": [0.25, 0.782, -0.234], "size": [0.03, 0.524, 0.03], "color": "woodDark" },
+        { "prim": "box", "at": [0, 1.044, -0.234], "size": [0.64, 0.1, 0.06], "color": "woodHi" },
+        { "prim": "box", "at": [-0.166, 0.782, -0.234], "size": [0.128, 0.524, 0.03], "color": "wood" },
+        { "prim": "box", "at": [0, 0.782, -0.234], "size": [0.128, 0.524, 0.03], "color": "wood" },
+        { "prim": "box", "at": [0.166, 0.782, -0.234], "size": [0.128, 0.524, 0.03], "color": "wood" },
+        { "prim": "box", "at": [-0.3, 0.68, -0.03], "size": [0.07, 0.055, 0.489], "color": "woodHi" },
+        { "prim": "cyl", "at": [-0.3, 0.57, 0.184], "size": [0.023, 0.22, 0.023], "color": "woodDark" },
+        { "prim": "box", "at": [0.3, 0.68, -0.03], "size": [0.07, 0.055, 0.489], "color": "woodHi" },
+        { "prim": "cyl", "at": [0.3, 0.57, 0.184], "size": [0.023, 0.22, 0.023], "color": "woodDark" }
+      ]
+    },
+    "kititem.corner-chair": {
+      "kind": "item",
+      "label": "Fenrush Corner Chair",
+      "value": 205,
+      "stack": 1,
+      "swatch": "#bb8940",
+      "badge": "chair",
+      "furniture": "fixture.corner-chair",
+      "palette": {
+        "wrap": "#d9c7a4",
+        "wrapHi": "#eee1c7",
+        "strap": "#8a6242",
+        "mark": "#bb8940"
+      }
+    }
+  }
+}

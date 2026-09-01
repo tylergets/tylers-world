@@ -1,0 +1,46 @@
+{
+  "format": "tw.kit",
+  "version": 1,
+  "meta": {
+    "id": "turnip.trunk",
+    "name": "Inkthorn Trunk"
+  },
+  "types": {
+    "fixture.trunk": {
+      "kind": "object",
+      "label": "Inkthorn Trunk",
+      "footprint": { "w": 1, "d": 1 },
+      "height": 0.88,
+      "squash": 0.34,
+      "palette": {
+        "wood": "#3a2f2a",
+        "woodHi": "#54443c",
+        "metal": "#c8a24a"
+      },
+      "parts": [
+        { "prim": "box", "at": [0, 0.237, 0], "size": [0.761, 0.474, 0.578], "color": "wood" },
+        { "prim": "cyl", "at": [0, 0.494, 0], "rot": [0, 0, 90], "size": [0.289, 0.761, 0.289], "color": "woodHi" },
+        { "prim": "box", "at": [-0.228, 0.261, 0], "size": [0.05, 0.634, 0.598], "color": "metal" },
+        { "prim": "box", "at": [0.228, 0.261, 0], "size": [0.05, 0.634, 0.598], "color": "metal" },
+        { "prim": "box", "at": [0, 0.407, 0.309], "size": [0.13, 0.13, 0.03], "color": "metal" },
+        { "prim": "cyl", "at": [-0.39, 0.284, 0], "rot": [90, 0, 0], "size": [0.02, 0.231, 0.02], "color": "metal" },
+        { "prim": "cyl", "at": [0.39, 0.284, 0], "rot": [90, 0, 0], "size": [0.02, 0.231, 0.02], "color": "metal" }
+      ]
+    },
+    "kititem.trunk": {
+      "kind": "item",
+      "label": "Inkthorn Trunk",
+      "value": 625,
+      "stack": 1,
+      "swatch": "#b79330",
+      "badge": "crate",
+      "furniture": "fixture.trunk",
+      "palette": {
+        "wrap": "#d9c7a4",
+        "wrapHi": "#eee1c7",
+        "strap": "#8a6242",
+        "mark": "#b79330"
+      }
+    }
+  }
+}

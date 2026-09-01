@@ -90,6 +90,10 @@ export const ITEM_TYPES = {
     swatch: 0xe8c24b,
     palette: { stem: 0x4f9e3f, petal: 0xf2e6a0, petalHi: 0xfaf3cf, heart: 0xe8c24b },
   },
+  'item.dried-flower': {
+    label: 'Dried Flowers', stack: 20, value: 28, height: 0.24, swatch: 0xb98b55,
+    palette: { stem: 0x76623f, petal: 0xb98b55, petalHi: 0xd0ab72, heart: 0x7f5d34 },
+  },
 
   // -------------------------------------------------------------- furniture --
   // Furniture travels as a flat-packed item and becomes its linked world object
@@ -331,6 +335,12 @@ export function itemType(typeId) {
   const t = ITEM_TYPES[typeId];
   if (!t) throw new Error(`Unknown item type: "${typeId}"`);
   return t;
+}
+
+/** The flat-pack item that assembles into an object type, or null. */
+export function furnitureItemFor(objectTypeId) {
+  for (const [id, type] of Object.entries(ITEM_TYPES)) if (type.furniture === objectTypeId) return id;
+  return null;
 }
 
 /**

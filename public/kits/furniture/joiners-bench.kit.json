@@ -1,0 +1,55 @@
+{
+  "format": "tw.kit",
+  "version": 1,
+  "meta": {
+    "id": "turnip.joiners-bench",
+    "name": "Coppervale Joiner's Bench"
+  },
+  "types": {
+    "fixture.joiners-bench": {
+      "kind": "object",
+      "label": "Coppervale Joiner's Bench",
+      "footprint": { "w": 3, "d": 1 },
+      "height": 1.57,
+      "squash": 0.34,
+      "palette": {
+        "wood": "#a9763f",
+        "woodHi": "#c6924f",
+        "woodDark": "#7a5329",
+        "metal": "#b5713c"
+      },
+      "parts": [
+        { "prim": "box", "at": [-0.948, 0.423, -0.243], "size": [0.12, 0.847, 0.12], "color": "woodDark" },
+        { "prim": "box", "at": [0.948, 0.423, -0.243], "size": [0.12, 0.847, 0.12], "color": "woodDark" },
+        { "prim": "box", "at": [-0.948, 0.423, 0.243], "size": [0.12, 0.847, 0.12], "color": "woodDark" },
+        { "prim": "box", "at": [0.948, 0.423, 0.243], "size": [0.12, 0.847, 0.12], "color": "woodDark" },
+        { "prim": "box", "at": [0, 0.254, 0], "size": [1.936, 0.07, 0.347], "color": "woodDark" },
+        { "prim": "box", "at": [0, 0.907, 0], "size": [2.136, 0.12, 0.687], "color": "wood" },
+        { "prim": "box", "at": [0, 0.977, 0], "size": [1.996, 0.02, 0.567], "color": "woodHi" },
+        { "prim": "box", "at": [-0.812, 0.867, 0.363], "size": [0.24, 0.18, 0.1], "color": "metal" },
+        { "prim": "cyl", "at": [-0.812, 0.787, 0.423], "rot": [0, 0, 90], "size": [0.02, 0.22, 0.02], "color": "metal" },
+        { "prim": "box", "at": [0, 1.267, -0.303], "size": [2.136, 0.6, 0.05], "color": "woodHi" },
+        { "prim": "cyl", "at": [-0.769, 1.247, -0.243], "size": [0.018, 0.34, 0.018], "color": "metal" },
+        { "prim": "cyl", "at": [-0.384, 1.247, -0.243], "size": [0.018, 0.34, 0.018], "color": "metal" },
+        { "prim": "cyl", "at": [0, 1.247, -0.243], "size": [0.018, 0.34, 0.018], "color": "metal" },
+        { "prim": "cyl", "at": [0.384, 1.247, -0.243], "size": [0.018, 0.34, 0.018], "color": "metal" },
+        { "prim": "cyl", "at": [0.769, 1.247, -0.243], "size": [0.018, 0.34, 0.018], "color": "metal" }
+      ]
+    },
+    "kititem.joiners-bench": {
+      "kind": "item",
+      "label": "Coppervale Joiner's Bench",
+      "value": 1045,
+      "stack": 1,
+      "swatch": "#b17043",
+      "badge": "stove",
+      "furniture": "fixture.joiners-bench",
+      "palette": {
+        "wrap": "#d9c7a4",
+        "wrapHi": "#eee1c7",
+        "strap": "#8a6242",
+        "mark": "#b17043"
+      }
+    }
+  }
+}

@@ -1,0 +1,46 @@
+{
+  "format": "tw.kit",
+  "version": 1,
+  "meta": {
+    "id": "turnip.cobblers-stool",
+    "name": "Coppervale Cobbler's Stool"
+  },
+  "types": {
+    "fixture.cobblers-stool": {
+      "kind": "object",
+      "label": "Coppervale Cobbler's Stool",
+      "footprint": { "w": 1, "d": 1 },
+      "height": 0.54,
+      "squash": 0.34,
+      "palette": {
+        "wood": "#a9763f",
+        "woodHi": "#c6924f",
+        "woodDark": "#7a5329"
+      },
+      "parts": [
+        { "prim": "cyl", "at": [0.17, 0.218, 0], "rot": [0, 0, -8], "size": [0.032, 0.437, 0.032], "color": "woodDark" },
+        { "prim": "cyl", "at": [0, 0.218, 0.17], "rot": [8, 0, 0], "size": [0.032, 0.437, 0.032], "color": "woodDark" },
+        { "prim": "cyl", "at": [-0.17, 0.218, 0], "rot": [0, 0, 8], "size": [0.032, 0.437, 0.032], "color": "woodDark" },
+        { "prim": "cyl", "at": [0, 0.218, -0.17], "rot": [-8, 0, 0], "size": [0.032, 0.437, 0.032], "color": "woodDark" },
+        { "prim": "cyl", "at": [0, 0.149, 0], "size": [0.161, 0.025, 0.161], "color": "woodDark" },
+        { "prim": "box", "at": [0, 0.477, 0], "size": [0.474, 0.08, 0.474], "color": "wood" },
+        { "prim": "box", "at": [0, 0.527, 0], "size": [0.403, 0.02, 0.403], "color": "woodHi" }
+      ]
+    },
+    "kititem.cobblers-stool": {
+      "kind": "item",
+      "label": "Coppervale Cobbler's Stool",
+      "value": 115,
+      "stack": 1,
+      "swatch": "#c37a3f",
+      "badge": "chair",
+      "furniture": "fixture.cobblers-stool",
+      "palette": {
+        "wrap": "#d9c7a4",
+        "wrapHi": "#eee1c7",
+        "strap": "#8a6242",
+        "mark": "#c37a3f"
+      }
+    }
+  }
+}

@@ -1,0 +1,47 @@
+{
+  "format": "tw.kit",
+  "version": 1,
+  "meta": {
+    "id": "turnip.tavern-stool",
+    "name": "Inkthorn Tavern Stool"
+  },
+  "types": {
+    "fixture.tavern-stool": {
+      "kind": "object",
+      "label": "Inkthorn Tavern Stool",
+      "footprint": { "w": 1, "d": 1 },
+      "height": 0.71,
+      "squash": 0.34,
+      "palette": {
+        "wood": "#3a2f2a",
+        "woodHi": "#54443c",
+        "woodDark": "#241d1a",
+        "metal": "#c8a24a"
+      },
+      "parts": [
+        { "prim": "cyl", "at": [0.166, 0.302, 0], "rot": [0, 0, -8], "size": [0.032, 0.603, 0.032], "color": "woodDark" },
+        { "prim": "cyl", "at": [-0.083, 0.302, 0.144], "rot": [6.928, 0, 4], "size": [0.032, 0.603, 0.032], "color": "woodDark" },
+        { "prim": "cyl", "at": [-0.083, 0.302, -0.144], "rot": [-6.928, 0, 4], "size": [0.032, 0.603, 0.032], "color": "woodDark" },
+        { "prim": "cyl", "at": [0, 0.205, 0], "size": [0.157, 0.025, 0.157], "color": "woodDark" },
+        { "prim": "cyl", "at": [0, 0.338, 0], "size": [0.194, 0.022, 0.194], "color": "metal" },
+        { "prim": "cyl", "at": [0, 0.643, 0], "size": [0.231, 0.08, 0.231], "color": "wood" },
+        { "prim": "cyl", "at": [0, 0.693, 0], "size": [0.198, 0.02, 0.198], "color": "woodHi" }
+      ]
+    },
+    "kititem.tavern-stool": {
+      "kind": "item",
+      "label": "Inkthorn Tavern Stool",
+      "value": 170,
+      "stack": 1,
+      "swatch": "#c39d36",
+      "badge": "chair",
+      "furniture": "fixture.tavern-stool",
+      "palette": {
+        "wrap": "#d9c7a4",
+        "wrapHi": "#eee1c7",
+        "strap": "#8a6242",
+        "mark": "#c39d36"
+      }
+    }
+  }
+}

@@ -1,0 +1,54 @@
+{
+  "format": "tw.kit",
+  "version": 1,
+  "meta": {
+    "id": "turnip.settee",
+    "name": "Meadowash Settee"
+  },
+  "types": {
+    "fixture.settee": {
+      "kind": "object",
+      "label": "Meadowash Settee",
+      "footprint": { "w": 3, "d": 1 },
+      "height": 0.98,
+      "squash": 0.34,
+      "palette": {
+        "woodHi": "#e9e2ce",
+        "woodDark": "#a89d84",
+        "cloth": "#8faa74",
+        "clothHi": "#a9c290"
+      },
+      "parts": [
+        { "prim": "box", "at": [-1.282, 0.06, -0.249], "size": [0.1, 0.12, 0.1], "color": "woodDark" },
+        { "prim": "box", "at": [1.282, 0.06, -0.249], "size": [0.1, 0.12, 0.1], "color": "woodDark" },
+        { "prim": "box", "at": [-1.282, 0.06, 0.249], "size": [0.1, 0.12, 0.1], "color": "woodDark" },
+        { "prim": "box", "at": [1.282, 0.06, 0.249], "size": [0.1, 0.12, 0.1], "color": "woodDark" },
+        { "prim": "box", "at": [0, 0.26, 0.02], "size": [2.745, 0.28, 0.718], "color": "cloth" },
+        { "prim": "box", "at": [-0.835, 0.48, 0.03], "size": [0.792, 0.16, 0.538], "color": "cloth" },
+        { "prim": "box", "at": [0, 0.48, 0.03], "size": [0.792, 0.16, 0.538], "color": "clothHi" },
+        { "prim": "box", "at": [0.835, 0.48, 0.03], "size": [0.792, 0.16, 0.538], "color": "cloth" },
+        { "prim": "box", "at": [0, 0.632, -0.269], "size": [2.785, 0.62, 0.2], "color": "cloth" },
+        { "prim": "box", "at": [0, 0.93, -0.269], "size": [2.785, 0.08, 0.24], "color": "woodHi" },
+        { "prim": "box", "at": [-1.342, 0.6, 0.02], "size": [0.07, 0.06, 0.678], "color": "woodHi" },
+        { "prim": "cyl", "at": [-1.342, 0.42, 0.269], "size": [0.026, 0.36, 0.026], "color": "woodDark" },
+        { "prim": "box", "at": [1.342, 0.6, 0.02], "size": [0.07, 0.06, 0.678], "color": "woodHi" },
+        { "prim": "cyl", "at": [1.342, 0.42, 0.269], "size": [0.026, 0.36, 0.026], "color": "woodDark" }
+      ]
+    },
+    "kititem.settee": {
+      "kind": "item",
+      "label": "Meadowash Settee",
+      "value": 770,
+      "stack": 1,
+      "swatch": "#828366",
+      "badge": "chair",
+      "furniture": "fixture.settee",
+      "palette": {
+        "wrap": "#d9c7a4",
+        "wrapHi": "#eee1c7",
+        "strap": "#8a6242",
+        "mark": "#828366"
+      }
+    }
+  }
+}

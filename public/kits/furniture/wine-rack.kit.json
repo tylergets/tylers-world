@@ -1,0 +1,61 @@
+{
+  "format": "tw.kit",
+  "version": 1,
+  "meta": {
+    "id": "turnip.wine-rack",
+    "name": "Turnipwood Wine Rack"
+  },
+  "types": {
+    "fixture.wine-rack": {
+      "kind": "object",
+      "label": "Turnipwood Wine Rack",
+      "footprint": { "w": 1, "d": 1 },
+      "height": 1.06,
+      "squash": 0.34,
+      "palette": {
+        "wood": "#e8dcc4",
+        "woodHi": "#f6eeda",
+        "accent": "#8e6fb0",
+        "glass": "#d8e8ef"
+      },
+      "parts": [
+        { "prim": "box", "at": [-0.3, 0.455, -0.2], "size": [0.06, 0.909, 0.06], "color": "wood" },
+        { "prim": "box", "at": [0.3, 0.455, -0.2], "size": [0.06, 0.909, 0.06], "color": "wood" },
+        { "prim": "box", "at": [-0.3, 0.455, 0.2], "size": [0.06, 0.909, 0.06], "color": "wood" },
+        { "prim": "box", "at": [0.3, 0.455, 0.2], "size": [0.06, 0.909, 0.06], "color": "wood" },
+        { "prim": "box", "at": [0, 0.14, 0], "size": [0.62, 0.04, 0.44], "color": "woodHi" },
+        { "prim": "cyl", "at": [-0.18, 0.21, 0], "rot": [90, 0, 0], "size": [0.045, 0.36, 0.045], "color": "glass" },
+        { "prim": "cyl", "at": [0, 0.21, 0], "rot": [90, 0, 0], "size": [0.045, 0.36, 0.045], "color": "accent" },
+        { "prim": "cyl", "at": [0.18, 0.21, 0], "rot": [90, 0, 0], "size": [0.045, 0.36, 0.045], "color": "glass" },
+        { "prim": "box", "at": [0, 0.363, 0], "size": [0.62, 0.04, 0.44], "color": "woodHi" },
+        { "prim": "cyl", "at": [-0.18, 0.433, 0], "rot": [90, 0, 0], "size": [0.045, 0.36, 0.045], "color": "accent" },
+        { "prim": "cyl", "at": [0, 0.433, 0], "rot": [90, 0, 0], "size": [0.045, 0.36, 0.045], "color": "glass" },
+        { "prim": "cyl", "at": [0.18, 0.433, 0], "rot": [90, 0, 0], "size": [0.045, 0.36, 0.045], "color": "accent" },
+        { "prim": "box", "at": [0, 0.586, 0], "size": [0.62, 0.04, 0.44], "color": "woodHi" },
+        { "prim": "cyl", "at": [-0.18, 0.656, 0], "rot": [90, 0, 0], "size": [0.045, 0.36, 0.045], "color": "glass" },
+        { "prim": "cyl", "at": [0, 0.656, 0], "rot": [90, 0, 0], "size": [0.045, 0.36, 0.045], "color": "accent" },
+        { "prim": "cyl", "at": [0.18, 0.656, 0], "rot": [90, 0, 0], "size": [0.045, 0.36, 0.045], "color": "glass" },
+        { "prim": "box", "at": [0, 0.809, 0], "size": [0.62, 0.04, 0.44], "color": "woodHi" },
+        { "prim": "cyl", "at": [-0.18, 0.879, 0], "rot": [90, 0, 0], "size": [0.045, 0.36, 0.045], "color": "accent" },
+        { "prim": "cyl", "at": [0, 0.879, 0], "rot": [90, 0, 0], "size": [0.045, 0.36, 0.045], "color": "glass" },
+        { "prim": "cyl", "at": [0.18, 0.879, 0], "rot": [90, 0, 0], "size": [0.045, 0.36, 0.045], "color": "accent" },
+        { "prim": "box", "at": [0, 0.939, 0], "size": [0.68, 0.05, 0.5], "color": "woodHi" }
+      ]
+    },
+    "kititem.wine-rack": {
+      "kind": "item",
+      "label": "Turnipwood Wine Rack",
+      "value": 600,
+      "stack": 1,
+      "swatch": "#937995",
+      "badge": "shelf",
+      "furniture": "fixture.wine-rack",
+      "palette": {
+        "wrap": "#d9c7a4",
+        "wrapHi": "#eee1c7",
+        "strap": "#8a6242",
+        "mark": "#937995"
+      }
+    }
+  }
+}

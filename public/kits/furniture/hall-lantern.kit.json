@@ -1,0 +1,47 @@
+{
+  "format": "tw.kit",
+  "version": 1,
+  "meta": {
+    "id": "turnip.hall-lantern",
+    "name": "Meadowash Hall Lantern"
+  },
+  "types": {
+    "fixture.hall-lantern": {
+      "kind": "object",
+      "label": "Meadowash Hall Lantern",
+      "footprint": { "w": 1, "d": 1 },
+      "height": 1.8,
+      "squash": 0.3,
+      "palette": {
+        "wood": "#d6cdb6",
+        "woodDark": "#a89d84",
+        "pale": "#f4f1e6",
+        "metal": "#a9ada0",
+        "glass": "#dcecdf"
+      },
+      "parts": [
+        { "prim": "cyl", "at": [0, 0.045, 0], "size": [0.22, 0.09, 0.22], "color": "woodDark" },
+        { "prim": "cyl", "at": [0, 0.792, 0], "size": [0.035, 1.457, 0.035], "color": "wood" },
+        { "prim": "box", "at": [0, 1.489, 0], "size": [0.234, 0.34, 0.234], "color": "metal" },
+        { "prim": "box", "at": [0, 1.489, 0], "size": [0.198, 0.26, 0.198], "color": "glass" },
+        { "prim": "pyr", "at": [0, 1.729, 0], "size": [0.171, 0.14, 0.171], "color": "metal" },
+        { "prim": "blob", "at": [0, 1.469, 0], "size": [0.11, 0.11, 0.11], "color": "pale", "anim": { "pulse": { "amp": 0.16, "rate": 0.62 } } }
+      ]
+    },
+    "kititem.hall-lantern": {
+      "kind": "item",
+      "label": "Meadowash Hall Lantern",
+      "value": 370,
+      "stack": 1,
+      "swatch": "#9daa54",
+      "badge": "crate",
+      "furniture": "fixture.hall-lantern",
+      "palette": {
+        "wrap": "#d9c7a4",
+        "wrapHi": "#eee1c7",
+        "strap": "#8a6242",
+        "mark": "#9daa54"
+      }
+    }
+  }
+}

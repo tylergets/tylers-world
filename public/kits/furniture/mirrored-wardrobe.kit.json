@@ -1,0 +1,51 @@
+{
+  "format": "tw.kit",
+  "version": 1,
+  "meta": {
+    "id": "turnip.mirrored-wardrobe",
+    "name": "Hollowmilk Mirrored Wardrobe"
+  },
+  "types": {
+    "fixture.mirrored-wardrobe": {
+      "kind": "object",
+      "label": "Hollowmilk Mirrored Wardrobe",
+      "footprint": { "w": 2, "d": 1 },
+      "height": 2.18,
+      "squash": 0.34,
+      "palette": {
+        "wood": "#f2ece0",
+        "woodHi": "#fdfaf2",
+        "woodDark": "#cfc7b6",
+        "metal": "#b6bcc1",
+        "glass": "#dceaf4"
+      },
+      "parts": [
+        { "prim": "box", "at": [0, 0.06, 0], "size": [1.761, 0.12, 0.67], "color": "woodDark" },
+        { "prim": "box", "at": [0, 1.067, 0], "size": [1.721, 1.893, 0.63], "color": "wood" },
+        { "prim": "box", "at": [0, 2.053, 0], "size": [1.821, 0.08, 0.73], "color": "woodHi" },
+        { "prim": "box", "at": [0, 2.133, 0], "size": [1.741, 0.08, 0.65], "color": "wood" },
+        { "prim": "box", "at": [-0.43, 1.062, 0.325], "size": [0.771, 1.803, 0.04], "color": "woodHi" },
+        { "prim": "box", "at": [-0.43, 1.062, 0.345], "size": [0.631, 1.643, 0.02], "color": "wood" },
+        { "prim": "cyl", "at": [-0.137, 1.062, 0.365], "rot": [90, 0, 0], "size": [0.03, 0.05, 0.03], "color": "metal" },
+        { "prim": "box", "at": [0.43, 1.062, 0.325], "size": [0.771, 1.803, 0.04], "color": "woodHi" },
+        { "prim": "box", "at": [0.43, 1.062, 0.345], "size": [0.651, 1.663, 0.02], "color": "glass" },
+        { "prim": "cyl", "at": [0.137, 1.062, 0.365], "rot": [90, 0, 0], "size": [0.03, 0.05, 0.03], "color": "metal" }
+      ]
+    },
+    "kititem.mirrored-wardrobe": {
+      "kind": "item",
+      "label": "Hollowmilk Mirrored Wardrobe",
+      "value": 1585,
+      "stack": 1,
+      "swatch": "#657086",
+      "badge": "counter",
+      "furniture": "fixture.mirrored-wardrobe",
+      "palette": {
+        "wrap": "#d9c7a4",
+        "wrapHi": "#eee1c7",
+        "strap": "#8a6242",
+        "mark": "#657086"
+      }
+    }
+  }
+}

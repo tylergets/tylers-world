@@ -346,6 +346,19 @@ for (const [id, badge] of Object.entries(FURNITURE)) {
   GLYPHS[id] = (p) => PARCEL(p, badge);
 }
 
+/**
+ * The same eight stamps, addressable by NAME rather than by type id.
+ *
+ * For flat-packs that came out of a kit file (world/kit.js), where the piece
+ * inside is a wardrobe or a loom or a birdcage stand and the parcel it travels
+ * as is still one of these eight. A kit item names the family it belongs to in
+ * its `badge` field; anything unrecognised -- an older build reading a newer
+ * catalogue -- draws the plain parcel, which is a correct picture of a wrapped
+ * board and not a broken one.
+ */
+const BADGES = Object.fromEntries(
+  Object.entries(FURNITURE).map(([id, badge]) => [id.slice('furnitem.'.length), badge]));
+
 /** Built strings, keyed by type id. A slot redraw should not re-run a template. */
 const CACHE = new Map();
 
@@ -358,12 +371,30 @@ const CACHE = new Map();
  */
 export function itemIcon(typeId) {
   if (CACHE.has(typeId)) return CACHE.get(typeId);
-  const glyph = GLYPHS[typeId];
+  const type = itemType(typeId);
+  const glyph = GLYPHS[typeId] ?? kitGlyph(type);
   const svg = glyph
-    ? `<svg class="icon" viewBox="0 0 24 24" aria-hidden="true">${glyph(itemType(typeId).palette)}</svg>`
+    ? `<svg class="icon" viewBox="0 0 24 24" aria-hidden="true">${glyph(type.palette)}</svg>`
     : null;
   CACHE.set(typeId, svg);
   return svg;
+}
+
+/**
+ * The drawing for an item that arrived in a file, or null.
+ *
+ * Only flat-packs get one, and that is the whole of the rule. A kit item with a
+ * `furniture` link IS a wrapped board with a strap round it -- the same object
+ * the eight built-in parcels are -- so drawing it as one claims nothing that is
+ * not true, and it buys the bag the read that actually matters at 40 pixels:
+ * this slot holds furniture rather than food or a tool. A kit item with a model
+ * of its own has made no such claim, so it falls through to the colour chip
+ * rather than being dressed as a parcel it is not.
+ */
+function kitGlyph(type) {
+  if (!type.fromKit || !type.furniture) return null;
+  const badge = BADGES[type.badge] ?? BADGES.crate;
+  return (p) => PARCEL(p, badge);
 }
 
 /** Whether a type has a drawing of its own. For anyone auditing the registry. */

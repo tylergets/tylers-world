@@ -1,0 +1,46 @@
+{
+  "format": "tw.kit",
+  "version": 1,
+  "meta": {
+    "id": "turnip.laundry-trough",
+    "name": "Meadowash Laundry Trough"
+  },
+  "types": {
+    "fixture.laundry-trough": {
+      "kind": "object",
+      "label": "Meadowash Laundry Trough",
+      "footprint": { "w": 2, "d": 1 },
+      "height": 0.88,
+      "squash": 0.34,
+      "palette": {
+        "woodDark": "#a89d84",
+        "dark": "#5f6350",
+        "metal": "#a9ada0",
+        "glass": "#dcecdf"
+      },
+      "parts": [
+        { "prim": "box", "at": [0, 0.3, 0], "size": [1.399, 0.44, 0.56], "color": "metal" },
+        { "prim": "box", "at": [0, 0.5, 0], "size": [1.299, 0.1, 0.46], "color": "dark" },
+        { "prim": "box", "at": [0, 0.5, 0], "size": [1.239, 0.06, 0.4], "color": "glass", "anim": { "bob": { "amp": 0.012, "rate": 0.45 } } },
+        { "prim": "box", "at": [-0.579, 0.05, 0], "size": [0.14, 0.1, 0.5], "color": "woodDark" },
+        { "prim": "box", "at": [0.579, 0.05, 0], "size": [0.14, 0.1, 0.5], "color": "woodDark" },
+        { "prim": "cyl", "at": [0, 0.7, -0.3], "size": [0.03, 0.36, 0.03], "color": "metal" }
+      ]
+    },
+    "kititem.laundry-trough": {
+      "kind": "item",
+      "label": "Meadowash Laundry Trough",
+      "value": 515,
+      "stack": 1,
+      "swatch": "#75a180",
+      "badge": "stove",
+      "furniture": "fixture.laundry-trough",
+      "palette": {
+        "wrap": "#d9c7a4",
+        "wrapHi": "#eee1c7",
+        "strap": "#8a6242",
+        "mark": "#75a180"
+      }
+    }
+  }
+}

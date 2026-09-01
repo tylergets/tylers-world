@@ -1,0 +1,52 @@
+{
+  "format": "tw.kit",
+  "version": 1,
+  "meta": {
+    "id": "turnip.kitchen-trolley",
+    "name": "Meadowash Kitchen Trolley"
+  },
+  "types": {
+    "fixture.kitchen-trolley": {
+      "kind": "object",
+      "label": "Meadowash Kitchen Trolley",
+      "footprint": { "w": 1, "d": 1 },
+      "height": 1.2,
+      "squash": 0.34,
+      "palette": {
+        "wood": "#d6cdb6",
+        "woodHi": "#e9e2ce",
+        "dark": "#5f6350",
+        "metal": "#a9ada0"
+      },
+      "parts": [
+        { "prim": "cyl", "at": [-0.309, 0.511, -0.211], "size": [0.024, 0.923, 0.024], "color": "metal" },
+        { "prim": "cyl", "at": [0.309, 0.511, -0.211], "size": [0.024, 0.923, 0.024], "color": "metal" },
+        { "prim": "cyl", "at": [-0.309, 0.511, 0.211], "size": [0.024, 0.923, 0.024], "color": "metal" },
+        { "prim": "cyl", "at": [0.309, 0.511, 0.211], "size": [0.024, 0.923, 0.024], "color": "metal" },
+        { "prim": "box", "at": [0, 0.2, 0], "size": [0.697, 0.05, 0.503], "color": "wood" },
+        { "prim": "box", "at": [0, 0.591, 0], "size": [0.697, 0.05, 0.503], "color": "wood" },
+        { "prim": "box", "at": [0, 0.983, 0], "size": [0.697, 0.05, 0.503], "color": "woodHi" },
+        { "prim": "cyl", "at": [-0.309, 0.06, -0.211], "rot": [0, 0, 90], "size": [0.06, 0.035, 0.06], "color": "dark" },
+        { "prim": "cyl", "at": [0.309, 0.06, -0.211], "rot": [0, 0, 90], "size": [0.06, 0.035, 0.06], "color": "dark" },
+        { "prim": "cyl", "at": [-0.309, 0.06, 0.211], "rot": [0, 0, 90], "size": [0.06, 0.035, 0.06], "color": "dark" },
+        { "prim": "cyl", "at": [0.309, 0.06, 0.211], "rot": [0, 0, 90], "size": [0.06, 0.035, 0.06], "color": "dark" },
+        { "prim": "box", "at": [0, 1.083, 0], "size": [0.577, 0.22, 0.403], "color": "wood" }
+      ]
+    },
+    "kititem.kitchen-trolley": {
+      "kind": "item",
+      "label": "Meadowash Kitchen Trolley",
+      "value": 430,
+      "stack": 1,
+      "swatch": "#7b976e",
+      "badge": "shelf",
+      "furniture": "fixture.kitchen-trolley",
+      "palette": {
+        "wrap": "#d9c7a4",
+        "wrapHi": "#eee1c7",
+        "strap": "#8a6242",
+        "mark": "#7b976e"
+      }
+    }
+  }
+}

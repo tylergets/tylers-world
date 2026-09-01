@@ -356,6 +356,9 @@ function hex(v, path, key) {
  */
 const KINDS = { object: 'fixture.', item: 'kititem.' };
 
+/** The four colours the shared flat-pack parcel is painted from. */
+const PARCEL_KEYS = ['wrap', 'wrapHi', 'strap', 'mark'];
+
 function checkType(id, raw, path) {
   if (!isObj(raw)) throw new KitError('a type must be an object', path);
 
@@ -428,6 +431,29 @@ function checkItemType(id, raw, path) {
   if (!furniture && !parts) {
     throw new KitError('an item needs "parts" of its own or a "furniture" link', path);
   }
+  // A flat-pack with no model of its own is drawn as the parcel every other
+  // flat-pack in the game is drawn as, and the parcel is painted from four
+  // named colours (see `furnitureItem` in itemTypes.js, which names the same
+  // four for the same reason). Checked here, where a missing key is one message
+  // naming the file, rather than at the first frame the bag tries to draw it.
+  if (furniture && !parts) {
+    const missing = PARCEL_KEYS.filter((k) => !(k in palette));
+    if (missing.length) {
+      throw new KitError(
+        `a flat-pack is drawn as a parcel and its palette needs ${missing.join(', ')}`,
+        `${path}.palette`);
+    }
+  }
+
+  // Purely presentational, and it sits here for the same reason `swatch` does
+  // (see itemTypes.js): which of eight stamped silhouettes says "this parcel
+  // holds a chair" is a judgement about a drawing, not something derivable from
+  // a footprint. A free string rather than a checked enum, because the table it
+  // names lives in ui/icons.js and this module must stay loadable in node --
+  // an unknown name falls back to a plain parcel there rather than erroring.
+  if (raw.badge !== undefined && (typeof raw.badge !== 'string' || !raw.badge.trim())) {
+    throw new KitError('"badge" must be a non-empty string', path);
+  }
 
   return {
     id,
@@ -435,6 +461,7 @@ function checkItemType(id, raw, path) {
     /** Marks a type as coming from a file, for everything that must not assume. */
     fromKit: true,
     label: raw.label,
+    badge: raw.badge ?? null,
     stack,
     value,
     height,

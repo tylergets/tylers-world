@@ -1,0 +1,57 @@
+{
+  "format": "tw.kit",
+  "version": 1,
+  "meta": {
+    "id": "turnip.pet-run",
+    "name": "Seaglass Pet Run"
+  },
+  "types": {
+    "fixture.pet-run": {
+      "kind": "object",
+      "label": "Seaglass Pet Run",
+      "footprint": { "w": 2, "d": 1 },
+      "height": 0.99,
+      "squash": 0.3,
+      "palette": {
+        "wood": "#a6a89c",
+        "woodHi": "#c2c4b8",
+        "woodDark": "#7b7d73",
+        "metal": "#8f969c"
+      },
+      "parts": [
+        { "prim": "box", "at": [-0.813, 0.1, -0.231], "size": [0.09, 0.2, 0.09], "color": "woodDark" },
+        { "prim": "box", "at": [0.813, 0.1, -0.231], "size": [0.09, 0.2, 0.09], "color": "woodDark" },
+        { "prim": "box", "at": [-0.813, 0.1, 0.231], "size": [0.09, 0.2, 0.09], "color": "woodDark" },
+        { "prim": "box", "at": [0.813, 0.1, 0.231], "size": [0.09, 0.2, 0.09], "color": "woodDark" },
+        { "prim": "box", "at": [0, 0.547, 0], "size": [1.765, 0.694, 0.602], "color": "wood" },
+        { "prim": "box", "at": [0, 0.944, 0], "size": [1.885, 0.08, 0.722], "color": "woodHi" },
+        { "prim": "cyl", "at": [-0.769, 0.547, 0.311], "size": [0.012, 0.614, 0.012], "color": "metal" },
+        { "prim": "cyl", "at": [-0.647, 0.547, 0.311], "size": [0.012, 0.614, 0.012], "color": "metal" },
+        { "prim": "cyl", "at": [-0.526, 0.547, 0.311], "size": [0.012, 0.614, 0.012], "color": "metal" },
+        { "prim": "cyl", "at": [-0.404, 0.547, 0.311], "size": [0.012, 0.614, 0.012], "color": "metal" },
+        { "prim": "cyl", "at": [-0.282, 0.547, 0.311], "size": [0.012, 0.614, 0.012], "color": "metal" },
+        { "prim": "cyl", "at": [-0.161, 0.547, 0.311], "size": [0.012, 0.614, 0.012], "color": "metal" },
+        { "prim": "cyl", "at": [-0.039, 0.547, 0.311], "size": [0.012, 0.614, 0.012], "color": "metal" },
+        { "prim": "cyl", "at": [0.082, 0.547, 0.311], "size": [0.012, 0.614, 0.012], "color": "metal" },
+        { "prim": "cyl", "at": [0.204, 0.547, 0.311], "size": [0.012, 0.614, 0.012], "color": "metal" },
+        { "prim": "box", "at": [0.565, 0.547, 0.311], "size": [0.53, 0.634, 0.04], "color": "woodHi" },
+        { "prim": "cyl", "at": [0.741, 0.547, 0.341], "rot": [90, 0, 0], "size": [0.026, 0.045, 0.026], "color": "metal" }
+      ]
+    },
+    "kititem.pet-run": {
+      "kind": "item",
+      "label": "Seaglass Pet Run",
+      "value": 525,
+      "stack": 1,
+      "swatch": "#719c89",
+      "badge": "plant",
+      "furniture": "fixture.pet-run",
+      "palette": {
+        "wrap": "#d9c7a4",
+        "wrapHi": "#eee1c7",
+        "strap": "#8a6242",
+        "mark": "#719c89"
+      }
+    }
+  }
+}

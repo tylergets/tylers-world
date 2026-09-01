@@ -1,0 +1,66 @@
+{
+  "format": "tw.kit",
+  "version": 1,
+  "meta": {
+    "id": "turnip.canopy-bed",
+    "name": "Hollowmilk Canopy Bed"
+  },
+  "types": {
+    "fixture.canopy-bed": {
+      "kind": "object",
+      "label": "Hollowmilk Canopy Bed",
+      "footprint": { "w": 2, "d": 3 },
+      "height": 2,
+      "squash": 0.34,
+      "palette": {
+        "wood": "#f2ece0",
+        "woodHi": "#fdfaf2",
+        "woodDark": "#cfc7b6",
+        "cloth": "#5878ab",
+        "clothHi": "#7d9bc9",
+        "pale": "#ffffff"
+      },
+      "parts": [
+        { "prim": "box", "at": [0, 0.16, 0], "size": [1.776, 0.32, 2.671], "color": "woodDark" },
+        { "prim": "box", "at": [-0.808, 0.05, -1.236], "size": [0.12, 0.1, 0.12], "color": "wood" },
+        { "prim": "box", "at": [0.808, 0.05, -1.236], "size": [0.12, 0.1, 0.12], "color": "wood" },
+        { "prim": "box", "at": [-0.808, 0.05, 1.236], "size": [0.12, 0.1, 0.12], "color": "wood" },
+        { "prim": "box", "at": [0.808, 0.05, 1.236], "size": [0.12, 0.1, 0.12], "color": "wood" },
+        { "prim": "box", "at": [0, 0.45, 0.1], "size": [1.676, 0.26, 2.411], "color": "pale" },
+        { "prim": "box", "at": [0, 0.61, 0.507], "size": [1.726, 0.14, 1.496], "color": "cloth" },
+        { "prim": "box", "at": [0, 0.65, -0.24], "size": [1.726, 0.06, 0.12], "color": "clothHi" },
+        { "prim": "box", "at": [-0.391, 0.66, -0.996], "size": [0.71, 0.18, 0.42], "color": "pale" },
+        { "prim": "box", "at": [0.391, 0.66, -0.996], "size": [0.71, 0.18, 0.42], "color": "pale" },
+        { "prim": "box", "at": [-0.828, 0.53, -1.286], "size": [0.1, 0.86, 0.1], "color": "wood" },
+        { "prim": "box", "at": [0.828, 0.53, -1.286], "size": [0.1, 0.86, 0.1], "color": "wood" },
+        { "prim": "box", "at": [0, 0.378, -1.286], "size": [1.616, 0.09, 0.05], "color": "woodHi" },
+        { "prim": "box", "at": [0, 0.578, -1.286], "size": [1.616, 0.09, 0.05], "color": "woodHi" },
+        { "prim": "box", "at": [0, 0.779, -1.286], "size": [1.616, 0.09, 0.05], "color": "woodHi" },
+        { "prim": "box", "at": [0, 0.98, -1.286], "size": [1.616, 0.09, 0.05], "color": "woodHi" },
+        { "prim": "cyl", "at": [-0.818, 1, -1.246], "size": [0.05, 2, 0.05], "color": "wood" },
+        { "prim": "cyl", "at": [0.818, 1, -1.246], "size": [0.05, 2, 0.05], "color": "wood" },
+        { "prim": "cyl", "at": [-0.818, 1, 1.246], "size": [0.05, 2, 0.05], "color": "wood" },
+        { "prim": "cyl", "at": [0.818, 1, 1.246], "size": [0.05, 2, 0.05], "color": "wood" },
+        { "prim": "box", "at": [0, 1.96, -1.246], "size": [1.776, 0.08, 0.08], "color": "woodHi" },
+        { "prim": "box", "at": [0, 1.96, 1.246], "size": [1.776, 0.08, 0.08], "color": "woodHi" },
+        { "prim": "box", "at": [-0.818, 1.96, 0], "size": [0.08, 0.08, 2.671], "color": "woodHi" },
+        { "prim": "box", "at": [0.818, 1.96, 0], "size": [0.08, 0.08, 2.671], "color": "woodHi" }
+      ]
+    },
+    "kititem.canopy-bed": {
+      "kind": "item",
+      "label": "Hollowmilk Canopy Bed",
+      "value": 1610,
+      "stack": 1,
+      "swatch": "#547eb2",
+      "badge": "bed",
+      "furniture": "fixture.canopy-bed",
+      "palette": {
+        "wrap": "#d9c7a4",
+        "wrapHi": "#eee1c7",
+        "strap": "#8a6242",
+        "mark": "#547eb2"
+      }
+    }
+  }
+}

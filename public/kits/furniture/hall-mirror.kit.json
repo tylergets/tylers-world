@@ -1,0 +1,43 @@
+{
+  "format": "tw.kit",
+  "version": 1,
+  "meta": {
+    "id": "turnip.hall-mirror",
+    "name": "Inkthorn Hall Mirror"
+  },
+  "types": {
+    "fixture.hall-mirror": {
+      "kind": "object",
+      "label": "Inkthorn Hall Mirror",
+      "footprint": { "w": 1, "d": 1 },
+      "height": 1.54,
+      "squash": 0.3,
+      "palette": {
+        "wood": "#3a2f2a",
+        "woodDark": "#241d1a",
+        "glass": "#9fb6bd"
+      },
+      "parts": [
+        { "prim": "box", "at": [0, 0.05, 0.1], "size": [0.64, 0.1, 0.3], "color": "woodDark" },
+        { "prim": "box", "at": [0, 0.822, 0], "rot": [-8, 0, 0], "size": [0.5, 1.423, 0.07], "color": "wood" },
+        { "prim": "box", "at": [0, 0.822, 0.05], "rot": [-8, 0, 0], "size": [0.39, 1.297, 0.02], "color": "glass" },
+        { "prim": "box", "at": [0, 0.791, -0.16], "rot": [14, 0, 0], "size": [0.07, 1.265, 0.05], "color": "woodDark" }
+      ]
+    },
+    "kititem.hall-mirror": {
+      "kind": "item",
+      "label": "Inkthorn Hall Mirror",
+      "value": 660,
+      "stack": 1,
+      "swatch": "#b3aa63",
+      "badge": "crate",
+      "furniture": "fixture.hall-mirror",
+      "palette": {
+        "wrap": "#d9c7a4",
+        "wrapHi": "#eee1c7",
+        "strap": "#8a6242",
+        "mark": "#b3aa63"
+      }
+    }
+  }
+}

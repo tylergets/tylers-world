@@ -1,0 +1,48 @@
+{
+  "format": "tw.kit",
+  "version": 1,
+  "meta": {
+    "id": "turnip.parlour-fountain",
+    "name": "Turnipwood Parlour Fountain"
+  },
+  "types": {
+    "fixture.parlour-fountain": {
+      "kind": "object",
+      "label": "Turnipwood Parlour Fountain",
+      "footprint": { "w": 2, "d": 2 },
+      "height": 0.86,
+      "squash": 0.34,
+      "palette": {
+        "pale": "#fbf7ee",
+        "metal": "#b9a98d",
+        "glass": "#d8e8ef"
+      },
+      "parts": [
+        { "prim": "cyl", "at": [0, 0.11, 0], "size": [0.72, 0.22, 0.72], "color": "metal" },
+        { "prim": "cyl", "at": [0, 0.3, 0], "size": [0.66, 0.18, 0.66], "color": "pale" },
+        { "prim": "cyl", "at": [0, 0.36, 0], "size": [0.56, 0.06, 0.56], "color": "glass", "anim": { "bob": { "amp": 0.014, "rate": 0.45 } } },
+        { "prim": "taper", "at": [0, 0.58, 0], "size": [0.11, 0.468, 0.11], "color": "metal" },
+        { "prim": "cyl", "at": [0, 0.823, 0], "size": [0.26, 0.06, 0.26], "color": "pale" },
+        { "prim": "cyl", "at": [0.18, 0.674, 0], "size": [0.028, 0.3, 0.028], "color": "glass", "anim": { "flow": { "amp": 0.36, "rate": 1.1, "phase": 0 } } },
+        { "prim": "cyl", "at": [0, 0.674, 0.18], "size": [0.028, 0.3, 0.028], "color": "glass", "anim": { "flow": { "amp": 0.36, "rate": 1.1, "phase": 0.25 } } },
+        { "prim": "cyl", "at": [-0.18, 0.674, 0], "size": [0.028, 0.3, 0.028], "color": "glass", "anim": { "flow": { "amp": 0.36, "rate": 1.1, "phase": 0.5 } } },
+        { "prim": "cyl", "at": [0, 0.674, -0.18], "size": [0.028, 0.3, 0.028], "color": "glass", "anim": { "flow": { "amp": 0.36, "rate": 1.1, "phase": 0.75 } } }
+      ]
+    },
+    "kititem.parlour-fountain": {
+      "kind": "item",
+      "label": "Turnipwood Parlour Fountain",
+      "value": 1610,
+      "stack": 1,
+      "swatch": "#767ead",
+      "badge": "stove",
+      "furniture": "fixture.parlour-fountain",
+      "palette": {
+        "wrap": "#d9c7a4",
+        "wrapHi": "#eee1c7",
+        "strap": "#8a6242",
+        "mark": "#767ead"
+      }
+    }
+  }
+}

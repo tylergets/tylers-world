@@ -1,0 +1,43 @@
+{
+  "format": "tw.kit",
+  "version": 1,
+  "meta": {
+    "id": "turnip.bottle-crate",
+    "name": "Seaglass Bottle Crate"
+  },
+  "types": {
+    "fixture.bottle-crate": {
+      "kind": "object",
+      "label": "Seaglass Bottle Crate",
+      "footprint": { "w": 1, "d": 1 },
+      "height": 0.45,
+      "squash": 0.34,
+      "palette": {
+        "wood": "#a6a89c",
+        "woodHi": "#c2c4b8"
+      },
+      "parts": [
+        { "prim": "box", "at": [0, 0.183, 0], "size": [0.839, 0.367, 0.577], "color": "wood" },
+        { "prim": "box", "at": [0, 0.073, 0.294], "size": [0.849, 0.073, 0.02], "color": "woodHi" },
+        { "prim": "box", "at": [0, 0.183, 0.294], "size": [0.849, 0.073, 0.02], "color": "woodHi" },
+        { "prim": "box", "at": [0, 0.293, 0.294], "size": [0.849, 0.073, 0.02], "color": "woodHi" },
+        { "prim": "box", "at": [0, 0.407, 0], "size": [0.889, 0.08, 0.627], "color": "woodHi" }
+      ]
+    },
+    "kititem.bottle-crate": {
+      "kind": "item",
+      "label": "Seaglass Bottle Crate",
+      "value": 115,
+      "stack": 1,
+      "swatch": "#628c7e",
+      "badge": "crate",
+      "furniture": "fixture.bottle-crate",
+      "palette": {
+        "wrap": "#d9c7a4",
+        "wrapHi": "#eee1c7",
+        "strap": "#8a6242",
+        "mark": "#628c7e"
+      }
+    }
+  }
+}

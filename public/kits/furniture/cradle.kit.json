@@ -1,0 +1,50 @@
+{
+  "format": "tw.kit",
+  "version": 1,
+  "meta": {
+    "id": "turnip.cradle",
+    "name": "Hollowmilk Cradle"
+  },
+  "types": {
+    "fixture.cradle": {
+      "kind": "object",
+      "label": "Hollowmilk Cradle",
+      "footprint": { "w": 1, "d": 1 },
+      "height": 0.48,
+      "squash": 0.34,
+      "palette": {
+        "wood": "#f2ece0",
+        "woodHi": "#fdfaf2",
+        "woodDark": "#cfc7b6",
+        "cloth": "#5878ab",
+        "pale": "#ffffff"
+      },
+      "parts": [
+        { "prim": "box", "at": [0, 0.05, -0.32], "size": [0.62, 0.1, 0.09], "color": "woodHi" },
+        { "prim": "box", "at": [0, 0.05, 0.32], "size": [0.62, 0.1, 0.09], "color": "woodHi" },
+        { "prim": "box", "at": [0, 0.269, -0.3], "size": [0.6, 0.32, 0.05], "color": "wood" },
+        { "prim": "box", "at": [0, 0.269, 0.3], "size": [0.6, 0.32, 0.05], "color": "wood" },
+        { "prim": "box", "at": [-0.3, 0.294, 0], "rot": [0, 0, -6], "size": [0.05, 0.371, 0.6], "color": "wood" },
+        { "prim": "box", "at": [0.3, 0.294, 0], "rot": [0, 0, 6], "size": [0.05, 0.371, 0.6], "color": "wood" },
+        { "prim": "box", "at": [0, 0.179, 0], "size": [0.56, 0.05, 0.56], "color": "woodDark" },
+        { "prim": "box", "at": [0, 0.256, 0.04], "size": [0.5, 0.12, 0.46], "color": "pale" },
+        { "prim": "box", "at": [0, 0.307, 0.12], "size": [0.5, 0.06, 0.3], "color": "cloth" }
+      ]
+    },
+    "kititem.cradle": {
+      "kind": "item",
+      "label": "Hollowmilk Cradle",
+      "value": 575,
+      "stack": 1,
+      "swatch": "#6c819b",
+      "badge": "crate",
+      "furniture": "fixture.cradle",
+      "palette": {
+        "wrap": "#d9c7a4",
+        "wrapHi": "#eee1c7",
+        "strap": "#8a6242",
+        "mark": "#6c819b"
+      }
+    }
+  }
+}

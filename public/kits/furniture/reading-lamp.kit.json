@@ -1,0 +1,47 @@
+{
+  "format": "tw.kit",
+  "version": 1,
+  "meta": {
+    "id": "turnip.reading-lamp",
+    "name": "Inkthorn Reading Lamp"
+  },
+  "types": {
+    "fixture.reading-lamp": {
+      "kind": "object",
+      "label": "Inkthorn Reading Lamp",
+      "footprint": { "w": 1, "d": 1 },
+      "height": 1.49,
+      "squash": 0.3,
+      "palette": {
+        "woodDark": "#241d1a",
+        "cloth": "#7a3f4a",
+        "clothHi": "#9b5762",
+        "pale": "#e6ddcb",
+        "metal": "#c8a24a"
+      },
+      "parts": [
+        { "prim": "cyl", "at": [0, 0.045, 0], "size": [0.22, 0.09, 0.22], "color": "woodDark" },
+        { "prim": "cyl", "at": [0, 0.653, 0], "size": [0.035, 1.202, 0.035], "color": "metal" },
+        { "prim": "cone", "at": [0, 1.288, 0], "rot": [180, 0, 0], "size": [0.22, 0.4, 0.22], "color": "cloth" },
+        { "prim": "cyl", "at": [0, 1.098, 0], "size": [0.22, 0.03, 0.22], "color": "clothHi" },
+        { "prim": "blob", "at": [0, 1.208, 0], "size": [0.11, 0.11, 0.11], "color": "pale", "anim": { "pulse": { "amp": 0.16, "rate": 0.62 } } },
+        { "prim": "cyl", "at": [0.11, 1.008, 0], "size": [0.008, 0.14, 0.008], "color": "metal" }
+      ]
+    },
+    "kititem.reading-lamp": {
+      "kind": "item",
+      "label": "Inkthorn Reading Lamp",
+      "value": 435,
+      "stack": 1,
+      "swatch": "#d5ae35",
+      "badge": "crate",
+      "furniture": "fixture.reading-lamp",
+      "palette": {
+        "wrap": "#d9c7a4",
+        "wrapHi": "#eee1c7",
+        "strap": "#8a6242",
+        "mark": "#d5ae35"
+      }
+    }
+  }
+}

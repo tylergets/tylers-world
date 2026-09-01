@@ -1,0 +1,51 @@
+{
+  "format": "tw.kit",
+  "version": 1,
+  "meta": {
+    "id": "turnip.four-fold-screen",
+    "name": "Rosewick Four-Fold Screen"
+  },
+  "types": {
+    "fixture.four-fold-screen": {
+      "kind": "object",
+      "label": "Rosewick Four-Fold Screen",
+      "footprint": { "w": 3, "d": 1 },
+      "height": 1.71,
+      "squash": 0.3,
+      "palette": {
+        "wood": "#8f4a3c",
+        "woodDark": "#653228",
+        "cloth": "#e0b7ad"
+      },
+      "parts": [
+        { "prim": "box", "at": [-0.902, 0.851, -0.08], "rot": [0, 18, 0], "size": [0.64, 1.702, 0.06], "color": "wood" },
+        { "prim": "box", "at": [-0.902, 0.919, -0.06], "rot": [0, 18, 0], "size": [0.52, 1.327, 0.03], "color": "cloth" },
+        { "prim": "box", "at": [-0.902, 0.04, -0.08], "rot": [0, 18, 0], "size": [0.68, 0.08, 0.16], "color": "woodDark" },
+        { "prim": "box", "at": [-0.301, 0.851, 0.08], "rot": [0, -18, 0], "size": [0.64, 1.702, 0.06], "color": "wood" },
+        { "prim": "box", "at": [-0.301, 0.919, 0.1], "rot": [0, -18, 0], "size": [0.52, 1.327, 0.03], "color": "cloth" },
+        { "prim": "box", "at": [-0.301, 0.04, 0.08], "rot": [0, -18, 0], "size": [0.68, 0.08, 0.16], "color": "woodDark" },
+        { "prim": "box", "at": [0.301, 0.851, -0.08], "rot": [0, 18, 0], "size": [0.64, 1.702, 0.06], "color": "wood" },
+        { "prim": "box", "at": [0.301, 0.919, -0.06], "rot": [0, 18, 0], "size": [0.52, 1.327, 0.03], "color": "cloth" },
+        { "prim": "box", "at": [0.301, 0.04, -0.08], "rot": [0, 18, 0], "size": [0.68, 0.08, 0.16], "color": "woodDark" },
+        { "prim": "box", "at": [0.902, 0.851, 0.08], "rot": [0, -18, 0], "size": [0.64, 1.702, 0.06], "color": "wood" },
+        { "prim": "box", "at": [0.902, 0.919, 0.1], "rot": [0, -18, 0], "size": [0.52, 1.327, 0.03], "color": "cloth" },
+        { "prim": "box", "at": [0.902, 0.04, 0.08], "rot": [0, -18, 0], "size": [0.68, 0.08, 0.16], "color": "woodDark" }
+      ]
+    },
+    "kititem.four-fold-screen": {
+      "kind": "item",
+      "label": "Rosewick Four-Fold Screen",
+      "value": 895,
+      "stack": 1,
+      "swatch": "#a97257",
+      "badge": "crate",
+      "furniture": "fixture.four-fold-screen",
+      "palette": {
+        "wrap": "#d9c7a4",
+        "wrapHi": "#eee1c7",
+        "strap": "#8a6242",
+        "mark": "#a97257"
+      }
+    }
+  }
+}

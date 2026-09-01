@@ -1,0 +1,63 @@
+{
+  "format": "tw.kit",
+  "version": 1,
+  "meta": {
+    "id": "turnip.cottage-bed",
+    "name": "Fenrush Cottage Bed"
+  },
+  "types": {
+    "fixture.cottage-bed": {
+      "kind": "object",
+      "label": "Fenrush Cottage Bed",
+      "footprint": { "w": 2, "d": 3 },
+      "height": 1,
+      "squash": 0.34,
+      "palette": {
+        "wood": "#d9bb7a",
+        "woodHi": "#ecd69c",
+        "woodDark": "#a8873f",
+        "cloth": "#9c8a5e",
+        "clothHi": "#bda87a",
+        "pale": "#f7efd9"
+      },
+      "parts": [
+        { "prim": "box", "at": [0, 0.16, 0], "size": [1.474, 0.32, 2.765], "color": "woodDark" },
+        { "prim": "box", "at": [-0.657, 0.05, -1.282], "size": [0.12, 0.1, 0.12], "color": "wood" },
+        { "prim": "box", "at": [0.657, 0.05, -1.282], "size": [0.12, 0.1, 0.12], "color": "wood" },
+        { "prim": "box", "at": [-0.657, 0.05, 1.282], "size": [0.12, 0.1, 0.12], "color": "wood" },
+        { "prim": "box", "at": [0.657, 0.05, 1.282], "size": [0.12, 0.1, 0.12], "color": "wood" },
+        { "prim": "box", "at": [0, 0.45, 0.1], "size": [1.374, 0.26, 2.505], "color": "pale" },
+        { "prim": "box", "at": [0, 0.61, 0.525], "size": [1.424, 0.14, 1.548], "color": "cloth" },
+        { "prim": "box", "at": [0, 0.65, -0.249], "size": [1.424, 0.06, 0.12], "color": "clothHi" },
+        { "prim": "box", "at": [0, 0.66, -1.042], "size": [0.943, 0.18, 0.42], "color": "pale" },
+        { "prim": "cyl", "at": [-0.677, 0.53, -1.332], "size": [0.05, 0.86, 0.05], "color": "wood" },
+        { "prim": "cyl", "at": [0.677, 0.53, -1.332], "size": [0.05, 0.86, 0.05], "color": "wood" },
+        { "prim": "cyl", "at": [-0.546, 0.53, -1.332], "size": [0.02, 0.72, 0.02], "color": "woodHi" },
+        { "prim": "cyl", "at": [-0.364, 0.53, -1.332], "size": [0.02, 0.72, 0.02], "color": "woodHi" },
+        { "prim": "cyl", "at": [-0.182, 0.53, -1.332], "size": [0.02, 0.72, 0.02], "color": "woodHi" },
+        { "prim": "cyl", "at": [0, 0.53, -1.332], "size": [0.02, 0.72, 0.02], "color": "woodHi" },
+        { "prim": "cyl", "at": [0.182, 0.53, -1.332], "size": [0.02, 0.72, 0.02], "color": "woodHi" },
+        { "prim": "cyl", "at": [0.364, 0.53, -1.332], "size": [0.02, 0.72, 0.02], "color": "woodHi" },
+        { "prim": "cyl", "at": [0.546, 0.53, -1.332], "size": [0.02, 0.72, 0.02], "color": "woodHi" },
+        { "prim": "box", "at": [0, 0.96, -1.332], "size": [1.474, 0.08, 0.08], "color": "woodHi" },
+        { "prim": "box", "at": [0, 0.56, 1.332], "size": [1.474, 0.48, 0.1], "color": "wood" },
+        { "prim": "box", "at": [0, 0.82, 1.332], "size": [1.524, 0.07, 0.14], "color": "woodHi" }
+      ]
+    },
+    "kititem.cottage-bed": {
+      "kind": "item",
+      "label": "Fenrush Cottage Bed",
+      "value": 520,
+      "stack": 1,
+      "swatch": "#958d69",
+      "badge": "bed",
+      "furniture": "fixture.cottage-bed",
+      "palette": {
+        "wrap": "#d9c7a4",
+        "wrapHi": "#eee1c7",
+        "strap": "#8a6242",
+        "mark": "#958d69"
+      }
+    }
+  }
+}

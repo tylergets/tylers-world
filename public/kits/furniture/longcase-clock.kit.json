@@ -1,0 +1,54 @@
+{
+  "format": "tw.kit",
+  "version": 1,
+  "meta": {
+    "id": "turnip.longcase-clock",
+    "name": "Inkthorn Longcase Clock"
+  },
+  "types": {
+    "fixture.longcase-clock": {
+      "kind": "object",
+      "label": "Inkthorn Longcase Clock",
+      "footprint": { "w": 1, "d": 1 },
+      "height": 2.28,
+      "squash": 0.3,
+      "palette": {
+        "wood": "#3a2f2a",
+        "woodHi": "#54443c",
+        "woodDark": "#241d1a",
+        "pale": "#e6ddcb",
+        "dark": "#171210",
+        "metal": "#c8a24a",
+        "glass": "#9fb6bd"
+      },
+      "parts": [
+        { "prim": "box", "at": [0, 0.14, 0], "size": [0.52, 0.28, 0.38], "color": "woodDark" },
+        { "prim": "box", "at": [0, 0.931, 0], "size": [0.36, 1.335, 0.28], "color": "wood" },
+        { "prim": "box", "at": [0, 0.931, 0.145], "size": [0.2, 0.931, 0.02], "color": "glass" },
+        { "prim": "cyl", "at": [0, 0.769, 0.1], "rot": [90, 0, 0], "size": [0.07, 0.02, 0.07], "color": "metal", "anim": { "bob": { "amp": 0.045, "rate": 0.9 } } },
+        { "prim": "cyl", "at": [0, 1.113, 0.1], "size": [0.012, 0.607, 0.012], "color": "metal" },
+        { "prim": "box", "at": [0, 1.78, 0], "size": [0.5, 0.5, 0.36], "color": "wood" },
+        { "prim": "cyl", "at": [0, 1.8, 0.19], "rot": [90, 0, 0], "size": [0.17, 0.02, 0.17], "color": "pale" },
+        { "prim": "box", "at": [0, 1.841, 0.21], "size": [0.02, 0.11, 0.012], "color": "dark" },
+        { "prim": "box", "at": [0.05, 1.8, 0.21], "size": [0.1, 0.02, 0.012], "color": "dark" },
+        { "prim": "box", "at": [0, 2.084, 0], "size": [0.56, 0.09, 0.42], "color": "woodHi" },
+        { "prim": "cone", "at": [0, 2.205, 0], "size": [0.05, 0.14, 0.05], "color": "metal" }
+      ]
+    },
+    "kititem.longcase-clock": {
+      "kind": "item",
+      "label": "Inkthorn Longcase Clock",
+      "value": 1890,
+      "stack": 1,
+      "swatch": "#c09a30",
+      "badge": "crate",
+      "furniture": "fixture.longcase-clock",
+      "palette": {
+        "wrap": "#d9c7a4",
+        "wrapHi": "#eee1c7",
+        "strap": "#8a6242",
+        "mark": "#c09a30"
+      }
+    }
+  }
+}

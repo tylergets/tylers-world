@@ -1,0 +1,66 @@
+{
+  "format": "tw.kit",
+  "version": 1,
+  "meta": {
+    "id": "turnip.welsh-dresser",
+    "name": "Fenrush Welsh Dresser"
+  },
+  "types": {
+    "fixture.welsh-dresser": {
+      "kind": "object",
+      "label": "Fenrush Welsh Dresser",
+      "footprint": { "w": 2, "d": 1 },
+      "height": 2.26,
+      "squash": 0.34,
+      "palette": {
+        "wood": "#d9bb7a",
+        "woodHi": "#ecd69c",
+        "woodDark": "#a8873f",
+        "pale": "#f7efd9",
+        "metal": "#9d9384"
+      },
+      "parts": [
+        { "prim": "box", "at": [0, 0.06, 0], "size": [1.834, 0.12, 0.666], "color": "woodDark" },
+        { "prim": "box", "at": [0, 0.535, 0], "size": [1.794, 0.829, 0.626], "color": "wood" },
+        { "prim": "box", "at": [0, 0.989, 0], "size": [1.844, 0.08, 0.676], "color": "woodHi" },
+        { "prim": "box", "at": [-0.449, 0.53, 0.323], "size": [0.807, 0.739, 0.04], "color": "woodHi" },
+        { "prim": "box", "at": [-0.449, 0.53, 0.343], "size": [0.667, 0.579, 0.02], "color": "wood" },
+        { "prim": "cyl", "at": [-0.142, 0.53, 0.363], "rot": [90, 0, 0], "size": [0.03, 0.05, 0.03], "color": "metal" },
+        { "prim": "box", "at": [0.449, 0.53, 0.323], "size": [0.807, 0.739, 0.04], "color": "woodHi" },
+        { "prim": "box", "at": [0.449, 0.53, 0.343], "size": [0.667, 0.579, 0.02], "color": "wood" },
+        { "prim": "cyl", "at": [0.142, 0.53, 0.363], "rot": [90, 0, 0], "size": [0.03, 0.05, 0.03], "color": "metal" },
+        { "prim": "box", "at": [0, 1.609, -0.188], "size": [1.734, 1.12, 0.05], "color": "woodDark" },
+        { "prim": "box", "at": [-0.827, 1.609, -0.075], "size": [0.06, 1.12, 0.344], "color": "wood" },
+        { "prim": "box", "at": [0.827, 1.609, -0.075], "size": [0.06, 1.12, 0.344], "color": "wood" },
+        { "prim": "box", "at": [0, 1.161, -0.075], "size": [1.634, 0.05, 0.313], "color": "wood" },
+        { "prim": "cyl", "at": [-0.467, 1.281, -0.138], "rot": [90, 0, 0], "size": [0.12, 0.025, 0.12], "color": "pale" },
+        { "prim": "cyl", "at": [0, 1.281, -0.138], "rot": [90, 0, 0], "size": [0.12, 0.025, 0.12], "color": "pale" },
+        { "prim": "cyl", "at": [0.467, 1.281, -0.138], "rot": [90, 0, 0], "size": [0.12, 0.025, 0.12], "color": "pale" },
+        { "prim": "box", "at": [0, 1.643, -0.075], "size": [1.634, 0.05, 0.313], "color": "wood" },
+        { "prim": "cyl", "at": [-0.467, 1.763, -0.138], "rot": [90, 0, 0], "size": [0.12, 0.025, 0.12], "color": "pale" },
+        { "prim": "cyl", "at": [0, 1.763, -0.138], "rot": [90, 0, 0], "size": [0.12, 0.025, 0.12], "color": "pale" },
+        { "prim": "cyl", "at": [0.467, 1.763, -0.138], "rot": [90, 0, 0], "size": [0.12, 0.025, 0.12], "color": "pale" },
+        { "prim": "box", "at": [0, 2.124, -0.075], "size": [1.634, 0.05, 0.313], "color": "wood" },
+        { "prim": "cyl", "at": [-0.467, 2.244, -0.138], "rot": [90, 0, 0], "size": [0.12, 0.025, 0.12], "color": "pale" },
+        { "prim": "cyl", "at": [0, 2.244, -0.138], "rot": [90, 0, 0], "size": [0.12, 0.025, 0.12], "color": "pale" },
+        { "prim": "cyl", "at": [0.467, 2.244, -0.138], "rot": [90, 0, 0], "size": [0.12, 0.025, 0.12], "color": "pale" },
+        { "prim": "box", "at": [0, 2.219, -0.075], "size": [1.814, 0.08, 0.388], "color": "woodHi" }
+      ]
+    },
+    "kititem.welsh-dresser": {
+      "kind": "item",
+      "label": "Fenrush Welsh Dresser",
+      "value": 1115,
+      "stack": 1,
+      "swatch": "#a7803d",
+      "badge": "counter",
+      "furniture": "fixture.welsh-dresser",
+      "palette": {
+        "wrap": "#d9c7a4",
+        "wrapHi": "#eee1c7",
+        "strap": "#8a6242",
+        "mark": "#a7803d"
+      }
+    }
+  }
+}

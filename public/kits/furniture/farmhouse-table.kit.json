@@ -1,0 +1,46 @@
+{
+  "format": "tw.kit",
+  "version": 1,
+  "meta": {
+    "id": "turnip.farmhouse-table",
+    "name": "Beechbark Farmhouse Table"
+  },
+  "types": {
+    "fixture.farmhouse-table": {
+      "kind": "object",
+      "label": "Beechbark Farmhouse Table",
+      "footprint": { "w": 2, "d": 2 },
+      "height": 0.83,
+      "squash": 0.34,
+      "palette": {
+        "wood": "#c08b55",
+        "woodHi": "#d8a870",
+        "woodDark": "#8a6242"
+      },
+      "parts": [
+        { "prim": "box", "at": [-0.638, 0.353, 0], "size": [0.12, 0.646, 1.021], "color": "wood" },
+        { "prim": "box", "at": [-0.638, 0.05, 0], "size": [0.22, 0.1, 1.417], "color": "woodDark" },
+        { "prim": "box", "at": [0.638, 0.353, 0], "size": [0.12, 0.646, 1.021], "color": "wood" },
+        { "prim": "box", "at": [0.638, 0.05, 0], "size": [0.22, 0.1, 1.417], "color": "woodDark" },
+        { "prim": "box", "at": [0, 0.297, 0], "size": [1.156, 0.09, 0.09], "color": "woodDark" },
+        { "prim": "box", "at": [0, 0.756, 0], "size": [1.716, 0.1, 1.647], "color": "wood" },
+        { "prim": "box", "at": [0, 0.811, 0], "size": [1.596, 0.02, 1.527], "color": "woodHi" }
+      ]
+    },
+    "kititem.farmhouse-table": {
+      "kind": "item",
+      "label": "Beechbark Farmhouse Table",
+      "value": 470,
+      "stack": 1,
+      "swatch": "#ca8a46",
+      "badge": "table",
+      "furniture": "fixture.farmhouse-table",
+      "palette": {
+        "wrap": "#d9c7a4",
+        "wrapHi": "#eee1c7",
+        "strap": "#8a6242",
+        "mark": "#ca8a46"
+      }
+    }
+  }
+}

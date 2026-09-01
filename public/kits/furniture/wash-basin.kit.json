@@ -1,0 +1,45 @@
+{
+  "format": "tw.kit",
+  "version": 1,
+  "meta": {
+    "id": "turnip.wash-basin",
+    "name": "Coppervale Wash Basin"
+  },
+  "types": {
+    "fixture.wash-basin": {
+      "kind": "object",
+      "label": "Coppervale Wash Basin",
+      "footprint": { "w": 1, "d": 1 },
+      "height": 1.21,
+      "squash": 0.34,
+      "palette": {
+        "pale": "#f0e6d2",
+        "metal": "#b5713c",
+        "glass": "#d5e2e0"
+      },
+      "parts": [
+        { "prim": "cyl", "at": [0, 0.04, 0], "size": [0.22, 0.08, 0.22], "color": "metal" },
+        { "prim": "taper", "at": [0, 0.429, 0], "size": [0.07, 0.773, 0.07], "color": "metal" },
+        { "prim": "cyl", "at": [0, 0.859, 0], "size": [0.29, 0.14, 0.29], "color": "pale" },
+        { "prim": "cyl", "at": [0, 0.899, 0], "size": [0.24, 0.04, 0.24], "color": "glass", "anim": { "bob": { "amp": 0.01, "rate": 0.55 } } },
+        { "prim": "cyl", "at": [0, 1.059, -0.2], "size": [0.022, 0.3, 0.022], "color": "metal" },
+        { "prim": "box", "at": [0, 1.189, -0.13], "size": [0.04, 0.04, 0.18], "color": "metal" }
+      ]
+    },
+    "kititem.wash-basin": {
+      "kind": "item",
+      "label": "Coppervale Wash Basin",
+      "value": 420,
+      "stack": 1,
+      "swatch": "#ad8269",
+      "badge": "stove",
+      "furniture": "fixture.wash-basin",
+      "palette": {
+        "wrap": "#d9c7a4",
+        "wrapHi": "#eee1c7",
+        "strap": "#8a6242",
+        "mark": "#ad8269"
+      }
+    }
+  }
+}

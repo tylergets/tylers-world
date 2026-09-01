@@ -1,0 +1,50 @@
+{
+  "format": "tw.kit",
+  "version": 1,
+  "meta": {
+    "id": "turnip.shield-back-chair",
+    "name": "Hollowmilk Shield-Back Chair"
+  },
+  "types": {
+    "fixture.shield-back-chair": {
+      "kind": "object",
+      "label": "Hollowmilk Shield-Back Chair",
+      "footprint": { "w": 1, "d": 1 },
+      "height": 1.09,
+      "squash": 0.34,
+      "palette": {
+        "wood": "#f2ece0",
+        "woodHi": "#fdfaf2",
+        "woodDark": "#cfc7b6"
+      },
+      "parts": [
+        { "prim": "cyl", "at": [-0.231, 0.21, -0.222], "size": [0.036, 0.421, 0.036], "color": "woodDark" },
+        { "prim": "cyl", "at": [0.231, 0.21, -0.222], "size": [0.036, 0.421, 0.036], "color": "woodDark" },
+        { "prim": "cyl", "at": [-0.231, 0.21, 0.222], "size": [0.036, 0.421, 0.036], "color": "woodDark" },
+        { "prim": "cyl", "at": [0.231, 0.21, 0.222], "size": [0.036, 0.421, 0.036], "color": "woodDark" },
+        { "prim": "box", "at": [0, 0.126, -0.222], "size": [0.442, 0.04, 0.04], "color": "woodDark" },
+        { "prim": "box", "at": [0, 0.126, 0.222], "size": [0.442, 0.04, 0.04], "color": "woodDark" },
+        { "prim": "box", "at": [0, 0.466, 0], "size": [0.602, 0.09, 0.584], "color": "wood" },
+        { "prim": "cyl", "at": [-0.231, 0.771, -0.222], "size": [0.03, 0.521, 0.03], "color": "woodDark" },
+        { "prim": "cyl", "at": [0.231, 0.771, -0.222], "size": [0.03, 0.521, 0.03], "color": "woodDark" },
+        { "prim": "box", "at": [0, 1.032, -0.222], "size": [0.602, 0.1, 0.06], "color": "woodHi" },
+        { "prim": "blob", "at": [0, 0.797, -0.222], "size": [0.253, 0.271, 0.03], "color": "wood" }
+      ]
+    },
+    "kititem.shield-back-chair": {
+      "kind": "item",
+      "label": "Hollowmilk Shield-Back Chair",
+      "value": 320,
+      "stack": 1,
+      "swatch": "#7a7989",
+      "badge": "chair",
+      "furniture": "fixture.shield-back-chair",
+      "palette": {
+        "wrap": "#d9c7a4",
+        "wrapHi": "#eee1c7",
+        "strap": "#8a6242",
+        "mark": "#7a7989"
+      }
+    }
+  }
+}

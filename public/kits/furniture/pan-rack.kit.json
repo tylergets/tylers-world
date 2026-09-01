@@ -1,0 +1,48 @@
+{
+  "format": "tw.kit",
+  "version": 1,
+  "meta": {
+    "id": "turnip.pan-rack",
+    "name": "Coppervale Pan Rack"
+  },
+  "types": {
+    "fixture.pan-rack": {
+      "kind": "object",
+      "label": "Coppervale Pan Rack",
+      "footprint": { "w": 1, "d": 1 },
+      "height": 1.17,
+      "squash": 0.34,
+      "palette": {
+        "wood": "#a9763f",
+        "woodHi": "#c6924f",
+        "pale": "#f0e6d2",
+        "metal": "#b5713c"
+      },
+      "parts": [
+        { "prim": "box", "at": [-0.34, 0.396, 0], "size": [0.06, 0.792, 0.4], "color": "wood" },
+        { "prim": "box", "at": [0.34, 0.396, 0], "size": [0.06, 0.792, 0.4], "color": "wood" },
+        { "prim": "box", "at": [0, 0.222, 0], "size": [0.66, 0.05, 0.34], "color": "woodHi" },
+        { "prim": "box", "at": [0, 0.554, 0], "size": [0.66, 0.05, 0.34], "color": "woodHi" },
+        { "prim": "cyl", "at": [-0.2, 0.912, 0], "rot": [90, 0, 0], "size": [0.13, 0.025, 0.13], "color": "pale" },
+        { "prim": "cyl", "at": [0, 0.912, 0], "rot": [90, 0, 0], "size": [0.13, 0.025, 0.13], "color": "pale" },
+        { "prim": "cyl", "at": [0.2, 0.912, 0], "rot": [90, 0, 0], "size": [0.13, 0.025, 0.13], "color": "pale" },
+        { "prim": "cyl", "at": [0, 0.852, 0.14], "rot": [0, 0, 90], "size": [0.018, 0.62, 0.018], "color": "metal" }
+      ]
+    },
+    "kititem.pan-rack": {
+      "kind": "item",
+      "label": "Coppervale Pan Rack",
+      "value": 310,
+      "stack": 1,
+      "swatch": "#b77649",
+      "badge": "shelf",
+      "furniture": "fixture.pan-rack",
+      "palette": {
+        "wrap": "#d9c7a4",
+        "wrapHi": "#eee1c7",
+        "strap": "#8a6242",
+        "mark": "#b77649"
+      }
+    }
+  }
+}

@@ -1,0 +1,46 @@
+{
+  "format": "tw.kit",
+  "version": 1,
+  "meta": {
+    "id": "turnip.pickling-barrel",
+    "name": "Turnipwood Pickling Barrel"
+  },
+  "types": {
+    "fixture.pickling-barrel": {
+      "kind": "object",
+      "label": "Turnipwood Pickling Barrel",
+      "footprint": { "w": 1, "d": 1 },
+      "height": 0.93,
+      "squash": 0.34,
+      "palette": {
+        "wood": "#e8dcc4",
+        "woodHi": "#f6eeda",
+        "metal": "#b9a98d"
+      },
+      "parts": [
+        { "prim": "taper", "at": [0, 0.22, 0], "rot": [180, 0, 0], "size": [0.353, 0.44, 0.353], "color": "wood" },
+        { "prim": "taper", "at": [0, 0.661, 0], "size": [0.353, 0.44, 0.353], "color": "wood" },
+        { "prim": "cyl", "at": [0, 0.11, 0], "size": [0.32, 0.045, 0.32], "color": "metal" },
+        { "prim": "cyl", "at": [0, 0.33, 0], "size": [0.347, 0.045, 0.347], "color": "metal" },
+        { "prim": "cyl", "at": [0, 0.551, 0], "size": [0.347, 0.045, 0.347], "color": "metal" },
+        { "prim": "cyl", "at": [0, 0.771, 0], "size": [0.32, 0.045, 0.32], "color": "metal" },
+        { "prim": "cyl", "at": [0, 0.901, 0], "size": [0.29, 0.05, 0.29], "color": "woodHi" }
+      ]
+    },
+    "kititem.pickling-barrel": {
+      "kind": "item",
+      "label": "Turnipwood Pickling Barrel",
+      "value": 325,
+      "stack": 1,
+      "swatch": "#956d83",
+      "badge": "crate",
+      "furniture": "fixture.pickling-barrel",
+      "palette": {
+        "wrap": "#d9c7a4",
+        "wrapHi": "#eee1c7",
+        "strap": "#8a6242",
+        "mark": "#956d83"
+      }
+    }
+  }
+}

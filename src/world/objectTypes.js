@@ -184,6 +184,12 @@ export const OBJECT_TYPES = {
     { pot: 0xb2705a, soil: 0x5a4433, leaf: 0x4f9e3f, leafHi: 0x63b84e }),
   'furn.crate': furniture('Crate', 1, 1, 0.8,
     { body: 0xc09a5f, edge: 0x8a6242 }),
+  'furn.stairs': {
+    category: 'furniture', label: 'Stairs',
+    footprint: { w: 2, d: 3, mask: ['##', '##', '+.'] },
+    height: 1.5, squash: 0.34,
+    palette: { tread: 0xb78654, riser: 0x805a39, rail: 0x68462f },
+  },
 };
 
 // Derived once at load: the unrotated south-face door cell, if the type has one.

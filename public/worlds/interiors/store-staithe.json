@@ -215,6 +215,7 @@
         "title": "The Staithe"
       },
       "shop": {
+        "hours": {"open": 8, "close": 19},
         "name": "Boards & Baskets",
         "markup": 1.24,
         "buyRate": 0.7,

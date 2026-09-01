@@ -1,0 +1,46 @@
+{
+  "format": "tw.kit",
+  "version": 1,
+  "meta": {
+    "id": "turnip.standard-lamp",
+    "name": "Turnipwood Standard Lamp"
+  },
+  "types": {
+    "fixture.standard-lamp": {
+      "kind": "object",
+      "label": "Turnipwood Standard Lamp",
+      "footprint": { "w": 1, "d": 1 },
+      "height": 1.7,
+      "squash": 0.3,
+      "palette": {
+        "wood": "#e8dcc4",
+        "woodDark": "#c3b394",
+        "cloth": "#8e6fb0",
+        "clothHi": "#a98acb",
+        "pale": "#fbf7ee"
+      },
+      "parts": [
+        { "prim": "cyl", "at": [0, 0.045, 0], "size": [0.22, 0.09, 0.22], "color": "woodDark" },
+        { "prim": "cyl", "at": [0, 0.763, 0], "size": [0.035, 1.404, 0.035], "color": "wood" },
+        { "prim": "cone", "at": [0, 1.495, 0], "rot": [180, 0, 0], "size": [0.3, 0.4, 0.3], "color": "cloth" },
+        { "prim": "cyl", "at": [0, 1.305, 0], "size": [0.3, 0.03, 0.3], "color": "clothHi" },
+        { "prim": "blob", "at": [0, 1.415, 0], "size": [0.11, 0.11, 0.11], "color": "pale", "anim": { "pulse": { "amp": 0.16, "rate": 0.62 } } }
+      ]
+    },
+    "kititem.standard-lamp": {
+      "kind": "item",
+      "label": "Turnipwood Standard Lamp",
+      "value": 545,
+      "stack": 1,
+      "swatch": "#b08f8a",
+      "badge": "crate",
+      "furniture": "fixture.standard-lamp",
+      "palette": {
+        "wrap": "#d9c7a4",
+        "wrapHi": "#eee1c7",
+        "strap": "#8a6242",
+        "mark": "#b08f8a"
+      }
+    }
+  }
+}

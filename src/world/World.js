@@ -91,6 +91,9 @@ export class World {
     this.occupant = new Int32Array(n).fill(-1);
     this.byId = new Map();
     this.portals = new Map();
+    // Null means no player context (not one story): headless world walkers must
+    // see every authored doorway. Game.setPlace supplies the authoritative tier.
+    this.houseStories = null;
     /**
      * The two overlays the player can lay over a place: objects that are no
      * longer there, and tiles that have been dug open. Held here because every
@@ -195,6 +198,15 @@ export class World {
     return obj;
   }
 
+  /** Remove a player-added object entirely; authored objects are immutable here. */
+  removeAddedObject(id) {
+    const index = this.byId.get(id);
+    if (index === undefined || index < this.authoredObjectCount) return false;
+    this.objects.splice(index, 1);
+    this.#derive();
+    return true;
+  }
+
   /** Open or fill a hole on a tile. Returns false if the tile is out of bounds. */
   setHole(x, z, open) {
     if (!this.inBounds(x, z)) return false;
@@ -217,6 +229,16 @@ export class World {
     this.felled.clear();
     this.dug.clear();
     this.#derive();
+  }
+
+  /** Apply player progression to derived portals and player-home presentation. */
+  setHouseStories(stories) {
+    if (!Number.isInteger(stories) || stories < 1 || stories > 3) stories = 1;
+    if (this.houseStories === stories) return false;
+    this.houseStories = stories;
+    this.portals.clear();
+    this.#buildPortals();
+    return true;
   }
 
   /** Re-derive one tile's collision and occupancy from the file plus the overlays. */
@@ -299,6 +321,8 @@ export class World {
       if (this.felled.has(obj.id)) continue;
       const dest = obj.props?.interior;
       if (!dest) continue;
+      const required = obj.props?.requiresHouseStories;
+      if (required && this.houseStories !== null && this.houseStories < required) continue;
       const [ax, az] = obj.tile;
       // Rotation is clockwise, and DIR is ordered so that one quarter-turn is
       // one index: an unrotated doorway faces SOUTH (index 0), so the outward

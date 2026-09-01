@@ -1,0 +1,49 @@
+{
+  "format": "tw.kit",
+  "version": 1,
+  "meta": {
+    "id": "turnip.slipper-bath",
+    "name": "Rosewick Slipper Bath"
+  },
+  "types": {
+    "fixture.slipper-bath": {
+      "kind": "object",
+      "label": "Rosewick Slipper Bath",
+      "footprint": { "w": 2, "d": 1 },
+      "height": 1.03,
+      "squash": 0.34,
+      "palette": {
+        "woodHi": "#ab6150",
+        "pale": "#fbf1ea",
+        "metal": "#c2a35c",
+        "glass": "#eddad6"
+      },
+      "parts": [
+        { "prim": "cyl", "at": [0, 0.401, 0], "rot": [0, 0, 90], "size": [0.341, 1.251, 0.341], "color": "pale" },
+        { "prim": "box", "at": [0, 0.541, 0], "size": [1.311, 0.06, 0.742], "color": "woodHi" },
+        { "prim": "box", "at": [0, 0.481, 0], "size": [1.111, 0.05, 0.511], "color": "glass", "anim": { "bob": { "amp": 0.01, "rate": 0.5 } } },
+        { "prim": "cone", "at": [-0.45, 0.05, -0.187], "rot": [180, 0, 0], "size": [0.07, 0.12, 0.07], "color": "metal" },
+        { "prim": "cone", "at": [0.45, 0.05, -0.187], "rot": [180, 0, 0], "size": [0.07, 0.12, 0.07], "color": "metal" },
+        { "prim": "cone", "at": [-0.45, 0.05, 0.187], "rot": [180, 0, 0], "size": [0.07, 0.12, 0.07], "color": "metal" },
+        { "prim": "cone", "at": [0.45, 0.05, 0.187], "rot": [180, 0, 0], "size": [0.07, 0.12, 0.07], "color": "metal" },
+        { "prim": "cyl", "at": [-0.551, 0.681, 0], "size": [0.03, 0.24, 0.03], "color": "metal" },
+        { "prim": "box", "at": [-0.475, 0.781, 0], "size": [0.16, 0.04, 0.04], "color": "metal" }
+      ]
+    },
+    "kititem.slipper-bath": {
+      "kind": "item",
+      "label": "Rosewick Slipper Bath",
+      "value": 1080,
+      "stack": 1,
+      "swatch": "#aa7c77",
+      "badge": "stove",
+      "furniture": "fixture.slipper-bath",
+      "palette": {
+        "wrap": "#d9c7a4",
+        "wrapHi": "#eee1c7",
+        "strap": "#8a6242",
+        "mark": "#aa7c77"
+      }
+    }
+  }
+}

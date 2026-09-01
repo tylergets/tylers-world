@@ -1,0 +1,47 @@
+{
+  "format": "tw.kit",
+  "version": 1,
+  "meta": {
+    "id": "turnip.standing-banner",
+    "name": "Rosewick Standing Banner"
+  },
+  "types": {
+    "fixture.standing-banner": {
+      "kind": "object",
+      "label": "Rosewick Standing Banner",
+      "footprint": { "w": 1, "d": 1 },
+      "height": 1.77,
+      "squash": 0.3,
+      "palette": {
+        "wood": "#8f4a3c",
+        "woodHi": "#ab6150",
+        "woodDark": "#653228",
+        "cloth": "#e0b7ad",
+        "accent": "#c4614c"
+      },
+      "parts": [
+        { "prim": "box", "at": [0, 0.06, 0], "size": [0.44, 0.12, 0.34], "color": "woodDark" },
+        { "prim": "cyl", "at": [0, 0.856, 0], "size": [0.045, 1.712, 0.045], "color": "wood" },
+        { "prim": "box", "at": [0, 1.742, 0], "size": [0.5, 0.05, 0.05], "color": "woodHi" },
+        { "prim": "box", "at": [0, 1.164, 0.02], "size": [0.42, 0.72, 0.03], "color": "cloth" },
+        { "prim": "box", "at": [0, 1.164, 0.035], "size": [0.28, 0.5, 0.01], "color": "accent" },
+        { "prim": "cone", "at": [0, 0.479, 0.02], "rot": [180, 0, 0], "size": [0.21, 0.16, 0.02], "color": "cloth" }
+      ]
+    },
+    "kititem.standing-banner": {
+      "kind": "item",
+      "label": "Rosewick Standing Banner",
+      "value": 290,
+      "stack": 1,
+      "swatch": "#c88874",
+      "badge": "crate",
+      "furniture": "fixture.standing-banner",
+      "palette": {
+        "wrap": "#d9c7a4",
+        "wrapHi": "#eee1c7",
+        "strap": "#8a6242",
+        "mark": "#c88874"
+      }
+    }
+  }
+}

@@ -1,0 +1,49 @@
+{
+  "format": "tw.kit",
+  "version": 1,
+  "meta": {
+    "id": "turnip.bracket-clock",
+    "name": "Turnipwood Bracket Clock"
+  },
+  "types": {
+    "fixture.bracket-clock": {
+      "kind": "object",
+      "label": "Turnipwood Bracket Clock",
+      "footprint": { "w": 1, "d": 1 },
+      "height": 0.72,
+      "squash": 0.3,
+      "palette": {
+        "wood": "#e8dcc4",
+        "woodHi": "#f6eeda",
+        "woodDark": "#c3b394",
+        "pale": "#fbf7ee",
+        "dark": "#5a4a63",
+        "metal": "#b9a98d"
+      },
+      "parts": [
+        { "prim": "box", "at": [0, 0.06, 0], "size": [0.5, 0.12, 0.3], "color": "woodDark" },
+        { "prim": "box", "at": [0, 0.323, 0], "size": [0.42, 0.465, 0.24], "color": "wood" },
+        { "prim": "cyl", "at": [0, 0.362, 0.13], "rot": [90, 0, 0], "size": [0.15, 0.02, 0.15], "color": "pale" },
+        { "prim": "box", "at": [0, 0.4, 0.15], "size": [0.02, 0.1, 0.012], "color": "dark" },
+        { "prim": "box", "at": [0.05, 0.362, 0.15], "size": [0.09, 0.02, 0.012], "color": "dark" },
+        { "prim": "box", "at": [0, 0.607, 0], "size": [0.46, 0.06, 0.28], "color": "woodHi" },
+        { "prim": "blob", "at": [0, 0.659, 0], "size": [0.07, 0.06, 0.07], "color": "metal" }
+      ]
+    },
+    "kititem.bracket-clock": {
+      "kind": "item",
+      "label": "Turnipwood Bracket Clock",
+      "value": 730,
+      "stack": 1,
+      "swatch": "#9b7a85",
+      "badge": "crate",
+      "furniture": "fixture.bracket-clock",
+      "palette": {
+        "wrap": "#d9c7a4",
+        "wrapHi": "#eee1c7",
+        "strap": "#8a6242",
+        "mark": "#9b7a85"
+      }
+    }
+  }
+}

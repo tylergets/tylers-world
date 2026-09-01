@@ -1,0 +1,52 @@
+{
+  "format": "tw.kit",
+  "version": 1,
+  "meta": {
+    "id": "turnip.credenza",
+    "name": "Sootpine Credenza"
+  },
+  "types": {
+    "fixture.credenza": {
+      "kind": "object",
+      "label": "Sootpine Credenza",
+      "footprint": { "w": 3, "d": 1 },
+      "height": 0.98,
+      "squash": 0.34,
+      "palette": {
+        "wood": "#4a4640",
+        "woodHi": "#656057",
+        "woodDark": "#332f2b",
+        "metal": "#9aa0a6"
+      },
+      "parts": [
+        { "prim": "box", "at": [-1.23, 0.1, -0.213], "size": [0.09, 0.2, 0.09], "color": "woodDark" },
+        { "prim": "box", "at": [1.23, 0.1, -0.213], "size": [0.09, 0.2, 0.09], "color": "woodDark" },
+        { "prim": "box", "at": [-1.23, 0.1, 0.213], "size": [0.09, 0.2, 0.09], "color": "woodDark" },
+        { "prim": "box", "at": [1.23, 0.1, 0.213], "size": [0.09, 0.2, 0.09], "color": "woodDark" },
+        { "prim": "box", "at": [0, 0.55, 0], "size": [2.66, 0.7, 0.625], "color": "wood" },
+        { "prim": "box", "at": [0, 0.94, 0], "size": [2.71, 0.08, 0.675], "color": "woodHi" },
+        { "prim": "box", "at": [-0.665, 0.545, 0.323], "size": [1.24, 0.61, 0.04], "color": "woodHi" },
+        { "prim": "box", "at": [-0.665, 0.545, 0.343], "size": [1.1, 0.45, 0.02], "color": "wood" },
+        { "prim": "cyl", "at": [-0.194, 0.545, 0.363], "rot": [90, 0, 0], "size": [0.03, 0.05, 0.03], "color": "metal" },
+        { "prim": "box", "at": [0.665, 0.545, 0.323], "size": [1.24, 0.61, 0.04], "color": "woodHi" },
+        { "prim": "box", "at": [0.665, 0.545, 0.343], "size": [1.1, 0.45, 0.02], "color": "wood" },
+        { "prim": "cyl", "at": [0.194, 0.545, 0.363], "rot": [90, 0, 0], "size": [0.03, 0.05, 0.03], "color": "metal" }
+      ]
+    },
+    "kititem.credenza": {
+      "kind": "item",
+      "label": "Sootpine Credenza",
+      "value": 1055,
+      "stack": 1,
+      "swatch": "#ba6e3d",
+      "badge": "counter",
+      "furniture": "fixture.credenza",
+      "palette": {
+        "wrap": "#d9c7a4",
+        "wrapHi": "#eee1c7",
+        "strap": "#8a6242",
+        "mark": "#ba6e3d"
+      }
+    }
+  }
+}

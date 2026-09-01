@@ -1,0 +1,51 @@
+{
+  "format": "tw.kit",
+  "version": 1,
+  "meta": {
+    "id": "turnip.lattice-rug",
+    "name": "Seaglass Lattice Rug"
+  },
+  "types": {
+    "fixture.lattice-rug": {
+      "kind": "object",
+      "label": "Seaglass Lattice Rug",
+      "footprint": { "w": 2, "d": 2 },
+      "height": 0.2,
+      "squash": 0.9,
+      "palette": {
+        "cloth": "#5f9fa8",
+        "clothHi": "#7fbfc6",
+        "accent": "#3f97a4"
+      },
+      "parts": [
+        { "prim": "box", "at": [0, 0.02, 0], "size": [1.925, 0.04, 1.95], "color": "cloth" },
+        { "prim": "box", "at": [0, 0.045, 0], "size": [1.765, 0.016, 1.79], "color": "clothHi" },
+        { "prim": "box", "at": [-0.693, 0.054, 0], "size": [0.058, 0.014, 1.71], "color": "accent" },
+        { "prim": "box", "at": [0, 0.054, -0.702], "size": [1.685, 0.014, 0.059], "color": "accent" },
+        { "prim": "box", "at": [-0.346, 0.054, 0], "size": [0.058, 0.014, 1.71], "color": "accent" },
+        { "prim": "box", "at": [0, 0.054, -0.351], "size": [1.685, 0.014, 0.059], "color": "accent" },
+        { "prim": "box", "at": [0, 0.054, 0], "size": [0.058, 0.014, 1.71], "color": "accent" },
+        { "prim": "box", "at": [0, 0.054, 0], "size": [1.685, 0.014, 0.059], "color": "accent" },
+        { "prim": "box", "at": [0.346, 0.054, 0], "size": [0.058, 0.014, 1.71], "color": "accent" },
+        { "prim": "box", "at": [0, 0.054, 0.351], "size": [1.685, 0.014, 0.059], "color": "accent" },
+        { "prim": "box", "at": [0.693, 0.054, 0], "size": [0.058, 0.014, 1.71], "color": "accent" },
+        { "prim": "box", "at": [0, 0.054, 0.702], "size": [1.685, 0.014, 0.059], "color": "accent" }
+      ]
+    },
+    "kititem.lattice-rug": {
+      "kind": "item",
+      "label": "Seaglass Lattice Rug",
+      "value": 355,
+      "stack": 1,
+      "swatch": "#6b7e83",
+      "badge": "crate",
+      "furniture": "fixture.lattice-rug",
+      "palette": {
+        "wrap": "#d9c7a4",
+        "wrapHi": "#eee1c7",
+        "strap": "#8a6242",
+        "mark": "#6b7e83"
+      }
+    }
+  }
+}

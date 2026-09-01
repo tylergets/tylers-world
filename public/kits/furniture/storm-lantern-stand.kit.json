@@ -1,0 +1,47 @@
+{
+  "format": "tw.kit",
+  "version": 1,
+  "meta": {
+    "id": "turnip.storm-lantern-stand",
+    "name": "Coppervale Storm Lantern Stand"
+  },
+  "types": {
+    "fixture.storm-lantern-stand": {
+      "kind": "object",
+      "label": "Coppervale Storm Lantern Stand",
+      "footprint": { "w": 1, "d": 1 },
+      "height": 1.4,
+      "squash": 0.3,
+      "palette": {
+        "wood": "#a9763f",
+        "woodDark": "#7a5329",
+        "pale": "#f0e6d2",
+        "metal": "#b5713c",
+        "glass": "#d5e2e0"
+      },
+      "parts": [
+        { "prim": "cyl", "at": [0, 0.045, 0], "size": [0.22, 0.09, 0.22], "color": "woodDark" },
+        { "prim": "cyl", "at": [0, 0.578, 0], "size": [0.035, 1.063, 0.035], "color": "wood" },
+        { "prim": "box", "at": [0, 1.086, 0], "size": [0.208, 0.34, 0.208], "color": "metal" },
+        { "prim": "box", "at": [0, 1.086, 0], "size": [0.176, 0.26, 0.176], "color": "glass" },
+        { "prim": "pyr", "at": [0, 1.326, 0], "size": [0.152, 0.14, 0.152], "color": "metal" },
+        { "prim": "blob", "at": [0, 1.066, 0], "size": [0.11, 0.11, 0.11], "color": "pale", "anim": { "pulse": { "amp": 0.16, "rate": 0.62 } } }
+      ]
+    },
+    "kititem.storm-lantern-stand": {
+      "kind": "item",
+      "label": "Coppervale Storm Lantern Stand",
+      "value": 375,
+      "stack": 1,
+      "swatch": "#d58b3d",
+      "badge": "crate",
+      "furniture": "fixture.storm-lantern-stand",
+      "palette": {
+        "wrap": "#d9c7a4",
+        "wrapHi": "#eee1c7",
+        "strap": "#8a6242",
+        "mark": "#d58b3d"
+      }
+    }
+  }
+}

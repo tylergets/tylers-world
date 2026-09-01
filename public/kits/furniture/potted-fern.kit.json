@@ -1,0 +1,47 @@
+{
+  "format": "tw.kit",
+  "version": 1,
+  "meta": {
+    "id": "turnip.potted-fern",
+    "name": "Meadowash Potted Fern"
+  },
+  "types": {
+    "fixture.potted-fern": {
+      "kind": "object",
+      "label": "Meadowash Potted Fern",
+      "footprint": { "w": 1, "d": 1 },
+      "height": 0.83,
+      "squash": 0.34,
+      "palette": {
+        "dark": "#5f6350",
+        "accent": "#6f9c5a",
+        "leaf": "#63b84e"
+      },
+      "parts": [
+        { "prim": "taper", "at": [0, 0.189, 0], "size": [0.256, 0.378, 0.256], "color": "accent" },
+        { "prim": "cyl", "at": [0, 0.378, 0], "size": [0.276, 0.05, 0.276], "color": "accent" },
+        { "prim": "cyl", "at": [0, 0.398, 0], "size": [0.22, 0.04, 0.22], "color": "dark" },
+        { "prim": "blob", "at": [0.12, 0.538, 0], "size": [0.16, 0.128, 0.16], "color": "accent", "anim": { "pulse": { "amp": 0.1, "rate": 0.35, "phase": 0 } } },
+        { "prim": "blob", "at": [0.037, 0.618, 0.114], "size": [0.16, 0.128, 0.16], "color": "leaf", "anim": { "pulse": { "amp": 0.1, "rate": 0.41, "phase": 0.2 } } },
+        { "prim": "blob", "at": [-0.097, 0.698, 0.071], "size": [0.16, 0.128, 0.16], "color": "accent", "anim": { "pulse": { "amp": 0.1, "rate": 0.47, "phase": 0.4 } } },
+        { "prim": "blob", "at": [-0.097, 0.538, -0.071], "size": [0.16, 0.128, 0.16], "color": "leaf", "anim": { "pulse": { "amp": 0.1, "rate": 0.35, "phase": 0.6000000000000001 } } },
+        { "prim": "blob", "at": [0.037, 0.618, -0.114], "size": [0.16, 0.128, 0.16], "color": "accent", "anim": { "pulse": { "amp": 0.1, "rate": 0.41, "phase": 0.8 } } }
+      ]
+    },
+    "kititem.potted-fern": {
+      "kind": "item",
+      "label": "Meadowash Potted Fern",
+      "value": 140,
+      "stack": 1,
+      "swatch": "#6aa755",
+      "badge": "plant",
+      "furniture": "fixture.potted-fern",
+      "palette": {
+        "wrap": "#d9c7a4",
+        "wrapHi": "#eee1c7",
+        "strap": "#8a6242",
+        "mark": "#6aa755"
+      }
+    }
+  }
+}

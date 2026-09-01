@@ -1,0 +1,45 @@
+{
+  "format": "tw.kit",
+  "version": 1,
+  "meta": {
+    "id": "turnip.oak-barrel",
+    "name": "Beechbark Oak Barrel"
+  },
+  "types": {
+    "fixture.oak-barrel": {
+      "kind": "object",
+      "label": "Beechbark Oak Barrel",
+      "footprint": { "w": 1, "d": 1 },
+      "height": 0.86,
+      "squash": 0.34,
+      "palette": {
+        "wood": "#c08b55",
+        "woodHi": "#d8a870",
+        "metal": "#b08d3f"
+      },
+      "parts": [
+        { "prim": "taper", "at": [0, 0.202, 0], "rot": [180, 0, 0], "size": [0.356, 0.405, 0.356], "color": "wood" },
+        { "prim": "taper", "at": [0, 0.607, 0], "size": [0.356, 0.405, 0.356], "color": "wood" },
+        { "prim": "cyl", "at": [0, 0.135, 0], "size": [0.327, 0.045, 0.327], "color": "metal" },
+        { "prim": "cyl", "at": [0, 0.405, 0], "size": [0.363, 0.045, 0.363], "color": "metal" },
+        { "prim": "cyl", "at": [0, 0.675, 0], "size": [0.327, 0.045, 0.327], "color": "metal" },
+        { "prim": "cyl", "at": [0, 0.83, 0], "size": [0.292, 0.05, 0.292], "color": "woodHi" }
+      ]
+    },
+    "kititem.oak-barrel": {
+      "kind": "item",
+      "label": "Beechbark Oak Barrel",
+      "value": 195,
+      "stack": 1,
+      "swatch": "#be7e3b",
+      "badge": "crate",
+      "furniture": "fixture.oak-barrel",
+      "palette": {
+        "wrap": "#d9c7a4",
+        "wrapHi": "#eee1c7",
+        "strap": "#8a6242",
+        "mark": "#be7e3b"
+      }
+    }
+  }
+}

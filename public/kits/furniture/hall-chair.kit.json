@@ -1,0 +1,52 @@
+{
+  "format": "tw.kit",
+  "version": 1,
+  "meta": {
+    "id": "turnip.hall-chair",
+    "name": "Sootpine Hall Chair"
+  },
+  "types": {
+    "fixture.hall-chair": {
+      "kind": "object",
+      "label": "Sootpine Hall Chair",
+      "footprint": { "w": 1, "d": 1 },
+      "height": 1.13,
+      "squash": 0.34,
+      "palette": {
+        "wood": "#4a4640",
+        "woodHi": "#656057",
+        "woodDark": "#332f2b",
+        "dark": "#221f1c"
+      },
+      "parts": [
+        { "prim": "cyl", "at": [-0.232, 0.222, -0.219], "size": [0.036, 0.445, 0.036], "color": "woodDark" },
+        { "prim": "cyl", "at": [0.232, 0.222, -0.219], "size": [0.036, 0.445, 0.036], "color": "woodDark" },
+        { "prim": "cyl", "at": [-0.232, 0.222, 0.219], "size": [0.036, 0.445, 0.036], "color": "woodDark" },
+        { "prim": "cyl", "at": [0.232, 0.222, 0.219], "size": [0.036, 0.445, 0.036], "color": "woodDark" },
+        { "prim": "box", "at": [0, 0.133, -0.219], "size": [0.444, 0.04, 0.04], "color": "woodDark" },
+        { "prim": "box", "at": [0, 0.133, 0.219], "size": [0.444, 0.04, 0.04], "color": "woodDark" },
+        { "prim": "box", "at": [0, 0.49, 0], "size": [0.604, 0.09, 0.578], "color": "wood" },
+        { "prim": "cyl", "at": [-0.232, 0.803, -0.219], "size": [0.03, 0.537, 0.03], "color": "woodDark" },
+        { "prim": "cyl", "at": [0.232, 0.803, -0.219], "size": [0.03, 0.537, 0.03], "color": "woodDark" },
+        { "prim": "box", "at": [0, 1.072, -0.219], "size": [0.604, 0.1, 0.06], "color": "woodHi" },
+        { "prim": "box", "at": [0, 0.803, -0.219], "size": [0.484, 0.537, 0.04], "color": "wood" },
+        { "prim": "blob", "at": [0, 0.83, -0.189], "size": [0.097, 0.107, 0.02], "color": "dark" }
+      ]
+    },
+    "kititem.hall-chair": {
+      "kind": "item",
+      "label": "Sootpine Hall Chair",
+      "value": 225,
+      "stack": 1,
+      "swatch": "#cf7840",
+      "badge": "chair",
+      "furniture": "fixture.hall-chair",
+      "palette": {
+        "wrap": "#d9c7a4",
+        "wrapHi": "#eee1c7",
+        "strap": "#8a6242",
+        "mark": "#cf7840"
+      }
+    }
+  }
+}

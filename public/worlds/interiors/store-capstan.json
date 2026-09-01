@@ -215,6 +215,7 @@
         "title": "The Capstan"
       },
       "shop": {
+        "hours": {"open": 8, "close": 19},
         "name": "Chandlery & Feed",
         "markup": 1.3,
         "buyRate": 0.68,

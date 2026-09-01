@@ -1,0 +1,54 @@
+{
+  "format": "tw.kit",
+  "version": 1,
+  "meta": {
+    "id": "turnip.fish-tank-stand",
+    "name": "Hollowmilk Fish Tank Stand"
+  },
+  "types": {
+    "fixture.fish-tank-stand": {
+      "kind": "object",
+      "label": "Hollowmilk Fish Tank Stand",
+      "footprint": { "w": 2, "d": 1 },
+      "height": 1.2,
+      "squash": 0.34,
+      "palette": {
+        "wood": "#f2ece0",
+        "woodHi": "#fdfaf2",
+        "woodDark": "#cfc7b6",
+        "dark": "#7e7768",
+        "metal": "#b6bcc1",
+        "accent": "#4f79b0",
+        "glass": "#dceaf4",
+        "leaf": "#6aa85c"
+      },
+      "parts": [
+        { "prim": "box", "at": [0, 0.305, 0], "size": [1.178, 0.609, 0.483], "color": "wood" },
+        { "prim": "box", "at": [0, 0.649, 0], "size": [1.258, 0.08, 0.533], "color": "woodHi" },
+        { "prim": "box", "at": [0, 0.749, 0], "size": [1.158, 0.12, 0.403], "color": "woodDark" },
+        { "prim": "box", "at": [0, 0.949, 0], "size": [1.158, 0.3, 0.403], "color": "glass", "anim": { "bob": { "amp": 0.008, "rate": 0.4 } } },
+        { "prim": "box", "at": [-0.569, 0.909, 0], "size": [0.04, 0.44, 0.423], "color": "metal" },
+        { "prim": "box", "at": [0.569, 0.909, 0], "size": [0.04, 0.44, 0.423], "color": "metal" },
+        { "prim": "box", "at": [0, 1.149, 0], "size": [1.238, 0.1, 0.463], "color": "dark" },
+        { "prim": "blob", "at": [-0.277, 0.949, 0], "size": [0.06, 0.045, 0.035], "color": "accent", "anim": { "bob": { "amp": 0.05, "rate": 0.8, "phase": 0 } } },
+        { "prim": "blob", "at": [0.277, 0.949, 0], "size": [0.06, 0.045, 0.035], "color": "accent", "anim": { "bob": { "amp": 0.05, "rate": 0.8, "phase": 0.5 } } },
+        { "prim": "cone", "at": [0.378, 0.909, -0.097], "size": [0.05, 0.24, 0.05], "color": "leaf", "anim": { "pulse": { "amp": 0.1, "rate": 0.5 } } }
+      ]
+    },
+    "kititem.fish-tank-stand": {
+      "kind": "item",
+      "label": "Hollowmilk Fish Tank Stand",
+      "value": 910,
+      "stack": 1,
+      "swatch": "#4f84ad",
+      "badge": "stove",
+      "furniture": "fixture.fish-tank-stand",
+      "palette": {
+        "wrap": "#d9c7a4",
+        "wrapHi": "#eee1c7",
+        "strap": "#8a6242",
+        "mark": "#4f84ad"
+      }
+    }
+  }
+}

@@ -1,0 +1,46 @@
+{
+  "format": "tw.kit",
+  "version": 1,
+  "meta": {
+    "id": "turnip.trestle-bench",
+    "name": "Coppervale Trestle Bench"
+  },
+  "types": {
+    "fixture.trestle-bench": {
+      "kind": "object",
+      "label": "Coppervale Trestle Bench",
+      "footprint": { "w": 2, "d": 1 },
+      "height": 0.55,
+      "squash": 0.34,
+      "palette": {
+        "wood": "#a9763f",
+        "woodHi": "#c6924f",
+        "woodDark": "#7a5329"
+      },
+      "parts": [
+        { "prim": "box", "at": [-0.763, 0.212, 0], "size": [0.1, 0.424, 0.382], "color": "woodDark" },
+        { "prim": "box", "at": [-0.763, 0.04, 0], "size": [0.22, 0.08, 0.537], "color": "woodDark" },
+        { "prim": "box", "at": [0.763, 0.212, 0], "size": [0.1, 0.424, 0.382], "color": "woodDark" },
+        { "prim": "box", "at": [0.763, 0.04, 0], "size": [0.22, 0.08, 0.537], "color": "woodDark" },
+        { "prim": "box", "at": [0, 0.127, 0], "size": [1.466, 0.06, 0.06], "color": "woodDark" },
+        { "prim": "box", "at": [0, 0.474, 0], "size": [1.806, 0.1, 0.477], "color": "wood" },
+        { "prim": "box", "at": [0, 0.534, 0], "size": [1.706, 0.02, 0.397], "color": "woodHi" }
+      ]
+    },
+    "kititem.trestle-bench": {
+      "kind": "item",
+      "label": "Coppervale Trestle Bench",
+      "value": 270,
+      "stack": 1,
+      "swatch": "#bc6939",
+      "badge": "chair",
+      "furniture": "fixture.trestle-bench",
+      "palette": {
+        "wrap": "#d9c7a4",
+        "wrapHi": "#eee1c7",
+        "strap": "#8a6242",
+        "mark": "#bc6939"
+      }
+    }
+  }
+}

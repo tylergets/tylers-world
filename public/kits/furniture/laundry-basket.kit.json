@@ -1,0 +1,45 @@
+{
+  "format": "tw.kit",
+  "version": 1,
+  "meta": {
+    "id": "turnip.laundry-basket",
+    "name": "Seaglass Laundry Basket"
+  },
+  "types": {
+    "fixture.laundry-basket": {
+      "kind": "object",
+      "label": "Seaglass Laundry Basket",
+      "footprint": { "w": 1, "d": 1 },
+      "height": 0.68,
+      "squash": 0.34,
+      "palette": {
+        "wood": "#a6a89c",
+        "woodHi": "#c2c4b8",
+        "woodDark": "#7b7d73"
+      },
+      "parts": [
+        { "prim": "taper", "at": [0, 0.249, 0], "rot": [180, 0, 0], "size": [0.304, 0.497, 0.304], "color": "wood" },
+        { "prim": "cyl", "at": [0, 0.497, 0], "size": [0.324, 0.05, 0.324], "color": "woodHi" },
+        { "prim": "cyl", "at": [0, 0.119, 0], "size": [0.262, 0.025, 0.262], "color": "woodDark" },
+        { "prim": "cyl", "at": [0, 0.269, 0], "size": [0.277, 0.025, 0.277], "color": "woodDark" },
+        { "prim": "cyl", "at": [0, 0.418, 0], "size": [0.292, 0.025, 0.292], "color": "woodDark" },
+        { "prim": "cyl", "at": [0, 0.657, 0], "rot": [90, 0, 0], "size": [0.274, 0.03, 0.274], "color": "woodHi" }
+      ]
+    },
+    "kititem.laundry-basket": {
+      "kind": "item",
+      "label": "Seaglass Laundry Basket",
+      "value": 170,
+      "stack": 1,
+      "swatch": "#629494",
+      "badge": "crate",
+      "furniture": "fixture.laundry-basket",
+      "palette": {
+        "wrap": "#d9c7a4",
+        "wrapHi": "#eee1c7",
+        "strap": "#8a6242",
+        "mark": "#629494"
+      }
+    }
+  }
+}

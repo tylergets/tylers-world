@@ -1,0 +1,51 @@
+{
+  "format": "tw.kit",
+  "version": 1,
+  "meta": {
+    "id": "turnip.striped-runner",
+    "name": "Fenrush Striped Runner"
+  },
+  "types": {
+    "fixture.striped-runner": {
+      "kind": "object",
+      "label": "Fenrush Striped Runner",
+      "footprint": { "w": 1, "d": 3 },
+      "height": 0.2,
+      "squash": 0.9,
+      "palette": {
+        "cloth": "#9c8a5e",
+        "clothHi": "#bda87a",
+        "pale": "#f7efd9",
+        "accent": "#b8923a"
+      },
+      "parts": [
+        { "prim": "box", "at": [0, 0.02, 0], "size": [0.921, 0.04, 2.73], "color": "cloth" },
+        { "prim": "box", "at": [0, 0.045, 0], "size": [0.761, 0.016, 2.57], "color": "clothHi" },
+        { "prim": "box", "at": [0, 0.054, -0.983], "size": [0.721, 0.014, 0.164], "color": "accent" },
+        { "prim": "box", "at": [0, 0.054, -0.655], "size": [0.721, 0.014, 0.164], "color": "pale" },
+        { "prim": "box", "at": [0, 0.054, -0.328], "size": [0.721, 0.014, 0.164], "color": "accent" },
+        { "prim": "box", "at": [0, 0.054, 0], "size": [0.721, 0.014, 0.164], "color": "pale" },
+        { "prim": "box", "at": [0, 0.054, 0.328], "size": [0.721, 0.014, 0.164], "color": "accent" },
+        { "prim": "box", "at": [0, 0.054, 0.655], "size": [0.721, 0.014, 0.164], "color": "pale" },
+        { "prim": "box", "at": [0, 0.054, 0.983], "size": [0.721, 0.014, 0.164], "color": "accent" },
+        { "prim": "box", "at": [0, 0.02, -1.4], "size": [0.921, 0.022, 0.07], "color": "pale" },
+        { "prim": "box", "at": [0, 0.02, 1.4], "size": [0.921, 0.022, 0.07], "color": "pale" }
+      ]
+    },
+    "kititem.striped-runner": {
+      "kind": "item",
+      "label": "Fenrush Striped Runner",
+      "value": 235,
+      "stack": 1,
+      "swatch": "#b67a42",
+      "badge": "crate",
+      "furniture": "fixture.striped-runner",
+      "palette": {
+        "wrap": "#d9c7a4",
+        "wrapHi": "#eee1c7",
+        "strap": "#8a6242",
+        "mark": "#b67a42"
+      }
+    }
+  }
+}

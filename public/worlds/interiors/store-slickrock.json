@@ -215,6 +215,7 @@
         "title": "Slickrock Post"
       },
       "shop": {
+        "hours": {"open": 8, "close": 19},
         "name": "Post & Water",
         "markup": 1.35,
         "buyRate": 0.6,

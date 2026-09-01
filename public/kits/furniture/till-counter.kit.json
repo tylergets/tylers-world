@@ -1,0 +1,50 @@
+{
+  "format": "tw.kit",
+  "version": 1,
+  "meta": {
+    "id": "turnip.till-counter",
+    "name": "Coppervale Till Counter"
+  },
+  "types": {
+    "fixture.till-counter": {
+      "kind": "object",
+      "label": "Coppervale Till Counter",
+      "footprint": { "w": 3, "d": 1 },
+      "height": 1.38,
+      "squash": 0.34,
+      "palette": {
+        "wood": "#a9763f",
+        "woodHi": "#c6924f",
+        "woodDark": "#7a5329",
+        "dark": "#3f2d18",
+        "metal": "#b5713c"
+      },
+      "parts": [
+        { "prim": "box", "at": [0, 0.05, 0.02], "size": [2.64, 0.1, 0.618], "color": "dark" },
+        { "prim": "box", "at": [0, 0.543, 0], "size": [2.72, 0.985, 0.678], "color": "wood" },
+        { "prim": "box", "at": [0, 1.085, 0], "size": [2.88, 0.1, 0.818], "color": "woodHi" },
+        { "prim": "box", "at": [-0.945, 0.552, 0.349], "size": [0.555, 0.611, 0.03], "color": "woodDark" },
+        { "prim": "box", "at": [-0.315, 0.552, 0.349], "size": [0.555, 0.611, 0.03], "color": "woodDark" },
+        { "prim": "box", "at": [0.315, 0.552, 0.349], "size": [0.555, 0.611, 0.03], "color": "woodDark" },
+        { "prim": "box", "at": [0.945, 0.552, 0.349], "size": [0.555, 0.611, 0.03], "color": "woodDark" },
+        { "prim": "box", "at": [0.87, 1.225, -0.041], "size": [0.36, 0.2, 0.28], "color": "metal" },
+        { "prim": "box", "at": [0.87, 1.345, -0.041], "size": [0.2, 0.06, 0.16], "color": "dark" }
+      ]
+    },
+    "kititem.till-counter": {
+      "kind": "item",
+      "label": "Coppervale Till Counter",
+      "value": 1165,
+      "stack": 1,
+      "swatch": "#cf8d5f",
+      "badge": "counter",
+      "furniture": "fixture.till-counter",
+      "palette": {
+        "wrap": "#d9c7a4",
+        "wrapHi": "#eee1c7",
+        "strap": "#8a6242",
+        "mark": "#cf8d5f"
+      }
+    }
+  }
+}

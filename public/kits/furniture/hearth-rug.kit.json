@@ -1,0 +1,44 @@
+{
+  "format": "tw.kit",
+  "version": 1,
+  "meta": {
+    "id": "turnip.hearth-rug",
+    "name": "Sootpine Hearth Rug"
+  },
+  "types": {
+    "fixture.hearth-rug": {
+      "kind": "object",
+      "label": "Sootpine Hearth Rug",
+      "footprint": { "w": 2, "d": 2 },
+      "height": 0.2,
+      "squash": 0.9,
+      "palette": {
+        "cloth": "#6d7480",
+        "clothHi": "#8b929c",
+        "pale": "#dcd8cf",
+        "accent": "#d8763a"
+      },
+      "parts": [
+        { "prim": "box", "at": [0, 0.02, 0], "size": [1.737, 0.04, 1.089], "color": "cloth" },
+        { "prim": "box", "at": [0, 0.045, 0], "size": [1.577, 0.016, 0.929], "color": "clothHi" },
+        { "prim": "box", "at": [0, 0.052, 0], "size": [1.437, 0.014, 0.789], "color": "accent" },
+        { "prim": "box", "at": [0, 0.058, 0], "size": [1.297, 0.014, 0.649], "color": "pale" }
+      ]
+    },
+    "kititem.hearth-rug": {
+      "kind": "item",
+      "label": "Sootpine Hearth Rug",
+      "value": 315,
+      "stack": 1,
+      "swatch": "#ca6942",
+      "badge": "crate",
+      "furniture": "fixture.hearth-rug",
+      "palette": {
+        "wrap": "#d9c7a4",
+        "wrapHi": "#eee1c7",
+        "strap": "#8a6242",
+        "mark": "#ca6942"
+      }
+    }
+  }
+}

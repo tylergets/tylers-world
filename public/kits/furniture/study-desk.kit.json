@@ -1,0 +1,60 @@
+{
+  "format": "tw.kit",
+  "version": 1,
+  "meta": {
+    "id": "turnip.study-desk",
+    "name": "Meadowash Study Desk"
+  },
+  "types": {
+    "fixture.study-desk": {
+      "kind": "object",
+      "label": "Meadowash Study Desk",
+      "footprint": { "w": 2, "d": 1 },
+      "height": 1.2,
+      "squash": 0.34,
+      "palette": {
+        "wood": "#d6cdb6",
+        "woodHi": "#e9e2ce",
+        "woodDark": "#a89d84",
+        "pale": "#f4f1e6",
+        "metal": "#a9ada0",
+        "accent": "#6f9c5a"
+      },
+      "parts": [
+        { "prim": "box", "at": [-0.682, 0.352, 0], "size": [0.44, 0.664, 0.71], "color": "wood" },
+        { "prim": "box", "at": [-0.682, 0.04, 0], "size": [0.48, 0.08, 0.75], "color": "woodDark" },
+        { "prim": "box", "at": [-0.682, 0.127, 0.345], "size": [0.36, 0.181, 0.04], "color": "woodHi" },
+        { "prim": "cyl", "at": [-0.682, 0.127, 0.385], "rot": [0, 0, 90], "size": [0.025, 0.12, 0.025], "color": "metal" },
+        { "prim": "box", "at": [-0.682, 0.564, 0.345], "size": [0.36, 0.181, 0.04], "color": "woodHi" },
+        { "prim": "cyl", "at": [-0.682, 0.564, 0.385], "rot": [0, 0, 90], "size": [0.025, 0.12, 0.025], "color": "metal" },
+        { "prim": "box", "at": [0.682, 0.352, 0], "size": [0.44, 0.664, 0.71], "color": "wood" },
+        { "prim": "box", "at": [0.682, 0.04, 0], "size": [0.48, 0.08, 0.75], "color": "woodDark" },
+        { "prim": "box", "at": [0.682, 0.127, 0.345], "size": [0.36, 0.181, 0.04], "color": "woodHi" },
+        { "prim": "cyl", "at": [0.682, 0.127, 0.385], "rot": [0, 0, 90], "size": [0.025, 0.12, 0.025], "color": "metal" },
+        { "prim": "box", "at": [0.682, 0.564, 0.345], "size": [0.36, 0.181, 0.04], "color": "woodHi" },
+        { "prim": "cyl", "at": [0.682, 0.564, 0.385], "rot": [0, 0, 90], "size": [0.025, 0.12, 0.025], "color": "metal" },
+        { "prim": "box", "at": [0, 0.744, 0], "size": [1.843, 0.08, 0.79], "color": "wood" },
+        { "prim": "box", "at": [0, 0.794, 0], "size": [1.683, 0.02, 0.63], "color": "woodHi" },
+        { "prim": "cyl", "at": [0.627, 0.844, -0.174], "size": [0.06, 0.04, 0.06], "color": "metal" },
+        { "prim": "cyl", "at": [0.627, 0.964, -0.174], "size": [0.018, 0.24, 0.018], "color": "metal" },
+        { "prim": "cone", "at": [0.627, 1.124, -0.174], "rot": [180, 0, 0], "size": [0.1, 0.14, 0.1], "color": "accent" },
+        { "prim": "blob", "at": [0.627, 1.064, -0.174], "size": [0.05, 0.05, 0.05], "color": "pale", "anim": { "pulse": { "amp": 0.14, "rate": 0.7 } } }
+      ]
+    },
+    "kititem.study-desk": {
+      "kind": "item",
+      "label": "Meadowash Study Desk",
+      "value": 655,
+      "stack": 1,
+      "swatch": "#798954",
+      "badge": "table",
+      "furniture": "fixture.study-desk",
+      "palette": {
+        "wrap": "#d9c7a4",
+        "wrapHi": "#eee1c7",
+        "strap": "#8a6242",
+        "mark": "#798954"
+      }
+    }
+  }
+}

@@ -1,0 +1,57 @@
+{
+  "format": "tw.kit",
+  "version": 1,
+  "meta": {
+    "id": "turnip.chesterfield",
+    "name": "Inkthorn Chesterfield"
+  },
+  "types": {
+    "fixture.chesterfield": {
+      "kind": "object",
+      "label": "Inkthorn Chesterfield",
+      "footprint": { "w": 3, "d": 1 },
+      "height": 0.94,
+      "squash": 0.34,
+      "palette": {
+        "woodDark": "#241d1a",
+        "cloth": "#7a3f4a",
+        "clothHi": "#9b5762"
+      },
+      "parts": [
+        { "prim": "box", "at": [-1.27, 0.06, -0.257], "size": [0.1, 0.12, 0.1], "color": "woodDark" },
+        { "prim": "box", "at": [1.27, 0.06, -0.257], "size": [0.1, 0.12, 0.1], "color": "woodDark" },
+        { "prim": "box", "at": [-1.27, 0.06, 0.257], "size": [0.1, 0.12, 0.1], "color": "woodDark" },
+        { "prim": "box", "at": [1.27, 0.06, 0.257], "size": [0.1, 0.12, 0.1], "color": "woodDark" },
+        { "prim": "box", "at": [0, 0.26, 0.02], "size": [2.719, 0.28, 0.735], "color": "cloth" },
+        { "prim": "box", "at": [-0.826, 0.48, 0.03], "size": [0.783, 0.16, 0.555], "color": "cloth" },
+        { "prim": "box", "at": [0, 0.48, 0.03], "size": [0.783, 0.16, 0.555], "color": "clothHi" },
+        { "prim": "box", "at": [0.826, 0.48, 0.03], "size": [0.783, 0.16, 0.555], "color": "cloth" },
+        { "prim": "box", "at": [0, 0.596, -0.277], "size": [2.759, 0.56, 0.2], "color": "cloth" },
+        { "prim": "box", "at": [0, 0.865, -0.277], "size": [2.759, 0.08, 0.24], "color": "clothHi" },
+        { "prim": "blob", "at": [-0.792, 0.652, -0.167], "size": [0.03, 0.03, 0.02], "color": "woodDark" },
+        { "prim": "blob", "at": [-0.264, 0.652, -0.167], "size": [0.03, 0.03, 0.02], "color": "woodDark" },
+        { "prim": "blob", "at": [0.264, 0.652, -0.167], "size": [0.03, 0.03, 0.02], "color": "woodDark" },
+        { "prim": "blob", "at": [0.792, 0.652, -0.167], "size": [0.03, 0.03, 0.02], "color": "woodDark" },
+        { "prim": "box", "at": [-1.31, 0.4, 0.02], "size": [0.16, 0.3, 0.695], "color": "cloth" },
+        { "prim": "cyl", "at": [-1.31, 0.59, 0.02], "rot": [90, 0, 0], "size": [0.1, 0.695, 0.1], "color": "clothHi" },
+        { "prim": "box", "at": [1.31, 0.4, 0.02], "size": [0.16, 0.3, 0.695], "color": "cloth" },
+        { "prim": "cyl", "at": [1.31, 0.59, 0.02], "rot": [90, 0, 0], "size": [0.1, 0.695, 0.1], "color": "clothHi" }
+      ]
+    },
+    "kititem.chesterfield": {
+      "kind": "item",
+      "label": "Inkthorn Chesterfield",
+      "value": 1735,
+      "stack": 1,
+      "swatch": "#ba8747",
+      "badge": "chair",
+      "furniture": "fixture.chesterfield",
+      "palette": {
+        "wrap": "#d9c7a4",
+        "wrapHi": "#eee1c7",
+        "strap": "#8a6242",
+        "mark": "#ba8747"
+      }
+    }
+  }
+}

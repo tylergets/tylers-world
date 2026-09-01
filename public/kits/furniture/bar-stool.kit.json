@@ -1,0 +1,48 @@
+{
+  "format": "tw.kit",
+  "version": 1,
+  "meta": {
+    "id": "turnip.bar-stool",
+    "name": "Sootpine Bar Stool"
+  },
+  "types": {
+    "fixture.bar-stool": {
+      "kind": "object",
+      "label": "Sootpine Bar Stool",
+      "footprint": { "w": 1, "d": 1 },
+      "height": 0.88,
+      "squash": 0.34,
+      "palette": {
+        "wood": "#4a4640",
+        "woodHi": "#656057",
+        "woodDark": "#332f2b",
+        "metal": "#9aa0a6"
+      },
+      "parts": [
+        { "prim": "cyl", "at": [0.143, 0.388, 0], "rot": [0, 0, -8], "size": [0.032, 0.776, 0.032], "color": "woodDark" },
+        { "prim": "cyl", "at": [0, 0.388, 0.143], "rot": [8, 0, 0], "size": [0.032, 0.776, 0.032], "color": "woodDark" },
+        { "prim": "cyl", "at": [-0.143, 0.388, 0], "rot": [0, 0, 8], "size": [0.032, 0.776, 0.032], "color": "woodDark" },
+        { "prim": "cyl", "at": [0, 0.388, -0.143], "rot": [-8, 0, 0], "size": [0.032, 0.776, 0.032], "color": "woodDark" },
+        { "prim": "cyl", "at": [0, 0.264, 0], "size": [0.135, 0.025, 0.135], "color": "woodDark" },
+        { "prim": "cyl", "at": [0, 0.435, 0], "size": [0.166, 0.022, 0.166], "color": "metal" },
+        { "prim": "cyl", "at": [0, 0.816, 0], "size": [0.198, 0.08, 0.198], "color": "wood" },
+        { "prim": "cyl", "at": [0, 0.866, 0], "size": [0.17, 0.02, 0.17], "color": "woodHi" }
+      ]
+    },
+    "kititem.bar-stool": {
+      "kind": "item",
+      "label": "Sootpine Bar Stool",
+      "value": 195,
+      "stack": 1,
+      "swatch": "#cc8142",
+      "badge": "chair",
+      "furniture": "fixture.bar-stool",
+      "palette": {
+        "wrap": "#d9c7a4",
+        "wrapHi": "#eee1c7",
+        "strap": "#8a6242",
+        "mark": "#cc8142"
+      }
+    }
+  }
+}

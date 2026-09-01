@@ -1,0 +1,48 @@
+{
+  "format": "tw.kit",
+  "version": 1,
+  "meta": {
+    "id": "turnip.piano-stool",
+    "name": "Rosewick Piano Stool"
+  },
+  "types": {
+    "fixture.piano-stool": {
+      "kind": "object",
+      "label": "Rosewick Piano Stool",
+      "footprint": { "w": 1, "d": 1 },
+      "height": 0.76,
+      "squash": 0.34,
+      "palette": {
+        "wood": "#8f4a3c",
+        "woodDark": "#653228",
+        "cloth": "#e0b7ad",
+        "clothHi": "#f2d5cd"
+      },
+      "parts": [
+        { "prim": "cyl", "at": [0.178, 0.291, 0], "rot": [0, 0, -8], "size": [0.032, 0.583, 0.032], "color": "woodDark" },
+        { "prim": "cyl", "at": [0, 0.291, 0.178], "rot": [8, 0, 0], "size": [0.032, 0.583, 0.032], "color": "woodDark" },
+        { "prim": "cyl", "at": [-0.178, 0.291, 0], "rot": [0, 0, 8], "size": [0.032, 0.583, 0.032], "color": "woodDark" },
+        { "prim": "cyl", "at": [0, 0.291, -0.178], "rot": [-8, 0, 0], "size": [0.032, 0.583, 0.032], "color": "woodDark" },
+        { "prim": "cyl", "at": [0, 0.198, 0], "size": [0.168, 0.025, 0.168], "color": "woodDark" },
+        { "prim": "box", "at": [0, 0.623, 0], "size": [0.494, 0.08, 0.494], "color": "wood" },
+        { "prim": "box", "at": [0, 0.698, 0], "size": [0.469, 0.08, 0.469], "color": "cloth" },
+        { "prim": "blob", "at": [0, 0.738, 0], "size": [0.049, 0.02, 0.049], "color": "clothHi" }
+      ]
+    },
+    "kititem.piano-stool": {
+      "kind": "item",
+      "label": "Rosewick Piano Stool",
+      "value": 240,
+      "stack": 1,
+      "swatch": "#c0744d",
+      "badge": "chair",
+      "furniture": "fixture.piano-stool",
+      "palette": {
+        "wrap": "#d9c7a4",
+        "wrapHi": "#eee1c7",
+        "strap": "#8a6242",
+        "mark": "#c0744d"
+      }
+    }
+  }
+}

@@ -1,0 +1,48 @@
+{
+  "format": "tw.kit",
+  "version": 1,
+  "meta": {
+    "id": "turnip.glazed-screen",
+    "name": "Hollowmilk Glazed Screen"
+  },
+  "types": {
+    "fixture.glazed-screen": {
+      "kind": "object",
+      "label": "Hollowmilk Glazed Screen",
+      "footprint": { "w": 2, "d": 1 },
+      "height": 1.73,
+      "squash": 0.3,
+      "palette": {
+        "wood": "#f2ece0",
+        "woodDark": "#cfc7b6",
+        "glass": "#dceaf4"
+      },
+      "parts": [
+        { "prim": "box", "at": [-0.602, 0.863, -0.08], "rot": [0, 18, 0], "size": [0.64, 1.726, 0.06], "color": "wood" },
+        { "prim": "box", "at": [-0.602, 1.036, -0.06], "rot": [0, 18, 0], "size": [0.5, 1.036, 0.03], "color": "glass" },
+        { "prim": "box", "at": [-0.602, 0.04, -0.08], "rot": [0, 18, 0], "size": [0.68, 0.08, 0.16], "color": "woodDark" },
+        { "prim": "box", "at": [0, 0.863, 0.08], "rot": [0, -18, 0], "size": [0.64, 1.726, 0.06], "color": "wood" },
+        { "prim": "box", "at": [0, 1.036, 0.1], "rot": [0, -18, 0], "size": [0.5, 1.036, 0.03], "color": "glass" },
+        { "prim": "box", "at": [0, 0.04, 0.08], "rot": [0, -18, 0], "size": [0.68, 0.08, 0.16], "color": "woodDark" },
+        { "prim": "box", "at": [0.602, 0.863, -0.08], "rot": [0, 18, 0], "size": [0.64, 1.726, 0.06], "color": "wood" },
+        { "prim": "box", "at": [0.602, 1.036, -0.06], "rot": [0, 18, 0], "size": [0.5, 1.036, 0.03], "color": "glass" },
+        { "prim": "box", "at": [0.602, 0.04, -0.08], "rot": [0, 18, 0], "size": [0.68, 0.08, 0.16], "color": "woodDark" }
+      ]
+    },
+    "kititem.glazed-screen": {
+      "kind": "item",
+      "label": "Hollowmilk Glazed Screen",
+      "value": 770,
+      "stack": 1,
+      "swatch": "#608195",
+      "badge": "crate",
+      "furniture": "fixture.glazed-screen",
+      "palette": {
+        "wrap": "#d9c7a4",
+        "wrapHi": "#eee1c7",
+        "strap": "#8a6242",
+        "mark": "#608195"
+      }
+    }
+  }
+}

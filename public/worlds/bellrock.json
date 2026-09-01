@@ -232,7 +232,7 @@
   "objects": [
     {"id":"gate.quay","type":"building.gate","tile":[28,52],"props":{"label":"Bellrock Quay"}},
     {"id":"gate.down","type":"building.gate","tile":[26,7],"props":{"label":"The Bellrock Down"}},
-    {"id":"home.player","type":"building.home","tile":[20,38],"props":{"label":"Tyler's House","interior":"worlds/interiors/home-tyler.json"}},
+    {"id":"home.player","type":"building.home","tile":[20,38],"props":{"label":"Tyler's House","interior":"worlds/interiors/home-tyler.json","playerHome":true}},
     {"id":"store.capstan","type":"building.store","tile":[36,40],"props":{"label":"The Capstan","interior":"worlds/interiors/store-capstan.json"}},
     {"id":"store.furniture","type":"building.furniture","tile":[43,40],"props":{"label":"Turnip & Timber","interior":"worlds/interiors/store-furniture.json"}},
     {"id":"home.sennen","type":"building.cottage","tile":[46,36],"props":{"label":"Sennen's Cottage","interior":"worlds/interiors/home-sennen.json"}},
@@ -431,6 +431,133 @@
     {"id":"cat.0","type":"cat","tile":[36,45]}
   ],
   "npcs": [
+    {
+      "id": "folk.ors",
+      "type": "folk.villager",
+      "tile": [
+        22,
+        41
+      ],
+      "facing": "north",
+      "props": {
+        "name": "Ors",
+        "title": "Downland Builder",
+        "voice": {
+          "pitch": 0.76,
+          "rate": 21,
+          "timbre": "square"
+        }
+      },
+      "dialog": {
+        "start": "hello",
+        "nodes": {
+          "hello": {
+            "text": "Ors. Bellrock bells tell me which way a frame is leaning. Yours is honest. I can stack two useful floors above it and leave every outside tile alone.",
+            "then": "menu"
+          },
+          "menu": {
+            "text": "The footprint stays exactly where it is. We build upward, and every new floor is yours to use.",
+            "choices": [
+              {
+                "text": "Add a second story — 1800 coin.",
+                "when": {
+                  "houseStories": 1,
+                  "coins": 1800
+                },
+                "do": [
+                  {
+                    "coins": -1800
+                  },
+                  {
+                    "houseStories": 2
+                  }
+                ],
+                "to": "second"
+              },
+              {
+                "text": "I need 1800 coin for the second story.",
+                "when": {
+                  "all": [
+                    {
+                      "houseStories": 1
+                    },
+                    {
+                      "not": {
+                        "coins": 1800
+                      }
+                    }
+                  ]
+                },
+                "to": "short"
+              },
+              {
+                "text": "Add a third story — 3600 coin.",
+                "when": {
+                  "houseStories": 2,
+                  "coins": 3600
+                },
+                "do": [
+                  {
+                    "coins": -3600
+                  },
+                  {
+                    "houseStories": 3
+                  }
+                ],
+                "to": "third"
+              },
+              {
+                "text": "I need 3600 coin for the third story.",
+                "when": {
+                  "all": [
+                    {
+                      "houseStories": 2
+                    },
+                    {
+                      "not": {
+                        "coins": 3600
+                      }
+                    }
+                  ]
+                },
+                "to": "short"
+              },
+              {
+                "text": "Is the house finished?",
+                "when": {
+                  "houseStories": 3
+                },
+                "to": "complete"
+              },
+              {
+                "text": "Not today.",
+                "to": "endline"
+              }
+            ]
+          },
+          "second": {
+            "text": "Two stories, sound and square. The new stair is ready inside.",
+            "then": "end"
+          },
+          "third": {
+            "text": "Three stories. Roof raised, chimney drawn, top floor ready. That house is complete.",
+            "then": "end"
+          },
+          "complete": {
+            "text": "Complete at three stories. Any higher and it stops being a house and starts arguing with the weather.",
+            "then": "end"
+          },
+          "short": {
+            "text": "Keep the plan. Come back when the purse is ready; the ground will not move.",
+            "then": "end"
+          },
+          "endline": {
+            "text": "No harm done. A measured house waits better than people do.",
+            "then": "end"
+          }
+        }
+      }
+    },
     {
       "id": "folk.doss",
       "type": "folk.fisher",

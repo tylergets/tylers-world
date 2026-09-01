@@ -219,7 +219,7 @@
   },
   "objects": [
     {"id":"gate.north","type":"building.gate","tile":[28,16],"props":{"label":"Meadowbrook Lookout"}},
-    {"id":"home.player","type":"building.home","tile":[24,34],"props":{"label":"Tyler's House","interior":"worlds/interiors/home-tyler.json"}},
+    {"id":"home.player","type":"building.home","tile":[24,34],"props":{"label":"Tyler's House","interior":"worlds/interiors/home-tyler.json","playerHome":true}},
     {"id":"store.nook","type":"building.store","tile":[40,35],"props":{"label":"General Store","interior":"worlds/interiors/store-nook.json"}},
     {"id":"store.furniture","type":"building.furniture","tile":[46,34],"props":{"label":"Turnip & Timber","interior":"worlds/interiors/store-furniture.json"}},
     {"id":"home.bramble","type":"building.cottage","tile":[18,46],"props":{"label":"Bramble's Cottage","interior":"worlds/interiors/home-bramble.json"}},
@@ -432,6 +432,133 @@
   ],
   "npcs": [
     {
+      "id": "folk.renna",
+      "type": "folk.villager",
+      "tile": [
+        26,
+        37
+      ],
+      "facing": "north",
+      "props": {
+        "name": "Renna",
+        "title": "Meadowbrook Housewright",
+        "voice": {
+          "pitch": 1.08,
+          "rate": 23,
+          "timbre": "triangle"
+        }
+      },
+      "dialog": {
+        "start": "hello",
+        "nodes": {
+          "hello": {
+            "text": "Renna. I set rafters by the wind off the meadow. Your foundations will carry two floors more without stealing another inch of garden.",
+            "then": "menu"
+          },
+          "menu": {
+            "text": "The footprint stays exactly where it is. We build upward, and every new floor is yours to use.",
+            "choices": [
+              {
+                "text": "Add a second story — 1800 coin.",
+                "when": {
+                  "houseStories": 1,
+                  "coins": 1800
+                },
+                "do": [
+                  {
+                    "coins": -1800
+                  },
+                  {
+                    "houseStories": 2
+                  }
+                ],
+                "to": "second"
+              },
+              {
+                "text": "I need 1800 coin for the second story.",
+                "when": {
+                  "all": [
+                    {
+                      "houseStories": 1
+                    },
+                    {
+                      "not": {
+                        "coins": 1800
+                      }
+                    }
+                  ]
+                },
+                "to": "short"
+              },
+              {
+                "text": "Add a third story — 3600 coin.",
+                "when": {
+                  "houseStories": 2,
+                  "coins": 3600
+                },
+                "do": [
+                  {
+                    "coins": -3600
+                  },
+                  {
+                    "houseStories": 3
+                  }
+                ],
+                "to": "third"
+              },
+              {
+                "text": "I need 3600 coin for the third story.",
+                "when": {
+                  "all": [
+                    {
+                      "houseStories": 2
+                    },
+                    {
+                      "not": {
+                        "coins": 3600
+                      }
+                    }
+                  ]
+                },
+                "to": "short"
+              },
+              {
+                "text": "Is the house finished?",
+                "when": {
+                  "houseStories": 3
+                },
+                "to": "complete"
+              },
+              {
+                "text": "Not today.",
+                "to": "endline"
+              }
+            ]
+          },
+          "second": {
+            "text": "Two stories, sound and square. The new stair is ready inside.",
+            "then": "end"
+          },
+          "third": {
+            "text": "Three stories. Roof raised, chimney drawn, top floor ready. That house is complete.",
+            "then": "end"
+          },
+          "complete": {
+            "text": "Complete at three stories. Any higher and it stops being a house and starts arguing with the weather.",
+            "then": "end"
+          },
+          "short": {
+            "text": "Keep the plan. Come back when the purse is ready; the ground will not move.",
+            "then": "end"
+          },
+          "endline": {
+            "text": "No harm done. A measured house waits better than people do.",
+            "then": "end"
+          }
+        }
+      }
+    },
+    {
       "id": "folk.pim",
       "type": "folk.villager",
       "tile": [
@@ -449,11 +576,50 @@
           "timbre": "sawtooth"
         }
       },
+      "schedule": [
+        {
+          "at": 6,
+          "tile": [
+            33,
+            44
+          ],
+          "facing": "west",
+          "activity": "Watching the square"
+        },
+        {
+          "at": 12,
+          "tile": [
+            31,
+            43
+          ],
+          "facing": "south",
+          "activity": "Taking the long way nowhere"
+        },
+        {
+          "at": 20,
+          "tile": [
+            33,
+            44
+          ],
+          "facing": "north",
+          "activity": "Gone quiet",
+          "available": false
+        }
+      ],
       "dialog": {
         "start": "open",
         "nodes": {
           "open": {
             "branch": [
+              {
+                "when": {
+                  "time": {
+                    "from": 5,
+                    "to": 9
+                  }
+                },
+                "to": "early"
+              },
               {
                 "when": {
                   "visits": 9
@@ -476,6 +642,10 @@
                 "to": "hello"
               }
             ]
+          },
+          "early": {
+            "text": "You are up early. I would say I was too, but I have not been to bed yet.",
+            "then": "menu"
           },
           "hello": {
             "text": [
@@ -635,6 +805,64 @@
           "timbre": "triangle"
         }
       },
+      "schedule": [
+        {
+          "at": 6,
+          "tile": [
+            19,
+            49
+          ],
+          "facing": "south",
+          "activity": "Tending the beds"
+        },
+        {
+          "at": 13,
+          "tile": [
+            22,
+            44
+          ],
+          "facing": "east",
+          "activity": "Checking the roadside soil"
+        },
+        {
+          "at": 20,
+          "tile": [
+            19,
+            49
+          ],
+          "facing": "north",
+          "activity": "Inside for the night",
+          "available": false
+        }
+      ],
+      "errands": [
+        {
+          "id": "shade-crop",
+          "title": "Gather mushrooms",
+          "objective": {
+            "kind": "gather",
+            "item": "item.mushroom",
+            "count": 3
+          },
+          "reward": {
+            "coins": 45,
+            "relationship": 18
+          }
+        },
+        {
+          "id": "winter-bundle",
+          "title": "Dry flowers",
+          "objective": {
+            "kind": "process",
+            "fixture": "fixture.dryrack",
+            "count": 1
+          },
+          "reward": {
+            "coins": 30,
+            "relationship": 12
+          }
+        }
+      ],
       "dialog": {
         "start": "open",
         "nodes": {
@@ -642,14 +870,27 @@
             "branch": [
               {
                 "when": {
-                  "all": [
-                    {
-                      "friend": true
-                    },
-                    {
-                      "visits": 7
-                    }
-                  ]
+                  "errand": {
+                    "id": "shade-crop",
+                    "status": "ready"
+                  }
+                },
+                "to": "mushrooms.done"
+              },
+              {
+                "when": {
+                  "errand": {
+                    "id": "winter-bundle",
+                    "status": "ready"
+                  }
+                },
+                "to": "drying.done"
+              },
+              {
+                "when": {
+                  "relationship": {
+                    "atLeast": "friend"
+                  }
                 },
                 "to": "regular"
               },
@@ -686,6 +927,26 @@
           "menu": {
             "text": "Something you wanted?",
             "choices": [
+              {
+                "text": "Need anything gathered?",
+                "when": {
+                  "errand": {
+                    "id": "shade-crop",
+                    "status": "available"
+                  }
+                },
+                "to": "mushrooms.offer"
+              },
+              {
+                "text": "Any work at the drying rack?",
+                "when": {
+                  "errand": {
+                    "id": "winter-bundle",
+                    "status": "available"
+                  }
+                },
+                "to": "drying.offer"
+              },
               {
                 "text": "Anything growing worth having?",
                 "when": {
@@ -735,6 +996,46 @@
                 "to": "bye"
               }
             ]
+          },
+          "mushrooms.offer": {
+            "text": "Three mushrooms from the wild shade. Picked by you, not borrowed from my trays.",
+            "do": {
+              "errand": {
+                "id": "shade-crop",
+                "action": "accept"
+              }
+            },
+            "then": "menu"
+          },
+          "mushrooms.done": {
+            "text": "Those are the ones. Good caps, clean stems. You have an eye for the damp places.",
+            "do": {
+              "errand": {
+                "id": "shade-crop",
+                "action": "complete"
+              }
+            },
+            "then": "menu"
+          },
+          "drying.offer": {
+            "text": "Take two flowers to my rack indoors and turn them into one dry bundle. The rack will show you.",
+            "do": {
+              "errand": {
+                "id": "winter-bundle",
+                "action": "accept"
+              }
+            },
+            "then": "menu"
+          },
+          "drying.done": {
+            "text": "A proper dry bundle. That will hold its colour through winter.",
+            "do": {
+              "errand": {
+                "id": "winter-bundle",
+                "action": "complete"
+              }
+            },
+            "then": "menu"
           },
           "gift": {
             "text": "Take these. Came up under the pines after the rain, and the rain did all the work.",
@@ -821,11 +1122,65 @@
           "timbre": "square"
         }
       },
+      "schedule": [
+        {
+          "at": 5,
+          "tile": [
+            37,
+            53
+          ],
+          "facing": "south",
+          "activity": "Reading the tide"
+        },
+        {
+          "at": 11,
+          "tile": [
+            33,
+            52
+          ],
+          "facing": "west",
+          "activity": "Working the shallows"
+        },
+        {
+          "at": 19,
+          "tile": [
+            37,
+            53
+          ],
+          "facing": "north",
+          "activity": "Mending gear",
+          "available": false
+        }
+      ],
+      "errands": [
+        {
+          "id": "pond-supper",
+          "title": "Catch trout",
+          "objective": {
+            "kind": "fish",
+            "item": "item.trout",
+            "count": 2
+          },
+          "reward": {
+            "coins": 80,
+            "relationship": 22
+          }
+        }
+      ],
       "dialog": {
         "start": "open",
         "nodes": {
           "open": {
             "branch": [
+              {
+                "when": {
+                  "errand": {
+                    "id": "pond-supper",
+                    "status": "ready"
+                  }
+                },
+                "to": "trout.done"
+              },
               {
                 "when": {
                   "all": [
@@ -869,6 +1224,16 @@
           "menu": {
             "text": "Well?",
             "choices": [
+              {
+                "text": "Need anything from the water?",
+                "when": {
+                  "errand": {
+                    "id": "pond-supper",
+                    "status": "available"
+                  }
+                },
+                "to": "trout.offer"
+              },
               {
                 "text": "Found any shells?",
                 "when": {
@@ -915,6 +1280,26 @@
                 "to": "bye"
               }
             ]
+          },
+          "trout.offer": {
+            "text": "Two trout, caught on your line. Not bought and not found on a floor. Bring me the story; keep the fish.",
+            "do": {
+              "errand": {
+                "id": "pond-supper",
+                "action": "accept"
+              }
+            },
+            "then": "menu"
+          },
+          "trout.done": {
+            "text": "Two clean catches. You listened to the water instead of fighting it. That is rarer than trout.",
+            "do": {
+              "errand": {
+                "id": "pond-supper",
+                "action": "complete"
+              }
+            },
+            "then": "menu"
           },
           "gift": {
             "text": "Here. I've a bucket of them and one pair of hands. Don't thank me.",
@@ -998,11 +1383,69 @@
           "timbre": "sawtooth"
         }
       },
+      "schedule": [
+        {
+          "at": 7,
+          "tile": [
+            40,
+            34
+          ],
+          "facing": "south",
+          "activity": "Sorting repairs"
+        },
+        {
+          "at": 14,
+          "tile": [
+            43,
+            44
+          ],
+          "facing": "west",
+          "activity": "Looking for straight timber"
+        },
+        {
+          "at": 21,
+          "tile": [
+            40,
+            34
+          ],
+          "facing": "north",
+          "activity": "Workshop closed",
+          "available": false
+        }
+      ],
+      "errands": [
+        {
+          "id": "clearfall",
+          "title": "Fell trees",
+          "objective": {
+            "kind": "change",
+            "change": "fell",
+            "category": "tree",
+            "count": 2
+          },
+          "reward": {
+            "item": {
+              "type": "furnitem.crate",
+              "count": 1
+            },
+            "relationship": 20
+          }
+        }
+      ],
       "dialog": {
         "start": "open",
         "nodes": {
           "open": {
             "branch": [
+              {
+                "when": {
+                  "errand": {
+                    "id": "clearfall",
+                    "status": "ready"
+                  }
+                },
+                "to": "timber.done"
+              },
               {
                 "when": {
                   "all": [
@@ -1049,6 +1492,16 @@
           "menu": {
             "text": "Was there something?",
             "choices": [
+              {
+                "text": "Need timber work done?",
+                "when": {
+                  "errand": {
+                    "id": "clearfall",
+                    "status": "available"
+                  }
+                },
+                "to": "timber.offer"
+              },
               {
                 "text": "Could you use a few sticks?",
                 "when": {
@@ -1107,6 +1560,26 @@
                 "to": "bye"
               }
             ]
+          },
+          "timber.offer": {
+            "text": "Fell two trees anywhere they need clearing. I need the work measured, not the wood; keep what drops.",
+            "do": {
+              "errand": {
+                "id": "clearfall",
+                "action": "accept"
+              }
+            },
+            "then": "menu"
+          },
+          "timber.done": {
+            "text": "Two trees down and room left where they stood. Take this crate flat-pack. A room should be allowed to change its mind.",
+            "do": {
+              "errand": {
+                "id": "clearfall",
+                "action": "complete"
+              }
+            },
+            "then": "menu"
           },
           "trade": {
             "text": "I could. Ash, is it. Yes. Here's for your trouble.",

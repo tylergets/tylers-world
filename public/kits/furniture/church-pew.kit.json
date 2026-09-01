@@ -1,0 +1,52 @@
+{
+  "format": "tw.kit",
+  "version": 1,
+  "meta": {
+    "id": "turnip.church-pew",
+    "name": "Inkthorn Church Pew"
+  },
+  "types": {
+    "fixture.church-pew": {
+      "kind": "object",
+      "label": "Inkthorn Church Pew",
+      "footprint": { "w": 3, "d": 1 },
+      "height": 1.22,
+      "squash": 0.34,
+      "palette": {
+        "wood": "#3a2f2a",
+        "woodHi": "#54443c",
+        "woodDark": "#241d1a"
+      },
+      "parts": [
+        { "prim": "box", "at": [-1.229, 0.225, 0], "size": [0.1, 0.449, 0.105], "color": "woodDark" },
+        { "prim": "box", "at": [1.229, 0.225, 0], "size": [0.1, 0.449, 0.105], "color": "woodDark" },
+        { "prim": "box", "at": [0, 0.135, 0], "size": [2.398, 0.06, 0.06], "color": "woodDark" },
+        { "prim": "box", "at": [0, 0.499, 0], "size": [2.738, 0.1, 0.524], "color": "wood" },
+        { "prim": "box", "at": [0, 0.559, 0], "size": [2.638, 0.02, 0.444], "color": "woodHi" },
+        { "prim": "cyl", "at": [-1.289, 0.859, -0.212], "size": [0.032, 0.62, 0.032], "color": "woodDark" },
+        { "prim": "cyl", "at": [1.289, 0.859, -0.212], "size": [0.032, 0.62, 0.032], "color": "woodDark" },
+        { "prim": "box", "at": [0, 1.169, -0.212], "size": [2.738, 0.09, 0.07], "color": "woodHi" },
+        { "prim": "box", "at": [0, 0.859, -0.212], "size": [2.598, 0.62, 0.04], "color": "wood" },
+        { "prim": "box", "at": [-1.339, 0.719, 0], "size": [0.07, 0.06, 0.484], "color": "woodHi" },
+        { "prim": "cyl", "at": [-1.339, 0.599, 0.182], "size": [0.026, 0.24, 0.026], "color": "woodDark" },
+        { "prim": "box", "at": [1.339, 0.719, 0], "size": [0.07, 0.06, 0.484], "color": "woodHi" },
+        { "prim": "cyl", "at": [1.339, 0.599, 0.182], "size": [0.026, 0.24, 0.026], "color": "woodDark" }
+      ]
+    },
+    "kititem.church-pew": {
+      "kind": "item",
+      "label": "Inkthorn Church Pew",
+      "value": 855,
+      "stack": 1,
+      "swatch": "#bc8c30",
+      "badge": "chair",
+      "furniture": "fixture.church-pew",
+      "palette": {
+        "wrap": "#d9c7a4",
+        "wrapHi": "#eee1c7",
+        "strap": "#8a6242",
+        "mark": "#bc8c30"
+      }
+    }
+  }
+}

@@ -1,0 +1,47 @@
+{
+  "format": "tw.kit",
+  "version": 1,
+  "meta": {
+    "id": "turnip.draught-screen",
+    "name": "Sootpine Draught Screen"
+  },
+  "types": {
+    "fixture.draught-screen": {
+      "kind": "object",
+      "label": "Sootpine Draught Screen",
+      "footprint": { "w": 1, "d": 1 },
+      "height": 1.72,
+      "squash": 0.3,
+      "palette": {
+        "wood": "#4a4640",
+        "woodHi": "#656057",
+        "woodDark": "#332f2b"
+      },
+      "parts": [
+        { "prim": "box", "at": [-0.263, 0.856, -0.08], "rot": [0, 18, 0], "size": [0.56, 1.711, 0.06], "color": "wood" },
+        { "prim": "box", "at": [-0.263, 0.513, -0.06], "rot": [0, 18, 0], "size": [0.43, 0.719, 0.03], "color": "woodHi" },
+        { "prim": "box", "at": [-0.263, 1.3, -0.06], "rot": [0, 18, 0], "size": [0.43, 0.616, 0.03], "color": "woodHi" },
+        { "prim": "box", "at": [-0.263, 0.04, -0.08], "rot": [0, 18, 0], "size": [0.6, 0.08, 0.16], "color": "woodDark" },
+        { "prim": "box", "at": [0.263, 0.856, 0.08], "rot": [0, -18, 0], "size": [0.56, 1.711, 0.06], "color": "wood" },
+        { "prim": "box", "at": [0.263, 0.513, 0.1], "rot": [0, -18, 0], "size": [0.43, 0.719, 0.03], "color": "woodHi" },
+        { "prim": "box", "at": [0.263, 1.3, 0.1], "rot": [0, -18, 0], "size": [0.43, 0.616, 0.03], "color": "woodHi" },
+        { "prim": "box", "at": [0.263, 0.04, 0.08], "rot": [0, -18, 0], "size": [0.6, 0.08, 0.16], "color": "woodDark" }
+      ]
+    },
+    "kititem.draught-screen": {
+      "kind": "item",
+      "label": "Sootpine Draught Screen",
+      "value": 440,
+      "stack": 1,
+      "swatch": "#b5804c",
+      "badge": "crate",
+      "furniture": "fixture.draught-screen",
+      "palette": {
+        "wrap": "#d9c7a4",
+        "wrapHi": "#eee1c7",
+        "strap": "#8a6242",
+        "mark": "#b5804c"
+      }
+    }
+  }
+}

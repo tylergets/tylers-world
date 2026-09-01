@@ -1,0 +1,55 @@
+{
+  "format": "tw.kit",
+  "version": 1,
+  "meta": {
+    "id": "turnip.sleigh-bed",
+    "name": "Rosewick Sleigh Bed"
+  },
+  "types": {
+    "fixture.sleigh-bed": {
+      "kind": "object",
+      "label": "Rosewick Sleigh Bed",
+      "footprint": { "w": 2, "d": 3 },
+      "height": 0.89,
+      "squash": 0.34,
+      "palette": {
+        "wood": "#8f4a3c",
+        "woodHi": "#ab6150",
+        "woodDark": "#653228",
+        "cloth": "#e0b7ad",
+        "clothHi": "#f2d5cd",
+        "pale": "#fbf1ea"
+      },
+      "parts": [
+        { "prim": "box", "at": [0, 0.16, 0], "size": [1.682, 0.32, 2.676], "color": "woodDark" },
+        { "prim": "box", "at": [-0.761, 0.05, -1.238], "size": [0.12, 0.1, 0.12], "color": "wood" },
+        { "prim": "box", "at": [0.761, 0.05, -1.238], "size": [0.12, 0.1, 0.12], "color": "wood" },
+        { "prim": "box", "at": [-0.761, 0.05, 1.238], "size": [0.12, 0.1, 0.12], "color": "wood" },
+        { "prim": "box", "at": [0.761, 0.05, 1.238], "size": [0.12, 0.1, 0.12], "color": "wood" },
+        { "prim": "box", "at": [0, 0.45, 0.1], "size": [1.582, 0.26, 2.416], "color": "pale" },
+        { "prim": "box", "at": [0, 0.61, 0.508], "size": [1.632, 0.14, 1.499], "color": "cloth" },
+        { "prim": "box", "at": [0, 0.65, -0.241], "size": [1.632, 0.06, 0.12], "color": "clothHi" },
+        { "prim": "box", "at": [0, 0.66, -0.998], "size": [1.077, 0.18, 0.42], "color": "pale" },
+        { "prim": "box", "at": [0, 0.487, -1.288], "size": [1.682, 0.688, 0.1], "color": "wood" },
+        { "prim": "cyl", "at": [0, 0.831, -1.288], "rot": [90, 0, 0], "size": [0.841, 0.1, 0.841], "color": "woodHi" },
+        { "prim": "box", "at": [0, 0.56, 1.288], "size": [1.682, 0.48, 0.1], "color": "wood" },
+        { "prim": "box", "at": [0, 0.82, 1.288], "size": [1.732, 0.07, 0.14], "color": "woodHi" }
+      ]
+    },
+    "kititem.sleigh-bed": {
+      "kind": "item",
+      "label": "Rosewick Sleigh Bed",
+      "value": 1240,
+      "stack": 1,
+      "swatch": "#9d6f74",
+      "badge": "bed",
+      "furniture": "fixture.sleigh-bed",
+      "palette": {
+        "wrap": "#d9c7a4",
+        "wrapHi": "#eee1c7",
+        "strap": "#8a6242",
+        "mark": "#9d6f74"
+      }
+    }
+  }
+}

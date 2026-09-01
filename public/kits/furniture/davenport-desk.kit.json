@@ -1,0 +1,55 @@
+{
+  "format": "tw.kit",
+  "version": 1,
+  "meta": {
+    "id": "turnip.davenport-desk",
+    "name": "Rosewick Davenport Desk"
+  },
+  "types": {
+    "fixture.davenport-desk": {
+      "kind": "object",
+      "label": "Rosewick Davenport Desk",
+      "footprint": { "w": 2, "d": 1 },
+      "height": 0.95,
+      "squash": 0.34,
+      "palette": {
+        "wood": "#8f4a3c",
+        "woodHi": "#ab6150",
+        "woodDark": "#653228",
+        "metal": "#c2a35c"
+      },
+      "parts": [
+        { "prim": "box", "at": [0.438, 0.356, 0], "size": [0.44, 0.673, 0.694], "color": "wood" },
+        { "prim": "box", "at": [0.438, 0.04, 0], "size": [0.48, 0.08, 0.734], "color": "woodDark" },
+        { "prim": "box", "at": [0.438, 0.128, 0.337], "size": [0.36, 0.113, 0.04], "color": "woodHi" },
+        { "prim": "cyl", "at": [0.438, 0.128, 0.377], "rot": [0, 0, 90], "size": [0.025, 0.12, 0.025], "color": "metal" },
+        { "prim": "box", "at": [0.438, 0.349, 0.337], "size": [0.36, 0.113, 0.04], "color": "woodHi" },
+        { "prim": "cyl", "at": [0.438, 0.349, 0.377], "rot": [0, 0, 90], "size": [0.025, 0.12, 0.025], "color": "metal" },
+        { "prim": "box", "at": [0.438, 0.57, 0.337], "size": [0.36, 0.113, 0.04], "color": "woodHi" },
+        { "prim": "cyl", "at": [0.438, 0.57, 0.377], "rot": [0, 0, 90], "size": [0.025, 0.12, 0.025], "color": "metal" },
+        { "prim": "box", "at": [-0.578, 0.356, -0.267], "size": [0.09, 0.713, 0.09], "color": "woodDark" },
+        { "prim": "box", "at": [-0.578, 0.356, 0.267], "size": [0.09, 0.713, 0.09], "color": "woodDark" },
+        { "prim": "box", "at": [0, 0.753, 0], "size": [1.355, 0.08, 0.774], "color": "wood" },
+        { "prim": "box", "at": [0, 0.803, 0.06], "rot": [-9, 0, 0], "size": [1.195, 0.02, 0.614], "color": "woodHi" },
+        { "prim": "box", "at": [0, 0.873, -0.337], "size": [1.255, 0.14, 0.04], "color": "woodHi" },
+        { "prim": "box", "at": [-0.618, 0.853, -0.227], "size": [0.04, 0.1, 0.22], "color": "woodHi" },
+        { "prim": "box", "at": [0.618, 0.853, -0.227], "size": [0.04, 0.1, 0.22], "color": "woodHi" }
+      ]
+    },
+    "kititem.davenport-desk": {
+      "kind": "item",
+      "label": "Rosewick Davenport Desk",
+      "value": 895,
+      "stack": 1,
+      "swatch": "#ae644b",
+      "badge": "table",
+      "furniture": "fixture.davenport-desk",
+      "palette": {
+        "wrap": "#d9c7a4",
+        "wrapHi": "#eee1c7",
+        "strap": "#8a6242",
+        "mark": "#ae644b"
+      }
+    }
+  }
+}

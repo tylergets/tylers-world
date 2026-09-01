@@ -1,0 +1,51 @@
+{
+  "format": "tw.kit",
+  "version": 1,
+  "meta": {
+    "id": "turnip.jardiniere",
+    "name": "Inkthorn Jardiniere"
+  },
+  "types": {
+    "fixture.jardiniere": {
+      "kind": "object",
+      "label": "Inkthorn Jardiniere",
+      "footprint": { "w": 1, "d": 1 },
+      "height": 1.35,
+      "squash": 0.34,
+      "palette": {
+        "pale": "#e6ddcb",
+        "dark": "#171210",
+        "metal": "#c8a24a",
+        "accent": "#c9a227",
+        "leaf": "#3f6f43"
+      },
+      "parts": [
+        { "prim": "cyl", "at": [0, 0.05, 0], "size": [0.3, 0.1, 0.3], "color": "metal" },
+        { "prim": "taper", "at": [0, 0.412, 0], "size": [0.09, 0.663, 0.09], "color": "metal" },
+        { "prim": "taper", "at": [0, 0.824, 0], "rot": [180, 0, 0], "size": [0.3, 0.3, 0.3], "color": "pale" },
+        { "prim": "cyl", "at": [0, 0.956, 0], "size": [0.29, 0.04, 0.29], "color": "dark" },
+        { "prim": "blob", "at": [0.14, 1.056, 0], "size": [0.16, 0.128, 0.16], "color": "accent", "anim": { "pulse": { "amp": 0.1, "rate": 0.35, "phase": 0 } } },
+        { "prim": "blob", "at": [0.07, 1.136, 0.121], "size": [0.16, 0.128, 0.16], "color": "leaf", "anim": { "pulse": { "amp": 0.1, "rate": 0.41, "phase": 0.2 } } },
+        { "prim": "blob", "at": [-0.07, 1.216, 0.121], "size": [0.16, 0.128, 0.16], "color": "accent", "anim": { "pulse": { "amp": 0.1, "rate": 0.47, "phase": 0.4 } } },
+        { "prim": "blob", "at": [-0.14, 1.056, 0], "size": [0.16, 0.128, 0.16], "color": "leaf", "anim": { "pulse": { "amp": 0.1, "rate": 0.35, "phase": 0.6000000000000001 } } },
+        { "prim": "blob", "at": [-0.07, 1.136, -0.121], "size": [0.16, 0.128, 0.16], "color": "accent", "anim": { "pulse": { "amp": 0.1, "rate": 0.41, "phase": 0.8 } } },
+        { "prim": "blob", "at": [0.07, 1.216, -0.121], "size": [0.16, 0.128, 0.16], "color": "leaf", "anim": { "pulse": { "amp": 0.1, "rate": 0.47, "phase": 1 } } }
+      ]
+    },
+    "kititem.jardiniere": {
+      "kind": "item",
+      "label": "Inkthorn Jardiniere",
+      "value": 670,
+      "stack": 1,
+      "swatch": "#a2aa36",
+      "badge": "plant",
+      "furniture": "fixture.jardiniere",
+      "palette": {
+        "wrap": "#d9c7a4",
+        "wrapHi": "#eee1c7",
+        "strap": "#8a6242",
+        "mark": "#a2aa36"
+      }
+    }
+  }
+}

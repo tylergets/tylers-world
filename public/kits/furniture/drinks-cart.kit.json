@@ -1,0 +1,60 @@
+{
+  "format": "tw.kit",
+  "version": 1,
+  "meta": {
+    "id": "turnip.drinks-cart",
+    "name": "Coppervale Drinks Cart"
+  },
+  "types": {
+    "fixture.drinks-cart": {
+      "kind": "object",
+      "label": "Coppervale Drinks Cart",
+      "footprint": { "w": 1, "d": 1 },
+      "height": 1.15,
+      "squash": 0.34,
+      "palette": {
+        "wood": "#a9763f",
+        "woodHi": "#c6924f",
+        "dark": "#3f2d18",
+        "metal": "#b5713c",
+        "accent": "#c96a35",
+        "glass": "#d5e2e0"
+      },
+      "parts": [
+        { "prim": "cyl", "at": [-0.297, 0.431, -0.218], "size": [0.024, 0.762, 0.024], "color": "metal" },
+        { "prim": "cyl", "at": [0.297, 0.431, -0.218], "size": [0.024, 0.762, 0.024], "color": "metal" },
+        { "prim": "cyl", "at": [-0.297, 0.431, 0.218], "size": [0.024, 0.762, 0.024], "color": "metal" },
+        { "prim": "cyl", "at": [0.297, 0.431, 0.218], "size": [0.024, 0.762, 0.024], "color": "metal" },
+        { "prim": "box", "at": [0, 0.2, 0], "size": [0.673, 0.05, 0.517], "color": "wood" },
+        { "prim": "box", "at": [0, 0.822, 0], "size": [0.673, 0.05, 0.517], "color": "woodHi" },
+        { "prim": "cyl", "at": [-0.297, 0.06, -0.218], "rot": [0, 0, 90], "size": [0.06, 0.035, 0.06], "color": "dark" },
+        { "prim": "cyl", "at": [0.297, 0.06, -0.218], "rot": [0, 0, 90], "size": [0.06, 0.035, 0.06], "color": "dark" },
+        { "prim": "cyl", "at": [-0.297, 0.06, 0.218], "rot": [0, 0, 90], "size": [0.06, 0.035, 0.06], "color": "dark" },
+        { "prim": "cyl", "at": [0.297, 0.06, 0.218], "rot": [0, 0, 90], "size": [0.06, 0.035, 0.06], "color": "dark" },
+        { "prim": "cyl", "at": [0, 0.852, -0.218], "rot": [0, 0, 90], "size": [0.014, 0.593, 0.014], "color": "metal" },
+        { "prim": "cyl", "at": [0, 0.852, 0.218], "rot": [0, 0, 90], "size": [0.014, 0.593, 0.014], "color": "metal" },
+        { "prim": "cyl", "at": [-0.16, 0.902, 0.05], "size": [0.042, 0.2, 0.042], "color": "glass" },
+        { "prim": "cyl", "at": [-0.16, 1.042, 0.05], "size": [0.016, 0.1, 0.016], "color": "glass" },
+        { "prim": "cyl", "at": [0, 0.902, 0.05], "size": [0.042, 0.2, 0.042], "color": "accent" },
+        { "prim": "cyl", "at": [0, 1.042, 0.05], "size": [0.016, 0.1, 0.016], "color": "accent" },
+        { "prim": "cyl", "at": [0.16, 0.902, 0.05], "size": [0.042, 0.2, 0.042], "color": "glass" },
+        { "prim": "cyl", "at": [0.16, 1.042, 0.05], "size": [0.016, 0.1, 0.016], "color": "glass" }
+      ]
+    },
+    "kititem.drinks-cart": {
+      "kind": "item",
+      "label": "Coppervale Drinks Cart",
+      "value": 585,
+      "stack": 1,
+      "swatch": "#b37857",
+      "badge": "shelf",
+      "furniture": "fixture.drinks-cart",
+      "palette": {
+        "wrap": "#d9c7a4",
+        "wrapHi": "#eee1c7",
+        "strap": "#8a6242",
+        "mark": "#b37857"
+      }
+    }
+  }
+}

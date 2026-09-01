@@ -1,0 +1,47 @@
+{
+  "format": "tw.kit",
+  "version": 1,
+  "meta": {
+    "id": "turnip.drum-floor-lamp",
+    "name": "Hollowmilk Drum Floor Lamp"
+  },
+  "types": {
+    "fixture.drum-floor-lamp": {
+      "kind": "object",
+      "label": "Hollowmilk Drum Floor Lamp",
+      "footprint": { "w": 1, "d": 1 },
+      "height": 1.58,
+      "squash": 0.3,
+      "palette": {
+        "wood": "#f2ece0",
+        "woodDark": "#cfc7b6",
+        "cloth": "#5878ab",
+        "clothHi": "#7d9bc9",
+        "pale": "#ffffff"
+      },
+      "parts": [
+        { "prim": "cyl", "at": [0, 0.045, 0], "size": [0.22, 0.09, 0.22], "color": "woodDark" },
+        { "prim": "cyl", "at": [0, 0.744, 0], "size": [0.035, 1.369, 0.035], "color": "wood" },
+        { "prim": "cyl", "at": [0, 1.399, 0], "size": [0.3, 0.32, 0.3], "color": "cloth" },
+        { "prim": "cyl", "at": [0, 1.239, 0], "size": [0.31, 0.03, 0.31], "color": "clothHi" },
+        { "prim": "cyl", "at": [0, 1.559, 0], "size": [0.31, 0.03, 0.31], "color": "clothHi" },
+        { "prim": "blob", "at": [0, 1.379, 0], "size": [0.11, 0.11, 0.11], "color": "pale", "anim": { "pulse": { "amp": 0.16, "rate": 0.62 } } }
+      ]
+    },
+    "kititem.drum-floor-lamp": {
+      "kind": "item",
+      "label": "Hollowmilk Drum Floor Lamp",
+      "value": 540,
+      "stack": 1,
+      "swatch": "#89958a",
+      "badge": "crate",
+      "furniture": "fixture.drum-floor-lamp",
+      "palette": {
+        "wrap": "#d9c7a4",
+        "wrapHi": "#eee1c7",
+        "strap": "#8a6242",
+        "mark": "#89958a"
+      }
+    }
+  }
+}

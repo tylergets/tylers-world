@@ -1,0 +1,55 @@
+{
+  "format": "tw.kit",
+  "version": 1,
+  "meta": {
+    "id": "turnip.chevron-rug",
+    "name": "Coppervale Chevron Rug"
+  },
+  "types": {
+    "fixture.chevron-rug": {
+      "kind": "object",
+      "label": "Coppervale Chevron Rug",
+      "footprint": { "w": 2, "d": 2 },
+      "height": 0.2,
+      "squash": 0.9,
+      "palette": {
+        "cloth": "#6f6350",
+        "clothHi": "#8d8067",
+        "accent": "#c96a35"
+      },
+      "parts": [
+        { "prim": "box", "at": [0, 0.02, 0], "size": [1.908, 0.04, 1.948], "color": "cloth" },
+        { "prim": "box", "at": [0, 0.045, 0], "size": [1.748, 0.016, 1.788], "color": "clothHi" },
+        { "prim": "box", "at": [0.382, 0.054, -0.76], "rot": [0, 22, 0], "size": [0.801, 0.014, 0.097], "color": "accent" },
+        { "prim": "box", "at": [-0.382, 0.054, -0.76], "rot": [0, -22, 0], "size": [0.801, 0.014, 0.097], "color": "accent" },
+        { "prim": "box", "at": [0.382, 0.054, -0.506], "rot": [0, 22, 0], "size": [0.801, 0.014, 0.097], "color": "clothHi" },
+        { "prim": "box", "at": [-0.382, 0.054, -0.506], "rot": [0, -22, 0], "size": [0.801, 0.014, 0.097], "color": "clothHi" },
+        { "prim": "box", "at": [0.382, 0.054, -0.253], "rot": [0, 22, 0], "size": [0.801, 0.014, 0.097], "color": "accent" },
+        { "prim": "box", "at": [-0.382, 0.054, -0.253], "rot": [0, -22, 0], "size": [0.801, 0.014, 0.097], "color": "accent" },
+        { "prim": "box", "at": [0.382, 0.054, 0], "rot": [0, 22, 0], "size": [0.801, 0.014, 0.097], "color": "clothHi" },
+        { "prim": "box", "at": [-0.382, 0.054, 0], "rot": [0, -22, 0], "size": [0.801, 0.014, 0.097], "color": "clothHi" },
+        { "prim": "box", "at": [0.382, 0.054, 0.253], "rot": [0, 22, 0], "size": [0.801, 0.014, 0.097], "color": "accent" },
+        { "prim": "box", "at": [-0.382, 0.054, 0.253], "rot": [0, -22, 0], "size": [0.801, 0.014, 0.097], "color": "accent" },
+        { "prim": "box", "at": [0.382, 0.054, 0.506], "rot": [0, 22, 0], "size": [0.801, 0.014, 0.097], "color": "clothHi" },
+        { "prim": "box", "at": [-0.382, 0.054, 0.506], "rot": [0, -22, 0], "size": [0.801, 0.014, 0.097], "color": "clothHi" },
+        { "prim": "box", "at": [0.382, 0.054, 0.76], "rot": [0, 22, 0], "size": [0.801, 0.014, 0.097], "color": "accent" },
+        { "prim": "box", "at": [-0.382, 0.054, 0.76], "rot": [0, -22, 0], "size": [0.801, 0.014, 0.097], "color": "accent" }
+      ]
+    },
+    "kititem.chevron-rug": {
+      "kind": "item",
+      "label": "Coppervale Chevron Rug",
+      "value": 390,
+      "stack": 1,
+      "swatch": "#c1623f",
+      "badge": "crate",
+      "furniture": "fixture.chevron-rug",
+      "palette": {
+        "wrap": "#d9c7a4",
+        "wrapHi": "#eee1c7",
+        "strap": "#8a6242",
+        "mark": "#c1623f"
+      }
+    }
+  }
+}

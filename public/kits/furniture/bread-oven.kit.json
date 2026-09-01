@@ -1,0 +1,49 @@
+{
+  "format": "tw.kit",
+  "version": 1,
+  "meta": {
+    "id": "turnip.bread-oven",
+    "name": "Fenrush Bread Oven"
+  },
+  "types": {
+    "fixture.bread-oven": {
+      "kind": "object",
+      "label": "Fenrush Bread Oven",
+      "footprint": { "w": 2, "d": 1 },
+      "height": 1.12,
+      "squash": 0.32,
+      "palette": {
+        "pale": "#f7efd9",
+        "dark": "#5c4a24",
+        "metal": "#9d9384",
+        "accent": "#b8923a"
+      },
+      "parts": [
+        { "prim": "box", "at": [0, 0.5, 0], "size": [1.381, 0.999, 0.712], "color": "metal" },
+        { "prim": "box", "at": [0, 1.039, 0], "size": [1.461, 0.07, 0.772], "color": "dark" },
+        { "prim": "cyl", "at": [-0.332, 1.089, -0.142], "size": [0.11, 0.03, 0.11], "color": "dark" },
+        { "prim": "cyl", "at": [0.332, 1.089, -0.142], "size": [0.11, 0.03, 0.11], "color": "dark" },
+        { "prim": "cyl", "at": [-0.332, 1.089, 0.142], "size": [0.11, 0.03, 0.11], "color": "dark" },
+        { "prim": "cyl", "at": [0.332, 1.089, 0.142], "size": [0.11, 0.03, 0.11], "color": "dark" },
+        { "prim": "box", "at": [0, 0.44, 0.376], "size": [0.939, 0.56, 0.04], "color": "pale" },
+        { "prim": "cyl", "at": [0, 0.7, 0.416], "rot": [0, 0, 90], "size": [0.024, 0.829, 0.024], "color": "metal" },
+        { "prim": "box", "at": [0, 0.34, 0.401], "size": [0.553, 0.1, 0.02], "color": "accent", "anim": { "pulse": { "amp": 0.22, "rate": 1.4 } } }
+      ]
+    },
+    "kititem.bread-oven": {
+      "kind": "item",
+      "label": "Fenrush Bread Oven",
+      "value": 855,
+      "stack": 1,
+      "swatch": "#a8945f",
+      "badge": "stove",
+      "furniture": "fixture.bread-oven",
+      "palette": {
+        "wrap": "#d9c7a4",
+        "wrapHi": "#eee1c7",
+        "strap": "#8a6242",
+        "mark": "#a8945f"
+      }
+    }
+  }
+}

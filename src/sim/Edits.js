@@ -76,8 +76,13 @@ export class Edits {
   get holeList() { return [...this.holes.values()]; }
 
   place(type, tile, rotation = 0, id = null) {
+    let nextId = id;
+    if (!nextId) {
+      let n = this.placed.length + 1;
+      do { nextId = `placed.${this.world.meta.id}.${n++}`; } while (this.world.objectRecord(nextId));
+    }
     const placed = {
-      id: id ?? `placed.${this.world.meta.id}.${this.placed.length + 1}`,
+      id: nextId,
       type,
       tile: [...tile],
       rotation,
@@ -87,6 +92,16 @@ export class Edits {
     this.placed.push(placed);
     this.version++;
     return obj;
+  }
+
+  isPlaced(id) { return this.placed.some((p) => p.id === id); }
+
+  pack(id) {
+    const index = this.placed.findIndex((p) => p.id === id);
+    if (index < 0 || !this.world.removeAddedObject(id)) return null;
+    const [placed] = this.placed.splice(index, 1);
+    this.version++;
+    return placed;
   }
 
   hitsOn(id) { return this.hits.get(id) ?? 0; }

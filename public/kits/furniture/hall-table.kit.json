@@ -1,0 +1,48 @@
+{
+  "format": "tw.kit",
+  "version": 1,
+  "meta": {
+    "id": "turnip.hall-table",
+    "name": "Inkthorn Hall Table"
+  },
+  "types": {
+    "fixture.hall-table": {
+      "kind": "object",
+      "label": "Inkthorn Hall Table",
+      "footprint": { "w": 2, "d": 1 },
+      "height": 0.82,
+      "squash": 0.34,
+      "palette": {
+        "wood": "#3a2f2a",
+        "woodHi": "#54443c",
+        "woodDark": "#241d1a",
+        "metal": "#c8a24a"
+      },
+      "parts": [
+        { "prim": "cyl", "at": [-0.727, 0.35, -0.124], "rot": [9, 0, -9], "size": [0.04, 0.741, 0.04], "color": "woodDark" },
+        { "prim": "cyl", "at": [0.727, 0.35, -0.124], "rot": [9, 0, 9], "size": [0.04, 0.741, 0.04], "color": "woodDark" },
+        { "prim": "cyl", "at": [-0.727, 0.35, 0.124], "rot": [-9, 0, -9], "size": [0.04, 0.741, 0.04], "color": "woodDark" },
+        { "prim": "cyl", "at": [0.727, 0.35, 0.124], "rot": [-9, 0, 9], "size": [0.04, 0.741, 0.04], "color": "woodDark" },
+        { "prim": "box", "at": [0, 0.751, 0], "size": [1.855, 0.1, 0.648], "color": "wood" },
+        { "prim": "box", "at": [0, 0.806, 0], "size": [1.735, 0.02, 0.528], "color": "woodHi" },
+        { "prim": "box", "at": [0, 0.561, 0.294], "size": [0.927, 0.14, 0.05], "color": "woodHi" },
+        { "prim": "cyl", "at": [0, 0.561, 0.334], "rot": [90, 0, 0], "size": [0.03, 0.05, 0.03], "color": "metal" }
+      ]
+    },
+    "kititem.hall-table": {
+      "kind": "item",
+      "label": "Inkthorn Hall Table",
+      "value": 755,
+      "stack": 1,
+      "swatch": "#c69938",
+      "badge": "table",
+      "furniture": "fixture.hall-table",
+      "palette": {
+        "wrap": "#d9c7a4",
+        "wrapHi": "#eee1c7",
+        "strap": "#8a6242",
+        "mark": "#c69938"
+      }
+    }
+  }
+}

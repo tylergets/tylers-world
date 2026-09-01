@@ -75,21 +75,44 @@
 export const GRUDGE_DAYS = 1;
 export const MAX_GRUDGE = 3;
 
+export const RELATIONSHIP_TIERS = Object.freeze([
+  { id: 'stranger', points: 0 },
+  { id: 'acquaintance', points: 10 },
+  { id: 'friend', points: 40 },
+  { id: 'close', points: 80 },
+]);
+
 /** Shared, so the ordinary frame allocates nothing. See `cool`. */
 const NOBODY = Object.freeze([]);
 
 export class Friends {
   constructor() {
-    this.ids = new Set();
+    /** NPC id -> relationship points. */
+    this.points = new Map();
     /** NPC id -> { until: Clock stamp, severity: repeat attacks this feud }. */
     this.foes = new Map();
     /** Bumped on every change, so the HUD can skip a redraw. */
     this.version = 0;
   }
 
-  get count() { return this.ids.size; }
+  get count() { return this.points.size; }
 
-  has(npcId) { return this.ids.has(npcId); }
+  pointsFor(npcId) { return this.points.get(npcId) ?? 0; }
+
+  tier(npcId) {
+    const points = this.pointsFor(npcId);
+    let tier = RELATIONSHIP_TIERS[0].id;
+    for (const row of RELATIONSHIP_TIERS) if (points >= row.points) tier = row.id;
+    return tier;
+  }
+
+  atLeast(npcId, tier) {
+    const threshold = RELATIONSHIP_TIERS.find((row) => row.id === tier)?.points;
+    return threshold !== undefined && this.pointsFor(npcId) >= threshold;
+  }
+
+  /** Legacy product contract: having met someone means acquaintance or better. */
+  has(npcId) { return this.atLeast(npcId, 'acquaintance'); }
 
   /** Whether this person has been shot and is still angry about it. */
   hates(npcId) { return this.foes.has(npcId); }
@@ -110,8 +133,15 @@ export class Friends {
    * somebody you shot yesterday, who has to be squared with first.
    */
   add(npcId) {
-    if (!npcId || this.foes.has(npcId) || this.ids.has(npcId)) return false;
-    this.ids.add(npcId);
+    if (!npcId || this.foes.has(npcId) || this.has(npcId)) return false;
+    this.points.set(npcId, 10);
+    this.version++;
+    return true;
+  }
+
+  reward(npcId, points) {
+    if (!npcId || this.foes.has(npcId) || !(points > 0)) return false;
+    this.points.set(npcId, Math.min(100, this.pointsFor(npcId) + points));
     this.version++;
     return true;
   }
@@ -134,7 +164,7 @@ export class Friends {
     if (!npcId) return false;
     const previous = this.foes.get(npcId);
     const fresh = !previous;
-    this.ids.delete(npcId);
+    this.points.delete(npcId);
     this.foes.set(npcId, {
       until: now + GRUDGE_DAYS,
       severity: Math.min(MAX_GRUDGE, (previous?.severity ?? 0) + 1),
@@ -183,7 +213,7 @@ export class Friends {
   }
 
   snapshot() {
-    return { friends: [...this.ids], foes: Object.fromEntries(this.foes) };
+    return { relationships: Object.fromEntries(this.points), foes: Object.fromEntries(this.foes) };
   }
 
   /**
@@ -200,8 +230,12 @@ export class Friends {
    */
   restore(snap, now = 1) {
     const friends = Array.isArray(snap) ? snap : (snap?.friends ?? []);
+    const relationships = !Array.isArray(snap) && snap?.relationships;
     const foes = Array.isArray(snap) ? [] : (snap?.foes ?? []);
-    this.ids = new Set(Array.isArray(friends) ? friends : []);
+    this.points = new Map(relationships && typeof relationships === 'object'
+      ? Object.entries(relationships).flatMap(([id, value]) => Number.isFinite(value)
+        ? [[id, Math.max(0, Math.min(100, value))]] : [])
+      : (Array.isArray(friends) ? friends.map((id) => [id, 10]) : []));
     this.foes = new Map(Array.isArray(foes)
       ? foes.map((id) => [id, { until: now + GRUDGE_DAYS, severity: 1 }])
       : Object.entries(foes ?? {}).flatMap(([id, saved]) => {
@@ -214,7 +248,7 @@ export class Friends {
     // A hand-edited save could name the same person in both. The feud wins: it
     // is the state with consequences, and getting it wrong the other way hands
     // somebody's front door to the person who shot them.
-    for (const id of this.foes.keys()) this.ids.delete(id);
+    for (const id of this.foes.keys()) this.points.delete(id);
     this.version++;
   }
 }

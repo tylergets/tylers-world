@@ -1,0 +1,48 @@
+{
+  "format": "tw.kit",
+  "version": 1,
+  "meta": {
+    "id": "turnip.kitchen-island",
+    "name": "Turnipwood Kitchen Island"
+  },
+  "types": {
+    "fixture.kitchen-island": {
+      "kind": "object",
+      "label": "Turnipwood Kitchen Island",
+      "footprint": { "w": 3, "d": 2 },
+      "height": 1.1,
+      "squash": 0.34,
+      "palette": {
+        "wood": "#e8dcc4",
+        "woodHi": "#f6eeda",
+        "woodDark": "#c3b394",
+        "dark": "#5a4a63"
+      },
+      "parts": [
+        { "prim": "box", "at": [0, 0.05, 0.02], "size": [2.817, 0.1, 1.22], "color": "dark" },
+        { "prim": "box", "at": [0, 0.523, 0], "size": [2.897, 0.946, 1.28], "color": "wood" },
+        { "prim": "box", "at": [0, 1.046, 0], "size": [3.057, 0.1, 1.42], "color": "woodHi" },
+        { "prim": "box", "at": [-1.011, 0.53, 0.65], "size": [0.599, 0.586, 0.03], "color": "woodDark" },
+        { "prim": "box", "at": [-0.337, 0.53, 0.65], "size": [0.599, 0.586, 0.03], "color": "woodDark" },
+        { "prim": "box", "at": [0.337, 0.53, 0.65], "size": [0.599, 0.586, 0.03], "color": "woodDark" },
+        { "prim": "box", "at": [1.011, 0.53, 0.65], "size": [0.599, 0.586, 0.03], "color": "woodDark" },
+        { "prim": "box", "at": [0, 0.322, -0.205], "size": [2.597, 0.05, 0.512], "color": "woodHi" }
+      ]
+    },
+    "kititem.kitchen-island": {
+      "kind": "item",
+      "label": "Turnipwood Kitchen Island",
+      "value": 1480,
+      "stack": 1,
+      "swatch": "#ab90ab",
+      "badge": "counter",
+      "furniture": "fixture.kitchen-island",
+      "palette": {
+        "wrap": "#d9c7a4",
+        "wrapHi": "#eee1c7",
+        "strap": "#8a6242",
+        "mark": "#ab90ab"
+      }
+    }
+  }
+}

@@ -1,0 +1,43 @@
+{
+  "format": "tw.kit",
+  "version": 1,
+  "meta": {
+    "id": "turnip.packing-crate",
+    "name": "Meadowash Packing Crate"
+  },
+  "types": {
+    "fixture.packing-crate": {
+      "kind": "object",
+      "label": "Meadowash Packing Crate",
+      "footprint": { "w": 1, "d": 1 },
+      "height": 0.69,
+      "squash": 0.34,
+      "palette": {
+        "wood": "#d6cdb6",
+        "woodHi": "#e9e2ce",
+        "woodDark": "#a89d84"
+      },
+      "parts": [
+        { "prim": "box", "at": [0, 0.302, 0], "size": [0.781, 0.604, 0.756], "color": "wood" },
+        { "prim": "box", "at": [0, 0.644, 0], "size": [0.831, 0.08, 0.806], "color": "woodHi" },
+        { "prim": "box", "at": [0, 0.302, 0.39], "rot": [0, 0, 40], "size": [1.046, 0.055, 0.02], "color": "woodDark" },
+        { "prim": "box", "at": [0, 0.302, 0.39], "rot": [0, 0, -40], "size": [1.046, 0.055, 0.02], "color": "woodDark" }
+      ]
+    },
+    "kititem.packing-crate": {
+      "kind": "item",
+      "label": "Meadowash Packing Crate",
+      "value": 90,
+      "stack": 1,
+      "swatch": "#7f8f50",
+      "badge": "crate",
+      "furniture": "fixture.packing-crate",
+      "palette": {
+        "wrap": "#d9c7a4",
+        "wrapHi": "#eee1c7",
+        "strap": "#8a6242",
+        "mark": "#7f8f50"
+      }
+    }
+  }
+}

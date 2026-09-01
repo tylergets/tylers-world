@@ -1,0 +1,76 @@
+{
+  "format": "tw.world",
+  "version": 1,
+  "kind": "interior",
+  "meta": {
+    "id": "home.player.floor3",
+    "role": "player-home",
+    "name": "Third Floor",
+    "note": "Top floor of the upgraded player home."
+  },
+  "grid": {"width":12,"height":10,"tileSize":1},
+  "layers": {
+    "surface": {
+      "palette": {"#":"wall","w":"floor.wood","r":"rug"},
+      "data": [
+        "############",
+        "#wwwwwwwwww#",
+        "#wwwwwwwwww#",
+        "#wwwwwwwwww#",
+        "#wwwrrrrwww#",
+        "#wwwrrrrwww#",
+        "#wwwwwwwwww#",
+        "#wwwwwwwwww#",
+        "#wwwwwwwwww#",
+        "#####ww#####"
+      ]
+    },
+    "elevation": {
+      "palette": {"0":"0","4":"4"},
+      "data": [
+        "444444444444",
+        "400000000004",
+        "400000000004",
+        "400000000004",
+        "400000000004",
+        "400000000004",
+        "400000000004",
+        "400000000004",
+        "400000000004",
+        "444440044444"
+      ]
+    },
+    "flags": {
+      "palette": {".":"none"},
+      "data": [
+        "............",
+        "............",
+        "............",
+        "............",
+        "............",
+        "............",
+        "............",
+        "............",
+        "............",
+        "............"
+      ]
+    }
+  },
+  "objects": [
+    {"id":"shelf","type":"furn.shelf","tile":[1,1]},
+    {"id":"crate.one","type":"furn.crate","tile":[9,1]},
+    {"id":"crate.two","type":"furn.crate","tile":[10,1]},
+    {"id":"table.work","type":"furn.table","tile":[4,4]},
+    {"id":"chair","type":"furn.chair","tile":[6,5],"rotation":270},
+    {"id":"plant","type":"furn.plant","tile":[1,8]}
+  ],
+  "items": [
+    {"id":"stone.rafters","type":"item.stone","tile":[8,6]},
+    {"id":"stick.spare","type":"item.stick","tile":[9,7]}
+  ],
+  "exits": [
+    {"tile":[5,9],"label":"Downstairs"},
+    {"tile":[6,9],"label":"Downstairs"}
+  ],
+  "spawn": {"tile":[6,8],"facing":"north"}
+}

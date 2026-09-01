@@ -1,0 +1,47 @@
+{
+  "format": "tw.kit",
+  "version": 1,
+  "meta": {
+    "id": "turnip.table-lamp",
+    "name": "Rosewick Table Lamp"
+  },
+  "types": {
+    "fixture.table-lamp": {
+      "kind": "object",
+      "label": "Rosewick Table Lamp",
+      "footprint": { "w": 1, "d": 1 },
+      "height": 0.77,
+      "squash": 0.3,
+      "palette": {
+        "wood": "#8f4a3c",
+        "woodDark": "#653228",
+        "cloth": "#e0b7ad",
+        "clothHi": "#f2d5cd",
+        "pale": "#fbf1ea"
+      },
+      "parts": [
+        { "prim": "cyl", "at": [0, 0.045, 0], "size": [0.14, 0.09, 0.14], "color": "woodDark" },
+        { "prim": "cyl", "at": [0, 0.313, 0], "size": [0.035, 0.576, 0.035], "color": "wood" },
+        { "prim": "cyl", "at": [0, 0.589, 0], "size": [0.2, 0.32, 0.2], "color": "cloth" },
+        { "prim": "cyl", "at": [0, 0.429, 0], "size": [0.21, 0.03, 0.21], "color": "clothHi" },
+        { "prim": "cyl", "at": [0, 0.749, 0], "size": [0.21, 0.03, 0.21], "color": "clothHi" },
+        { "prim": "blob", "at": [0, 0.569, 0], "size": [0.11, 0.11, 0.11], "color": "pale", "anim": { "pulse": { "amp": 0.16, "rate": 0.62 } } }
+      ]
+    },
+    "kititem.table-lamp": {
+      "kind": "item",
+      "label": "Rosewick Table Lamp",
+      "value": 265,
+      "stack": 1,
+      "swatch": "#d2864c",
+      "badge": "crate",
+      "furniture": "fixture.table-lamp",
+      "palette": {
+        "wrap": "#d9c7a4",
+        "wrapHi": "#eee1c7",
+        "strap": "#8a6242",
+        "mark": "#d2864c"
+      }
+    }
+  }
+}

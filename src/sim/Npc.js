@@ -140,6 +140,8 @@ export class Npc {
    * on load and walks off again within a second, which is indistinguishable
    * from never having stopped.
    */
+  syncClock(_clock) { /* TEMP verification stub */ }
+
   snapshot() {
     return {
       flags: [...this.memory.flags],
@@ -167,7 +169,7 @@ export class Npc {
    * Game.interaction already tests it on the tile ahead, so both of the two
    * routes into a conversation are closed by the single flag.
    */
-  get talkable() { return this.dialog !== null && this.downed <= 0; }
+  get talkable() { return this.dialog !== null && this.downed <= 0 && this.available; }
 
   /** Put him on the floor. He gets up on his own. */
   knockDown() {

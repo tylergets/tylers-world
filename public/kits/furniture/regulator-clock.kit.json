@@ -1,0 +1,54 @@
+{
+  "format": "tw.kit",
+  "version": 1,
+  "meta": {
+    "id": "turnip.regulator-clock",
+    "name": "Beechbark Regulator Clock"
+  },
+  "types": {
+    "fixture.regulator-clock": {
+      "kind": "object",
+      "label": "Beechbark Regulator Clock",
+      "footprint": { "w": 1, "d": 1 },
+      "height": 2.01,
+      "squash": 0.3,
+      "palette": {
+        "wood": "#c08b55",
+        "woodHi": "#d8a870",
+        "woodDark": "#8a6242",
+        "pale": "#f6eede",
+        "dark": "#5c412c",
+        "metal": "#b08d3f",
+        "glass": "#cfe4ec"
+      },
+      "parts": [
+        { "prim": "box", "at": [0, 0.14, 0], "size": [0.52, 0.28, 0.38], "color": "woodDark" },
+        { "prim": "box", "at": [0, 0.817, 0], "size": [0.36, 1.173, 0.28], "color": "wood" },
+        { "prim": "box", "at": [0, 0.817, 0.145], "size": [0.2, 0.817, 0.02], "color": "glass" },
+        { "prim": "cyl", "at": [0, 0.675, 0.1], "rot": [90, 0, 0], "size": [0.07, 0.02, 0.07], "color": "metal", "anim": { "bob": { "amp": 0.045, "rate": 0.9 } } },
+        { "prim": "cyl", "at": [0, 0.977, 0.1], "size": [0.012, 0.533, 0.012], "color": "metal" },
+        { "prim": "box", "at": [0, 1.563, 0], "size": [0.5, 0.5, 0.36], "color": "wood" },
+        { "prim": "cyl", "at": [0, 1.581, 0.19], "rot": [90, 0, 0], "size": [0.17, 0.02, 0.17], "color": "pale" },
+        { "prim": "box", "at": [0, 1.617, 0.21], "size": [0.02, 0.11, 0.012], "color": "dark" },
+        { "prim": "box", "at": [0.05, 1.581, 0.21], "size": [0.1, 0.02, 0.012], "color": "dark" },
+        { "prim": "box", "at": [0, 1.83, 0], "size": [0.56, 0.09, 0.42], "color": "woodHi" },
+        { "prim": "cone", "at": [0, 1.937, 0], "size": [0.05, 0.14, 0.05], "color": "metal" }
+      ]
+    },
+    "kititem.regulator-clock": {
+      "kind": "item",
+      "label": "Beechbark Regulator Clock",
+      "value": 1180,
+      "stack": 1,
+      "swatch": "#c48b3d",
+      "badge": "crate",
+      "furniture": "fixture.regulator-clock",
+      "palette": {
+        "wrap": "#d9c7a4",
+        "wrapHi": "#eee1c7",
+        "strap": "#8a6242",
+        "mark": "#c48b3d"
+      }
+    }
+  }
+}

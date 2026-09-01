@@ -1,0 +1,48 @@
+{
+  "format": "tw.kit",
+  "version": 1,
+  "meta": {
+    "id": "turnip.step-stool",
+    "name": "Meadowash Step Stool"
+  },
+  "types": {
+    "fixture.step-stool": {
+      "kind": "object",
+      "label": "Meadowash Step Stool",
+      "footprint": { "w": 1, "d": 1 },
+      "height": 0.58,
+      "squash": 0.34,
+      "palette": {
+        "wood": "#d6cdb6",
+        "woodHi": "#e9e2ce",
+        "woodDark": "#a89d84"
+      },
+      "parts": [
+        { "prim": "cyl", "at": [0.173, 0.24, 0], "rot": [0, 0, -5], "size": [0.032, 0.48, 0.032], "color": "woodDark" },
+        { "prim": "cyl", "at": [0, 0.24, 0.173], "rot": [5, 0, 0], "size": [0.032, 0.48, 0.032], "color": "woodDark" },
+        { "prim": "cyl", "at": [-0.173, 0.24, 0], "rot": [0, 0, 5], "size": [0.032, 0.48, 0.032], "color": "woodDark" },
+        { "prim": "cyl", "at": [0, 0.24, -0.173], "rot": [-5, 0, 0], "size": [0.032, 0.48, 0.032], "color": "woodDark" },
+        { "prim": "cyl", "at": [0, 0.163, 0], "size": [0.164, 0.025, 0.164], "color": "woodDark" },
+        { "prim": "box", "at": [0, 0.52, 0], "size": [0.482, 0.08, 0.482], "color": "wood" },
+        { "prim": "box", "at": [0, 0.57, 0], "size": [0.41, 0.02, 0.41], "color": "woodHi" },
+        { "prim": "box", "at": [0, 0.16, 0.217], "size": [0.41, 0.05, 0.12], "color": "wood" },
+        { "prim": "box", "at": [0, 0.32, 0.217], "size": [0.41, 0.05, 0.12], "color": "wood" }
+      ]
+    },
+    "kititem.step-stool": {
+      "kind": "item",
+      "label": "Meadowash Step Stool",
+      "value": 125,
+      "stack": 1,
+      "swatch": "#8b9956",
+      "badge": "chair",
+      "furniture": "fixture.step-stool",
+      "palette": {
+        "wrap": "#d9c7a4",
+        "wrapHi": "#eee1c7",
+        "strap": "#8a6242",
+        "mark": "#8b9956"
+      }
+    }
+  }
+}

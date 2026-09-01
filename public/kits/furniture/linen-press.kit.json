@@ -1,0 +1,55 @@
+{
+  "format": "tw.kit",
+  "version": 1,
+  "meta": {
+    "id": "turnip.linen-press",
+    "name": "Inkthorn Linen Press"
+  },
+  "types": {
+    "fixture.linen-press": {
+      "kind": "object",
+      "label": "Inkthorn Linen Press",
+      "footprint": { "w": 2, "d": 1 },
+      "height": 2.02,
+      "squash": 0.34,
+      "palette": {
+        "wood": "#3a2f2a",
+        "woodHi": "#54443c",
+        "woodDark": "#241d1a",
+        "metal": "#c8a24a"
+      },
+      "parts": [
+        { "prim": "box", "at": [0, 0.06, 0], "size": [1.887, 0.12, 0.636], "color": "woodDark" },
+        { "prim": "box", "at": [0, 1.027, 0], "size": [1.847, 1.814, 0.596], "color": "wood" },
+        { "prim": "box", "at": [0, 1.974, 0], "size": [1.897, 0.08, 0.646], "color": "woodHi" },
+        { "prim": "box", "at": [0, 0.299, 0.308], "size": [1.707, 0.238, 0.04], "color": "woodHi" },
+        { "prim": "cyl", "at": [-0.443, 0.299, 0.338], "rot": [0, 0, 90], "size": [0.024, 0.13, 0.024], "color": "metal" },
+        { "prim": "cyl", "at": [0.443, 0.299, 0.338], "rot": [0, 0, 90], "size": [0.024, 0.13, 0.024], "color": "metal" },
+        { "prim": "box", "at": [0, 0.578, 0.308], "size": [1.707, 0.238, 0.04], "color": "woodHi" },
+        { "prim": "cyl", "at": [-0.443, 0.578, 0.338], "rot": [0, 0, 90], "size": [0.024, 0.13, 0.024], "color": "metal" },
+        { "prim": "cyl", "at": [0.443, 0.578, 0.338], "rot": [0, 0, 90], "size": [0.024, 0.13, 0.024], "color": "metal" },
+        { "prim": "box", "at": [-0.462, 1.311, 0.308], "size": [0.833, 1.147, 0.04], "color": "woodHi" },
+        { "prim": "box", "at": [-0.462, 1.311, 0.328], "size": [0.693, 0.987, 0.02], "color": "wood" },
+        { "prim": "cyl", "at": [-0.145, 1.311, 0.348], "rot": [90, 0, 0], "size": [0.03, 0.05, 0.03], "color": "metal" },
+        { "prim": "box", "at": [0.462, 1.311, 0.308], "size": [0.833, 1.147, 0.04], "color": "woodHi" },
+        { "prim": "box", "at": [0.462, 1.311, 0.328], "size": [0.693, 0.987, 0.02], "color": "wood" },
+        { "prim": "cyl", "at": [0.145, 1.311, 0.348], "rot": [90, 0, 0], "size": [0.03, 0.05, 0.03], "color": "metal" }
+      ]
+    },
+    "kititem.linen-press": {
+      "kind": "item",
+      "label": "Inkthorn Linen Press",
+      "value": 1470,
+      "stack": 1,
+      "swatch": "#b18a31",
+      "badge": "counter",
+      "furniture": "fixture.linen-press",
+      "palette": {
+        "wrap": "#d9c7a4",
+        "wrapHi": "#eee1c7",
+        "strap": "#8a6242",
+        "mark": "#b18a31"
+      }
+    }
+  }
+}

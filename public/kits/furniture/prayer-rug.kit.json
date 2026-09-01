@@ -1,0 +1,46 @@
+{
+  "format": "tw.kit",
+  "version": 1,
+  "meta": {
+    "id": "turnip.prayer-rug",
+    "name": "Inkthorn Prayer Rug"
+  },
+  "types": {
+    "fixture.prayer-rug": {
+      "kind": "object",
+      "label": "Inkthorn Prayer Rug",
+      "footprint": { "w": 2, "d": 2 },
+      "height": 0.2,
+      "squash": 0.9,
+      "palette": {
+        "cloth": "#7a3f4a",
+        "clothHi": "#9b5762",
+        "pale": "#e6ddcb",
+        "accent": "#c9a227"
+      },
+      "parts": [
+        { "prim": "box", "at": [0, 0.02, 0], "size": [1.129, 0.04, 1.811], "color": "cloth" },
+        { "prim": "box", "at": [0, 0.045, 0], "size": [0.969, 0.016, 1.651], "color": "clothHi" },
+        { "prim": "box", "at": [0, 0.052, 0], "size": [0.829, 0.014, 1.511], "color": "accent" },
+        { "prim": "box", "at": [0, 0.058, 0], "size": [0.689, 0.014, 1.371], "color": "pale" },
+        { "prim": "box", "at": [0, 0.02, -0.94], "size": [1.129, 0.022, 0.07], "color": "pale" },
+        { "prim": "box", "at": [0, 0.02, 0.94], "size": [1.129, 0.022, 0.07], "color": "pale" }
+      ]
+    },
+    "kititem.prayer-rug": {
+      "kind": "item",
+      "label": "Inkthorn Prayer Rug",
+      "value": 645,
+      "stack": 1,
+      "swatch": "#c18436",
+      "badge": "crate",
+      "furniture": "fixture.prayer-rug",
+      "palette": {
+        "wrap": "#d9c7a4",
+        "wrapHi": "#eee1c7",
+        "strap": "#8a6242",
+        "mark": "#c18436"
+      }
+    }
+  }
+}

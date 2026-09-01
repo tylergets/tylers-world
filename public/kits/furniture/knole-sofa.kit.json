@@ -1,0 +1,47 @@
+{
+  "format": "tw.kit",
+  "version": 1,
+  "meta": {
+    "id": "turnip.knole-sofa",
+    "name": "Sootpine Knole Sofa"
+  },
+  "types": {
+    "fixture.knole-sofa": {
+      "kind": "object",
+      "label": "Sootpine Knole Sofa",
+      "footprint": { "w": 3, "d": 1 },
+      "height": 1.16,
+      "squash": 0.34,
+      "palette": {
+        "cloth": "#6d7480",
+        "clothHi": "#8b929c"
+      },
+      "parts": [
+        { "prim": "box", "at": [0, 0.09, 0], "size": [2.614, 0.18, 0.767], "color": "cloth" },
+        { "prim": "box", "at": [0, 0.32, 0.02], "size": [2.614, 0.28, 0.747], "color": "cloth" },
+        { "prim": "box", "at": [-0.791, 0.54, 0.03], "size": [0.748, 0.16, 0.567], "color": "cloth" },
+        { "prim": "box", "at": [0, 0.54, 0.03], "size": [0.748, 0.16, 0.567], "color": "clothHi" },
+        { "prim": "box", "at": [0.791, 0.54, 0.03], "size": [0.748, 0.16, 0.567], "color": "cloth" },
+        { "prim": "box", "at": [0, 0.764, -0.284], "size": [2.654, 0.74, 0.2], "color": "cloth" },
+        { "prim": "box", "at": [0, 1.119, -0.284], "size": [2.654, 0.08, 0.24], "color": "clothHi" },
+        { "prim": "box", "at": [-1.257, 0.56, 0.02], "size": [0.16, 0.46, 0.707], "color": "cloth" },
+        { "prim": "box", "at": [1.257, 0.56, 0.02], "size": [0.16, 0.46, 0.707], "color": "cloth" }
+      ]
+    },
+    "kititem.knole-sofa": {
+      "kind": "item",
+      "label": "Sootpine Knole Sofa",
+      "value": 1190,
+      "stack": 1,
+      "swatch": "#c36c52",
+      "badge": "chair",
+      "furniture": "fixture.knole-sofa",
+      "palette": {
+        "wrap": "#d9c7a4",
+        "wrapHi": "#eee1c7",
+        "strap": "#8a6242",
+        "mark": "#c36c52"
+      }
+    }
+  }
+}

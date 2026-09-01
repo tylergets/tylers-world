@@ -1,0 +1,48 @@
+{
+  "format": "tw.kit",
+  "version": 1,
+  "meta": {
+    "id": "turnip.dressing-screen",
+    "name": "Meadowash Dressing Screen"
+  },
+  "types": {
+    "fixture.dressing-screen": {
+      "kind": "object",
+      "label": "Meadowash Dressing Screen",
+      "footprint": { "w": 2, "d": 1 },
+      "height": 1.74,
+      "squash": 0.3,
+      "palette": {
+        "wood": "#d6cdb6",
+        "woodDark": "#a89d84",
+        "cloth": "#8faa74"
+      },
+      "parts": [
+        { "prim": "box", "at": [-0.602, 0.869, -0.08], "rot": [0, 18, 0], "size": [0.64, 1.738, 0.06], "color": "wood" },
+        { "prim": "box", "at": [-0.602, 0.938, -0.06], "rot": [0, 18, 0], "size": [0.52, 1.355, 0.03], "color": "cloth" },
+        { "prim": "box", "at": [-0.602, 0.04, -0.08], "rot": [0, 18, 0], "size": [0.68, 0.08, 0.16], "color": "woodDark" },
+        { "prim": "box", "at": [0, 0.869, 0.08], "rot": [0, -18, 0], "size": [0.64, 1.738, 0.06], "color": "wood" },
+        { "prim": "box", "at": [0, 0.938, 0.1], "rot": [0, -18, 0], "size": [0.52, 1.355, 0.03], "color": "cloth" },
+        { "prim": "box", "at": [0, 0.04, 0.08], "rot": [0, -18, 0], "size": [0.68, 0.08, 0.16], "color": "woodDark" },
+        { "prim": "box", "at": [0.602, 0.869, -0.08], "rot": [0, 18, 0], "size": [0.64, 1.738, 0.06], "color": "wood" },
+        { "prim": "box", "at": [0.602, 0.938, -0.06], "rot": [0, 18, 0], "size": [0.52, 1.355, 0.03], "color": "cloth" },
+        { "prim": "box", "at": [0.602, 0.04, -0.08], "rot": [0, 18, 0], "size": [0.68, 0.08, 0.16], "color": "woodDark" }
+      ]
+    },
+    "kititem.dressing-screen": {
+      "kind": "item",
+      "label": "Meadowash Dressing Screen",
+      "value": 560,
+      "stack": 1,
+      "swatch": "#749760",
+      "badge": "crate",
+      "furniture": "fixture.dressing-screen",
+      "palette": {
+        "wrap": "#d9c7a4",
+        "wrapHi": "#eee1c7",
+        "strap": "#8a6242",
+        "mark": "#749760"
+      }
+    }
+  }
+}

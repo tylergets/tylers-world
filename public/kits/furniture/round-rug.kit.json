@@ -1,0 +1,47 @@
+{
+  "format": "tw.kit",
+  "version": 1,
+  "meta": {
+    "id": "turnip.round-rug",
+    "name": "Meadowash Round Rug"
+  },
+  "types": {
+    "fixture.round-rug": {
+      "kind": "object",
+      "label": "Meadowash Round Rug",
+      "footprint": { "w": 2, "d": 2 },
+      "height": 0.2,
+      "squash": 0.9,
+      "palette": {
+        "cloth": "#8faa74",
+        "clothHi": "#a9c290",
+        "accent": "#6f9c5a"
+      },
+      "parts": [
+        { "prim": "cyl", "at": [0, 0.02, 0], "size": [0.96, 0.04, 0.924], "color": "cloth" },
+        { "prim": "cyl", "at": [0, 0.045, 0], "size": [0.88, 0.016, 0.844], "color": "clothHi" },
+        { "prim": "cyl", "at": [0, 0.052, 0], "size": [0.79, 0.014, 0.754], "color": "cloth" },
+        { "prim": "cyl", "at": [0, 0.058, 0], "size": [0.407, 0.014, 0.407], "color": "accent" },
+        { "prim": "cyl", "at": [-0.557, 0.058, -0.536], "size": [0.09, 0.014, 0.09], "color": "accent" },
+        { "prim": "cyl", "at": [0.557, 0.058, -0.536], "size": [0.09, 0.014, 0.09], "color": "accent" },
+        { "prim": "cyl", "at": [-0.557, 0.058, 0.536], "size": [0.09, 0.014, 0.09], "color": "accent" },
+        { "prim": "cyl", "at": [0.557, 0.058, 0.536], "size": [0.09, 0.014, 0.09], "color": "accent" }
+      ]
+    },
+    "kititem.round-rug": {
+      "kind": "item",
+      "label": "Meadowash Round Rug",
+      "value": 285,
+      "stack": 1,
+      "swatch": "#898155",
+      "badge": "crate",
+      "furniture": "fixture.round-rug",
+      "palette": {
+        "wrap": "#d9c7a4",
+        "wrapHi": "#eee1c7",
+        "strap": "#8a6242",
+        "mark": "#898155"
+      }
+    }
+  }
+}

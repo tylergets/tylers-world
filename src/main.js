@@ -36,10 +36,12 @@
  */
 
 import { PORTAL } from './world/World.js';
-import { itemType } from './world/itemTypes.js';
+import { itemType, furnitureItemFor } from './world/itemTypes.js';
 import { objectType, rotateMask } from './world/objectTypes.js';
 import { Places } from './world/places.js';
+import { kits } from './world/kits.js';
 import { grudgeFor } from './world/grudge.js';
+import { closedFor } from './world/closed.js';
 import { Stage } from './render/Stage.js';
 import { Orbit } from './render/orbit.js';
 import { Player } from './sim/Player.js';
@@ -53,6 +55,7 @@ import {
   toolTarget, toolOf, chopDrops, stumpDrops, digFind, AMMO, killDrops, mineDrops,
 } from './sim/tools.js';
 import { Fishing } from './sim/Fishing.js';
+import { Errands } from './sim/Errands.js';
 import { FreeInput, GridInput } from './sim/inputs.js';
 import { findPath } from './sim/pathfind.js';
 import { Keyboard } from './sim/Keyboard.js';
@@ -167,6 +170,7 @@ class Game {
     this.stage.setShadows(this.graphics.shadows === 'on');
     this.stage.setQuality(SCALE_VALUES[this.graphics.resolution]);
     this.player = new Player(world);
+    this.errands = new Errands(this.player.friends);
     this.keys = new Keyboard();
     this.pointer = null;
     canvas.addEventListener('pointermove', (e) => {
@@ -194,6 +198,8 @@ class Game {
     this.source = null;
     this.saveId = null;
     this.saveName = 'World';
+    /** Authoritative, save-backed tier of the player's marked home. */
+    this.houseStories = 1;
     /**
      * Place state from a save that has not been applied yet, keyed by world id.
      *
@@ -529,6 +535,10 @@ class Game {
    */
   setPlace(world, tile, facing) {
     this.world = world;
+    // Portal availability is derived from player progression. Do this before
+    // either the renderer or HUD sees the place so inaccessible stairs are
+    // never advertised for a frame.
+    world.setHouseStories(this.houseStories);
     // A save records places by world id, because that is what the caches are
     // keyed by; getting back into one needs its URL. Recorded here rather than
     // read off the World, so a generated place -- which has no URL a fetch
@@ -577,6 +587,17 @@ class Game {
     this.hud.setWorld(world, this.stack.length > 0);
   }
 
+  /** Advance house progression by one authored tier and refresh the live place. */
+  setHouseStories(stories) {
+    if (!Number.isInteger(stories) || stories !== this.houseStories + 1 || stories > 3) return false;
+    this.houseStories = stories;
+    this.world.setHouseStories(stories);
+    // The footprint and collision do not change, but the marked home mesh does.
+    // Rebuilding through Stage keeps its per-place geometry cache coherent.
+    this.stage.rebuildWorld(this.world);
+    return true;
+  }
+
   /**
    * The live animals of a place, created on first visit and KEPT.
    *
@@ -606,7 +627,9 @@ class Game {
     if (!folk) {
       this.folk.set(world.meta.id, (folk = new Folk(world, this.player.friends)));
       folk.restore(this.#claim(world, 'folk'));
+      for (const npc of folk.npcs) this.errands.register(npc);
     }
+    folk.syncClock(this.player.clock);
     folk.refreshShops(this.player.clock.day);
     return folk;
   }
@@ -728,6 +751,7 @@ class Game {
     this.grounds.clear();
     this.changes.clear();
     this.fittings.clear();
+    this.errands = new Errands(this.player.friends);
     this.placeUrls.clear();
     this.stack.length = 0;
     this.travel = null;
@@ -738,6 +762,11 @@ class Game {
     this.saveId = saveId;
     this.saveName = name;
     this.pending = pending;
+    // Additive save data: older saves are one-story homes. Assign before
+    // setPlace so cached Worlds and their gated portals cannot carry a previous
+    // session's tier into this one.
+    this.houseStories = Number.isInteger(restore?.houseStories)
+      && restore.houseStories >= 1 && restore.houseStories <= 3 ? restore.houseStories : 1;
 
     // Pockets and friendships before the place, because `setPlace` builds the
     // Folk of the arrival room and a trespass check runs on the first frame --
@@ -755,6 +784,7 @@ class Game {
     // one from the time it is being read at. See Friends.restore.
     this.player.clock.restore(restore?.clock);
     this.player.friends.restore(restore?.friends ?? [], this.player.clock.stamp);
+    this.errands.restore(restore?.errands);
     this.syncGameSettings();
     // A new game starts with three tools in the bag. They are ordinary items
     // -- sellable, droppable, and buyable again over a counter -- so this is a
@@ -913,7 +943,9 @@ class Game {
         inventory: p.inventory.snapshot(),
         coins: p.purse.coins,
         friends: p.friends.snapshot(),
+        errands: this.errands.snapshot(),
         clock: p.clock.snapshot(),
+        houseStories: this.houseStories,
       },
       places,
     };
@@ -944,6 +976,8 @@ class Game {
     const p = this.player;
     return `${this.world.meta.id}|${p.tileX},${p.tileZ}|${this.stack.length}`
       + `|${p.inventory.version}|${p.purse.version}|${p.friends.version}`
+      + `|errands:${this.errands.version}`
+      + `|house:${this.houseStories}`
       + `|${this.loose.version}|${this.edits.version}|${this.fixtures.version}`
       + `|${this._talked ?? 0}`
       // The DAY, and deliberately not the time of day. This string is the
@@ -1194,6 +1228,7 @@ class Game {
     // every wall and tree the player happens to be facing is garbage generated
     // by a query that is supposed to be free.
     const obj = this.world.objectAt(ax, az);
+    if (obj && this.edits?.isPlaced(obj.id)) return { kind: 'pack', object: obj };
     if (obj && interactOf(obj.type)) {
       const fixture = this.fixtures?.target(obj, this.tradeCtx());
       if (fixture) return { kind: 'use', fixture };
@@ -1208,6 +1243,7 @@ class Game {
     const what = this.interaction();
     if (!what) return;
     if (what.kind === 'take') this.take();
+    else if (what.kind === 'pack') this.packFurniture(what.object);
     else if (what.kind === 'use') this.use(what.fixture);
     else this.talk(what.npc);
   }
@@ -1223,6 +1259,10 @@ class Game {
    */
   use(fixture) {
     const result = this.fixtures.use(fixture.object, this.tradeCtx());
+    if (result.ok) this.errands.record({
+      kind: 'process', fixture: fixture.object.type,
+      token: `${this.world.meta.id}:${fixture.object.id}:${this.fixtures.usesOf(fixture.object.id)}`,
+    });
     if (result.lines.length) this.note(result.lines.join(' '));
     return result.ok;
   }
@@ -1332,7 +1372,7 @@ class Game {
     const ctx = this.tradeCtx();
     const script = this.player.friends.hates(npc.id)
       ? grudgeFor(npc, this.player.friends.grudgeLevel(npc.id))
-      : npc.dialog;
+      : (npc.shop && !npc.shopAvailable ? closedFor(npc) : npc.dialog);
     this.chat.open(new Dialogue(npc, ctx, script), ctx);
     this.talking = npc;
     return npc;
@@ -1355,6 +1395,10 @@ class Game {
       // that does write is `peace`, which ENDS a feud and is paid for by the
       // item `gift` has just taken out of the bag. See sim/Dialogue.js.
       friends: this.player.friends,
+      errands: this.errands,
+      clock: this.player.clock,
+      houseStories: () => this.houseStories,
+      setHouseStories: (stories) => this.setHouseStories(stories),
     };
   }
 
@@ -1401,6 +1445,7 @@ class Game {
     if (!item) return null;
     if (!this.player.inventory.add(item.typeId, 1)) return null;   // no room
     this.loose.take(item);
+    this.errands.record({ kind: 'gather', item: item.typeId, token: `${this.world.meta.id}:${item.id}` });
     return item;
   }
 
@@ -1433,6 +1478,10 @@ class Game {
   placeFurniture(typeId) {
     const furniture = itemType(typeId).furniture;
     if (!furniture) return null;
+    if (this.world.meta.role !== 'player-home') {
+      this.note('Furniture can be assembled in your house.');
+      return null;
+    }
 
     const rotation = this.player.facing * 90;
     const shape = rotateMask(objectType(furniture).footprint, this.player.facing);
@@ -1462,7 +1511,24 @@ class Game {
     this.player.inventory.removeFrom(this.player.inventory.selected, 1);
     this.stage.rebuildWorld(this.world);
     this.note(`${objectType(furniture).label} placed.`);
+    this.errands.record({ kind: 'change', change: 'furnish', category: 'furniture', token: obj.id });
     return obj;
+  }
+
+  /** Fold one player-placed piece back into its inventory item. */
+  packFurniture(obj) {
+    const itemId = obj && furnitureItemFor(obj.type);
+    if (!itemId || !this.edits.isPlaced(obj.id)) return null;
+    if (this.player.inventory.room(itemId) < 1) {
+      this.note('Make room in your pockets first.');
+      return null;
+    }
+    const packed = this.edits.pack(obj.id);
+    if (!packed) return null;
+    this.player.inventory.add(itemId, 1);
+    this.stage.rebuildWorld(this.world);
+    this.note(`${objectType(obj.type).label} packed up.`);
+    return packed;
   }
 
   // ----------------------------------------------------------------- tools --
@@ -1581,7 +1647,7 @@ class Game {
       this.mapScreen.panBy(px * rate, pz * rate);
     }
 
-    this.people.update(dt);
+    this.people.update(dt, this.player.clock);
     this.live.update(dt);
   }
 
@@ -1592,7 +1658,7 @@ class Game {
     if (k.pressed('ArrowLeft') || k.pressed('KeyA')) this.photos.step(1);
     if (k.pressed('ArrowRight') || k.pressed('KeyD')) this.photos.step(-1);
 
-    this.people.update(dt);
+    this.people.update(dt, this.player.clock);
     this.live.update(dt);
   }
 
@@ -1807,6 +1873,7 @@ class Game {
     // looking for dry land and find the far bank as readily as this one.
     for (const typeId of killDrops(fish)) {
       this.spill(typeId, [this.player.tileX, this.player.tileZ]);
+      this.errands.record({ kind: 'fish', item: typeId, token: `${this.world.meta.id}:${fish.id}` });
     }
     this.note(`A ${fish.type.label.toLowerCase()}.`);
     return what;
@@ -1883,6 +1950,10 @@ class Game {
     // outlived its tree would lean a span that is no longer there.
     this.stage.chopHit(null);
     this.edits.fell(obj);
+    this.errands.record({
+      kind: 'change', change: 'fell', category: objectType(obj.type).category,
+      token: `${this.world.meta.id}:${obj.id}`,
+    });
     for (const typeId of chopDrops(obj)) this.spill(typeId, what.tile);
     return what;
   }
@@ -1898,6 +1969,7 @@ class Game {
     const [x, z] = what.tile;
     const found = digFind(this.world, x, z, this.edits.digs);
     if (!this.edits.dig(x, z)) return null;
+    this.errands.record({ kind: 'change', change: 'dig', token: `${this.world.meta.id}:${x},${z}` });
     if (found) this.spill(found, what.tile);
     return what;
   }
@@ -1954,7 +2026,7 @@ class Game {
     this.chat.tick(dt);
 
     // The people keep breathing and the animals keep moving while you talk.
-    this.people.update(dt);
+    this.people.update(dt, this.player.clock);
     this.live.update(dt);
     this.talking?.lookAt(this.player.x, this.player.z);
 
@@ -2141,7 +2213,7 @@ class Game {
     // while you were indoors would cost a frame budget that belongs to the room
     // you are standing in, to move things nobody can see.
     this.live.update(dt);
-    this.people.update(dt);
+    this.people.update(dt, this.player.clock);
     // AFTER the animals, so a fish that reached the float this frame is at the
     // float when the line is asked about it, rather than a frame behind -- the
     // bite window is one second, and a frame of it is worth having.
@@ -2388,7 +2460,32 @@ function directGame(hold, params, resume) {
     : newGame(hold, { kind: 'file', starter: STARTERS[0].id }));
 }
 
+/**
+ * The furniture shop's catalogue, loaded once before anything else.
+ *
+ * Every other kit in the game is declared by the ONE world that places it, and
+ * loaded on the way into that world (see world/kits.js). This one cannot be,
+ * and the reason is that its types leave the building: a flat-pack bought at
+ * Turnip & Timber goes into your pockets, walks out of the door, crosses the
+ * town and gets assembled in your own front room -- and it is in the SAVE, so a
+ * fresh session restores an inventory holding `kititem.wingback-chair` before
+ * it has been anywhere near the shop.
+ *
+ * A per-place dependency would therefore have to be declared by every place the
+ * player might carry a chair into, which is all of them. So the catalogue is a
+ * game-wide registry entry, like the apple and the axe, and the only thing that
+ * makes it a file is where it is written down.
+ *
+ * Awaited, and not fired-and-forgotten: the title screen's Continue button can
+ * restore a save, and a bag it cannot price is worse than a second of dawn.
+ * (The store interior declares it too, so `checkworld` -- which never runs
+ * this function -- still validates the shop's three hundred stock rows.)
+ */
+const CATALOGUE_KIT = 'kits/turnip-catalog.kit.json';
+
 async function boot() {
+  await kits.load(CATALOGUE_KIT);
+
   // Everything a Game needs that is not a world. Held together because all
   // three constructors below want the same four things, and threading them
   // one at a time through five call sites is how a canvas ends up in the

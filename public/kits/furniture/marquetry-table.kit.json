@@ -1,0 +1,49 @@
+{
+  "format": "tw.kit",
+  "version": 1,
+  "meta": {
+    "id": "turnip.marquetry-table",
+    "name": "Inkthorn Marquetry Table"
+  },
+  "types": {
+    "fixture.marquetry-table": {
+      "kind": "object",
+      "label": "Inkthorn Marquetry Table",
+      "footprint": { "w": 2, "d": 2 },
+      "height": 0.84,
+      "squash": 0.34,
+      "palette": {
+        "wood": "#3a2f2a",
+        "woodHi": "#54443c",
+        "woodDark": "#241d1a",
+        "accent": "#c9a227"
+      },
+      "parts": [
+        { "prim": "cyl", "at": [-0.657, 0.349, -0.703], "size": [0.055, 0.698, 0.055], "color": "woodDark" },
+        { "prim": "cyl", "at": [0.657, 0.349, -0.703], "size": [0.055, 0.698, 0.055], "color": "woodDark" },
+        { "prim": "cyl", "at": [-0.657, 0.349, 0.703], "size": [0.055, 0.698, 0.055], "color": "woodDark" },
+        { "prim": "cyl", "at": [0.657, 0.349, 0.703], "size": [0.055, 0.698, 0.055], "color": "woodDark" },
+        { "prim": "box", "at": [0, 0.558, -0.743], "size": [1.273, 0.1, 0.06], "color": "wood" },
+        { "prim": "box", "at": [0, 0.558, 0.743], "size": [1.273, 0.1, 0.06], "color": "wood" },
+        { "prim": "box", "at": [0, 0.748, 0], "size": [1.593, 0.1, 1.687], "color": "wood" },
+        { "prim": "box", "at": [0, 0.803, 0], "size": [1.473, 0.02, 1.567], "color": "woodHi" },
+        { "prim": "cyl", "at": [0, 0.823, 0], "size": [0.35, 0.02, 0.35], "color": "accent" }
+      ]
+    },
+    "kititem.marquetry-table": {
+      "kind": "item",
+      "label": "Inkthorn Marquetry Table",
+      "value": 1065,
+      "stack": 1,
+      "swatch": "#c69938",
+      "badge": "table",
+      "furniture": "fixture.marquetry-table",
+      "palette": {
+        "wrap": "#d9c7a4",
+        "wrapHi": "#eee1c7",
+        "strap": "#8a6242",
+        "mark": "#c69938"
+      }
+    }
+  }
+}

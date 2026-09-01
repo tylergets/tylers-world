@@ -1,0 +1,47 @@
+{
+  "format": "tw.kit",
+  "version": 1,
+  "meta": {
+    "id": "turnip.aloe-pot",
+    "name": "Fenrush Aloe Pot"
+  },
+  "types": {
+    "fixture.aloe-pot": {
+      "kind": "object",
+      "label": "Fenrush Aloe Pot",
+      "footprint": { "w": 1, "d": 1 },
+      "height": 0.78,
+      "squash": 0.34,
+      "palette": {
+        "dark": "#5c4a24",
+        "accent": "#b8923a",
+        "leaf": "#7fae4f"
+      },
+      "parts": [
+        { "prim": "taper", "at": [0, 0.15, 0], "size": [0.213, 0.299, 0.213], "color": "accent" },
+        { "prim": "cyl", "at": [0, 0.299, 0], "size": [0.233, 0.05, 0.233], "color": "accent" },
+        { "prim": "cyl", "at": [0, 0.319, 0], "size": [0.183, 0.04, 0.183], "color": "dark" },
+        { "prim": "cone", "at": [0.07, 0.559, 0], "rot": [0, 0, -9], "size": [0.05, 0.44, 0.05], "color": "leaf", "anim": { "pulse": { "amp": 0.08, "rate": 0.3, "phase": 0 } } },
+        { "prim": "cone", "at": [0.022, 0.559, 0.067], "rot": [8.56, 0, -2.781], "size": [0.05, 0.44, 0.05], "color": "leaf", "anim": { "pulse": { "amp": 0.08, "rate": 0.3, "phase": 0.2 } } },
+        { "prim": "cone", "at": [-0.057, 0.559, 0.041], "rot": [5.29, 0, 7.281], "size": [0.05, 0.44, 0.05], "color": "leaf", "anim": { "pulse": { "amp": 0.08, "rate": 0.3, "phase": 0.4 } } },
+        { "prim": "cone", "at": [-0.057, 0.559, -0.041], "rot": [-5.29, 0, 7.281], "size": [0.05, 0.44, 0.05], "color": "leaf", "anim": { "pulse": { "amp": 0.08, "rate": 0.3, "phase": 0.6000000000000001 } } },
+        { "prim": "cone", "at": [0.022, 0.559, -0.067], "rot": [-8.56, 0, -2.781], "size": [0.05, 0.44, 0.05], "color": "leaf", "anim": { "pulse": { "amp": 0.08, "rate": 0.3, "phase": 0.8 } } }
+      ]
+    },
+    "kititem.aloe-pot": {
+      "kind": "item",
+      "label": "Fenrush Aloe Pot",
+      "value": 115,
+      "stack": 1,
+      "swatch": "#98a042",
+      "badge": "plant",
+      "furniture": "fixture.aloe-pot",
+      "palette": {
+        "wrap": "#d9c7a4",
+        "wrapHi": "#eee1c7",
+        "strap": "#8a6242",
+        "mark": "#98a042"
+      }
+    }
+  }
+}

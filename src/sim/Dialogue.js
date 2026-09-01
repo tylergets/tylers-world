@@ -47,7 +47,8 @@ const MAX_HOPS = 32;
 export class Dialogue {
   /**
    * @param {Npc} npc  the person talking; supplies the memory and the shop
-   * @param {{inventory: Inventory, purse: Purse, friends?: Friends}} ctx
+   * @param {{inventory: Inventory, purse: Purse, friends?: Friends,
+   *   houseStories?: function(): number, setHouseStories?: function(number): void}} ctx
    * @param {object} [script]  what he says, defaulting to his own dialog. The
    *   one caller that passes something else is the one talking to somebody who
    *   is angry, who gets a grudge script instead -- see world/grudge.js. It is
@@ -183,12 +184,19 @@ export class Dialogue {
         // player has is a bug in the file, and clamping at zero keeps it from
         // becoming a debt the game has no way to express.
         case 'coins': v >= 0 ? this.ctx.purse.earn(v) : this.ctx.purse.pay(Math.min(-v, this.ctx.purse.coins)); break;
+        // The Game owns progression and the consequences of changing it. An
+        // absent callback is a headless format walker, where effects are inert.
+        case 'houseStories': this.ctx.setHouseStories?.(v); break;
         case 'shop': if (v) this.shop = this.npc.shop; break;
         case 'gift': if (v) this.#gift(); break;
         // Absent friends is a caller who is not asking -- checkworld drives
         // these scripts with no player in the world -- and the sensible thing
         // to do with a feud nobody is keeping track of is nothing.
         case 'peace': if (v) this.ctx.friends?.forgive(this.npc.id); break;
+        case 'errand':
+          if (v.action === 'accept') this.ctx.errands?.accept(this.npc.id, v.id);
+          else if (v.action === 'complete') this.ctx.errands?.complete(this.npc, v.id, this.ctx);
+          break;
       }
     }
     this.version++;
@@ -235,9 +243,27 @@ export class Dialogue {
         // you have not, in a run with no player in it. Treating absent as false
         // would quietly hide half of every script from the only check we have.
         case 'friend': if (this.ctx.friends && this.ctx.friends.has(this.npc.id) !== v) return false; break;
+        case 'relationship':
+          if (this.ctx.friends && !this.ctx.friends.atLeast(this.npc.id, v.atLeast)) return false;
+          break;
+        case 'errand':
+          if (this.ctx.errands && (this.ctx.errands.status(this.npc.id, v.id) !== v.status
+            || (v.status === 'ready' && !this.ctx.errands.canComplete(this.npc.id, v.id, inventory)))) return false;
+          break;
+        case 'time': {
+          if (!this.ctx.clock) break;
+          const hour = this.ctx.clock.t * 24;
+          const inside = v.from < v.to ? hour >= v.from && hour < v.to : hour >= v.from || hour < v.to;
+          if (!inside) return false;
+          break;
+        }
+        case 'shopOpen': if (this.npc.shopAvailable !== v) return false; break;
         case 'holding': if (!!inventory.held !== v) return false; break;
         case 'visits': if (mem.visits < v) return false; break;
         case 'coins': if (purse.coins < v) return false; break;
+        // As with `friend`, absence means the caller is not asking. This keeps
+        // every authored tier alternative walkable under checkworld.
+        case 'houseStories': if (this.ctx.houseStories && this.ctx.houseStories() !== v) return false; break;
         case 'has': if (inventory.count(v.type) < v.count) return false; break;
         case 'room': if (inventory.room(v.type) < v.count) return false; break;
         case 'not': if (this.#test(v)) return false; break;

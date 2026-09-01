@@ -1,0 +1,49 @@
+{
+  "format": "tw.kit",
+  "version": 1,
+  "meta": {
+    "id": "turnip.tripod-lamp",
+    "name": "Sootpine Tripod Lamp"
+  },
+  "types": {
+    "fixture.tripod-lamp": {
+      "kind": "object",
+      "label": "Sootpine Tripod Lamp",
+      "footprint": { "w": 1, "d": 1 },
+      "height": 1.61,
+      "squash": 0.3,
+      "palette": {
+        "wood": "#4a4640",
+        "woodDark": "#332f2b",
+        "cloth": "#6d7480",
+        "clothHi": "#8b929c",
+        "pale": "#dcd8cf"
+      },
+      "parts": [
+        { "prim": "cyl", "at": [0, 0.045, 0], "size": [0.22, 0.09, 0.22], "color": "woodDark" },
+        { "prim": "cyl", "at": [0.154, 0.428, 0], "rot": [0, 0, -12], "size": [0.022, 0.885, 0.022], "color": "wood" },
+        { "prim": "cyl", "at": [-0.077, 0.428, 0.133], "rot": [10.392, 0, 6], "size": [0.022, 0.885, 0.022], "color": "wood" },
+        { "prim": "cyl", "at": [-0.077, 0.428, -0.133], "rot": [-10.392, 0, 6], "size": [0.022, 0.885, 0.022], "color": "wood" },
+        { "prim": "cyl", "at": [0, 0.714, 0], "size": [0.035, 1.313, 0.035], "color": "wood" },
+        { "prim": "cone", "at": [0, 1.402, 0], "rot": [180, 0, 0], "size": [0.3, 0.4, 0.3], "color": "cloth" },
+        { "prim": "cyl", "at": [0, 1.212, 0], "size": [0.3, 0.03, 0.3], "color": "clothHi" },
+        { "prim": "blob", "at": [0, 1.322, 0], "size": [0.11, 0.11, 0.11], "color": "pale", "anim": { "pulse": { "amp": 0.16, "rate": 0.62 } } }
+      ]
+    },
+    "kititem.tripod-lamp": {
+      "kind": "item",
+      "label": "Sootpine Tripod Lamp",
+      "value": 530,
+      "stack": 1,
+      "swatch": "#de9340",
+      "badge": "crate",
+      "furniture": "fixture.tripod-lamp",
+      "palette": {
+        "wrap": "#d9c7a4",
+        "wrapHi": "#eee1c7",
+        "strap": "#8a6242",
+        "mark": "#de9340"
+      }
+    }
+  }
+}

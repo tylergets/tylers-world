@@ -1,0 +1,48 @@
+{
+  "format": "tw.kit",
+  "version": 1,
+  "meta": {
+    "id": "turnip.dolls-house",
+    "name": "Hollowmilk Doll's House"
+  },
+  "types": {
+    "fixture.dolls-house": {
+      "kind": "object",
+      "label": "Hollowmilk Doll's House",
+      "footprint": { "w": 1, "d": 1 },
+      "height": 0.96,
+      "squash": 0.34,
+      "palette": {
+        "woodDark": "#cfc7b6",
+        "pale": "#ffffff",
+        "accent": "#4f79b0",
+        "glass": "#dceaf4"
+      },
+      "parts": [
+        { "prim": "box", "at": [0, 0.06, 0], "size": [0.72, 0.12, 0.48], "color": "woodDark" },
+        { "prim": "box", "at": [0, 0.341, 0], "size": [0.62, 0.451, 0.4], "color": "pale" },
+        { "prim": "box", "at": [-0.15, 0.232, 0.21], "size": [0.16, 0.16, 0.02], "color": "glass" },
+        { "prim": "box", "at": [0.15, 0.232, 0.21], "size": [0.16, 0.16, 0.02], "color": "glass" },
+        { "prim": "box", "at": [-0.15, 0.478, 0.21], "size": [0.16, 0.16, 0.02], "color": "glass" },
+        { "prim": "box", "at": [0.15, 0.478, 0.21], "size": [0.16, 0.16, 0.02], "color": "glass" },
+        { "prim": "pyr", "at": [0, 0.803, 0], "size": [0.48, 0.3, 0.32], "color": "accent" },
+        { "prim": "box", "at": [0, 0.15, 0.21], "size": [0.14, 0.24, 0.02], "color": "woodDark" }
+      ]
+    },
+    "kititem.dolls-house": {
+      "kind": "item",
+      "label": "Hollowmilk Doll's House",
+      "value": 770,
+      "stack": 1,
+      "swatch": "#6c819b",
+      "badge": "crate",
+      "furniture": "fixture.dolls-house",
+      "palette": {
+        "wrap": "#d9c7a4",
+        "wrapHi": "#eee1c7",
+        "strap": "#8a6242",
+        "mark": "#6c819b"
+      }
+    }
+  }
+}

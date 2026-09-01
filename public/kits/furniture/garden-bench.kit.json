@@ -1,0 +1,55 @@
+{
+  "format": "tw.kit",
+  "version": 1,
+  "meta": {
+    "id": "turnip.garden-bench",
+    "name": "Meadowash Garden Bench"
+  },
+  "types": {
+    "fixture.garden-bench": {
+      "kind": "object",
+      "label": "Meadowash Garden Bench",
+      "footprint": { "w": 2, "d": 1 },
+      "height": 1.08,
+      "squash": 0.34,
+      "palette": {
+        "wood": "#d6cdb6",
+        "woodHi": "#e9e2ce",
+        "woodDark": "#a89d84"
+      },
+      "parts": [
+        { "prim": "box", "at": [-0.724, 0.217, 0], "size": [0.1, 0.434, 0.1], "color": "woodDark" },
+        { "prim": "box", "at": [0.724, 0.217, 0], "size": [0.1, 0.434, 0.1], "color": "woodDark" },
+        { "prim": "box", "at": [0, 0.13, 0], "size": [1.388, 0.06, 0.06], "color": "woodDark" },
+        { "prim": "box", "at": [0, 0.484, 0], "size": [1.728, 0.1, 0.499], "color": "wood" },
+        { "prim": "box", "at": [0, 0.544, 0], "size": [1.628, 0.02, 0.419], "color": "woodHi" },
+        { "prim": "cyl", "at": [-0.784, 0.784, -0.199], "size": [0.032, 0.5, 0.032], "color": "woodDark" },
+        { "prim": "cyl", "at": [0.784, 0.784, -0.199], "size": [0.032, 0.5, 0.032], "color": "woodDark" },
+        { "prim": "box", "at": [0, 1.034, -0.199], "size": [1.728, 0.09, 0.07], "color": "woodHi" },
+        { "prim": "box", "at": [0, 0.634, -0.199], "size": [1.548, 0.07, 0.04], "color": "wood" },
+        { "prim": "box", "at": [0, 0.738, -0.199], "size": [1.548, 0.07, 0.04], "color": "wood" },
+        { "prim": "box", "at": [0, 0.841, -0.199], "size": [1.548, 0.07, 0.04], "color": "wood" },
+        { "prim": "box", "at": [0, 0.944, -0.199], "size": [1.548, 0.07, 0.04], "color": "wood" },
+        { "prim": "box", "at": [-0.834, 0.704, 0], "size": [0.07, 0.06, 0.459], "color": "woodHi" },
+        { "prim": "cyl", "at": [-0.834, 0.584, 0.169], "size": [0.026, 0.24, 0.026], "color": "woodDark" },
+        { "prim": "box", "at": [0.834, 0.704, 0], "size": [0.07, 0.06, 0.459], "color": "woodHi" },
+        { "prim": "cyl", "at": [0.834, 0.584, 0.169], "size": [0.026, 0.24, 0.026], "color": "woodDark" }
+      ]
+    },
+    "kititem.garden-bench": {
+      "kind": "item",
+      "label": "Meadowash Garden Bench",
+      "value": 340,
+      "stack": 1,
+      "swatch": "#858850",
+      "badge": "chair",
+      "furniture": "fixture.garden-bench",
+      "palette": {
+        "wrap": "#d9c7a4",
+        "wrapHi": "#eee1c7",
+        "strap": "#8a6242",
+        "mark": "#858850"
+      }
+    }
+  }
+}

@@ -1,0 +1,45 @@
+{
+  "format": "tw.kit",
+  "version": 1,
+  "meta": {
+    "id": "turnip.library-steps",
+    "name": "Inkthorn Library Steps"
+  },
+  "types": {
+    "fixture.library-steps": {
+      "kind": "object",
+      "label": "Inkthorn Library Steps",
+      "footprint": { "w": 1, "d": 1 },
+      "height": 0.74,
+      "squash": 0.34,
+      "palette": {
+        "wood": "#3a2f2a",
+        "woodHi": "#54443c",
+        "woodDark": "#241d1a"
+      },
+      "parts": [
+        { "prim": "box", "at": [-0.3, 0.365, 0], "rot": [0, 0, -5], "size": [0.06, 0.731, 0.42], "color": "wood" },
+        { "prim": "box", "at": [0.3, 0.365, 0], "rot": [0, 0, 5], "size": [0.06, 0.731, 0.42], "color": "wood" },
+        { "prim": "box", "at": [0, 0.161, 0.06], "size": [0.6, 0.05, 0.24], "color": "woodHi" },
+        { "prim": "box", "at": [0, 0.409, 0], "size": [0.58, 0.05, 0.24], "color": "woodHi" },
+        { "prim": "box", "at": [0, 0.658, -0.06], "size": [0.56, 0.05, 0.24], "color": "woodHi" },
+        { "prim": "box", "at": [0, 0.117, -0.16], "size": [0.56, 0.05, 0.05], "color": "woodDark" }
+      ]
+    },
+    "kititem.library-steps": {
+      "kind": "item",
+      "label": "Inkthorn Library Steps",
+      "value": 450,
+      "stack": 1,
+      "swatch": "#b79b47",
+      "badge": "crate",
+      "furniture": "fixture.library-steps",
+      "palette": {
+        "wrap": "#d9c7a4",
+        "wrapHi": "#eee1c7",
+        "strap": "#8a6242",
+        "mark": "#b79b47"
+      }
+    }
+  }
+}

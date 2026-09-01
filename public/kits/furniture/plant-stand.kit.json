@@ -1,0 +1,54 @@
+{
+  "format": "tw.kit",
+  "version": 1,
+  "meta": {
+    "id": "turnip.plant-stand",
+    "name": "Rosewick Plant Stand"
+  },
+  "types": {
+    "fixture.plant-stand": {
+      "kind": "object",
+      "label": "Rosewick Plant Stand",
+      "footprint": { "w": 1, "d": 1 },
+      "height": 1.37,
+      "squash": 0.34,
+      "palette": {
+        "wood": "#8f4a3c",
+        "woodHi": "#ab6150",
+        "woodDark": "#653228",
+        "dark": "#452019",
+        "accent": "#c4614c",
+        "leaf": "#6b9a52"
+      },
+      "parts": [
+        { "prim": "cyl", "at": [0.2, 0.377, 0], "rot": [0, 0, -10], "size": [0.025, 0.796, 0.025], "color": "wood" },
+        { "prim": "cyl", "at": [-0.1, 0.377, 0.173], "rot": [8.66, 0, 5], "size": [0.025, 0.796, 0.025], "color": "wood" },
+        { "prim": "cyl", "at": [-0.1, 0.377, -0.173], "rot": [-8.66, 0, 5], "size": [0.025, 0.796, 0.025], "color": "wood" },
+        { "prim": "cyl", "at": [0, 0.314, 0], "size": [0.2, 0.04, 0.2], "color": "woodDark" },
+        { "prim": "cyl", "at": [0, 0.754, 0], "size": [0.27, 0.05, 0.27], "color": "woodHi" },
+        { "prim": "taper", "at": [0, 0.901, 0], "size": [0.19, 0.24, 0.19], "color": "accent" },
+        { "prim": "cyl", "at": [0, 1.026, 0], "size": [0.16, 0.03, 0.16], "color": "dark" },
+        { "prim": "blob", "at": [0.1, 1.11, 0], "size": [0.14, 0.112, 0.14], "color": "accent", "anim": { "pulse": { "amp": 0.1, "rate": 0.35, "phase": 0 } } },
+        { "prim": "blob", "at": [0.031, 1.18, 0.095], "size": [0.14, 0.112, 0.14], "color": "leaf", "anim": { "pulse": { "amp": 0.1, "rate": 0.41, "phase": 0.2 } } },
+        { "prim": "blob", "at": [-0.081, 1.25, 0.059], "size": [0.14, 0.112, 0.14], "color": "accent", "anim": { "pulse": { "amp": 0.1, "rate": 0.47, "phase": 0.4 } } },
+        { "prim": "blob", "at": [-0.081, 1.11, -0.059], "size": [0.14, 0.112, 0.14], "color": "leaf", "anim": { "pulse": { "amp": 0.1, "rate": 0.35, "phase": 0.6000000000000001 } } },
+        { "prim": "blob", "at": [0.031, 1.18, -0.095], "size": [0.14, 0.112, 0.14], "color": "accent", "anim": { "pulse": { "amp": 0.1, "rate": 0.41, "phase": 0.8 } } }
+      ]
+    },
+    "kititem.plant-stand": {
+      "kind": "item",
+      "label": "Rosewick Plant Stand",
+      "value": 390,
+      "stack": 1,
+      "swatch": "#9f824d",
+      "badge": "plant",
+      "furniture": "fixture.plant-stand",
+      "palette": {
+        "wrap": "#d9c7a4",
+        "wrapHi": "#eee1c7",
+        "strap": "#8a6242",
+        "mark": "#9f824d"
+      }
+    }
+  }
+}

@@ -1,0 +1,44 @@
+{
+  "format": "tw.kit",
+  "version": 1,
+  "meta": {
+    "id": "turnip.globe-lamp",
+    "name": "Seaglass Globe Lamp"
+  },
+  "types": {
+    "fixture.globe-lamp": {
+      "kind": "object",
+      "label": "Seaglass Globe Lamp",
+      "footprint": { "w": 1, "d": 1 },
+      "height": 1.69,
+      "squash": 0.3,
+      "palette": {
+        "wood": "#a6a89c",
+        "woodDark": "#7b7d73",
+        "pale": "#eef2ee",
+        "glass": "#bfe0ea"
+      },
+      "parts": [
+        { "prim": "cyl", "at": [0, 0.045, 0], "size": [0.22, 0.09, 0.22], "color": "woodDark" },
+        { "prim": "cyl", "at": [0, 0.746, 0], "size": [0.035, 1.372, 0.035], "color": "wood" },
+        { "prim": "blob", "at": [0, 1.462, 0], "size": [0.22, 0.22, 0.22], "color": "glass" },
+        { "prim": "blob", "at": [0, 1.382, 0], "size": [0.11, 0.11, 0.11], "color": "pale", "anim": { "pulse": { "amp": 0.16, "rate": 0.62 } } }
+      ]
+    },
+    "kititem.globe-lamp": {
+      "kind": "item",
+      "label": "Seaglass Globe Lamp",
+      "value": 420,
+      "stack": 1,
+      "swatch": "#7fa782",
+      "badge": "crate",
+      "furniture": "fixture.globe-lamp",
+      "palette": {
+        "wrap": "#d9c7a4",
+        "wrapHi": "#eee1c7",
+        "strap": "#8a6242",
+        "mark": "#7fa782"
+      }
+    }
+  }
+}

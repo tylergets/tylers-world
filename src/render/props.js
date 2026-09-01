@@ -175,7 +175,9 @@ function gableRoof(c, w, d, eaveY, rise, overhang, color, dark) {
 function home(c) {
   const p = c.pal;
   const fw = c.type.footprint.w, fd = c.type.footprint.d;
-  const W = fw - 0.5, D = fd - 0.6, wallH = 1.35;
+  const W = fw - 0.5, D = fd - 0.6, levelH = 1.35;
+  const stories = c.obj.props?.playerHome ? (c.houseStories ?? 1) : 1;
+  const wallH = levelH * stories;
   c.box(0, wallH / 2, 0, W, wallH, D, p.wall);
   gableRoof(c, W, D, wallH, 1.0, 0.28, p.roof, p.roofDark);
 
@@ -186,18 +188,30 @@ function home(c) {
   c.box(doorX, 0.42, (D / 2) * zf + 0.03 * zf, 0.52, 0.84, 0.06, p.door);
   c.box(doorX, 0.88, (D / 2) * zf + 0.05 * zf, 0.1, 0.1, 0.06, p.trim);
 
-  // Windows flanking the door, as many as the front wall has room for, plus
-  // one on each gable end.
-  for (const side of [-1, 1]) {
-    const wx = doorX + side * 1.05;
-    if (Math.abs(wx) > W / 2 - 0.35) continue;   // narrow front: one window fewer
-    c.box(wx, 0.85, (D / 2) * zf + 0.03 * zf, 0.44, 0.44, 0.06, p.window);
-    c.box(wx, 0.85, (D / 2) * zf + 0.05 * zf, 0.5, 0.06, 0.04, p.trim);
+  // One window course per usable floor. Only the ground course has a door.
+  for (let level = 0; level < stories; level++) {
+    const y = 0.85 + level * levelH;
+    for (const side of [-1, 1]) {
+      const wx = doorX + side * 1.05;
+      if (Math.abs(wx) > W / 2 - 0.35) continue;
+      c.box(wx, y, (D / 2) * zf + 0.03 * zf, 0.44, 0.44, 0.06, p.window);
+      c.box(wx, y, (D / 2) * zf + 0.05 * zf, 0.5, 0.06, 0.04, p.trim);
+    }
+    c.box(-W / 2 - 0.02, y, 0, 0.05, 0.4, 0.5, p.window);
+    c.box(W / 2 + 0.02, y, 0, 0.05, 0.4, 0.5, p.window);
   }
-  c.box(-W / 2 - 0.02, 0.9, 0, 0.05, 0.4, 0.5, p.window);
-  c.box(W / 2 + 0.02, 0.9, 0, 0.05, 0.4, 0.5, p.window);
   // Chimney, so the roofline isn't a bare wedge from above.
   c.box(W * 0.3, wallH + 0.85, -D * 0.22, 0.3, 0.75, 0.3, p.trim);
+}
+
+function stairs(c) {
+  const p = c.pal;
+  for (let i = 0; i < 6; i++) {
+    const h = 0.18 + i * 0.18;
+    c.box(0, h / 2, 0.95 - i * 0.34, 1.55, h, 0.34, p.tread);
+    c.box(0, h - 0.04, 0.95 - i * 0.34, 1.62, 0.08, 0.38, p.riser);
+  }
+  for (const x of [-0.84, 0.84]) c.box(x, 0.75, 0, 0.08, 1.5, 2.2, p.rail, -0.43);
 }
 
 function store(c) {
@@ -377,6 +391,7 @@ const BUILDERS = {
   'furn.stove': stove,
   'furn.plant': plant,
   'furn.crate': crate,
+  'furn.stairs': stairs,
 };
 
 /**
@@ -465,6 +480,7 @@ export function buildProps(world) {
     const yaw = -obj.rotation * DEG;
 
     const ctx = new PropCtx(g, cx, baseY, cz, yaw, obj, type);
+    ctx.houseStories = world.houseStories;
     g.begin(obj.id, baseY);
     build(ctx);
     g.end();

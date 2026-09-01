@@ -1,0 +1,45 @@
+{
+  "format": "tw.kit",
+  "version": 1,
+  "meta": {
+    "id": "turnip.rush-stool",
+    "name": "Fenrush Rush Stool"
+  },
+  "types": {
+    "fixture.rush-stool": {
+      "kind": "object",
+      "label": "Fenrush Rush Stool",
+      "footprint": { "w": 1, "d": 1 },
+      "height": 0.56,
+      "squash": 0.34,
+      "palette": {
+        "wood": "#d9bb7a",
+        "woodHi": "#ecd69c",
+        "woodDark": "#a8873f"
+      },
+      "parts": [
+        { "prim": "cyl", "at": [0.159, 0.226, 0], "rot": [0, 0, -8], "size": [0.032, 0.452, 0.032], "color": "woodDark" },
+        { "prim": "cyl", "at": [-0.08, 0.226, 0.138], "rot": [6.928, 0, 4], "size": [0.032, 0.452, 0.032], "color": "woodDark" },
+        { "prim": "cyl", "at": [-0.08, 0.226, -0.138], "rot": [-6.928, 0, 4], "size": [0.032, 0.452, 0.032], "color": "woodDark" },
+        { "prim": "cyl", "at": [0, 0.154, 0], "size": [0.151, 0.025, 0.151], "color": "woodDark" },
+        { "prim": "cyl", "at": [0, 0.492, 0], "size": [0.221, 0.08, 0.221], "color": "wood" },
+        { "prim": "cyl", "at": [0, 0.542, 0], "size": [0.19, 0.02, 0.19], "color": "woodHi" }
+      ]
+    },
+    "kititem.rush-stool": {
+      "kind": "item",
+      "label": "Fenrush Rush Stool",
+      "value": 65,
+      "stack": 1,
+      "swatch": "#b89342",
+      "badge": "chair",
+      "furniture": "fixture.rush-stool",
+      "palette": {
+        "wrap": "#d9c7a4",
+        "wrapHi": "#eee1c7",
+        "strap": "#8a6242",
+        "mark": "#b89342"
+      }
+    }
+  }
+}

@@ -1,0 +1,52 @@
+{
+  "format": "tw.kit",
+  "version": 1,
+  "meta": {
+    "id": "turnip.vanity-mirror",
+    "name": "Coppervale Vanity Mirror"
+  },
+  "types": {
+    "fixture.vanity-mirror": {
+      "kind": "object",
+      "label": "Coppervale Vanity Mirror",
+      "footprint": { "w": 2, "d": 1 },
+      "height": 1.27,
+      "squash": 0.3,
+      "palette": {
+        "wood": "#a9763f",
+        "woodHi": "#c6924f",
+        "woodDark": "#7a5329",
+        "metal": "#b5713c",
+        "glass": "#d5e2e0"
+      },
+      "parts": [
+        { "prim": "cyl", "at": [-0.315, 0.35, -0.22], "size": [0.035, 0.7, 0.035], "color": "woodDark" },
+        { "prim": "cyl", "at": [0.315, 0.35, -0.22], "size": [0.035, 0.7, 0.035], "color": "woodDark" },
+        { "prim": "cyl", "at": [-0.315, 0.35, 0.22], "size": [0.035, 0.7, 0.035], "color": "woodDark" },
+        { "prim": "cyl", "at": [0.315, 0.35, 0.22], "size": [0.035, 0.7, 0.035], "color": "woodDark" },
+        { "prim": "box", "at": [0, 0.74, 0], "size": [0.762, 0.08, 0.56], "color": "wood" },
+        { "prim": "box", "at": [0, 0.6, 0.26], "size": [0.559, 0.14, 0.04], "color": "woodHi" },
+        { "prim": "cyl", "at": [0, 0.6, 0.29], "rot": [90, 0, 0], "size": [0.03, 0.05, 0.03], "color": "metal" },
+        { "prim": "cyl", "at": [-0.254, 1.02, -0.16], "size": [0.025, 0.5, 0.025], "color": "wood" },
+        { "prim": "cyl", "at": [0.254, 1.02, -0.16], "size": [0.025, 0.5, 0.025], "color": "wood" },
+        { "prim": "cyl", "at": [0, 1.2, -0.16], "rot": [90, 0, 0], "size": [0.254, 0.05, 0.254], "color": "woodHi" },
+        { "prim": "cyl", "at": [0, 1.2, -0.12], "rot": [90, 0, 0], "size": [0.213, 0.02, 0.213], "color": "glass" }
+      ]
+    },
+    "kititem.vanity-mirror": {
+      "kind": "item",
+      "label": "Coppervale Vanity Mirror",
+      "value": 815,
+      "stack": 1,
+      "swatch": "#b3876b",
+      "badge": "crate",
+      "furniture": "fixture.vanity-mirror",
+      "palette": {
+        "wrap": "#d9c7a4",
+        "wrapHi": "#eee1c7",
+        "strap": "#8a6242",
+        "mark": "#b3876b"
+      }
+    }
+  }
+}

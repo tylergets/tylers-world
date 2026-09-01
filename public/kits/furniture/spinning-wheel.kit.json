@@ -1,0 +1,54 @@
+{
+  "format": "tw.kit",
+  "version": 1,
+  "meta": {
+    "id": "turnip.spinning-wheel",
+    "name": "Beechbark Spinning Wheel"
+  },
+  "types": {
+    "fixture.spinning-wheel": {
+      "kind": "object",
+      "label": "Beechbark Spinning Wheel",
+      "footprint": { "w": 1, "d": 2 },
+      "height": 1.02,
+      "squash": 0.34,
+      "palette": {
+        "wood": "#c08b55",
+        "woodHi": "#d8a870",
+        "woodDark": "#8a6242",
+        "clothHi": "#eee1c7"
+      },
+      "parts": [
+        { "prim": "box", "at": [0, 0.06, 0], "size": [0.9, 0.12, 0.36], "color": "wood" },
+        { "prim": "cyl", "at": [-0.34, 0.04, 0.16], "size": [0.03, 0.08, 0.03], "color": "woodDark" },
+        { "prim": "cyl", "at": [0.34, 0.04, 0.16], "size": [0.03, 0.08, 0.03], "color": "woodDark" },
+        { "prim": "cyl", "at": [-0.2, 0.544, 0], "size": [0.032, 0.936, 0.032], "color": "wood" },
+        { "prim": "cyl", "at": [-0.28, 0.599, 0], "rot": [0, 0, 90], "size": [0.36, 0.05, 0.36], "color": "woodHi" },
+        { "prim": "box", "at": [-0.28, 0.599, 0], "size": [0.05, 0.68, 0.03], "color": "wood" },
+        { "prim": "box", "at": [-0.28, 0.599, 0], "rot": [30, 0, 0], "size": [0.05, 0.68, 0.03], "color": "wood" },
+        { "prim": "box", "at": [-0.28, 0.599, 0], "rot": [60, 0, 0], "size": [0.05, 0.68, 0.03], "color": "wood" },
+        { "prim": "box", "at": [-0.28, 0.599, 0], "rot": [90, 0, 0], "size": [0.05, 0.68, 0.03], "color": "wood" },
+        { "prim": "box", "at": [-0.28, 0.599, 0], "rot": [120, 0, 0], "size": [0.05, 0.68, 0.03], "color": "wood" },
+        { "prim": "box", "at": [-0.28, 0.599, 0], "rot": [150, 0, 0], "size": [0.05, 0.68, 0.03], "color": "wood" },
+        { "prim": "cyl", "at": [0.3, 0.675, 0], "size": [0.026, 0.653, 0.026], "color": "wood" },
+        { "prim": "cyl", "at": [0.3, 0.936, 0], "rot": [0, 0, 90], "size": [0.1, 0.08, 0.1], "color": "clothHi" },
+        { "prim": "cyl", "at": [0.06, 0.24, 0.1], "rot": [0, 0, 62], "size": [0.02, 0.34, 0.02], "color": "woodDark" }
+      ]
+    },
+    "kititem.spinning-wheel": {
+      "kind": "item",
+      "label": "Beechbark Spinning Wheel",
+      "value": 740,
+      "stack": 1,
+      "swatch": "#b58447",
+      "badge": "stove",
+      "furniture": "fixture.spinning-wheel",
+      "palette": {
+        "wrap": "#d9c7a4",
+        "wrapHi": "#eee1c7",
+        "strap": "#8a6242",
+        "mark": "#b58447"
+      }
+    }
+  }
+}

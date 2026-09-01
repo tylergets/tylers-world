@@ -21,6 +21,63 @@
 
 import { Draft } from './draft.js';
 
+const HOUSE_PRICE = { 2: 1800, 3: 3600 };
+
+/** Place a recipe-specific housewright on the proven-open approach to the home. */
+function addHousewright(d, home, { id, name, title, voice, flavor }) {
+  const candidates = [
+    [home[0] + 2, home[1] + 3], [home[0], home[1] + 3],
+    [home[0] + 3, home[1] + 3], [home[0] + 2, home[1] + 4],
+  ];
+  const tile = candidates.find(([x, z]) => d.free(x, z, 1, 1, ['g', 'c', 's']));
+  if (!tile) throw new Error(`${id}: no open tile beside the player home`);
+
+  d.person({
+    id, type: 'folk.villager', tile, facing: 'north',
+    props: { name, title, voice },
+    dialog: {
+      start: 'hello',
+      nodes: {
+        hello: { text: flavor, then: 'menu' },
+        menu: {
+          text: 'The footprint stays exactly where it is. We build upward, and every new floor is yours to use.',
+          choices: [
+            {
+              text: `Add a second story — ${HOUSE_PRICE[2]} coin.`,
+              when: { houseStories: 1, coins: HOUSE_PRICE[2] },
+              do: [{ coins: -HOUSE_PRICE[2] }, { houseStories: 2 }],
+              to: 'second',
+            },
+            {
+              text: `I need ${HOUSE_PRICE[2]} coin for the second story.`,
+              when: { all: [{ houseStories: 1 }, { not: { coins: HOUSE_PRICE[2] } }] },
+              to: 'short',
+            },
+            {
+              text: `Add a third story — ${HOUSE_PRICE[3]} coin.`,
+              when: { houseStories: 2, coins: HOUSE_PRICE[3] },
+              do: [{ coins: -HOUSE_PRICE[3] }, { houseStories: 3 }],
+              to: 'third',
+            },
+            {
+              text: `I need ${HOUSE_PRICE[3]} coin for the third story.`,
+              when: { all: [{ houseStories: 2 }, { not: { coins: HOUSE_PRICE[3] } }] },
+              to: 'short',
+            },
+            { text: 'Is the house finished?', when: { houseStories: 3 }, to: 'complete' },
+            { text: 'Not today.', to: 'endline' },
+          ],
+        },
+        second: { text: 'Two stories, sound and square. The new stair is ready inside.', then: 'end' },
+        third: { text: 'Three stories. Roof raised, chimney drawn, top floor ready. That house is complete.', then: 'end' },
+        complete: { text: 'Complete at three stories. Any higher and it stops being a house and starts arguing with the weather.', then: 'end' },
+        short: { text: 'Keep the plan. Come back when the purse is ready; the ground will not move.', then: 'end' },
+        endline: { text: 'No harm done. A measured house waits better than people do.', then: 'end' },
+      },
+    },
+  });
+}
+
 // ===========================================================================
 // MEADOWBROOK -- an island
 // ===========================================================================
@@ -93,7 +150,7 @@ export function meadowbrook({
   const lookout = d.placeNear('gate.north', 'building.gate', cx - 4, cz - 16, ['c', 'g'], 8,
     { label: 'Meadowbrook Lookout' }, '1');
   const home = d.placeNear('home.player', 'building.home', cx - 10, cz + 4, ['g'], 10,
-    { label: "Tyler's House", interior: 'worlds/interiors/home-tyler.json' }, '0');
+    { label: "Tyler's House", interior: 'worlds/interiors/home-tyler.json', playerHome: true }, '0');
   const store = d.placeNear('store.nook', 'building.store', cx + 8, cz + 3, ['g'], 10,
     { label: 'General Store', interior: 'worlds/interiors/store-nook.json' }, '0');
   const furniture = d.placeNear('store.furniture', 'building.furniture', cx + 15, cz + 3, ['g'], 12,
@@ -121,6 +178,11 @@ export function meadowbrook({
   d.pathL(cabin[0] + 2, cabin[1] + 3, cx + 1, cz + 20, { level: '0' });
   d.pathL(bungalow[0] + 2, bungalow[1] + 3, cx + 11, cz + 12, { level: '0' });
   d.pathL(lookout[0] + 2, lookout[1] + 2, cx - 1, cz - 13, { level: '1' });
+  addHousewright(d, home, {
+    id: 'folk.renna', name: 'Renna', title: 'Meadowbrook Housewright',
+    voice: { pitch: 1.08, rate: 23, timbre: 'triangle' },
+    flavor: 'Renna. I set rafters by the wind off the meadow. Your foundations will carry two floors more without stealing another inch of garden.',
+  });
 
   // The people, standing on their own doorsteps -- the tile directly south of
   // the door, which is the one tile outside every house that placement has
@@ -139,17 +201,24 @@ export function meadowbrook({
       roam: 6,
       voice: { pitch: 0.84, rate: 20, timbre: 'sawtooth' },
     },
+    schedule: [
+      { at: 6, tile: [cx + 1, cz + 12], facing: 'west', activity: 'Watching the square' },
+      { at: 12, tile: [cx - 1, cz + 11], facing: 'south', activity: 'Taking the long way nowhere' },
+      { at: 20, tile: [cx + 1, cz + 12], facing: 'north', activity: 'Gone quiet', available: false },
+    ],
     dialog: {
       start: 'open',
       nodes: {
         open: {
           branch: [
+            { when: { time: { from: 5, to: 9 } }, to: 'early' },
             { when: { visits: 9 }, to: 'ninth' },
             { when: { flag: 'gave' }, to: 'after' },
             { when: { visits: 3 }, to: 'third' },
             { to: 'hello' },
           ],
         },
+        early: { text: 'You are up early. I would say I was too, but I have not been to bed yet.', then: 'menu' },
         hello: {
           text: [
             'Morning. Chickens been at the flowerbed again. Third time this week, and it is Tuesday.',
@@ -261,13 +330,24 @@ export function meadowbrook({
       roam: 6,
       voice: { pitch: 0.78, rate: 20, timbre: 'triangle' },
     },
+    schedule: [
+      { at: 6, tile: [cottage[0] + 1, cottage[1] + 3], facing: 'south', activity: 'Tending the beds' },
+      { at: 13, tile: [cx - 10, cz + 12], facing: 'east', activity: 'Checking the roadside soil' },
+      { at: 20, tile: [cottage[0] + 1, cottage[1] + 3], facing: 'north', activity: 'Inside for the night', available: false },
+    ],
+    errands: [
+      { id: 'shade-crop', title: 'Gather mushrooms', objective: { kind: 'gather', item: 'item.mushroom', count: 3 }, reward: { coins: 45, relationship: 18 } },
+      { id: 'winter-bundle', title: 'Dry flowers', objective: { kind: 'process', fixture: 'fixture.dryrack', count: 1 }, reward: { coins: 30, relationship: 12 } },
+    ],
     dialog: {
       start: 'open',
       nodes: {
         open: {
           branch: [
+            { when: { errand: { id: 'shade-crop', status: 'ready' } }, to: 'mushrooms.done' },
+            { when: { errand: { id: 'winter-bundle', status: 'ready' } }, to: 'drying.done' },
             {
-              when: { all: [{ friend: true }, { visits: 7 }] },
+              when: { relationship: { atLeast: 'friend' } },
               to: 'regular',
             },
             { when: { friend: true }, to: 'welcome' },
@@ -296,6 +376,8 @@ export function meadowbrook({
         menu: {
           text: 'Something you wanted?',
           choices: [
+            { text: 'Need anything gathered?', when: { errand: { id: 'shade-crop', status: 'available' } }, to: 'mushrooms.offer' },
+            { text: 'Any work at the drying rack?', when: { errand: { id: 'winter-bundle', status: 'available' } }, to: 'drying.offer' },
             {
               text: 'Anything growing worth having?',
               when: { room: { type: 'item.mushroom', count: 2 } },
@@ -321,6 +403,10 @@ export function meadowbrook({
             { text: 'Just passing.', to: 'bye' },
           ],
         },
+        'mushrooms.offer': { text: 'Three mushrooms from the wild shade. Picked by you, not borrowed from my trays.', do: { errand: { id: 'shade-crop', action: 'accept' } }, then: 'menu' },
+        'mushrooms.done': { text: 'Those are the ones. Good caps, clean stems. You have an eye for the damp places.', do: { errand: { id: 'shade-crop', action: 'complete' } }, then: 'menu' },
+        'drying.offer': { text: 'Take two flowers to my rack indoors and turn them into one dry bundle. The rack will show you.', do: { errand: { id: 'winter-bundle', action: 'accept' } }, then: 'menu' },
+        'drying.done': { text: 'A proper dry bundle. That will hold its colour through winter.', do: { errand: { id: 'winter-bundle', action: 'complete' } }, then: 'menu' },
         gift: {
           text: 'Take these. Came up under the pines after the rain, and the rain did all the work.',
           do: [{ give: { type: 'item.mushroom', count: 2 } }],
@@ -379,11 +465,20 @@ export function meadowbrook({
       roam: 7,
       voice: { pitch: 1.28, rate: 32, timbre: 'square' },
     },
+    schedule: [
+      { at: 5, tile: [cabin[0] + 2, cabin[1] + 3], facing: 'south', activity: 'Reading the tide' },
+      { at: 11, tile: [cx + 1, cz + 20], facing: 'west', activity: 'Working the shallows' },
+      { at: 19, tile: [cabin[0] + 2, cabin[1] + 3], facing: 'north', activity: 'Mending gear', available: false },
+    ],
+    errands: [
+      { id: 'pond-supper', title: 'Catch trout', objective: { kind: 'fish', item: 'item.trout', count: 2 }, reward: { coins: 80, relationship: 22 } },
+    ],
     dialog: {
       start: 'open',
       nodes: {
         open: {
           branch: [
+            { when: { errand: { id: 'pond-supper', status: 'ready' } }, to: 'trout.done' },
             {
               when: { all: [{ friend: true }, { flag: 'boat' }] },
               to: 'boatagain',
@@ -411,6 +506,7 @@ export function meadowbrook({
         menu: {
           text: 'Well?',
           choices: [
+            { text: 'Need anything from the water?', when: { errand: { id: 'pond-supper', status: 'available' } }, to: 'trout.offer' },
             {
               text: 'Found any shells?',
               when: { room: { type: 'item.shell', count: 1 } },
@@ -432,6 +528,8 @@ export function meadowbrook({
             { text: "I'll leave you to it.", to: 'bye' },
           ],
         },
+        'trout.offer': { text: 'Two trout, caught on your line. Not bought and not found on a floor. Bring me the story; keep the fish.', do: { errand: { id: 'pond-supper', action: 'accept' } }, then: 'menu' },
+        'trout.done': { text: 'Two clean catches. You listened to the water instead of fighting it. That is rarer than trout.', do: { errand: { id: 'pond-supper', action: 'complete' } }, then: 'menu' },
         gift: {
           text: "Here. I've a bucket of them and one pair of hands. Don't thank me.",
           do: [{ give: { type: 'item.shell', count: 1 } }],
@@ -487,11 +585,20 @@ export function meadowbrook({
       roam: 5,
       voice: { pitch: 0.94, rate: 16, timbre: 'sawtooth' },
     },
+    schedule: [
+      { at: 7, tile: [bungalow[0] + 2, bungalow[1] + 3], facing: 'south', activity: 'Sorting repairs' },
+      { at: 14, tile: [cx + 11, cz + 12], facing: 'west', activity: 'Looking for straight timber' },
+      { at: 21, tile: [bungalow[0] + 2, bungalow[1] + 3], facing: 'north', activity: 'Workshop closed', available: false },
+    ],
+    errands: [
+      { id: 'clearfall', title: 'Fell trees', objective: { kind: 'change', change: 'fell', category: 'tree', count: 2 }, reward: { item: { type: 'furnitem.crate', count: 1 }, relationship: 20 } },
+    ],
     dialog: {
       start: 'open',
       nodes: {
         open: {
           branch: [
+            { when: { errand: { id: 'clearfall', status: 'ready' } }, to: 'timber.done' },
             {
               when: { all: [{ friend: true }, { flag: 'orrery' }] },
               to: 'orreryagain',
@@ -522,6 +629,7 @@ export function meadowbrook({
         menu: {
           text: 'Was there something?',
           choices: [
+            { text: 'Need timber work done?', when: { errand: { id: 'clearfall', status: 'available' } }, to: 'timber.offer' },
             {
               text: 'Could you use a few sticks?',
               when: { has: { type: 'item.stick', count: 2 } },
@@ -555,6 +663,8 @@ export function meadowbrook({
             { text: 'Nothing. Sorry.', to: 'bye' },
           ],
         },
+        'timber.offer': { text: 'Fell two trees anywhere they need clearing. I need the work measured, not the wood; keep what drops.', do: { errand: { id: 'clearfall', action: 'accept' } }, then: 'menu' },
+        'timber.done': { text: 'Two trees down and room left where they stood. Take this crate flat-pack. A room should be allowed to change its mind.', do: { errand: { id: 'clearfall', action: 'complete' } }, then: 'menu' },
         trade: {
           text: "I could. Ash, is it. Yes. Here's for your trouble.",
           do: [{ take: { type: 'item.stick', count: 2 } }, { coins: 18 }],
@@ -766,7 +876,7 @@ export function sourwood({
   const gate = d.placeNear('gate.mouth', 'building.gate', Math.round(creek(sites.gate)) + 2, sites.gate, ['c', 'g'], 10,
     { label: 'Sourwood Holler' }, '0');
   const home = d.placeNear('home.holler', 'building.home', Math.round(creek(sites.home)) - 8, sites.home, ['g'], 11,
-    { label: 'The Old Place', interior: 'worlds/interiors/home-holler.json' }, '0');
+    { label: 'The Old Place', interior: 'worlds/interiors/home-holler.json', playerHome: true }, '0');
   const store = d.placeNear('store.branch', 'building.store', Math.round(creek(sites.store)) + 6, sites.store, ['g'], 11,
     { label: 'Branch Store', interior: 'worlds/interiors/store-branch.json' }, '0');
   const furniture = d.placeNear('store.furniture', 'building.furniture', store[0] + 7, store[1], ['g'], 12,
@@ -778,6 +888,11 @@ export function sourwood({
   d.pathL(store[0] + 2, store[1] + 4, Math.round(creek(store[1] + 5)) + 4, store[1] + 5, { level: '0' });
   d.pathL(furniture[0] + 2, furniture[1] + 4, Math.round(creek(furniture[1] + 5)) + 4, furniture[1] + 5, { level: '0' });
   d.pathL(gate[0] + 2, gate[1] + 2, Math.round(creek(gate[1] + 3)) + 4, gate[1] + 3, { level: '0' });
+  addHousewright(d, home, {
+    id: 'folk.eldra', name: 'Eldra', title: 'Holler Carpenter',
+    voice: { pitch: 0.82, rate: 19, timbre: 'sawtooth' },
+    flavor: 'Eldra. Old holler timber talks before it breaks. Yours says the stone is deep and the house can climb without spreading into the creek.',
+  });
 
   const counts = {
     boulder: d.scatter('boulder', 'rock.large', 18, ['g', 's'], 4200, '0'),
@@ -926,7 +1041,7 @@ export function tidewrack({
   const landing = d.placeNear('gate.landing', 'building.gate', cx, cz + out(0.78), ['s', 'g'], 8,
     { label: 'Tidewrack Landing' }, '0');
   const home = d.placeNear('home.player', 'building.home', cx - 6, cz + out(0.54), ['g'], 10,
-    { label: "Tyler's House", interior: 'worlds/interiors/home-tyler.json' }, '0');
+    { label: "Tyler's House", interior: 'worlds/interiors/home-tyler.json', playerHome: true }, '0');
   const store = d.placeNear('store.driftwood', 'building.store', cx + out(0.54), cz + 2, ['g'], 10,
     { label: 'Driftwood Stores', interior: 'worlds/interiors/store-driftwood.json' }, '0');
   const furniture = d.placeNear('store.furniture', 'building.furniture', store[0] + 7, store[1], ['g'], 12,
@@ -942,6 +1057,11 @@ export function tidewrack({
   d.pathL(cottage[0] + 1, cottage[1] + 3, cx - out(0.5), cz + 3, { level: '0' });
   d.pathL(landing[0] + 2, landing[1] + 2, cx, cz + out(0.6), { level: '0' });
   d.pathL(lookout[0] + 2, lookout[1] + 2, cx - 1, cz + dune[1] + 2, { level: '1' });
+  addHousewright(d, home, {
+    id: 'folk.calder', name: 'Calder', title: 'Storm-frame Builder',
+    voice: { pitch: 0.96, rate: 25, timbre: 'square' },
+    flavor: 'Calder. Salt tests every joint for free. I can raise your house in the same footprint and brace each new floor against a Tidewrack gale.',
+  });
 
   // THE PEOPLE. Three of them, one per arm of the ring, and none of them
   // visible from either of the others -- which on a map with a lake in the
@@ -1417,7 +1537,7 @@ export function thistledown({
   const south = d.placeNear('gate.south', 'building.gate', road - 3, sites.south, ['c', 'g'], 10,
     { label: 'The Low Road' }, '0');
   const home = d.placeNear('home.player', 'building.home', road - 9, sites.home, ['g'], 11,
-    { label: "Tyler's House", interior: 'worlds/interiors/home-tyler.json' }, '0');
+    { label: "Tyler's House", interior: 'worlds/interiors/home-tyler.json', playerHome: true }, '0');
   const store = d.placeNear('store.wether', 'building.store', road + 4, sites.store, ['g'], 11,
     { label: 'The Wether', interior: 'worlds/interiors/store-wether.json' }, '0');
   const furniture = d.placeNear('store.furniture', 'building.furniture', store[0] + 7, store[1], ['g'], 12,
@@ -1431,6 +1551,11 @@ export function thistledown({
   d.pathL(croft[0] + 1, croft[1] + 3, road, croft[1] + 4, { level: '0' });
   d.pathL(north[0] + 2, north[1] + 2, road, north[1] + 3, { level: '0' });
   d.pathL(south[0] + 2, south[1] + 2, road, south[1] + 3, { level: '0' });
+  addHousewright(d, home, {
+    id: 'folk.moss', name: 'Moss', title: 'Pass Mason',
+    voice: { pitch: 1.16, rate: 20, timbre: 'triangle' },
+    flavor: 'Moss. The pass has taught me to build narrow and high. Your walls are plumb; I can give them another floor or two without widening the path.',
+  });
 
   // THE PEOPLE. Three, spread the length of the road, and one of them
   // deliberately at the top of a trail: a bench you have climbed for the view
@@ -1910,7 +2035,7 @@ export function rimrock({
   const lip = d.placeNear('gate.lip', 'building.gate', cx - 2, cz + 22, ['c', 'g', 's'], 8,
     { label: 'The Long Look' }, '0');
   const home = d.placeNear('home.player', 'building.home', cx - 12, cz + 1, ['g'], 11,
-    { label: "Tyler's House", interior: 'worlds/interiors/home-tyler.json' }, '0');
+    { label: "Tyler's House", interior: 'worlds/interiors/home-tyler.json', playerHome: true }, '0');
   const store = d.placeNear('store.slickrock', 'building.store', cx + 9, cz + 2, ['g', 's'], 11,
     { label: 'Slickrock Post', interior: 'worlds/interiors/store-slickrock.json' }, '0');
   const furniture = d.placeNear('store.furniture', 'building.furniture', store[0] + 7, store[1], ['g', 's'], 12,
@@ -1924,6 +2049,11 @@ export function rimrock({
   d.pathL(cottage[0] + 1, cottage[1] + 3, cx - 1, cz + 12, { level: '0' });
   d.pathL(head[0] + 2, head[1] + 2, cx - 1, cz - 13, { level: '1' });
   d.pathL(lip[0] + 2, lip[1] + 2, cx - 1, cz + 21, { level: '0' });
+  addHousewright(d, home, {
+    id: 'folk.iona', name: 'Iona', title: 'Mesa Framer',
+    voice: { pitch: 0.9, rate: 27, timbre: 'sawtooth' },
+    flavor: 'Iona. Out here a roof has nowhere to hide. I can lift yours one story at a time, keep the footprint, and pin the frame hard to the rimrock.',
+  });
 
   // THE PEOPLE. Three, and every one of them is somewhere with a view, because
   // on a mesa that is the only geography there is: no valley to be up or down
@@ -2328,7 +2458,7 @@ export function ashkettle({
    */
   const [hx, hz] = at(...sites.home);
   const home = d.placeNear('home.player', 'building.home', hx - 1, hz, ['g', 'c'], 11,
-    { label: "Tyler's House", interior: 'worlds/interiors/home-tyler.json' }, '0');
+    { label: "Tyler's House", interior: 'worlds/interiors/home-tyler.json', playerHome: true }, '0');
   const [sx, sz] = at(...sites.store);
   const store = d.placeNear('store.cinder', 'building.store', sx - 2, sz, ['g', 'c'], 11,
     { label: 'The Cinder Shop', interior: 'worlds/interiors/store-cinder.json' }, '0');
@@ -2348,6 +2478,11 @@ export function ashkettle({
   toRing([furniture[0] + 2, furniture[1]], 4);
   toRing([cottage[0] + 1, cottage[1]], 3);
   toRing([quay[0] + 2, quay[1]], 2);
+  addHousewright(d, home, {
+    id: 'folk.brin', name: 'Brin', title: 'Caldera Joiner',
+    voice: { pitch: 1.03, rate: 22, timbre: 'square' },
+    flavor: 'Brin. Ash dries timber mean and straight. Your house can rise twice over on its own floor plan, with joints cut for the kettle winds.',
+  });
 
   // THE PEOPLE. One on the floor, one at the water, one up on a terrace -- the
   // three heights the place has, which is the only way a bowl can spread
@@ -2728,7 +2863,7 @@ export function sedgewater({
     { label: 'Sedgewater Staithe' }, '1');
   const [hx, hz] = at(sites.home, 0.42);
   const home = d.placeNear('home.player', 'building.home', hx - 1, hz, ['g'], 12,
-    { label: "Tyler's House", interior: 'worlds/interiors/home-tyler.json' }, '0');
+    { label: "Tyler's House", interior: 'worlds/interiors/home-tyler.json', playerHome: true }, '0');
   const [sx, sz] = at(sites.store, 0.44);
   const store = d.placeNear('store.staithe', 'building.store', sx - 2, sz, ['g'], 12,
     { label: 'The Staithe', interior: 'worlds/interiors/store-staithe.json' }, '0');
@@ -2752,6 +2887,11 @@ export function sedgewater({
   toWalk([furniture[0] + 2, furniture[1]], 4, sites.store, 0.50);
   toWalk([cottage[0] + 1, cottage[1]], 3, sites.cottage, 0.50);
   d.pathL(staithe[0] + 2, staithe[1] + 2, cx - 1, cz + toft[1] + 2, { level: '1' });
+  addHousewright(d, home, {
+    id: 'folk.fenna', name: 'Fenna', title: 'Fen Pilewright',
+    voice: { pitch: 1.2, rate: 24, timbre: 'triangle' },
+    flavor: 'Fenna. In Sedgewater we trust the piles and spare the reeds. Yours will bear two more levels directly upward, no wider than it stands today.',
+  });
 
   // THE PEOPLE. One on the toft, because it is the only place you can see the
   // shape of a fen from; one at the far end of a boardwalk; one at home.
@@ -3109,7 +3249,7 @@ export function bellrock({
   const down = d.placeNear('gate.down', 'building.gate', road - 4, row(sites.down), ['g'], 10,
     { label: 'The Bellrock Down' }, '3');
   const home = d.placeNear('home.player', 'building.home', road - 12, townRow(sites.home), ['g'], 12,
-    { label: "Tyler's House", interior: 'worlds/interiors/home-tyler.json' }, '0');
+    { label: "Tyler's House", interior: 'worlds/interiors/home-tyler.json', playerHome: true }, '0');
   const store = d.placeNear('store.capstan', 'building.store', road + 6, townRow(sites.store), ['g'], 12,
     { label: 'The Capstan', interior: 'worlds/interiors/store-capstan.json' }, '0');
   const furniture = d.placeNear('store.furniture', 'building.furniture', store[0] + 7, store[1], ['g'], 12,
@@ -3122,6 +3262,11 @@ export function bellrock({
   d.pathL(furniture[0] + 2, furniture[1] + 4, road + 8, roadZ, { level: '0' });
   d.pathL(cottage[0] + 1, cottage[1] + 3, road + 12, roadZ, { level: '0' });
   d.pathL(quay[0] + 2, quay[1] + 2, road, quay[1] + 3, { level: '0' });
+  addHousewright(d, home, {
+    id: 'folk.ors', name: 'Ors', title: 'Downland Builder',
+    voice: { pitch: 0.76, rate: 21, timbre: 'square' },
+    flavor: 'Ors. Bellrock bells tell me which way a frame is leaning. Yours is honest. I can stack two useful floors above it and leave every outside tile alone.',
+  });
 
   // THE PEOPLE. One at the quay with the sea behind him, one up on the top
   // bench with the land behind her, and one in the middle who has to look at

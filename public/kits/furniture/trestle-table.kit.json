@@ -1,0 +1,46 @@
+{
+  "format": "tw.kit",
+  "version": 1,
+  "meta": {
+    "id": "turnip.trestle-table",
+    "name": "Coppervale Trestle Table"
+  },
+  "types": {
+    "fixture.trestle-table": {
+      "kind": "object",
+      "label": "Coppervale Trestle Table",
+      "footprint": { "w": 2, "d": 2 },
+      "height": 0.88,
+      "squash": 0.34,
+      "palette": {
+        "wood": "#a9763f",
+        "woodHi": "#c6924f",
+        "woodDark": "#7a5329"
+      },
+      "parts": [
+        { "prim": "box", "at": [-0.548, 0.378, 0], "size": [0.12, 0.696, 1.069], "color": "wood" },
+        { "prim": "box", "at": [-0.548, 0.05, 0], "size": [0.22, 0.1, 1.483], "color": "woodDark" },
+        { "prim": "box", "at": [0.548, 0.378, 0], "size": [0.12, 0.696, 1.069], "color": "wood" },
+        { "prim": "box", "at": [0.548, 0.05, 0], "size": [0.22, 0.1, 1.483], "color": "woodDark" },
+        { "prim": "box", "at": [0, 0.317, 0], "size": [0.976, 0.09, 0.09], "color": "woodDark" },
+        { "prim": "box", "at": [0, 0.806, 0], "size": [1.536, 0.1, 1.724], "color": "wood" },
+        { "prim": "box", "at": [0, 0.861, 0], "size": [1.416, 0.02, 1.604], "color": "woodHi" }
+      ]
+    },
+    "kititem.trestle-table": {
+      "kind": "item",
+      "label": "Coppervale Trestle Table",
+      "value": 455,
+      "stack": 1,
+      "swatch": "#c67741",
+      "badge": "table",
+      "furniture": "fixture.trestle-table",
+      "palette": {
+        "wrap": "#d9c7a4",
+        "wrapHi": "#eee1c7",
+        "strap": "#8a6242",
+        "mark": "#c67741"
+      }
+    }
+  }
+}

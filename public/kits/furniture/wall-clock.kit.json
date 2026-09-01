@@ -1,0 +1,48 @@
+{
+  "format": "tw.kit",
+  "version": 1,
+  "meta": {
+    "id": "turnip.wall-clock",
+    "name": "Hollowmilk Wall Clock"
+  },
+  "types": {
+    "fixture.wall-clock": {
+      "kind": "object",
+      "label": "Hollowmilk Wall Clock",
+      "footprint": { "w": 1, "d": 1 },
+      "height": 1.46,
+      "squash": 0.3,
+      "palette": {
+        "wood": "#f2ece0",
+        "woodDark": "#cfc7b6",
+        "pale": "#ffffff",
+        "dark": "#7e7768",
+        "metal": "#b6bcc1"
+      },
+      "parts": [
+        { "prim": "box", "at": [0, 0.05, 0], "size": [0.34, 0.1, 0.24], "color": "woodDark" },
+        { "prim": "cyl", "at": [0, 0.657, 0], "size": [0.03, 1.251, 0.03], "color": "metal" },
+        { "prim": "cyl", "at": [0, 1.345, 0], "rot": [90, 0, 0], "size": [0.24, 0.09, 0.24], "color": "wood" },
+        { "prim": "cyl", "at": [0, 1.345, 0.05], "rot": [90, 0, 0], "size": [0.19, 0.02, 0.19], "color": "pale" },
+        { "prim": "box", "at": [0, 1.392, 0.07], "size": [0.02, 0.12, 0.012], "color": "dark" },
+        { "prim": "box", "at": [0.06, 1.345, 0.07], "size": [0.12, 0.02, 0.012], "color": "dark" },
+        { "prim": "cyl", "at": [0, 0.97, 0.02], "rot": [90, 0, 0], "size": [0.06, 0.02, 0.06], "color": "metal", "anim": { "bob": { "amp": 0.04, "rate": 1.1 } } }
+      ]
+    },
+    "kititem.wall-clock": {
+      "kind": "item",
+      "label": "Hollowmilk Wall Clock",
+      "value": 505,
+      "stack": 1,
+      "swatch": "#748185",
+      "badge": "crate",
+      "furniture": "fixture.wall-clock",
+      "palette": {
+        "wrap": "#d9c7a4",
+        "wrapHi": "#eee1c7",
+        "strap": "#8a6242",
+        "mark": "#748185"
+      }
+    }
+  }
+}

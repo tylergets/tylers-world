@@ -1,0 +1,48 @@
+{
+  "format": "tw.kit",
+  "version": 1,
+  "meta": {
+    "id": "turnip.shoe-rack",
+    "name": "Meadowash Shoe Rack"
+  },
+  "types": {
+    "fixture.shoe-rack": {
+      "kind": "object",
+      "label": "Meadowash Shoe Rack",
+      "footprint": { "w": 1, "d": 1 },
+      "height": 0.63,
+      "squash": 0.34,
+      "palette": {
+        "wood": "#d6cdb6",
+        "woodHi": "#e9e2ce",
+        "dark": "#5f6350",
+        "accent": "#6f9c5a"
+      },
+      "parts": [
+        { "prim": "box", "at": [-0.34, 0.287, 0], "size": [0.05, 0.575, 0.42], "color": "wood" },
+        { "prim": "box", "at": [0.34, 0.287, 0], "size": [0.05, 0.575, 0.42], "color": "wood" },
+        { "prim": "box", "at": [0, 0.115, 0], "rot": [-16, 0, 0], "size": [0.66, 0.04, 0.3], "color": "woodHi" },
+        { "prim": "box", "at": [0, 0.287, 0], "rot": [-16, 0, 0], "size": [0.66, 0.04, 0.3], "color": "woodHi" },
+        { "prim": "box", "at": [0, 0.46, 0], "rot": [-16, 0, 0], "size": [0.66, 0.04, 0.3], "color": "woodHi" },
+        { "prim": "box", "at": [0, 0.605, 0], "size": [0.74, 0.05, 0.46], "color": "woodHi" },
+        { "prim": "blob", "at": [-0.16, 0.161, 0.04], "size": [0.11, 0.05, 0.06], "color": "accent" },
+        { "prim": "blob", "at": [0.16, 0.161, 0.04], "size": [0.11, 0.05, 0.06], "color": "dark" }
+      ]
+    },
+    "kititem.shoe-rack": {
+      "kind": "item",
+      "label": "Meadowash Shoe Rack",
+      "value": 155,
+      "stack": 1,
+      "swatch": "#7f9560",
+      "badge": "shelf",
+      "furniture": "fixture.shoe-rack",
+      "palette": {
+        "wrap": "#d9c7a4",
+        "wrapHi": "#eee1c7",
+        "strap": "#8a6242",
+        "mark": "#7f9560"
+      }
+    }
+  }
+}

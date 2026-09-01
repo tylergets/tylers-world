@@ -1,0 +1,50 @@
+{
+  "format": "tw.kit",
+  "version": 1,
+  "meta": {
+    "id": "turnip.wardrobe",
+    "name": "Turnipwood Wardrobe"
+  },
+  "types": {
+    "fixture.wardrobe": {
+      "kind": "object",
+      "label": "Turnipwood Wardrobe",
+      "footprint": { "w": 2, "d": 1 },
+      "height": 2.12,
+      "squash": 0.34,
+      "palette": {
+        "wood": "#e8dcc4",
+        "woodHi": "#f6eeda",
+        "woodDark": "#c3b394",
+        "metal": "#b9a98d"
+      },
+      "parts": [
+        { "prim": "box", "at": [0, 0.06, 0], "size": [1.853, 0.12, 0.637], "color": "woodDark" },
+        { "prim": "box", "at": [0, 1.035, 0], "size": [1.813, 1.831, 0.597], "color": "wood" },
+        { "prim": "box", "at": [0, 1.991, 0], "size": [1.913, 0.08, 0.697], "color": "woodHi" },
+        { "prim": "box", "at": [0, 2.071, 0], "size": [1.833, 0.08, 0.617], "color": "wood" },
+        { "prim": "box", "at": [-0.453, 1.03, 0.308], "size": [0.816, 1.741, 0.04], "color": "woodHi" },
+        { "prim": "box", "at": [-0.453, 1.03, 0.328], "size": [0.676, 1.581, 0.02], "color": "wood" },
+        { "prim": "cyl", "at": [-0.143, 1.03, 0.348], "rot": [90, 0, 0], "size": [0.03, 0.05, 0.03], "color": "metal" },
+        { "prim": "box", "at": [0.453, 1.03, 0.308], "size": [0.816, 1.741, 0.04], "color": "woodHi" },
+        { "prim": "box", "at": [0.453, 1.03, 0.328], "size": [0.676, 1.581, 0.02], "color": "wood" },
+        { "prim": "cyl", "at": [0.143, 1.03, 0.348], "rot": [90, 0, 0], "size": [0.03, 0.05, 0.03], "color": "metal" }
+      ]
+    },
+    "kititem.wardrobe": {
+      "kind": "item",
+      "label": "Turnipwood Wardrobe",
+      "value": 1535,
+      "stack": 1,
+      "swatch": "#8c6a86",
+      "badge": "counter",
+      "furniture": "fixture.wardrobe",
+      "palette": {
+        "wrap": "#d9c7a4",
+        "wrapHi": "#eee1c7",
+        "strap": "#8a6242",
+        "mark": "#8c6a86"
+      }
+    }
+  }
+}

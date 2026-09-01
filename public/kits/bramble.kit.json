@@ -91,7 +91,13 @@
         { "prim": "cyl", "at": [0, 1.55, 1.10], "size": [0.012, 0.18, 0.012], "color": "twine" },
         { "prim": "taper", "at": [0, 1.28, 1.10], "size": [0.10, 0.40, 0.10], "rot": [180, 0, 0], "color": "bundle",
           "anim": { "bob": { "amp": 0.024, "rate": 0.33, "phase": 0.12 } } }
-      ]
+      ],
+      "state": { "bundles": 0 },
+      "interact": {
+        "label": "Dry two flowers",
+        "when": { "has": { "type": "item.flower", "count": 2 } },
+        "run": "bramble-dryrack.js"
+      }
     }
   }
 }

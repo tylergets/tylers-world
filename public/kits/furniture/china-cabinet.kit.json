@@ -1,0 +1,51 @@
+{
+  "format": "tw.kit",
+  "version": 1,
+  "meta": {
+    "id": "turnip.china-cabinet",
+    "name": "Hollowmilk China Cabinet"
+  },
+  "types": {
+    "fixture.china-cabinet": {
+      "kind": "object",
+      "label": "Hollowmilk China Cabinet",
+      "footprint": { "w": 2, "d": 1 },
+      "height": 1.99,
+      "squash": 0.34,
+      "palette": {
+        "wood": "#f2ece0",
+        "woodHi": "#fdfaf2",
+        "woodDark": "#cfc7b6",
+        "metal": "#b6bcc1",
+        "glass": "#dceaf4"
+      },
+      "parts": [
+        { "prim": "box", "at": [0, 0.06, 0], "size": [1.796, 0.12, 0.678], "color": "woodDark" },
+        { "prim": "box", "at": [0, 0.972, 0], "size": [1.756, 1.704, 0.638], "color": "wood" },
+        { "prim": "box", "at": [0, 1.864, 0], "size": [1.856, 0.08, 0.738], "color": "woodHi" },
+        { "prim": "box", "at": [0, 1.944, 0], "size": [1.776, 0.08, 0.658], "color": "wood" },
+        { "prim": "box", "at": [-0.439, 0.967, 0.329], "size": [0.788, 1.614, 0.04], "color": "woodHi" },
+        { "prim": "box", "at": [-0.439, 0.967, 0.349], "size": [0.668, 1.494, 0.02], "color": "glass" },
+        { "prim": "cyl", "at": [-0.14, 0.967, 0.369], "rot": [90, 0, 0], "size": [0.03, 0.05, 0.03], "color": "metal" },
+        { "prim": "box", "at": [0.439, 0.967, 0.329], "size": [0.788, 1.614, 0.04], "color": "woodHi" },
+        { "prim": "box", "at": [0.439, 0.967, 0.349], "size": [0.668, 1.494, 0.02], "color": "glass" },
+        { "prim": "cyl", "at": [0.14, 0.967, 0.369], "rot": [90, 0, 0], "size": [0.03, 0.05, 0.03], "color": "metal" }
+      ]
+    },
+    "kititem.china-cabinet": {
+      "kind": "item",
+      "label": "Hollowmilk China Cabinet",
+      "value": 1510,
+      "stack": 1,
+      "swatch": "#657086",
+      "badge": "counter",
+      "furniture": "fixture.china-cabinet",
+      "palette": {
+        "wrap": "#d9c7a4",
+        "wrapHi": "#eee1c7",
+        "strap": "#8a6242",
+        "mark": "#657086"
+      }
+    }
+  }
+}

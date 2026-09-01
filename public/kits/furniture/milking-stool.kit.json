@@ -1,0 +1,45 @@
+{
+  "format": "tw.kit",
+  "version": 1,
+  "meta": {
+    "id": "turnip.milking-stool",
+    "name": "Beechbark Milking Stool"
+  },
+  "types": {
+    "fixture.milking-stool": {
+      "kind": "object",
+      "label": "Beechbark Milking Stool",
+      "footprint": { "w": 1, "d": 1 },
+      "height": 0.49,
+      "squash": 0.34,
+      "palette": {
+        "wood": "#c08b55",
+        "woodHi": "#d8a870",
+        "woodDark": "#8a6242"
+      },
+      "parts": [
+        { "prim": "cyl", "at": [0.169, 0.191, 0], "rot": [0, 0, -8], "size": [0.032, 0.382, 0.032], "color": "woodDark" },
+        { "prim": "cyl", "at": [-0.085, 0.191, 0.146], "rot": [6.928, 0, 4], "size": [0.032, 0.382, 0.032], "color": "woodDark" },
+        { "prim": "cyl", "at": [-0.085, 0.191, -0.146], "rot": [-6.928, 0, 4], "size": [0.032, 0.382, 0.032], "color": "woodDark" },
+        { "prim": "cyl", "at": [0, 0.13, 0], "size": [0.16, 0.025, 0.16], "color": "woodDark" },
+        { "prim": "cyl", "at": [0, 0.422, 0], "size": [0.235, 0.08, 0.235], "color": "wood" },
+        { "prim": "cyl", "at": [0, 0.472, 0], "size": [0.202, 0.02, 0.202], "color": "woodHi" }
+      ]
+    },
+    "kititem.milking-stool": {
+      "kind": "item",
+      "label": "Beechbark Milking Stool",
+      "value": 60,
+      "stack": 1,
+      "swatch": "#c78e43",
+      "badge": "chair",
+      "furniture": "fixture.milking-stool",
+      "palette": {
+        "wrap": "#d9c7a4",
+        "wrapHi": "#eee1c7",
+        "strap": "#8a6242",
+        "mark": "#c78e43"
+      }
+    }
+  }
+}

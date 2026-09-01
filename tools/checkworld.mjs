@@ -87,6 +87,7 @@ const OBJ = {
   'tree.oak': 'T', 'tree.pine': 'Y', 'tree.palm': 'P', 'rock.small': 'o', 'rock.large': 'O',
   'furn.bed': 'b', 'furn.table': 't', 'furn.chair': 'c', 'furn.shelf': 's',
   'furn.counter': 'n', 'furn.stove': 'v', 'furn.plant': 'p', 'furn.crate': 'x',
+  'furn.stairs': 'u',
 
   // Kit fixtures. Here and not in the kit files because a glyph is a fact about
   // THIS tool's picture, not about the thing -- a kit that shipped its own ASCII
@@ -633,7 +634,7 @@ for (const { url, zone } of zoneOwners) {
 console.log(`
 legend: . grass/floor  " raised grass  + concrete  : sand  ~ water  , tile  = rug  # wall  / ramp  D doorway
         H home  C cottage  B cabin  U bungalow  S store  G gate  T/Y/P trees  o/O rocks
-        b bed  t table  c chair  s shelf  n counter  v stove  p plant  x crate
+        b bed  t table  c chair  s shelf  n counter  v stove  p plant  x crate  u stairs
         F cold frame  R drying rack  K skiff  J bait barrel  M orrery  L treadle bench
         N loom  A hearth  V cold hearth  X spyglass  Z chime  W fountain
         E sand sifter  I signal lamp  Q fire pit  0 eel trap  8 bell

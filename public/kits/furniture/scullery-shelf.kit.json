@@ -1,0 +1,51 @@
+{
+  "format": "tw.kit",
+  "version": 1,
+  "meta": {
+    "id": "turnip.scullery-shelf",
+    "name": "Sootpine Scullery Shelf"
+  },
+  "types": {
+    "fixture.scullery-shelf": {
+      "kind": "object",
+      "label": "Sootpine Scullery Shelf",
+      "footprint": { "w": 2, "d": 1 },
+      "height": 1.34,
+      "squash": 0.34,
+      "palette": {
+        "wood": "#4a4640",
+        "woodHi": "#656057",
+        "pale": "#dcd8cf"
+      },
+      "parts": [
+        { "prim": "box", "at": [-0.828, 0.624, 0], "size": [0.08, 1.249, 0.458], "color": "wood" },
+        { "prim": "box", "at": [0.828, 0.624, 0], "size": [0.08, 1.249, 0.458], "color": "wood" },
+        { "prim": "box", "at": [0, 0.1, 0], "size": [1.597, 0.055, 0.408], "color": "wood" },
+        { "prim": "box", "at": [0, 0.624, 0], "size": [1.597, 0.055, 0.408], "color": "wood" },
+        { "prim": "cyl", "at": [-0.447, 0.764, -0.11], "rot": [90, 0, 0], "size": [0.11, 0.025, 0.11], "color": "pale" },
+        { "prim": "cyl", "at": [0, 0.764, -0.11], "rot": [90, 0, 0], "size": [0.11, 0.025, 0.11], "color": "pale" },
+        { "prim": "cyl", "at": [0.447, 0.764, -0.11], "rot": [90, 0, 0], "size": [0.11, 0.025, 0.11], "color": "pale" },
+        { "prim": "box", "at": [0, 1.149, 0], "size": [1.597, 0.055, 0.408], "color": "wood" },
+        { "prim": "cyl", "at": [-0.447, 1.289, -0.11], "rot": [90, 0, 0], "size": [0.11, 0.025, 0.11], "color": "pale" },
+        { "prim": "cyl", "at": [0, 1.289, -0.11], "rot": [90, 0, 0], "size": [0.11, 0.025, 0.11], "color": "pale" },
+        { "prim": "cyl", "at": [0.447, 1.289, -0.11], "rot": [90, 0, 0], "size": [0.11, 0.025, 0.11], "color": "pale" },
+        { "prim": "box", "at": [0, 1.299, 0], "size": [1.797, 0.07, 0.508], "color": "woodHi" }
+      ]
+    },
+    "kititem.scullery-shelf": {
+      "kind": "item",
+      "label": "Sootpine Scullery Shelf",
+      "value": 340,
+      "stack": 1,
+      "swatch": "#b67143",
+      "badge": "shelf",
+      "furniture": "fixture.scullery-shelf",
+      "palette": {
+        "wrap": "#d9c7a4",
+        "wrapHi": "#eee1c7",
+        "strap": "#8a6242",
+        "mark": "#b67143"
+      }
+    }
+  }
+}

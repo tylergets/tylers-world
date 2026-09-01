@@ -1,0 +1,46 @@
+{
+  "format": "tw.kit",
+  "version": 1,
+  "meta": {
+    "id": "turnip.butchers-block",
+    "name": "Sootpine Butcher's Block"
+  },
+  "types": {
+    "fixture.butchers-block": {
+      "kind": "object",
+      "label": "Sootpine Butcher's Block",
+      "footprint": { "w": 2, "d": 2 },
+      "height": 0.94,
+      "squash": 0.34,
+      "palette": {
+        "wood": "#4a4640",
+        "woodHi": "#656057",
+        "woodDark": "#332f2b"
+      },
+      "parts": [
+        { "prim": "box", "at": [-0.519, 0.412, -0.524], "size": [0.11, 0.825, 0.11], "color": "woodDark" },
+        { "prim": "box", "at": [0.519, 0.412, -0.524], "size": [0.11, 0.825, 0.11], "color": "woodDark" },
+        { "prim": "box", "at": [-0.519, 0.412, 0.524], "size": [0.11, 0.825, 0.11], "color": "woodDark" },
+        { "prim": "box", "at": [0.519, 0.412, 0.524], "size": [0.11, 0.825, 0.11], "color": "woodDark" },
+        { "prim": "box", "at": [0, 0.875, 0], "size": [1.317, 0.1, 1.327], "color": "wood" },
+        { "prim": "box", "at": [0, 0.93, 0], "size": [1.197, 0.02, 1.207], "color": "woodHi" },
+        { "prim": "box", "at": [0, 0.223, 0], "size": [0.897, 0.05, 0.907], "color": "wood" }
+      ]
+    },
+    "kititem.butchers-block": {
+      "kind": "item",
+      "label": "Sootpine Butcher's Block",
+      "value": 570,
+      "stack": 1,
+      "swatch": "#cf7e44",
+      "badge": "table",
+      "furniture": "fixture.butchers-block",
+      "palette": {
+        "wrap": "#d9c7a4",
+        "wrapHi": "#eee1c7",
+        "strap": "#8a6242",
+        "mark": "#cf7e44"
+      }
+    }
+  }
+}

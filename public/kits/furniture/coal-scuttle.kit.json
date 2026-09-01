@@ -1,0 +1,44 @@
+{
+  "format": "tw.kit",
+  "version": 1,
+  "meta": {
+    "id": "turnip.coal-scuttle",
+    "name": "Sootpine Coal Scuttle"
+  },
+  "types": {
+    "fixture.coal-scuttle": {
+      "kind": "object",
+      "label": "Sootpine Coal Scuttle",
+      "footprint": { "w": 1, "d": 1 },
+      "height": 0.52,
+      "squash": 0.34,
+      "palette": {
+        "wood": "#4a4640",
+        "dark": "#221f1c",
+        "metal": "#9aa0a6"
+      },
+      "parts": [
+        { "prim": "cyl", "at": [0, 0.04, 0], "size": [0.2, 0.08, 0.2], "color": "metal" },
+        { "prim": "taper", "at": [0, 0.248, 0.02], "rot": [-14, 0, 0], "size": [0.24, 0.446, 0.24], "color": "metal" },
+        { "prim": "cyl", "at": [0, 0.466, 0.08], "rot": [-14, 0, 0], "size": [0.24, 0.04, 0.24], "color": "dark" },
+        { "prim": "cyl", "at": [0, 0.347, -0.2], "rot": [34, 0, 0], "size": [0.026, 0.28, 0.026], "color": "wood" },
+        { "prim": "blob", "at": [0, 0.456, 0.06], "size": [0.13, 0.06, 0.11], "color": "dark" }
+      ]
+    },
+    "kititem.coal-scuttle": {
+      "kind": "item",
+      "label": "Sootpine Coal Scuttle",
+      "value": 255,
+      "stack": 1,
+      "swatch": "#c08052",
+      "badge": "crate",
+      "furniture": "fixture.coal-scuttle",
+      "palette": {
+        "wrap": "#d9c7a4",
+        "wrapHi": "#eee1c7",
+        "strap": "#8a6242",
+        "mark": "#c08052"
+      }
+    }
+  }
+}

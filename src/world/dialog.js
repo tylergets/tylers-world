@@ -53,6 +53,7 @@
  *   { "has": { "type": "item.apple", "count": 3 } }
  *   { "room": { "type": "item.apple" } }  the bag could take one
  *   { "coins": 40 }                       carrying at least this much
+ *   { "houseStories": 2 }                the player's house is exactly this tier
  *   { "not": <cond> } / { "all": [...] } / { "any": [...] }
  *
  * EFFECTS are objects too, singly or as an array, applied in order:
@@ -61,6 +62,7 @@
  *   { "give": { "type": "item.flower", "count": 1 } }
  *   { "take": { "type": "item.apple", "count": 3 } }
  *   { "coins": -25 }                      spend (negative) or earn (positive)
+ *   { "houseStories": 2 }                upgrade the player's house to this tier
  *   { "shop": true }                      open the trade interface
  *   { "gift": true }                      hand over one of whatever is in your
  *                                         hand, whatever it happens to be
@@ -98,9 +100,14 @@ export const END = 'end';
 const CONDITIONS = {
   flag: 'string',
   friend: 'boolean',
+  relationship: 'relationship',
+  errand: 'errandCondition',
+  time: 'timeRange',
+  shopOpen: 'boolean',
   holding: 'boolean',
   visits: 'number',
   coins: 'number',
+  houseStories: 'tier',
   has: 'itemcount',
   room: 'itemcount',
   not: 'cond',
@@ -115,10 +122,15 @@ const EFFECTS = {
   give: 'itemcount',
   take: 'itemcount',
   coins: 'number',
+  houseStories: 'tier',
   shop: 'boolean',
   gift: 'boolean',
   peace: 'boolean',
+  errand: 'errandEffect',
 };
+
+const RELATIONSHIP_TIERS = ['stranger', 'acquaintance', 'friend', 'close'];
+const ERRAND_STATES = ['available', 'active', 'ready', 'completed'];
 
 export class DialogError extends Error {
   constructor(msg, path) {
@@ -140,6 +152,35 @@ function checkItemRef(v, path) {
   return { type: v.type, count };
 }
 
+function checkStructured(kind, v, path) {
+  if (!isObj(v)) throw new DialogError(`"${kind}" must be an object`, path);
+  if (kind === 'relationship') {
+    if (!RELATIONSHIP_TIERS.includes(v.atLeast)) {
+      throw new DialogError(`"atLeast" must be one of ${RELATIONSHIP_TIERS.join(', ')}`, path);
+    }
+    return { atLeast: v.atLeast };
+  }
+  if (kind === 'errandCondition') {
+    if (typeof v.id !== 'string' || !ERRAND_STATES.includes(v.status)) {
+      throw new DialogError(`expected { id, status } with status ${ERRAND_STATES.join(', ')}`, path);
+    }
+    return { id: v.id, status: v.status };
+  }
+  if (kind === 'errandEffect') {
+    if (typeof v.id !== 'string' || !['accept', 'complete'].includes(v.action)) {
+      throw new DialogError('expected { id, action: "accept" | "complete" }', path);
+    }
+    return { id: v.id, action: v.action };
+  }
+  if (kind === 'timeRange') {
+    if (![v.from, v.to].every((n) => typeof n === 'number' && n >= 0 && n <= 24) || v.from === v.to) {
+      throw new DialogError('expected { from, to } as distinct hours from 0 to 24', path);
+    }
+    return { from: v.from, to: v.to };
+  }
+  return v;
+}
+
 /** Validate one condition, returning it normalised. */
 function checkCond(raw, path) {
   if (!isObj(raw)) throw new DialogError('a condition must be an object', path);
@@ -155,8 +196,14 @@ function checkCond(raw, path) {
     const v = raw[key];
     if (kind === 'string' && typeof v !== 'string') throw new DialogError(`"${key}" must be a string`, path);
     else if (kind === 'number' && typeof v !== 'number') throw new DialogError(`"${key}" must be a number`, path);
+    else if (kind === 'tier' && (!Number.isInteger(v) || v < 1 || v > 3)) {
+      throw new DialogError(`"${key}" must be a house tier from 1 to 3`, path);
+    }
     else if (kind === 'boolean' && typeof v !== 'boolean') throw new DialogError(`"${key}" must be true or false`, path);
     else if (kind === 'itemcount') out[key] = checkItemRef(v, `${path}.${key}`);
+    else if (['relationship', 'errandCondition', 'timeRange'].includes(kind)) {
+      out[key] = checkStructured(kind, v, `${path}.${key}`);
+    }
     else if (kind === 'cond') out[key] = checkCond(v, `${path}.${key}`);
     else if (kind === 'cond[]') {
       if (!Array.isArray(v) || !v.length) throw new DialogError(`"${key}" must be a non-empty array`, path);
@@ -189,8 +236,12 @@ function checkEffects(raw, path) {
     if (kind === 'number' && (typeof v !== 'number' || !Number.isInteger(v))) {
       throw new DialogError(`"${key}" must be a whole number of coins`, p);
     }
+    if (kind === 'tier' && (!Number.isInteger(v) || v < 1 || v > 3)) {
+      throw new DialogError(`"${key}" must be a house tier from 1 to 3`, p);
+    }
     if (kind === 'boolean' && typeof v !== 'boolean') throw new DialogError(`"${key}" must be true or false`, p);
     if (kind === 'itemcount') return { [key]: checkItemRef(v, p) };
+    if (kind === 'errandEffect') return { [key]: checkStructured(kind, v, p) };
     return { [key]: v };
   });
 }

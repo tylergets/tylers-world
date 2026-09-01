@@ -5,6 +5,7 @@
   "meta": {
     "id": "home.tyler.interior",
     "name": "Tyler's House",
+    "role": "player-home",
     "note": "Interior of home.player in every starter world. Hand-authored: it is the same house wherever you start, which is the one thing about a new world that should not be new."
   },
   "grid": {"width":12,"height":10,"tileSize":1},
@@ -64,11 +65,12 @@
     {"id":"chair.west","type":"furn.chair","tile":[2,5]},
     {"id":"chair.east","type":"furn.chair","tile":[5,6],"rotation":180},
     {"id":"crate","type":"furn.crate","tile":[1,8]},
-    {"id":"plant","type":"furn.plant","tile":[10,8]}
+    {"id":"plant","type":"furn.plant","tile":[10,8]},
+    {"id":"stairs.up","type":"furn.stairs","tile":[8,5],"props":{"label":"Upstairs","interior":"worlds/interiors/home-upper-2.json","requiresHouseStories":2}}
   ],
   "items": [
     {"id":"apple.counter","type":"item.apple","tile":[7,2]},
-    {"id":"flower.jar","type":"item.flower","tile":[9,5]},
+    {"id":"flower.jar","type":"item.flower","tile":[7,5]},
     {"id":"stone.keepsake","type":"item.stone","tile":[2,7]}
   ],
   "exits": [

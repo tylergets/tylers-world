@@ -1,0 +1,48 @@
+{
+  "format": "tw.kit",
+  "version": 1,
+  "meta": {
+    "id": "turnip.courtyard-fountain",
+    "name": "Coppervale Courtyard Fountain"
+  },
+  "types": {
+    "fixture.courtyard-fountain": {
+      "kind": "object",
+      "label": "Coppervale Courtyard Fountain",
+      "footprint": { "w": 2, "d": 2 },
+      "height": 1.05,
+      "squash": 0.34,
+      "palette": {
+        "pale": "#f0e6d2",
+        "metal": "#b5713c",
+        "glass": "#d5e2e0"
+      },
+      "parts": [
+        { "prim": "cyl", "at": [0, 0.11, 0], "size": [0.72, 0.22, 0.72], "color": "metal" },
+        { "prim": "cyl", "at": [0, 0.3, 0], "size": [0.66, 0.18, 0.66], "color": "pale" },
+        { "prim": "cyl", "at": [0, 0.36, 0], "size": [0.56, 0.06, 0.56], "color": "glass", "anim": { "bob": { "amp": 0.014, "rate": 0.45 } } },
+        { "prim": "taper", "at": [0, 0.713, 0], "size": [0.11, 0.575, 0.11], "color": "metal" },
+        { "prim": "cyl", "at": [0, 1.011, 0], "size": [0.26, 0.06, 0.26], "color": "pale" },
+        { "prim": "cyl", "at": [0.18, 0.827, 0], "size": [0.028, 0.3, 0.028], "color": "glass", "anim": { "flow": { "amp": 0.36, "rate": 1.1, "phase": 0 } } },
+        { "prim": "cyl", "at": [0, 0.827, 0.18], "size": [0.028, 0.3, 0.028], "color": "glass", "anim": { "flow": { "amp": 0.36, "rate": 1.1, "phase": 0.25 } } },
+        { "prim": "cyl", "at": [-0.18, 0.827, 0], "size": [0.028, 0.3, 0.028], "color": "glass", "anim": { "flow": { "amp": 0.36, "rate": 1.1, "phase": 0.5 } } },
+        { "prim": "cyl", "at": [0, 0.827, -0.18], "size": [0.028, 0.3, 0.028], "color": "glass", "anim": { "flow": { "amp": 0.36, "rate": 1.1, "phase": 0.75 } } }
+      ]
+    },
+    "kititem.courtyard-fountain": {
+      "kind": "item",
+      "label": "Coppervale Courtyard Fountain",
+      "value": 1560,
+      "stack": 1,
+      "swatch": "#9b7b61",
+      "badge": "stove",
+      "furniture": "fixture.courtyard-fountain",
+      "palette": {
+        "wrap": "#d9c7a4",
+        "wrapHi": "#eee1c7",
+        "strap": "#8a6242",
+        "mark": "#9b7b61"
+      }
+    }
+  }
+}

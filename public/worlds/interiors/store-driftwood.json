@@ -242,6 +242,7 @@
         "title": "Driftwood Stores"
       },
       "shop": {
+        "hours": {"open": 8, "close": 19},
         "name": "Whatever Washed Up",
         "markup": 1.4,
         "buyRate": 0.6,

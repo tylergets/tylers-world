@@ -1,0 +1,45 @@
+{
+  "format": "tw.kit",
+  "version": 1,
+  "meta": {
+    "id": "turnip.bellows-stand",
+    "name": "Beechbark Bellows Stand"
+  },
+  "types": {
+    "fixture.bellows-stand": {
+      "kind": "object",
+      "label": "Beechbark Bellows Stand",
+      "footprint": { "w": 1, "d": 1 },
+      "height": 0.86,
+      "squash": 0.34,
+      "palette": {
+        "wood": "#c08b55",
+        "woodDark": "#8a6242",
+        "cloth": "#d9c7a4",
+        "metal": "#b08d3f"
+      },
+      "parts": [
+        { "prim": "box", "at": [0, 0.05, 0], "size": [0.34, 0.1, 0.26], "color": "woodDark" },
+        { "prim": "cyl", "at": [0, 0.41, 0], "size": [0.026, 0.737, 0.026], "color": "metal" },
+        { "prim": "blob", "at": [0.04, 0.672, 0], "rot": [0, 0, 12], "size": [0.15, 0.18, 0.07], "color": "wood" },
+        { "prim": "blob", "at": [0.05, 0.672, 0.03], "rot": [0, 0, 12], "size": [0.12, 0.14, 0.05], "color": "cloth" },
+        { "prim": "cyl", "at": [-0.13, 0.492, 0], "rot": [0, 0, 26], "size": [0.02, 0.22, 0.02], "color": "metal" }
+      ]
+    },
+    "kititem.bellows-stand": {
+      "kind": "item",
+      "label": "Beechbark Bellows Stand",
+      "value": 210,
+      "stack": 1,
+      "swatch": "#bb8c54",
+      "badge": "crate",
+      "furniture": "fixture.bellows-stand",
+      "palette": {
+        "wrap": "#d9c7a4",
+        "wrapHi": "#eee1c7",
+        "strap": "#8a6242",
+        "mark": "#bb8c54"
+      }
+    }
+  }
+}

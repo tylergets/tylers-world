@@ -1,0 +1,52 @@
+{
+  "format": "tw.kit",
+  "version": 1,
+  "meta": {
+    "id": "turnip.splay-leg-chair",
+    "name": "Seaglass Splay-Leg Chair"
+  },
+  "types": {
+    "fixture.splay-leg-chair": {
+      "kind": "object",
+      "label": "Seaglass Splay-Leg Chair",
+      "footprint": { "w": 1, "d": 1 },
+      "height": 1.11,
+      "squash": 0.34,
+      "palette": {
+        "wood": "#a6a89c",
+        "woodHi": "#c2c4b8",
+        "woodDark": "#7b7d73",
+        "dark": "#414a4a"
+      },
+      "parts": [
+        { "prim": "box", "at": [-0.249, 0.218, -0.217], "rot": [8, 0, -8], "size": [0.075, 0.436, 0.075], "color": "woodDark" },
+        { "prim": "box", "at": [0.249, 0.218, -0.217], "rot": [8, 0, 8], "size": [0.075, 0.436, 0.075], "color": "woodDark" },
+        { "prim": "box", "at": [-0.249, 0.218, 0.217], "rot": [-8, 0, -8], "size": [0.075, 0.436, 0.075], "color": "woodDark" },
+        { "prim": "box", "at": [0.249, 0.218, 0.217], "rot": [-8, 0, 8], "size": [0.075, 0.436, 0.075], "color": "woodDark" },
+        { "prim": "box", "at": [0, 0.131, -0.217], "size": [0.478, 0.04, 0.04], "color": "woodDark" },
+        { "prim": "box", "at": [0, 0.131, 0.217], "size": [0.478, 0.04, 0.04], "color": "woodDark" },
+        { "prim": "box", "at": [0, 0.481, 0], "size": [0.638, 0.09, 0.573], "color": "wood" },
+        { "prim": "cyl", "at": [-0.249, 0.791, -0.217], "size": [0.03, 0.528, 0.03], "color": "woodDark" },
+        { "prim": "cyl", "at": [0.249, 0.791, -0.217], "size": [0.03, 0.528, 0.03], "color": "woodDark" },
+        { "prim": "box", "at": [0, 1.055, -0.217], "size": [0.638, 0.1, 0.06], "color": "woodHi" },
+        { "prim": "box", "at": [0, 0.791, -0.217], "size": [0.518, 0.528, 0.04], "color": "wood" },
+        { "prim": "blob", "at": [0, 0.817, -0.187], "size": [0.102, 0.106, 0.02], "color": "dark" }
+      ]
+    },
+    "kititem.splay-leg-chair": {
+      "kind": "item",
+      "label": "Seaglass Splay-Leg Chair",
+      "value": 175,
+      "stack": 1,
+      "swatch": "#708c82",
+      "badge": "chair",
+      "furniture": "fixture.splay-leg-chair",
+      "palette": {
+        "wrap": "#d9c7a4",
+        "wrapHi": "#eee1c7",
+        "strap": "#8a6242",
+        "mark": "#708c82"
+      }
+    }
+  }
+}

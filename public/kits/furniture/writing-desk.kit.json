@@ -1,0 +1,46 @@
+{
+  "format": "tw.kit",
+  "version": 1,
+  "meta": {
+    "id": "turnip.writing-desk",
+    "name": "Turnipwood Writing Desk"
+  },
+  "types": {
+    "fixture.writing-desk": {
+      "kind": "object",
+      "label": "Turnipwood Writing Desk",
+      "footprint": { "w": 2, "d": 1 },
+      "height": 0.88,
+      "squash": 0.34,
+      "palette": {
+        "wood": "#e8dcc4",
+        "woodHi": "#f6eeda",
+        "woodDark": "#c3b394"
+      },
+      "parts": [
+        { "prim": "box", "at": [-0.852, 0.387, -0.274], "size": [0.1, 0.774, 0.1], "color": "woodDark" },
+        { "prim": "box", "at": [0.852, 0.387, -0.274], "size": [0.1, 0.774, 0.1], "color": "woodDark" },
+        { "prim": "box", "at": [-0.852, 0.387, 0.274], "size": [0.1, 0.774, 0.1], "color": "woodDark" },
+        { "prim": "box", "at": [0.852, 0.387, 0.274], "size": [0.1, 0.774, 0.1], "color": "woodDark" },
+        { "prim": "box", "at": [0, 0.644, -0.314], "size": [1.664, 0.1, 0.05], "color": "wood" },
+        { "prim": "box", "at": [0, 0.814, 0], "size": [1.944, 0.08, 0.789], "color": "wood" },
+        { "prim": "box", "at": [0, 0.864, 0], "size": [1.784, 0.02, 0.629], "color": "woodHi" }
+      ]
+    },
+    "kititem.writing-desk": {
+      "kind": "item",
+      "label": "Turnipwood Writing Desk",
+      "value": 795,
+      "stack": 1,
+      "swatch": "#8c6d89",
+      "badge": "table",
+      "furniture": "fixture.writing-desk",
+      "palette": {
+        "wrap": "#d9c7a4",
+        "wrapHi": "#eee1c7",
+        "strap": "#8a6242",
+        "mark": "#8c6d89"
+      }
+    }
+  }
+}

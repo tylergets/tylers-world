@@ -1,0 +1,48 @@
+{
+  "format": "tw.kit",
+  "version": 1,
+  "meta": {
+    "id": "turnip.terrestrial-globe",
+    "name": "Beechbark Terrestrial Globe"
+  },
+  "types": {
+    "fixture.terrestrial-globe": {
+      "kind": "object",
+      "label": "Beechbark Terrestrial Globe",
+      "footprint": { "w": 1, "d": 1 },
+      "height": 1.2,
+      "squash": 0.3,
+      "palette": {
+        "wood": "#c08b55",
+        "woodHi": "#d8a870",
+        "metal": "#b08d3f",
+        "glass": "#cfe4ec"
+      },
+      "parts": [
+        { "prim": "cyl", "at": [0.2, 0.249, 0], "rot": [0, 0, -14], "size": [0.024, 0.518, 0.024], "color": "wood" },
+        { "prim": "cyl", "at": [-0.1, 0.249, 0.173], "rot": [12.124, 0, 7], "size": [0.024, 0.518, 0.024], "color": "wood" },
+        { "prim": "cyl", "at": [-0.1, 0.249, -0.173], "rot": [-12.124, 0, 7], "size": [0.024, 0.518, 0.024], "color": "wood" },
+        { "prim": "cyl", "at": [0, 0.518, 0], "size": [0.15, 0.045, 0.15], "color": "woodHi" },
+        { "prim": "cyl", "at": [0, 0.746, 0], "size": [0.03, 0.435, 0.03], "color": "metal" },
+        { "prim": "cyl", "at": [0, 0.89, 0], "rot": [12, 0, 0], "size": [0.28, 0.03, 0.28], "color": "metal" },
+        { "prim": "blob", "at": [0, 0.89, 0], "size": [0.25, 0.25, 0.25], "color": "glass", "anim": { "spin": { "rate": 0.07 } } },
+        { "prim": "cyl", "at": [0, 1.17, 0], "size": [0.025, 0.06, 0.025], "color": "metal" }
+      ]
+    },
+    "kititem.terrestrial-globe": {
+      "kind": "item",
+      "label": "Beechbark Terrestrial Globe",
+      "value": 680,
+      "stack": 1,
+      "swatch": "#ab8a60",
+      "badge": "plant",
+      "furniture": "fixture.terrestrial-globe",
+      "palette": {
+        "wrap": "#d9c7a4",
+        "wrapHi": "#eee1c7",
+        "strap": "#8a6242",
+        "mark": "#ab8a60"
+      }
+    }
+  }
+}
