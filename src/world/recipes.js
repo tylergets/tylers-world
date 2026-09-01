@@ -23,6 +23,12 @@ import { Draft } from './draft.js';
 
 export const HOUSE_PRICE = { 2: 1800, 3: 3600 };
 
+const TOWN_HALL = { label: 'Town Hall', interior: 'worlds/interiors/town-hall.json' };
+
+function addTownHall(d, x, z, allow = ['g', 'c'], radius = 20, level = '0') {
+  return d.placeNear('town.hall', 'building.townhall', x, z, allow, radius, TOWN_HALL, level);
+}
+
 /** Place a recipe-specific housewright on the proven-open approach to the home. */
 function addHousewright(d, home, { id, name, title, voice, flavor }) {
   const candidates = [
@@ -173,6 +179,7 @@ export function meadowbrook({
     { label: "Wren's Cabin", interior: 'worlds/interiors/home-wren.json', owner: 'folk.wren' }, '0');
   const bungalow = d.placeNear('home.tobin', 'building.bungalow', cx + 15, cz + 8, ['g'], 10,
     { label: "Tobin's Bungalow", interior: 'worlds/interiors/home-tobin.json', owner: 'folk.tobin' }, '0');
+  const hall = addTownHall(d, cx - 4, cz + 8, ['g', 'c'], 18);
 
   // Approaches, drawn AFTER placement so a building that had to shuffle takes
   // its path with it. Doors face south, so the approach starts below them.
@@ -183,6 +190,7 @@ export function meadowbrook({
   d.pathL(cottage[0] + 1, cottage[1] + 3, cx - 10, cz + 12, { level: '0' });
   d.pathL(cabin[0] + 2, cabin[1] + 3, cx + 1, cz + 20, { level: '0' });
   d.pathL(bungalow[0] + 2, bungalow[1] + 3, cx + 11, cz + 12, { level: '0' });
+  d.pathL(hall[0] + 4, hall[1] + 6, cx, cz + 12, { level: '0' });
   d.pathL(lookout[0] + 2, lookout[1] + 2, cx - 1, cz - 13, { level: '1' });
   addHousewright(d, home, {
     id: 'folk.renna', name: 'Renna', title: 'Meadowbrook Housewright',
@@ -889,6 +897,7 @@ export function sourwood({
     { label: 'Turnip & Timber', interior: 'worlds/interiors/store-furniture.json' }, '0');
   const clothier = d.placeNear('store.clothier', 'building.clothier', furniture[0] + 7, furniture[1], ['g'], 12,
     { label: 'Cuff & Collar', interior: 'worlds/interiors/store-clothier.json' }, '0');
+  const hall = addTownHall(d, Math.round(creek(spawnRow)) - 11, spawnRow, ['g', 'c'], 24);
 
   // Each door out to the road. The road is the only through-line in a holler,
   // so everything hangs off it.
@@ -896,6 +905,7 @@ export function sourwood({
   d.pathL(store[0] + 2, store[1] + 4, Math.round(creek(store[1] + 5)) + 4, store[1] + 5, { level: '0' });
   d.pathL(furniture[0] + 2, furniture[1] + 4, Math.round(creek(furniture[1] + 5)) + 4, furniture[1] + 5, { level: '0' });
   d.pathL(clothier[0] + 2, clothier[1] + 4, Math.round(creek(clothier[1] + 5)) + 4, clothier[1] + 5, { level: '0' });
+  d.pathL(hall[0] + 4, hall[1] + 6, Math.round(creek(hall[1] + 7)) + 4, hall[1] + 7, { level: '0' });
   d.pathL(gate[0] + 2, gate[1] + 2, Math.round(creek(gate[1] + 3)) + 4, gate[1] + 3, { level: '0' });
   addHousewright(d, home, {
     id: 'folk.eldra', name: 'Eldra', title: 'Holler Carpenter',
@@ -1064,6 +1074,7 @@ export function tidewrack({
     { label: 'Cuff & Collar', interior: 'worlds/interiors/store-clothier.json' }, '0');
   const cottage = d.placeNear('home.marnie', 'building.cottage', cx - out(0.57), cz - 3, ['g'], 10,
     { label: "Marnie's Cottage", interior: 'worlds/interiors/home-marnie.json', owner: 'folk.marnie' }, '0');
+  const hall = addTownHall(d, cx + out(0.35), cz + out(0.22), ['g', 'c'], 22);
 
   // Doors face south, so every approach starts below its door and runs to the
   // nearest point of the ring road.
@@ -1072,6 +1083,7 @@ export function tidewrack({
   d.pathL(furniture[0] + 2, furniture[1] + 4, cx + out(0.5), cz + 9, { level: '0' });
   d.pathL(clothier[0] + 2, clothier[1] + 4, cx + 3, cz - out(0.44), { level: '0' });
   d.pathL(cottage[0] + 1, cottage[1] + 3, cx - out(0.5), cz + 3, { level: '0' });
+  d.pathL(hall[0] + 4, hall[1] + 6, cx + out(0.38), cz + out(0.28), { level: '0' });
   d.pathL(landing[0] + 2, landing[1] + 2, cx, cz + out(0.6), { level: '0' });
   d.pathL(lookout[0] + 2, lookout[1] + 2, cx - 1, cz + dune[1] + 2, { level: '1' });
   addHousewright(d, home, {
@@ -1563,12 +1575,14 @@ export function thistledown({
     { label: 'Cuff & Collar', interior: 'worlds/interiors/store-clothier.json' }, '0');
   const croft = d.placeNear('home.nan', 'building.cottage', road - 8, 24, ['g'], 11,
     { label: "Nan's Croft", interior: 'worlds/interiors/home-nan.json', owner: 'folk.nan' }, '0');
+  const hall = addTownHall(d, road - 13, spawnRow, ['g', 'c'], 24);
 
   d.pathL(home[0] + 1, home[1] + 3, road, home[1] + 4, { level: '0' });
   d.pathL(store[0] + 2, store[1] + 4, road, store[1] + 5, { level: '0' });
   d.pathL(furniture[0] + 2, furniture[1] + 4, road, furniture[1] + 5, { level: '0' });
   d.pathL(clothier[0] + 2, clothier[1] + 4, road, clothier[1] + 5, { level: '0' });
   d.pathL(croft[0] + 1, croft[1] + 3, road, croft[1] + 4, { level: '0' });
+  d.pathL(hall[0] + 4, hall[1] + 6, road, hall[1] + 7, { level: '0' });
   d.pathL(north[0] + 2, north[1] + 2, road, north[1] + 3, { level: '0' });
   d.pathL(south[0] + 2, south[1] + 2, road, south[1] + 3, { level: '0' });
   addHousewright(d, home, {
@@ -2064,12 +2078,14 @@ export function rimrock({
     { label: 'Cuff & Collar', interior: 'worlds/interiors/store-clothier.json' }, '0');
   const cottage = d.placeNear('home.pike', 'building.cottage', cx - 16, cz + 13, ['g', 's'], 11,
     { label: "Pike's Place", interior: 'worlds/interiors/home-pike.json', owner: 'folk.pike' }, '0');
+  const hall = addTownHall(d, cx - 4, cz + 12, ['g', 's', 'c'], 20);
 
   d.pathL(home[0] + 1, home[1] + 3, cx - 1, cz + 8, { level: '0' });
   d.pathL(store[0] + 2, store[1] + 4, cx, cz + 8, { level: '0' });
   d.pathL(furniture[0] + 2, furniture[1] + 4, cx, cz + 10, { level: '0' });
   d.pathL(clothier[0] + 2, clothier[1] + 4, cx, cz + 12, { level: '0' });
   d.pathL(cottage[0] + 1, cottage[1] + 3, cx - 1, cz + 12, { level: '0' });
+  d.pathL(hall[0] + 4, hall[1] + 6, cx, cz + 10, { level: '0' });
   d.pathL(head[0] + 2, head[1] + 2, cx - 1, cz - 13, { level: '1' });
   d.pathL(lip[0] + 2, lip[1] + 2, cx - 1, cz + 21, { level: '0' });
   addHousewright(d, home, {
@@ -2492,6 +2508,8 @@ export function ashkettle({
   const [cxx, czz] = at(...sites.cottage);
   const cottage = d.placeNear('home.vesper', 'building.cottage', cxx - 1, czz, ['g', 'c'], 11,
     { label: "Vesper's", interior: 'worlds/interiors/home-vesper.json', owner: 'folk.vesper' }, '0');
+  const [thx, thz] = at(1.3, 0.58);
+  const hall = addTownHall(d, thx - 4, thz, ['g', 'c'], 26);
 
   // Every door out to the ring road, which is the only through-line there is.
   const toRing = (door, dz) => {
@@ -2503,6 +2521,7 @@ export function ashkettle({
   toRing([furniture[0] + 2, furniture[1]], 4);
   toRing([clothier[0] + 2, clothier[1]], 4);
   toRing([cottage[0] + 1, cottage[1]], 3);
+  toRing([hall[0] + 4, hall[1]], 6);
   toRing([quay[0] + 2, quay[1]], 2);
   addHousewright(d, home, {
     id: 'folk.brin', name: 'Brin', title: 'Caldera Joiner',
@@ -2900,6 +2919,7 @@ export function sedgewater({
   const [qx, qz] = at(sites.cottage, 0.50);
   const cottage = d.placeNear('home.quill', 'building.cottage', qx - 1, qz, ['g'], 12,
     { label: "Quill's Hut", interior: 'worlds/interiors/home-quill.json', owner: 'folk.quill' }, '0');
+  const hall = addTownHall(d, cx - 4, cz + toft[1] + 7, ['g', 'c'], 26);
 
   // Every door back to the boardwalk that serves its wedge -- and back to the
   // NEAREST point of it, which is the point the house was wished at. Aiming
@@ -2915,6 +2935,7 @@ export function sedgewater({
   toWalk([furniture[0] + 2, furniture[1]], 4, sites.store, 0.50);
   toWalk([clothier[0] + 2, clothier[1]], 4, sites.store, 0.56);
   toWalk([cottage[0] + 1, cottage[1]], 3, sites.cottage, 0.50);
+  d.pathL(hall[0] + 4, hall[1] + 6, cx, cz + toft[1] + 8, { level: '0' });
   d.pathL(staithe[0] + 2, staithe[1] + 2, cx - 1, cz + toft[1] + 2, { level: '1' });
   addHousewright(d, home, {
     id: 'folk.fenna', name: 'Fenna', title: 'Fen Pilewright',
@@ -3287,12 +3308,14 @@ export function bellrock({
     { label: 'Cuff & Collar', interior: 'worlds/interiors/store-clothier.json' }, '0');
   const cottage = d.placeNear('home.sennen', 'building.cottage', road + 16, townRow(sites.cottage), ['g'], 12,
     { label: "Sennen's Cottage", interior: 'worlds/interiors/home-sennen.json', owner: 'folk.sennen' }, '0');
+  const hall = addTownHall(d, road - 4, townRow(0.5), ['g', 'c'], 24);
 
   d.pathL(home[0] + 1, home[1] + 3, road - 6, roadZ, { level: '0' });
   d.pathL(store[0] + 2, store[1] + 4, road + 4, roadZ, { level: '0' });
   d.pathL(furniture[0] + 2, furniture[1] + 4, road + 8, roadZ, { level: '0' });
   d.pathL(clothier[0] + 2, clothier[1] + 4, road + 10, roadZ, { level: '0' });
   d.pathL(cottage[0] + 1, cottage[1] + 3, road + 12, roadZ, { level: '0' });
+  d.pathL(hall[0] + 4, hall[1] + 6, road, roadZ, { level: '0' });
   d.pathL(quay[0] + 2, quay[1] + 2, road, quay[1] + 3, { level: '0' });
   addHousewright(d, home, {
     id: 'folk.ors', name: 'Ors', title: 'Downland Builder',

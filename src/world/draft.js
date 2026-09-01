@@ -23,6 +23,7 @@ import { World } from './World.js';
 const FOOT = {
   'building.home': [4, 3], 'building.store': [5, 4], 'building.furniture': [5, 4],
   'building.clothier': [5, 4], 'building.gate': [5, 2],
+  'building.townhall': [9, 6],
   'building.cottage': [3, 3], 'building.cabin': [4, 3], 'building.bungalow': [5, 3],
   'tree.oak': [1, 1], 'tree.pine': [1, 1], 'tree.palm': [1, 1],
   'rock.small': [1, 1], 'rock.large': [2, 2],
@@ -334,7 +335,49 @@ export class Draft {
 
   // ------------------------------------------------------------------ emit --
 
-  toWorld({ meta, terrain, spawn, ambience }) {
+  /** Expand authored terrain while keeping props and actors at their normal scale. */
+  expand(factor) {
+    if (factor === 1) return;
+    if (!Number.isInteger(factor) || factor < 1) throw new Error(`invalid world scale ${factor}`);
+    const growGrid = (grid) => grid.flatMap((row) => {
+      const wide = row.flatMap((cell) => Array(factor).fill(cell));
+      return Array.from({ length: factor }, () => wide.slice());
+    });
+    const growFlags = (grid) => grid.flatMap((row) => {
+      const rows = Array.from({ length: factor }, () => []);
+      for (const flag of row) {
+        const block = Array.from({ length: factor }, () => Array(factor).fill('.'));
+        if (flag === '^' || flag === 'v') {
+          const z = flag === '^' ? 0 : factor - 1;
+          block[z].fill(flag);
+        } else if (flag === '<' || flag === '>') {
+          const x = flag === '<' ? 0 : factor - 1;
+          for (const cells of block) cells[x] = flag;
+        }
+        for (let z = 0; z < factor; z++) rows[z].push(...block[z]);
+      }
+      return rows;
+    });
+    const scaleTile = (tile) => tile && [tile[0] * factor, tile[1] * factor];
+
+    this.surf = growGrid(this.surf);
+    this.elev = growGrid(this.elev);
+    this.flag = growFlags(this.flag);
+    this.taken = growGrid(this.taken);
+    this.W *= factor;
+    this.H *= factor;
+    for (const obj of this.objects) obj.tile = scaleTile(obj.tile);
+    for (const animal of this.animals) animal.tile = scaleTile(animal.tile);
+    for (const item of this.items) item.tile = scaleTile(item.tile);
+    for (const npc of this.npcs) {
+      npc.tile = scaleTile(npc.tile);
+      for (const stop of npc.schedule ?? []) stop.tile = scaleTile(stop.tile);
+    }
+  }
+
+  toWorld({ meta, terrain, spawn, ambience, scale = 2 }) {
+    this.expand(scale);
+    spawn = { ...spawn, tile: [spawn.tile[0] * scale, spawn.tile[1] * scale] };
     // The elevation palette is derived from what the layout actually used, so a
     // world never advertises levels it does not contain.
     const levels = [...new Set(this.elev.flat())].sort();

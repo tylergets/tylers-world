@@ -249,12 +249,12 @@ function signLines(label) {
   return [words.slice(0, best).join(' '), words.slice(best).join(' ')];
 }
 
-function shopSign(c, face, zf, centerX, label, color) {
+function shopSign(c, face, zf, centerX, label, color, centerY = 2.05, maxWidth = 3.35) {
   const lines = signLines(label);
   const maxCells = Math.max(...lines.map((line) => line.length * 4 - 1));
-  const unit = Math.min(lines.length === 1 ? 0.09 : 0.058, 3.35 / maxCells);
+  const unit = Math.min(lines.length === 1 ? 0.09 : 0.058, maxWidth / maxCells);
   const textH = lines.length * 5 * unit + (lines.length - 1) * unit * 1.5;
-  const top = 2.05 + textH / 2;
+  const top = centerY + textH / 2;
   const z = face + 0.235 * zf;
 
   for (let li = 0; li < lines.length; li++) {
@@ -331,6 +331,41 @@ function store(c) {
   c.box(doorX, 2.05, face + 0.185 * zf, 3.72, 0.6, 0.055, p.sign);
   for (const x of [doorX - 1.7, doorX + 1.7]) c.box(x, 1.69, face + 0.08 * zf, 0.08, 0.42, 0.08, p.trim);
   shopSign(c, face, zf, doorX, c.obj.props?.label ?? c.type.label, p.signText);
+}
+
+function townHall(c) {
+  const p = c.pal;
+  const W = 8.5, D = 5.4, wallH = 2.8;
+  c.box(0, 0.12, 0, W + 0.24, 0.24, D + 0.24, p.trim);
+  c.box(0, wallH / 2 + 0.12, 0, W, wallH, D, p.wall);
+  gableRoof(c, W, D, wallH + 0.12, 1.45, 0.38, p.roof, p.roofDark);
+
+  const face = D / 2;
+  c.box(0, 0.9, face + 0.05, 1.2, 1.8, 0.12, p.trim);
+  c.box(0, 0.84, face + 0.13, 0.86, 1.5, 0.06, p.door);
+  for (const x of [-3, -1.7, 1.7, 3]) {
+    c.box(x, 1.25, face + 0.06, 0.82, 1.1, 0.12, p.trim);
+    c.box(x, 1.25, face + 0.13, 0.62, 0.88, 0.055, p.window);
+    c.box(x, 1.25, face + 0.16, 0.055, 0.88, 0.025, p.trim);
+    c.box(x, 1.25, face + 0.16, 0.62, 0.055, 0.025, p.trim);
+  }
+  for (const x of [-3.7, 3.7]) c.box(x, 1.45, face + 0.52, 0.18, 2.65, 0.18, p.trim);
+  c.box(0, 2.48, face + 0.12, 4.8, 0.82, 0.14, p.trim);
+  c.box(0, 2.48, face + 0.2, 4.5, 0.6, 0.06, p.sign);
+  shopSign(c, face, 1, 0, c.obj.props?.label ?? c.type.label, p.signText, 2.48, 4.1);
+
+  c.box(0, 4.45, 0, 1.15, 0.72, 1.15, p.trim);
+  for (const x of [-0.42, 0.42]) c.box(x, 4.46, 0, 0.04, 0.4, 0.7, p.window);
+  for (const z of [-0.42, 0.42]) c.box(0, 4.46, z, 0.7, 0.4, 0.04, p.window);
+  c.add(PYR, trs(0, 5.08, 0, 0, Math.PI / 4, 0, 1.0, 0.55, 1.0), p.roofDark);
+}
+
+function constructionSign(c) {
+  const p = c.pal;
+  c.box(0, 1.05, 0, 2.8, 1.15, 0.14, p.edge);
+  c.box(0, 1.05, 0.08, 2.55, 0.9, 0.06, p.board);
+  for (const x of [-1.05, 1.05]) c.box(x, 0.42, -0.03, 0.12, 0.84, 0.12, p.edge);
+  shopSign(c, -0.16, 1, 0, c.obj.props?.label ?? c.type.label, p.text, 1.05, 2.25);
 }
 
 function gate(c) {
@@ -545,6 +580,7 @@ const BUILDERS = {
   'building.store': store,
   'building.furniture': store,
   'building.clothier': store,
+  'building.townhall': townHall,
   'building.gate': gate,
   'furn.bed': bed,
   'furn.table': table,
@@ -555,6 +591,7 @@ const BUILDERS = {
   'furn.plant': plant,
   'furn.crate': crate,
   'furn.stairs': stairs,
+  'furn.construction-sign': constructionSign,
   'yard.fence': fence,
   'yard.ladder': ladder,
 };

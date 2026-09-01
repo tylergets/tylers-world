@@ -169,7 +169,7 @@ function simulateFauna(world) {
     fauna.update(DT);
     for (const a of fauna.animals) {
       if (!world.inBounds(a.tileX, a.tileZ)) offGrid++;
-      else if (world.isBlocked(a.tileX, a.tileZ)) illegal++;
+      else if (a.swims ? !world.isOpenWater(a.tileX, a.tileZ) : world.isBlocked(a.tileX, a.tileZ)) illegal++;
       peak = Math.max(peak, Math.hypot(a.x - a.home.x, a.z - a.home.z));
       if (a.speed > 0.2) moving++;
     }

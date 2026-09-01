@@ -168,6 +168,12 @@ export const OBJECT_TYPES = {
     squash: 0.3,
     palette: { wall: 0xf3e2ea, roof: 0x8a6ba8, roofDark: 0x6b5188, trim: 0x7d6248, door: 0x6b4a30, window: 0x9fd4e8, awning: 0xe79ab0, sign: 0x65477c, signText: 0xfff2c9 },
   },
+  'building.townhall': {
+    category: 'building', label: 'Town Hall',
+    footprint: withDoor(9, 6, 4), height: 5.2,
+    squash: 0.3,
+    palette: { wall: 0xeee2c8, roof: 0x55758a, roofDark: 0x3e596b, trim: 0x8a6242, door: 0x70452f, window: 0xa9d8e5, sign: 0x31556c, signText: 0xfff2c9 },
+  },
   'building.gate': {
     category: 'building', label: 'Town Gate',
     // Two solid posts with a walk-through gap: the mask is doing real work here.
@@ -202,6 +208,8 @@ export const OBJECT_TYPES = {
     height: 1.5, squash: 0.34,
     palette: { tread: 0xb78654, riser: 0x805a39, rail: 0x68462f },
   },
+  'furn.construction-sign': furniture('Under Construction', 3, 1, 1.8,
+    { board: 0xe2b74f, edge: 0x6b4a30, text: 0x3f342a }),
 
   // ----------------------------------------------------------------- yard --
   // Two pieces the player buys indoors and puts down OUTdoors, and they are

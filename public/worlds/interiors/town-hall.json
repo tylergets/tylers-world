@@ -1,0 +1,108 @@
+{
+  "format": "tw.world",
+  "version": 1,
+  "kind": "interior",
+  "meta": {
+    "id": "town.hall.interior",
+    "name": "Town Hall",
+    "note": "A central lobby with three unfinished rooms on each side."
+  },
+  "grid": {"width":31,"height":23,"tileSize":1},
+  "ambience": {"music":"home"},
+  "layers": {
+    "surface": {
+      "palette": {"#":"wall","w":"floor.wood"},
+      "data": [
+        "###############################",
+        "#wwwwwwwwww#wwwwwww#wwwwwwwwww#",
+        "#wwwwwwwwww#wwwwwww#wwwwwwwwww#",
+        "#wwwwwwwwww#wwwwwww#wwwwwwwwww#",
+        "#wwwwwwwwwwwwwwwwwwwwwwwwwwwww#",
+        "#wwwwwwwwww#wwwwwww#wwwwwwwwww#",
+        "#wwwwwwwwww#wwwwwww#wwwwwwwwww#",
+        "############wwwwwww############",
+        "#wwwwwwwwww#wwwwwww#wwwwwwwwww#",
+        "#wwwwwwwwww#wwwwwww#wwwwwwwwww#",
+        "#wwwwwwwwww#wwwwwww#wwwwwwwwww#",
+        "#wwwwwwwwwwwwwwwwwwwwwwwwwwwww#",
+        "#wwwwwwwwww#wwwwwww#wwwwwwwwww#",
+        "#wwwwwwwwww#wwwwwww#wwwwwwwwww#",
+        "############wwwwwww############",
+        "#wwwwwwwwww#wwwwwww#wwwwwwwwww#",
+        "#wwwwwwwwww#wwwwwww#wwwwwwwwww#",
+        "#wwwwwwwwww#wwwwwww#wwwwwwwwww#",
+        "#wwwwwwwwwwwwwwwwwwwwwwwwwwwww#",
+        "#wwwwwwwwww#wwwwwww#wwwwwwwwww#",
+        "#wwwwwwwwww#wwwwwww#wwwwwwwwww#",
+        "#wwwwwwwwww#wwwwwww#wwwwwwwwww#",
+        "###############ww##############"
+      ]
+    },
+    "elevation": {
+      "palette": {"0":"0","4":"4"},
+      "data": [
+        "4444444444444444444444444444444",
+        "4000000000040000000400000000004",
+        "4000000000040000000400000000004",
+        "4000000000040000000400000000004",
+        "4000000000000000000000000000004",
+        "4000000000040000000400000000004",
+        "4000000000040000000400000000004",
+        "4444444444440000000444444444444",
+        "4000000000040000000400000000004",
+        "4000000000040000000400000000004",
+        "4000000000040000000400000000004",
+        "4000000000000000000000000000004",
+        "4000000000040000000400000000004",
+        "4000000000040000000400000000004",
+        "4444444444440000000444444444444",
+        "4000000000040000000400000000004",
+        "4000000000040000000400000000004",
+        "4000000000040000000400000000004",
+        "4000000000000000000000000000004",
+        "4000000000040000000400000000004",
+        "4000000000040000000400000000004",
+        "4000000000040000000400000000004",
+        "4444444444444440044444444444444"
+      ]
+    },
+    "flags": {
+      "palette": {".":"none"},
+      "data": [
+        "...............................",
+        "...............................",
+        "...............................",
+        "...............................",
+        "...............................",
+        "...............................",
+        "...............................",
+        "...............................",
+        "...............................",
+        "...............................",
+        "...............................",
+        "...............................",
+        "...............................",
+        "...............................",
+        "...............................",
+        "...............................",
+        "...............................",
+        "...............................",
+        "...............................",
+        "...............................",
+        "...............................",
+        "...............................",
+        "..............................."
+      ]
+    }
+  },
+  "objects": [
+    {"id":"sign.west.north","type":"furn.construction-sign","tile":[4,3],"props":{"label":"Under Construction"}},
+    {"id":"sign.east.north","type":"furn.construction-sign","tile":[24,3],"props":{"label":"Under Construction"}},
+    {"id":"sign.west.middle","type":"furn.construction-sign","tile":[4,10],"props":{"label":"Under Construction"}},
+    {"id":"sign.east.middle","type":"furn.construction-sign","tile":[24,10],"props":{"label":"Under Construction"}},
+    {"id":"sign.west.south","type":"furn.construction-sign","tile":[4,17],"props":{"label":"Under Construction"}},
+    {"id":"sign.east.south","type":"furn.construction-sign","tile":[24,17],"props":{"label":"Under Construction"}}
+  ],
+  "exits": [{"tile":[15,22]},{"tile":[16,22]}],
+  "spawn": {"tile":[15,21],"facing":"north"}
+}
