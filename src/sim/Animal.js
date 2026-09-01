@@ -23,6 +23,14 @@ import { makeRng, range } from '../core/rng.js';
 import { makeBehavior } from './behaviors.js';
 import { sweep } from './body.js';
 
+/**
+ * Seconds an animal takes to fall over.
+ *
+ * Short. Long enough that "shot it" is visibly different from "deleted it",
+ * short enough that it never becomes something you wait through.
+ */
+export const DEATH_TIME = 0.4;
+
 export class Animal {
   /**
    * @param {World} world
@@ -53,6 +61,14 @@ export class Animal {
     this.speed = 0;
     this.walkPhase = range(this.rng, 0, 10);   // so a flock's legs are not in step
     this.peck = 0;                             // 0..1 head-down, set by the behavior
+    /**
+     * 0..1 through toppling over, or null for an animal that is alive.
+     *
+     * Null and not 0, so "is it dying" is a question with a yes/no answer
+     * rather than a float compared against zero -- the same distinction
+     * `Ground`'s tile index makes between "no item" and "an item worth nothing".
+     */
+    this.dying = null;
 
     this.behavior = makeBehavior(this.type.behavior, this);
   }
@@ -62,6 +78,16 @@ export class Animal {
 
   /** Ask the behavior what it wants, then let the shared physics decide. */
   update(dt, world) {
+    // A dying animal has no behaviour and no physics. The behaviour is not
+    // paused -- it is over -- so this returns before body.js is asked to sweep
+    // something that is on its way out of the world, and before the wander
+    // timer can decide it would like to dash somewhere.
+    if (this.dying !== null) {
+      this.dying = Math.min(1, this.dying + dt / DEATH_TIME);
+      this.speed = 0;
+      this.peck = 0;
+      return;
+    }
     const { vx, vz } = this.behavior.update(dt, this, world);
     sweep(world, this, dt, vx, vz);
   }

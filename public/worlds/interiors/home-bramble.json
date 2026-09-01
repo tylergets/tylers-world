@@ -2,12 +2,20 @@
   "format": "tw.world",
   "version": 1,
   "kind": "interior",
+  "kits": ["kits/bramble.kit.json"],
   "meta": {
     "id": "home.bramble.interior",
     "name": "Bramble's Cottage",
-    "note": "Interior of home.bramble in meadowbrook.json. Hand-authored. PRIVATE: see zones."
+    "note": "Interior of home.bramble in meadowbrook.json. Hand-authored. PRIVATE: see zones. An L-shaped room -- the south-west corner is a lean-to he has walled off -- with a glazed strip along the north wall he grows in and a cold frame under it. The bed is an afterthought in the far corner, which is the whole of what there is to know about him."
   },
-  "grid": {"width":12,"height":9,"tileSize":1},
+  "grid": {"width":13,"height":10,"tileSize":1},
+  "ambience": {
+    "sky": "#171c15",
+    "hemiSky": "#dff3d2",
+    "hemiGround": "#6b7a4e",
+    "sun": 0.9,
+    "hemi": 2.25
+  },
   "zones": {
     "his": {"owner": "folk.bramble", "label": "Bramble's Cottage"}
   },
@@ -15,77 +23,87 @@
     "surface": {
         "palette": {"#":"wall","w":"floor.wood","t":"floor.tile","r":"rug"},
         "data": [
-          "############",
-          "#wwwwwwwwww#",
-          "#wwwwwwwwww#",
-          "#wwwwwwwwww#",
-          "#wwrrrrwwww#",
-          "#wwrrrrwwww#",
-          "#wwwwwwwwww#",
-          "#wwwwwwwwww#",
-          "#####tt#####"
+          "#############",
+          "#ttttttttttt#",
+          "#ttttttttttt#",
+          "#wwwwwwwwwww#",
+          "#wwwwwrrwwww#",
+          "#wwwwwrrwwww#",
+          "#####wwwwwww#",
+          "#####wwwwwww#",
+          "#####wwwwwww#",
+          "######tt#####"
         ]
       },
     "elevation": {
         "palette": {"0":"0","4":"4"},
         "data": [
-          "444444444444",
-          "400000000004",
-          "400000000004",
-          "400000000004",
-          "400000000004",
-          "400000000004",
-          "400000000004",
-          "400000000004",
-          "444440044444"
+          "4444444444444",
+          "4000000000004",
+          "4000000000004",
+          "4000000000004",
+          "4000000000004",
+          "4000000000004",
+          "4444400000004",
+          "4444400000004",
+          "4444400000004",
+          "4444440044444"
         ]
       },
     "flags": {
         "palette": {".":"none"},
         "data": [
-          "............",
-          "............",
-          "............",
-          "............",
-          "............",
-          "............",
-          "............",
-          "............",
-          "............"
+          ".............",
+          ".............",
+          ".............",
+          ".............",
+          ".............",
+          ".............",
+          ".............",
+          ".............",
+          ".............",
+          "............."
         ]
       },
     "zones": {
         "palette": {".":"none","h":"his"},
         "data": [
-          "............",
-          ".hhhhhhhhhh.",
-          ".hhhhhhhhhh.",
-          ".hhhhhhhhhh.",
-          ".hhhhhhhhhh.",
-          ".hhhhhhhhhh.",
-          ".hhhhhhhhhh.",
-          ".hhhhhhhhhh.",
-          ".....hh....."
+          ".............",
+          ".hhhhhhhhhhh.",
+          ".hhhhhhhhhhh.",
+          ".hhhhhhhhhhh.",
+          ".hhhhhhhhhhh.",
+          ".hhhhhhhhhhh.",
+          ".....hhhhhhh.",
+          ".....hhhhhhh.",
+          ".....hhhhhhh.",
+          "......hh....."
         ]
       }
   },
   "objects": [
-    {"id":"bed","type":"furn.bed","tile":[1,1]},
-    {"id":"shelf.seeds","type":"furn.shelf","tile":[4,1],"props":{"label":"Seed Shelf"}},
-    {"id":"table","type":"furn.table","tile":[7,1]},
-    {"id":"chair","type":"furn.chair","tile":[7,3],"rotation":180},
-    {"id":"plant.north","type":"furn.plant","tile":[10,1]},
-    {"id":"plant.south","type":"furn.plant","tile":[10,7]},
-    {"id":"crate","type":"furn.crate","tile":[1,6]}
+    {"id":"frame.seed","type":"fixture.coldframe","tile":[2,1],"props":{"label":"Seed Frame"}},
+    {"id":"bench.potting","type":"furn.counter","tile":[6,1],"props":{"label":"Potting Bench"}},
+    {"id":"plant.sill","type":"furn.plant","tile":[11,1]},
+    {"id":"shelf.seeds","type":"furn.shelf","tile":[1,3],"props":{"label":"Seed Shelf"}},
+    {"id":"stove","type":"furn.stove","tile":[4,3],"props":{"label":"Drying Stove"}},
+    {"id":"crate.pots","type":"furn.crate","tile":[10,3]},
+    {"id":"rack.drying","type":"fixture.dryrack","tile":[11,3],"props":{"label":"Drying Rack"}},
+    {"id":"plant.corner","type":"furn.plant","tile":[1,5]},
+    {"id":"bed","type":"furn.bed","tile":[9,5]},
+    {"id":"table","type":"furn.table","tile":[6,6]},
+    {"id":"chair","type":"furn.chair","tile":[5,7],"rotation":90}
   ],
   "items": [
-    {"id":"mushroom.jar","type":"item.mushroom","tile":[3,2]},
-    {"id":"flower.sill","type":"item.flower","tile":[9,5]},
-    {"id":"stone.paperweight","type":"item.stone","tile":[2,7]}
+    {"id":"mushroom.tray","type":"item.mushroom","tile":[4,2]},
+    {"id":"mushroom.shade","type":"item.mushroom","tile":[3,3]},
+    {"id":"flower.bench","type":"item.flower","tile":[9,2]},
+    {"id":"stone.weight","type":"item.stone","tile":[2,4]},
+    {"id":"stick.cane","type":"item.stick","tile":[7,8]}
   ],
   "exits": [
-    {"tile":[5,8]},
-    {"tile":[6,8]}
+    {"tile":[6,9]},
+    {"tile":[7,9]}
   ],
-  "spawn": {"tile":[6,7],"facing":"north"}
+  "spawn": {"tile":[6,8],"facing":"north"}
 }

@@ -92,6 +92,14 @@ function modelFor(typeId) {
   return m;
 }
 
+/** Just short of flat, so a shoulder still catches the light in 3D. */
+const TOPPLE = Math.PI / 2 * 0.92;
+/** Seconds to go over, and seconds to get back up. Falling is faster. */
+const DROP_TIME = 0.28;
+const RISE_TIME = 0.55;
+/** No rotation at all, to blend the lie-back toward. */
+const _UPRIGHT = new THREE.Quaternion();
+
 export class NpcView {
   constructor(typeId) {
     const m = modelFor(typeId);
@@ -103,9 +111,18 @@ export class NpcView {
     this.yawG = new THREE.Group();
     this.bob = new THREE.Group();
     this.neck = new THREE.Group();
+    // The topple sits INSIDE the facing, and that is load-bearing. Inside
+    // yawG the axes are the person's own, so a roll about Z lays him on his
+    // side hinged at the feet -- and because it is inside the camera-space
+    // tilt, it can never fight the counter-rotation. Putting a pitch on yawG
+    // itself would compose as Rx*Ry under three's default XYZ Euler order,
+    // which applies it in the PARENT frame: the exact bug the note above is
+    // about, arriving one level down.
+    this.fall = new THREE.Group();
     this.root.add(this.tilt);
     this.tilt.add(this.yawG);
-    this.yawG.add(this.bob);
+    this.yawG.add(this.fall);
+    this.fall.add(this.bob);
     this.bob.add(this.neck);
 
     const bodyMesh = new THREE.Mesh(m.body, m.material);
@@ -118,13 +135,29 @@ export class NpcView {
 
   /**
    * @param {Npc} npc
-   * @param {number} t         eased morph amount
-   * @param {number} tiltRad   how far the camera has pitched from its 3D angle
+   * @param {THREE.Quaternion} lieBack  the camera-space lie-back for this frame
    * @param {number} time      seconds, for the breathing
    */
-  update(npc, t, tiltRad, time) {
+  update(npc, lieBack, time) {
     this.root.position.set(npc.x, npc.y, npc.z);
-    this.tilt.rotation.x = tiltRad * t;
+
+    // How far over he is: quick down, a beat on the floor, slower back up.
+    const recover = npc.type.recover ?? 4.5;
+    const left = npc.downed ?? 0;
+    const down = left <= 0 ? 0
+      : Math.min(1, Math.min((recover - left) / DROP_TIME, left / RISE_TIME));
+    this.fall.rotation.z = down * TOPPLE;
+
+    this.tilt.quaternion.copy(lieBack);
+    // Blend the lie-back OUT as he goes down, and this is the part that makes
+    // it read from overhead. The counter-rotation exists to make a STANDING
+    // figure legible from the top-down camera -- it lays him back toward the
+    // lens. A figure who is already lying down does not need that and is
+    // actively wrecked by it: laid back AND toppled is about 140 degrees, which
+    // is the soles of his shoes. Upright he billboards; flat he is seen from
+    // above lying flat, which is what he actually is. One representation, both
+    // views -- the same argument the whole project rests on, one level deeper.
+    if (down > 0) this.tilt.quaternion.slerp(_UPRIGHT, down);
 
     // The BODY holds the heading and the HEAD carries the glance, up to a
     // point. A person who turns their whole body to look at a customer reads as

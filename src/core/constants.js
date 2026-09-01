@@ -63,6 +63,29 @@ export function yawFromVec(dx, dz) {
 }
 
 /**
+ * Rotate a ground-plane vector about +Y by `yaw`, writing into `out`.
+ *
+ * The one piece of arithmetic that turns a camera direction into a world one.
+ * Keys arrive in SCREEN space -- "up" means away from the viewer -- and the
+ * world only knows about x and z, so every movement request is this rotation
+ * by the camera yaw before anything else looks at it.
+ *
+ * It is exactly the rotation CameraRig builds its orientation from, which is
+ * what makes the two agree: at yaw 0 it is the identity and screen-up is -z,
+ * which is why none of this existed before the camera could turn.
+ *
+ * Writes into a caller-owned object rather than returning a fresh one, because
+ * this runs once per input filter per frame and a pair of floats is not worth
+ * a sixty-a-second allocation.
+ */
+export function rotateY(x, z, yaw, out) {
+  const c = Math.cos(yaw), s = Math.sin(yaw);
+  out.x = x * c + z * s;
+  out.z = -x * s + z * c;
+  return out;
+}
+
+/**
  * The eight steps a grid walker can take, ordered so that STEP8[2 * d] is
  * DIR_VEC[d] -- the four cardinals on the even indices, the diagonals wedged
  * between the two neighbours each of them splits. That interleaving is the

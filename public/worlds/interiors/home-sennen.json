@@ -1,0 +1,104 @@
+{
+  "format": "tw.world",
+  "version": 1,
+  "kind": "interior",
+  "kits": ["kits/sennen.kit.json"],
+  "meta": {
+    "id": "home.sennen.interior",
+    "name": "Sennen's Cottage",
+    "note": "Interior of home.sennen in bellrock.json. Hand-authored. PRIVATE: see zones. Halfway up and halfway down, and the house says so: the hill half is boarded and a step higher, the sea half is flagged and lower, and the only way between them is two ramps in the middle column -- so you can go round, which is the point he keeps making about the town."
+  },
+  "grid": {"width":13,"height":10,"tileSize":1},
+  "ambience": {
+    "sky": "#171d21",
+    "hemiSky": "#e2eef7",
+    "hemiGround": "#7a7a66",
+    "sun": 0.95,
+    "hemi": 2.1
+  },
+  "zones": {
+    "home": {"owner":"folk.sennen","label":"Sennen's Cottage"}
+  },
+  "layers": {
+    "surface": {
+        "palette": {"#":"wall","w":"floor.wood","t":"floor.tile","r":"rug"},
+        "data": [
+          "#############",
+          "#wwwwwwttttt#",
+          "#wwwwwwttttt#",
+          "#wwwwwwttttt#",
+          "#wrrrwwttttt#",
+          "#wrrrwwttttt#",
+          "#wrrrwwttttt#",
+          "#wwwwwwttttt#",
+          "#wwwwwwttttt#",
+          "######tt#####"
+        ]
+      },
+    "elevation": {
+        "palette": {"0":"0","1":"1","4":"4"},
+        "data": [
+          "4444444444444",
+          "4111110000004",
+          "4111110000004",
+          "4111110000004",
+          "4111110000004",
+          "4111110000004",
+          "4111110000004",
+          "4111110000004",
+          "4111110000004",
+          "4444440044444"
+        ]
+      },
+    "flags": {
+        "palette": {".":"none","<":"ramp.west"},
+        "data": [
+          ".............",
+          ".............",
+          ".............",
+          "......<......",
+          ".............",
+          ".............",
+          "......<......",
+          ".............",
+          ".............",
+          "............."
+        ]
+      },
+    "zones": {
+        "palette": {".":"none","h":"home"},
+        "data": [
+          ".............",
+          ".hhhhhhhhhhh.",
+          ".hhhhhhhhhhh.",
+          ".hhhhhhhhhhh.",
+          ".hhhhhhhhhhh.",
+          ".hhhhhhhhhhh.",
+          ".hhhhhhhhhhh.",
+          ".hhhhhhhhhhh.",
+          ".hhhhhhhhhhh.",
+          "......hh....."
+        ]
+      }
+  },
+  "objects": [
+    {"id":"bed","type":"furn.bed","tile":[1,1]},
+    {"id":"shelf.window","type":"furn.shelf","tile":[4,1],"props":{"label":"Hill Window"}},
+    {"id":"bell","type":"fixture.bell","tile":[8,1],"props":{"label":"The Bell"}},
+    {"id":"stove","type":"furn.stove","tile":[10,1]},
+    {"id":"counter","type":"furn.counter","tile":[7,4],"props":{"label":"Kitchen Counter"}},
+    {"id":"chair","type":"furn.chair","tile":[2,5],"rotation":90},
+    {"id":"table","type":"furn.table","tile":[3,5]},
+    {"id":"plant","type":"furn.plant","tile":[11,5]},
+    {"id":"shelf.sea","type":"furn.shelf","tile":[10,7],"props":{"label":"Sea Window"}},
+    {"id":"crate","type":"furn.crate","tile":[1,8]}
+  ],
+  "items": [
+    {"id":"flower.hill","type":"item.flower","tile":[4,4]},
+    {"id":"flower.road","type":"item.flower","tile":[9,3]},
+    {"id":"shell.sill","type":"item.shell","tile":[8,5]},
+    {"id":"stone.step","type":"item.stone","tile":[2,8]}
+  ],
+  "exits": [{"tile":[6,9]},{"tile":[7,9]}],
+  "spawn": {"tile":[7,8],"facing":"north"}
+}

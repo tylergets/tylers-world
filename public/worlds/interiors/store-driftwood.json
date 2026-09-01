@@ -7,123 +7,318 @@
     "name": "Driftwood Stores",
     "note": "Interior of store.driftwood in tidewrack.json. Hand-authored."
   },
-  "grid": {"width":14,"height":10,"tileSize":1},
+  "grid": {
+    "width": 14,
+    "height": 10,
+    "tileSize": 1
+  },
   "zones": {
-    "back": {"owner": "keep.cass", "label": "behind the counter"}
+    "back": {
+      "owner": "keep.cass",
+      "label": "behind the counter"
+    }
   },
   "layers": {
     "surface": {
-        "palette": {"#":"wall","w":"floor.wood","t":"floor.tile","r":"rug"},
-        "data": [
-          "##############",
-          "#tttttttttttt#",
-          "#tttttttttttt#",
-          "#wwwwwwwwwwww#",
-          "#wwwwwwwwwwww#",
-          "#wwwrrrrrrwww#",
-          "#wwwrrrrrrwww#",
-          "#wwwwwwwwwwww#",
-          "#wwwwwwwwwwww#",
-          "######tt######"
-        ]
+      "palette": {
+        "#": "wall",
+        "w": "floor.wood",
+        "t": "floor.tile",
+        "r": "rug"
       },
+      "data": [
+        "##############",
+        "#tttttttttttt#",
+        "#tttttttttttt#",
+        "#wwwwwwwwwwww#",
+        "#wwwwwwwwwwww#",
+        "#wwwrrrrrrwww#",
+        "#wwwrrrrrrwww#",
+        "#wwwwwwwwwwww#",
+        "#wwwwwwwwwwww#",
+        "######tt######"
+      ]
+    },
     "elevation": {
-        "palette": {"0":"0","4":"4"},
-        "data": [
-          "44444444444444",
-          "40000000000004",
-          "40000000000004",
-          "40000000000004",
-          "40000000000004",
-          "40000000000004",
-          "40000000000004",
-          "40000000000004",
-          "40000000000004",
-          "44444400444444"
-        ]
+      "palette": {
+        "0": "0",
+        "4": "4"
       },
+      "data": [
+        "44444444444444",
+        "40000000000004",
+        "40000000000004",
+        "40000000000004",
+        "40000000000004",
+        "40000000000004",
+        "40000000000004",
+        "40000000000004",
+        "40000000000004",
+        "44444400444444"
+      ]
+    },
     "flags": {
-        "palette": {".":"none"},
-        "data": [
-          "..............",
-          "..............",
-          "..............",
-          "..............",
-          "..............",
-          "..............",
-          "..............",
-          "..............",
-          "..............",
-          ".............."
-        ]
+      "palette": {
+        ".": "none"
       },
+      "data": [
+        "..............",
+        "..............",
+        "..............",
+        "..............",
+        "..............",
+        "..............",
+        "..............",
+        "..............",
+        "..............",
+        ".............."
+      ]
+    },
     "zones": {
-        "palette": {".":"none","b":"back"},
-        "data": [
-          "..............",
-          ".bbbbbbbbbbbb.",
-          ".bbbbbbbbbbbb.",
-          "..............",
-          "..............",
-          "..............",
-          "..............",
-          "..............",
-          "..............",
-          ".............."
-        ]
-      }
+      "palette": {
+        ".": "none",
+        "b": "back"
+      },
+      "data": [
+        "..............",
+        ".bbbbbbbbbbbb.",
+        ".bbbbbbbbbbbb.",
+        "..............",
+        "..............",
+        "..............",
+        "..............",
+        "..............",
+        "..............",
+        ".............."
+      ]
+    }
   },
   "objects": [
-    {"id":"shelf.line","type":"furn.shelf","tile":[1,1],"props":{"label":"Line & Twine"}},
-    {"id":"shelf.tins","type":"furn.shelf","tile":[4,1],"props":{"label":"Tins"}},
-    {"id":"shelf.found","type":"furn.shelf","tile":[7,1],"props":{"label":"Found on the Beach"}},
-    {"id":"shelf.rope","type":"furn.shelf","tile":[10,1],"props":{"label":"Rope"}},
-    {"id":"counter","type":"furn.counter","tile":[3,3],"props":{"label":"Register"}},
-    {"id":"crate.west","type":"furn.crate","tile":[1,5]},
-    {"id":"crate.stack","type":"furn.crate","tile":[1,6]},
-    {"id":"crate.east","type":"furn.crate","tile":[12,5]},
-    {"id":"table.sorting","type":"furn.table","tile":[10,7],"props":{"label":"Sorting Table"}},
-    {"id":"chair.sorting","type":"furn.chair","tile":[9,8],"rotation":90},
-    {"id":"plant","type":"furn.plant","tile":[1,8]}
+    {
+      "id": "shelf.line",
+      "type": "furn.shelf",
+      "tile": [
+        1,
+        1
+      ],
+      "props": {
+        "label": "Line & Twine"
+      }
+    },
+    {
+      "id": "shelf.tins",
+      "type": "furn.shelf",
+      "tile": [
+        4,
+        1
+      ],
+      "props": {
+        "label": "Tins"
+      }
+    },
+    {
+      "id": "shelf.found",
+      "type": "furn.shelf",
+      "tile": [
+        7,
+        1
+      ],
+      "props": {
+        "label": "Found on the Beach"
+      }
+    },
+    {
+      "id": "shelf.rope",
+      "type": "furn.shelf",
+      "tile": [
+        10,
+        1
+      ],
+      "props": {
+        "label": "Rope"
+      }
+    },
+    {
+      "id": "counter",
+      "type": "furn.counter",
+      "tile": [
+        3,
+        3
+      ],
+      "props": {
+        "label": "Register"
+      }
+    },
+    {
+      "id": "crate.west",
+      "type": "furn.crate",
+      "tile": [
+        1,
+        5
+      ]
+    },
+    {
+      "id": "crate.stack",
+      "type": "furn.crate",
+      "tile": [
+        1,
+        6
+      ]
+    },
+    {
+      "id": "crate.east",
+      "type": "furn.crate",
+      "tile": [
+        12,
+        5
+      ]
+    },
+    {
+      "id": "table.sorting",
+      "type": "furn.table",
+      "tile": [
+        10,
+        7
+      ],
+      "props": {
+        "label": "Sorting Table"
+      }
+    },
+    {
+      "id": "chair.sorting",
+      "type": "furn.chair",
+      "tile": [
+        9,
+        8
+      ],
+      "rotation": 90
+    },
+    {
+      "id": "plant",
+      "type": "furn.plant",
+      "tile": [
+        1,
+        8
+      ]
+    }
   ],
   "items": [
-    {"id":"shell.counter","type":"item.shell","tile":[8,3]},
-    {"id":"stone.doorstop","type":"item.stone","tile":[5,8]},
-    {"id":"stick.bundle","type":"item.stick","tile":[2,4]}
+    {
+      "id": "shell.counter",
+      "type": "item.shell",
+      "tile": [
+        8,
+        3
+      ]
+    },
+    {
+      "id": "stone.doorstop",
+      "type": "item.stone",
+      "tile": [
+        5,
+        8
+      ]
+    },
+    {
+      "id": "stick.bundle",
+      "type": "item.stick",
+      "tile": [
+        2,
+        4
+      ]
+    }
   ],
   "npcs": [
     {
       "id": "keep.cass",
       "type": "folk.shopkeep",
-      "tile": [4, 2],
+      "tile": [
+        4,
+        2
+      ],
       "facing": "south",
-      "props": {"name": "Cass", "title": "Driftwood Stores"},
+      "props": {
+        "name": "Cass",
+        "title": "Driftwood Stores"
+      },
       "shop": {
         "name": "Whatever Washed Up",
         "markup": 1.4,
         "buyRate": 0.6,
-        "takes": ["item.shell", "item.stone", "item.stick", "tool.axe", "tool.shovel"],
+        "takes": [
+          "item.shell",
+          "item.stone",
+          "item.stick",
+          "tool.axe",
+          "tool.shovel",
+          "tool.gun",
+          "item.shot",
+          "item.game"
+        ],
         "stock": [
-          {"type": "item.stick", "count": null},
-          {"type": "item.apple", "count": 5},
-          {"type": "item.flower", "count": 3, "price": 30},
-          {"type": "item.shell", "count": 2, "price": 64},
-          {"type": "tool.axe", "count": 1, "price": 210},
-          {"type": "tool.shovel", "count": 1, "price": 165}
+          {
+            "type": "item.stick",
+            "count": null
+          },
+          {
+            "type": "item.apple",
+            "count": 5
+          },
+          {
+            "type": "item.flower",
+            "count": 3,
+            "price": 30
+          },
+          {
+            "type": "item.shell",
+            "count": 2,
+            "price": 64
+          },
+          {
+            "type": "tool.axe",
+            "count": 1,
+            "price": 210
+          },
+          {
+            "type": "tool.shovel",
+            "count": 1,
+            "price": 165
+          },
+          {
+            "type": "tool.gun",
+            "count": 1,
+            "price": 480
+          },
+          {
+            "type": "item.shot",
+            "count": null
+          }
         ]
       },
       "dialog": {
         "start": "open",
         "nodes": {
           "open": {
-            "branch": [{"when": {"flag": "met"}, "to": "again"}, {"to": "hello"}]
+            "branch": [
+              {
+                "when": {
+                  "flag": "met"
+                },
+                "to": "again"
+              },
+              {
+                "to": "hello"
+              }
+            ]
           },
           "hello": {
             "text": [
               "Door's open. It is always open, the frame is warped.",
               "Cass. Half this shop washed up on the outer beach and I will not pretend otherwise."
             ],
-            "do": {"set": "met"},
+            "do": {
+              "set": "met"
+            },
             "then": "menu"
           },
           "again": {
@@ -133,9 +328,21 @@
           "menu": {
             "text": "Trading, or sheltering?",
             "choices": [
-              {"text": "Trading.", "do": {"shop": true}, "to": "after"},
-              {"text": "What'll you take?", "to": "takes"},
-              {"text": "Sheltering, mostly.", "to": "bye"}
+              {
+                "text": "Trading.",
+                "do": {
+                  "shop": true
+                },
+                "to": "after"
+              },
+              {
+                "text": "What'll you take?",
+                "to": "takes"
+              },
+              {
+                "text": "Sheltering, mostly.",
+                "to": "bye"
+              }
             ]
           },
           "takes": {
@@ -154,8 +361,24 @@
     }
   ],
   "exits": [
-    {"tile":[6,9]},
-    {"tile":[7,9]}
+    {
+      "tile": [
+        6,
+        9
+      ]
+    },
+    {
+      "tile": [
+        7,
+        9
+      ]
+    }
   ],
-  "spawn": {"tile":[7,8],"facing":"north"}
+  "spawn": {
+    "tile": [
+      7,
+      8
+    ],
+    "facing": "north"
+  }
 }

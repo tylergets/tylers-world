@@ -112,6 +112,15 @@ export class Npc {
     this._target = this.post;
     /** Who he is looking at, while someone is talking to him. */
     this.attention = null;
+    /**
+     * Seconds left on the floor, or 0 for somebody on their feet.
+     *
+     * NOT SAVED, on the precedent Edits.js writes down about axe swings: "two
+     * chops into an oak is a thing your arms remember, not the world". A few
+     * seconds flat on your back is a weaker claim still -- and Npc.snapshot
+     * already declines to save his POSITION for the same class of reason.
+     */
+    this.downed = 0;
 
     // Where a walker keeps to: his authored tile, exactly as an animal's home
     // is. He is not fenced to it -- see Stroll -- it is where he keeps ending up.
@@ -148,7 +157,21 @@ export class Npc {
   get tileZ() { return Math.floor(this.z); }
 
   /** True when this NPC has anything to say. */
-  get talkable() { return this.dialog !== null; }
+  /**
+   * Whether there is a conversation to be had.
+   *
+   * The `downed` term does the whole of "E does nothing to a man on the floor",
+   * and it does it in one place: Folk.nearest already filters on this, and
+   * Game.interaction already tests it on the tile ahead, so both of the two
+   * routes into a conversation are closed by the single flag.
+   */
+  get talkable() { return this.dialog !== null && this.downed <= 0; }
+
+  /** Put him on the floor. He gets up on his own. */
+  knockDown() {
+    this.downed = this.type.recover ?? 4.5;
+    this.attention = null;
+  }
 
   /**
    * Look at a point in the world -- the player, while they are talking.
@@ -163,6 +186,16 @@ export class Npc {
   }
 
   update(dt, world) {
+    // Down, and nothing else is true while he is. Above everything, so Stroll
+    // never sees the frame -- a walker who kept his errand while flat on his
+    // back would stand up somewhere he did not fall.
+    if (this.downed > 0) {
+      this.downed = Math.max(0, this.downed - dt);
+      this.attention = null;
+      this.speed = 0;
+      return;
+    }
+
     if (this.attention) {
       const dx = this.attention.x - this.x, dz = this.attention.z - this.z;
       // Standing exactly on him is not a direction. Keep the last heading.

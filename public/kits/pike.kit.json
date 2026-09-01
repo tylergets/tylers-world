@@ -1,0 +1,56 @@
+{
+  "format": "tw.kit",
+  "version": 1,
+  "meta": { "id": "pike", "name": "Pike's Place" },
+
+  "types": {
+    "fixture.sifter": {
+      "kind": "object",
+      "label": "Sand Sifter",
+      "footprint": { "w": 2, "d": 2 },
+      "height": 1.18,
+      "squash": 0.38,
+
+      "palette": {
+        "frame":  "#8a6242",
+        "iron":   "#6b6f74",
+        "ironHi": "#9aa0a6",
+        "mesh":   "#b9b3a6",
+        "dust":   "#d8c9a4",
+        "brass":  "#c9a227"
+      },
+
+      "parts": [
+        { "prim": "box", "at": [-0.70, 0.30, -0.32], "size": [0.10, 0.60, 0.10], "color": "frame" },
+        { "prim": "box", "at": [0.70, 0.30, -0.32], "size": [0.10, 0.60, 0.10], "color": "frame" },
+        { "prim": "box", "at": [-0.70, 0.30, 0.32], "size": [0.10, 0.60, 0.10], "color": "frame" },
+        { "prim": "box", "at": [0.70, 0.30, 0.32], "size": [0.10, 0.60, 0.10], "color": "frame" },
+        { "prim": "box", "at": [0, 0.62, 0], "size": [1.70, 0.08, 0.86], "color": "frame" },
+        { "prim": "box", "at": [0, 0.36, -0.32], "size": [1.50, 0.05, 0.06], "color": "frame" },
+
+        { "prim": "cyl", "at": [-0.42, 0.86, 0], "size": [0.34, 0.40, 0.34], "color": "mesh",
+          "anim": { "spin": { "rate": 0.62, "phase": 0.0 } } },
+        { "prim": "cyl", "at": [-0.42, 1.07, 0], "size": [0.36, 0.05, 0.36], "color": "iron",
+          "anim": { "spin": { "rate": 0.62, "phase": 0.0 } } },
+        { "prim": "box", "at": [-0.42, 1.13, 0], "size": [0.52, 0.04, 0.04], "color": "ironHi",
+          "anim": { "spin": { "rate": 0.62, "phase": 0.0 } } },
+
+        { "prim": "box", "at": [0.52, 0.68, 0], "size": [0.60, 0.06, 0.52], "color": "iron",
+          "anim": { "bob": { "amp": 0.018, "rate": 1.30, "phase": 0.0 } } },
+        { "prim": "box", "at": [0.52, 0.73, 0], "size": [0.50, 0.04, 0.42], "color": "dust",
+          "anim": { "bob": { "amp": 0.018, "rate": 1.30, "phase": 0.0 } } },
+
+        { "prim": "blob", "at": [0, 0.10, 0.36], "size": [0.26, 0.10, 0.20], "color": "dust" },
+        { "prim": "chunk", "at": [0.72, 0.70, -0.28], "size": [0.07, 0.05, 0.07], "color": "brass" },
+        { "prim": "chunk", "at": [0.20, 0.69, -0.30], "size": [0.06, 0.04, 0.06], "color": "ironHi" }
+      ],
+
+      "state": { "turns": 0 },
+
+      "interact": {
+        "label": "Turn the sifter",
+        "run": "pike-sifter.js"
+      }
+    }
+  }
+}

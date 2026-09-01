@@ -71,8 +71,10 @@
  *
  *   kind    "exterior" (default) or "interior". A presentation and validation
  *           hint; the simulation itself never branches on it.
- *   terrain Exterior-only: the world's FORM -- island or holler -- which is
- *           what the renderer wraps around the edge of the grid. See forms.js.
+ *   terrain Exterior-only: the world's FORM -- island, holler, mesa, caldera,
+ *           fen or coast -- which is what the renderer wraps around the edge of
+ *           the grid, and `open`, the edges that form leaves unwalled. See
+ *           forms.js.
  *   exits   Interior-only: tiles that send you back out the way you came.
  *
  * The link in the other direction is per-INSTANCE, not per-type: a building
@@ -246,10 +248,10 @@ export function parseWorldFile(raw) {
   }
 
   // -- form ----------------------------------------------------------------
-  // Every exterior is an island or a holler, and it has to say which. The edge
-  // of the grid is the first thing you look at from inside a place, so leaving
-  // the horizon to a default would make it the one part of the world nobody
-  // chose. Interiors have no outside and therefore no form.
+  // Every exterior has a form and has to say which. The edge of the grid is the
+  // first thing you look at from inside a place, so leaving the horizon to a
+  // default would make it the one part of the world nobody chose. Interiors have
+  // no outside and therefore no form.
   let terrain = null;
   if (kind === 'exterior') {
     const t = req(raw, 'terrain', 'terrain');

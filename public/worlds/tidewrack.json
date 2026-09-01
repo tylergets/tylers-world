@@ -392,13 +392,24 @@
       "props": {
         "name": "Otto",
         "title": "Keeps things floating",
-        "roam": 5
+        "roam": 5,
+        "voice": {
+          "pitch": 1.02,
+          "rate": 21,
+          "timbre": "sawtooth"
+        }
       },
       "dialog": {
         "start": "open",
         "nodes": {
           "open": {
             "branch": [
+              {
+                "when": {
+                  "visits": 9
+                },
+                "to": "ninth"
+              },
               {
                 "when": {
                   "flag": "told"
@@ -419,12 +430,24 @@
           "hello": {
             "text": [
               "Mind the rope. Everything on this landing is rope or under it.",
-              "Otto. I keep what floats floating. You'll be walking the ring -- everybody does, the first day."
+              "Otto. I keep what floats floating. You'll be walking the ring -- everybody does, the first day.",
+              "Nothing here is sinking fast. That is the most any of it gets from me and it has never once complained."
             ],
             "then": "menu"
           },
           "fourth": {
-            "text": "Round again. It does not get any shorter.",
+            "text": "Round again. It does not get any shorter. I have measured it twice, out of spite.",
+            "then": "menu"
+          },
+          "after": {
+            "text": "Still going round, then. Good. Somebody should be.",
+            "then": "menu"
+          },
+          "ninth": {
+            "text": [
+              "Nine laps. You have walked further round this ring than I have in a year and I live on it.",
+              "I do not need to go round. Everything comes past me eventually. That is what a landing is."
+            ],
             "then": "menu"
           },
           "menu": {
@@ -449,6 +472,29 @@
                 "to": "trade"
               },
               {
+                "text": "Is Marnie really out on both shores?",
+                "when": {
+                  "not": {
+                    "flag": "marnie"
+                  }
+                },
+                "to": "marnie"
+              },
+              {
+                "text": "Does anything here actually sink?",
+                "to": "sink"
+              },
+              {
+                "text": "Could you use a shell?",
+                "when": {
+                  "has": {
+                    "type": "item.shell",
+                    "count": 1
+                  }
+                },
+                "to": "shell"
+              },
+              {
                 "text": "I'll walk on.",
                 "to": "bye"
               }
@@ -465,11 +511,11 @@
             "then": "menu"
           },
           "dune": {
-            "text": "Sand, and the only look at this place that makes sense of it. Worth the climb the once.",
+            "text": "Sand, and the only look at this place that makes sense of it. Worth the climb the once. Yarrow is up there and will make it worth it twice.",
             "then": "menu"
           },
           "trade": {
-            "text": "Driftwood I can always use. There -- that's fair for three.",
+            "text": "Driftwood I can always use. There -- that's fair for three, and two of them are going in a boat you will never see.",
             "do": [
               {
                 "take": {
@@ -483,8 +529,40 @@
             ],
             "then": "menu"
           },
-          "after": {
-            "text": "Still going round, then.",
+          "marnie": {
+            "text": [
+              "She is. Sea in the morning, lagoon in the afternoon, and she knows which one is worth it before she gets there.",
+              "She has a glass in that window of hers, and I will tell you plainly: she has watched me tie a bad knot from half a mile off and mentioned it a week later."
+            ],
+            "do": {
+              "set": "marnie"
+            },
+            "then": "menu"
+          },
+          "sink": {
+            "text": [
+              "Everything sinks. That is not pessimism, it is a schedule.",
+              "A boat, a landing, a rope, a man -- all of it going down at its own rate, and the whole trade is slowing yours down.",
+              "Cheerful business, once you stop arguing with it."
+            ],
+            "then": "menu"
+          },
+          "shell": {
+            "text": [
+              "A good one. I will put it on the post at the head of the landing, where they all go.",
+              "There is fourteen years of them up there. Take a coin -- you have added to something."
+            ],
+            "do": [
+              {
+                "take": {
+                  "type": "item.shell",
+                  "count": 1
+                }
+              },
+              {
+                "coins": 30
+              }
+            ],
             "then": "menu"
           },
           "bye": {
@@ -504,13 +582,31 @@
       "props": {
         "name": "Marnie",
         "title": "Works both shores",
-        "roam": 7
+        "roam": 7,
+        "voice": {
+          "pitch": 1.16,
+          "rate": 28,
+          "timbre": "square"
+        }
       },
       "dialog": {
         "start": "open",
         "nodes": {
           "open": {
             "branch": [
+              {
+                "when": {
+                  "all": [
+                    {
+                      "friend": true
+                    },
+                    {
+                      "flag": "glass"
+                    }
+                  ]
+                },
+                "to": "glassagain"
+              },
               {
                 "when": {
                   "friend": true
@@ -524,13 +620,21 @@
           },
           "hello": {
             "text": [
-              "You came the long way round. There is no short way.",
-              "Marnie. Cottage is mine -- go in out of the wind whenever, now I know your face."
+              "You came the long way round. There is no short way. Now then.",
+              "Marnie. Cottage is mine -- go in out of the wind whenever, now I know your face.",
+              "Mind the step up to the window. Everybody trips on it once and then they never do again, which is the whole design."
             ],
             "then": "menu"
           },
           "welcome": {
-            "text": "Lagoon side today. The sea has a temper on it.",
+            "text": "Lagoon side today. The sea has a temper on it. Go in and put the kettle somewhere useful.",
+            "then": "menu"
+          },
+          "glassagain": {
+            "text": [
+              "You have had a look through my glass, then.",
+              "I will not ask what you saw. I know what is out there. I would rather hear what you thought of it."
+            ],
             "then": "menu"
           },
           "menu": {
@@ -551,13 +655,43 @@
                 "to": "lagoon"
               },
               {
+                "text": "What's the spyglass for?",
+                "when": {
+                  "not": {
+                    "flag": "glass"
+                  }
+                },
+                "to": "glass"
+              },
+              {
+                "text": "Where does all that on the shelves come from?",
+                "to": "finds"
+              },
+              {
+                "text": "What have you heard?",
+                "when": {
+                  "visits": 3
+                },
+                "to": "heard"
+              },
+              {
+                "text": "Would you buy a pebble off me?",
+                "when": {
+                  "has": {
+                    "type": "item.stone",
+                    "count": 2
+                  }
+                },
+                "to": "stones"
+              },
+              {
                 "text": "Just passing.",
                 "to": "bye"
               }
             ]
           },
           "gift": {
-            "text": "Take these. The lagoon side gives up better ones than the sea does.",
+            "text": "Take these. The lagoon side gives up better ones than the sea does, and it will deny it.",
             "do": {
               "give": {
                 "type": "item.shell",
@@ -570,6 +704,50 @@
             "text": [
               "Because the ring takes the weather and the lagoon does not.",
               "Same water, two moods, ten steps apart. You get used to it and then you do not."
+            ],
+            "then": "menu"
+          },
+          "glass": {
+            "text": [
+              "For seeing which shore is worth the walk before I have walked it. That is the honest half.",
+              "The other half is that I can see the landing, the far sand and about a mile of water from a chair.",
+              "People think I am lucky with what I know. I am not lucky. I am seated."
+            ],
+            "do": {
+              "set": "glass"
+            },
+            "then": "menu"
+          },
+          "finds": {
+            "text": [
+              "Off the tideline, every one, and I can tell you which shore and roughly which week.",
+              "Nothing on that shelf is worth anything. It is a record, not a hoard."
+            ],
+            "then": "menu"
+          },
+          "heard": {
+            "text": [
+              "I will tell you what I will tell you.",
+              "Otto is patching the same hull he swore he had finished, and there is a boat moored on the far side where nobody moors.",
+              "Yarrow knows about the boat and has decided it is none of his business, which is how he stays so calm."
+            ],
+            "then": "menu"
+          },
+          "stones": {
+            "text": [
+              "Two? I will take one. The flat one -- the other has been in fresh water and I do not know what to do with that.",
+              "There. That is a good price and I am telling you so you know when the next one is not."
+            ],
+            "do": [
+              {
+                "take": {
+                  "type": "item.stone",
+                  "count": 1
+                }
+              },
+              {
+                "coins": 9
+              }
             ],
             "then": "menu"
           },
@@ -590,13 +768,24 @@
       "props": {
         "name": "Yarrow",
         "title": "Up here most days",
-        "roam": 5
+        "roam": 5,
+        "voice": {
+          "pitch": 0.84,
+          "rate": 22,
+          "timbre": "triangle"
+        }
       },
       "dialog": {
         "start": "open",
         "nodes": {
           "open": {
             "branch": [
+              {
+                "when": {
+                  "visits": 7
+                },
+                "to": "often"
+              },
               {
                 "when": {
                   "visits": 3
@@ -619,6 +808,13 @@
             "text": "Back up. It is a good view for thinking at.",
             "then": "menu"
           },
+          "often": {
+            "text": [
+              "You are up here more than the wind is.",
+              "I will say the thing I have been saving: the people who keep climbing this dune are the ones who end up staying on the island. Every time."
+            ],
+            "then": "menu"
+          },
           "menu": {
             "text": "Anything?",
             "choices": [
@@ -635,6 +831,26 @@
               {
                 "text": "What am I looking at?",
                 "to": "view"
+              },
+              {
+                "text": "How does anything grow in sand?",
+                "when": {
+                  "not": {
+                    "flag": "sand"
+                  }
+                },
+                "to": "sand"
+              },
+              {
+                "text": "There is a boat out there nobody uses.",
+                "when": {
+                  "visits": 2
+                },
+                "to": "boat"
+              },
+              {
+                "text": "Do you ever go down?",
+                "to": "down"
               },
               {
                 "text": "Nothing. Thanks.",
@@ -656,6 +872,32 @@
             "text": [
               "A ring, and a lake in the hole of it, and sea round the whole lot.",
               "Otto is the smudge down at the landing. Marnie is the one you cannot see, which is west."
+            ],
+            "then": "menu"
+          },
+          "sand": {
+            "text": [
+              "It does not, mostly. You are looking at the survivors and they are all short and all furious.",
+              "The trick is not soil. The trick is roots that have given up on going down and gone sideways instead.",
+              "There is a lesson in that and I have decided not to draw it."
+            ],
+            "do": {
+              "set": "sand"
+            },
+            "then": "menu"
+          },
+          "boat": {
+            "text": [
+              "I have seen it. It has been there since before the wet week.",
+              "Marnie has seen it too, from a chair, and has said nothing to me about it, which means she is waiting to see who mentions it first.",
+              "I would rather not be the one. You go ahead."
+            ],
+            "then": "menu"
+          },
+          "down": {
+            "text": [
+              "For flour, and for the store, and to be told things I could have worked out from up here.",
+              "It is a fine place, the ring. It is just that from down there you cannot see it is a ring."
             ],
             "then": "menu"
           },

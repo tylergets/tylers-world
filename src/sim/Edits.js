@@ -42,6 +42,22 @@ export class Edits {
     this.world = world;
     /** Object ids that have been felled. */
     this.felled = new Set();
+    /**
+     * Animal ids that have been shot.
+     *
+     * The third record, and it belongs here for the reason the other two do:
+     * the world file says which chickens a place opens with, and whether one of
+     * them is still alive is a fact about the running game. It is an EDIT and
+     * not save-state, so it replays onto a place built fresh from its file and
+     * an id that no longer names anything is simply an edit with nothing left
+     * to apply -- a world whose flock has been re-authored since still loads.
+     *
+     * Note the asymmetry with `felled`, which is worth knowing about: felling
+     * calls into the World, because collision is derived from the file and has
+     * to be told. Culling calls into nothing. An animal is not part of the
+     * world's geometry -- Fauna owns it, this is only the record.
+     */
+    this.culled = new Set();
     /** tile index -> the id of the tree whose stump is on it, and back again. */
     this.stumps = new Map();
     this.stumpTile = new Map();
@@ -58,6 +74,32 @@ export class Edits {
   get holeList() { return [...this.holes.values()]; }
 
   hitsOn(id) { return this.hits.get(id) ?? 0; }
+
+  /**
+   * Forget what was shot here. Returns how many are owed back.
+   *
+   * A separate call from Fauna.restock rather than one method doing both,
+   * because they are facts in different places: this is the RECORD, which is
+   * per place and saved, and the flock is LIVE state, which is per place and
+   * is not. Keeping them apart is what lets a place you are not standing in
+   * have its record cleared now and its animals rebuilt whenever you next walk
+   * in -- which is the same laziness the save already uses everywhere else.
+   */
+  forgetCulled() {
+    const n = this.culled.size;
+    if (!n) return 0;
+    this.culled.clear();
+    this.version++;
+    return n;
+  }
+
+  /** Write down that an animal is gone. Returns whether this was news. */
+  cull(id) {
+    if (!id || this.culled.has(id)) return false;
+    this.culled.add(id);
+    this.version++;
+    return true;
+  }
 
   /** Land one blow on an object. Returns how many it has taken in total. */
   swing(obj) {
@@ -159,6 +201,7 @@ export class Edits {
   snapshot() {
     return {
       felled: [...this.felled],
+      culled: [...this.culled],
       // Which stumps are GONE rather than which are left: a stump is what
       // felling a tree produces, so the list that needs writing down is the
       // one recording the second thing that happened to it.
@@ -181,6 +224,10 @@ export class Edits {
     // exactly the path an axe takes -- including the stump it leaves, which a
     // shortcut into `removeObject` would silently skip.
     for (const id of snap.felled ?? []) this.fell(this.world.objectRecord(id));
+    // Straight into the set, unlike the felling above: there is no World call
+    // to take, and the flock is reconciled against this by Fauna.sync when the
+    // place is entered.
+    for (const id of snap.culled ?? []) this.culled.add(id);
     // After the felling, which is what puts the stumps there in the first place.
     for (const id of snap.cleared ?? []) {
       const i = this.stumpTile.get(id);

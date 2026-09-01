@@ -15,6 +15,7 @@
  * to carry its own checks; there is no build step left to catch it.
  */
 
+import { formByName } from './forms.js';
 import { parseWorldFile } from './WorldFile.js';
 import { World } from './World.js';
 
@@ -145,6 +146,36 @@ export class Draft {
     const [x0, x1] = fromX < x ? [fromX, x] : [x, fromX];
     for (let rz = z - 1; rz <= z + 1; rz++)
       for (let rx = x0; rx <= x1; rx++) if (this.inb(rx, rz)) this.taken[rz][rx] = true;
+    return cut;
+  }
+
+  /**
+   * `trail`, turned ninety degrees: a way up a hillside along COLUMN `x`,
+   * walking from `fromZ` toward `dirZ`.
+   *
+   * A holler's benches stack east and west of its floor, so a trail across a
+   * row climbs all of them. A coast's stack NORTH of the beach, and a row there
+   * climbs nothing at all -- every tile in it is on the same bench. Same rule,
+   * same reservation, other axis; `rampNorth` is not the answer because it cuts
+   * ONE step and a hillside has as many as it has.
+   */
+  climb(x, fromZ, dirZ) {
+    const flagChar = dirZ < 0 ? '^' : 'v';
+    let cut = 0;
+    let z = fromZ;
+    for (; z > 0 && z < this.H - 1; z += dirZ) {
+      const here = Number(this.elev[z][x]), next = Number(this.elev[z + dirZ][x]);
+      if (next === here + 1 && this.surf[z][x] !== 'w' && !this.taken[z][x] && this.flag[z][x] === '.') {
+        this.flag[z][x] = flagChar;
+        cut++;
+      } else if (next > here + 1) {
+        throw new Error(`climb(${x}): a ${next - here}-step cliff at z=${z} is not something a ramp can fix`);
+      }
+    }
+    if (!cut) throw new Error(`climb(${x}) from z=${fromZ}: nothing to climb`);
+    const [z0, z1] = fromZ < z ? [fromZ, z] : [z, fromZ];
+    for (let rx = x - 1; rx <= x + 1; rx++)
+      for (let rz = z0; rz <= z1; rz++) if (this.inb(rx, rz)) this.taken[rz][rx] = true;
     return cut;
   }
 
@@ -413,40 +444,136 @@ export function heal(world, spawnTile) {
  * An island whose grid runs out in a meadow, or a holler whose closed wall sits
  * at the same height as its floor, renders as a world that visibly lies about
  * its own shape -- and it does it silently, which is the worse half.
+ *
+ * ONE CHECK PER FORM, in a table rather than a chain of ifs, because the table
+ * is the contract: a form declared in forms.js and missing from here is a word
+ * in a world file that nothing ever earns. Each check gets the draft and the
+ * edges the wall leaves open, and throws with the count and a tile you can go
+ * and look at -- "the shape is wrong" on its own is not a bug report.
  */
-export function verifyForm(d, terrain) {
-  const EDGES = ['north', 'south', 'west', 'east'];
-  const edgeTiles = (edge) => {
-    const out = [];
-    if (edge === 'north') for (let x = 0; x < d.W; x++) out.push([x, 0]);
-    if (edge === 'south') for (let x = 0; x < d.W; x++) out.push([x, d.H - 1]);
-    if (edge === 'west') for (let z = 0; z < d.H; z++) out.push([0, z]);
-    if (edge === 'east') for (let z = 0; z < d.H; z++) out.push([d.W - 1, z]);
-    return out;
-  };
 
-  if (terrain.form === 'island') {
-    for (const edge of EDGES) {
-      const dry = edgeTiles(edge).filter(([x, z]) => d.surf[z][x] !== 'w');
-      if (dry.length) {
-        throw new Error(`island: ${dry.length} non-water tiles on the ${edge} edge `
-          + `(first at ${dry[0]}); the sea has to start inside the grid`);
-      }
+const EDGES = ['north', 'south', 'west', 'east'];
+
+/** Every tile on one edge of the grid, as [x, z] pairs. */
+function edgeTiles(d, edge) {
+  const out = [];
+  if (edge === 'north') for (let x = 0; x < d.W; x++) out.push([x, 0]);
+  if (edge === 'south') for (let x = 0; x < d.W; x++) out.push([x, d.H - 1]);
+  if (edge === 'west') for (let z = 0; z < d.H; z++) out.push([0, z]);
+  if (edge === 'east') for (let z = 0; z < d.H; z++) out.push([d.W - 1, z]);
+  return out;
+}
+
+/**
+ * The grid runs out in water on every side, which is what a band of open water
+ * welds to. Shared by the two forms that make that claim -- an island's sea and
+ * a fen's shallows are the same demand on the outermost row of tiles.
+ */
+function wetAllRound(d, form) {
+  for (const edge of EDGES) {
+    const dry = edgeTiles(d, edge).filter(([x, z]) => d.surf[z][x] !== 'w');
+    if (dry.length) {
+      throw new Error(`${form}: ${dry.length} non-water tiles on the ${edge} edge `
+        + `(first at ${dry[0]}); the water has to start inside the grid`);
     }
   }
+}
 
-  if (terrain.form === 'holler') {
-    const open = terrain.open ?? ['south'];
+/** Share of one edge's tiles that are raised enough to read as a wall. */
+const highShare = (d, edge) => {
+  const tiles = edgeTiles(d, edge);
+  return tiles.filter(([x, z]) => Number(d.elev[z][x]) >= 2).length / tiles.length;
+};
+
+/** Share of one edge's tiles that are water. */
+const wetShare = (d, edge) => {
+  const tiles = edgeTiles(d, edge);
+  return tiles.filter(([x, z]) => d.surf[z][x] === 'w').length / tiles.length;
+};
+
+const pct = (f) => `${Math.round(f * 100)}%`;
+
+const FORM_CHECKS = {
+  island: (d) => wetAllRound(d, 'island'),
+
+  fen: (d) => wetAllRound(d, 'fen'),
+
+  holler: (d, open) => {
     for (const edge of EDGES) {
-      const tiles = edgeTiles(edge);
-      const high = tiles.filter(([x, z]) => Number(d.elev[z][x]) >= 2).length;
+      const high = highShare(d, edge);
       if (open.includes(edge)) {
-        if (high > tiles.length * 0.25) {
-          throw new Error(`holler: the open ${edge} edge is walled off (${high}/${tiles.length} tiles raised)`);
-        }
-      } else if (high < tiles.length * 0.75) {
-        throw new Error(`holler: the closed ${edge} edge does not climb (only ${high}/${tiles.length} tiles raised)`);
+        if (high > 0.25) throw new Error(`holler: the open ${edge} edge is walled off (${pct(high)} raised)`);
+      } else if (high < 0.75) {
+        throw new Error(`holler: the closed ${edge} edge does not climb (only ${pct(high)} raised)`);
       }
     }
-  }
+  },
+
+  // A caldera is a holler with no mouth: every edge has to be wall, and the
+  // check is the holler's closed-edge rule applied all four ways round.
+  caldera: (d) => {
+    for (const edge of EDGES) {
+      const high = highShare(d, edge);
+      if (high < 0.75) {
+        throw new Error(`caldera: the ${edge} rim does not climb (only ${pct(high)} raised);`
+          + ' a caldera with a low side is a bowl with a hole in it');
+      }
+    }
+  },
+
+  /**
+   * A mesa's rim is the top of the drop, and two things follow.
+   *
+   * Water there would pour off a cliff into a band with no river in it. And the
+   * rim has to be ONE level: the band welds to the outer corner heights and
+   * then falls ten units, so a bench that runs off the map hangs a terrace in
+   * mid-air where the cliff face should be.
+   */
+  mesa: (d) => {
+    for (const edge of EDGES) {
+      const tiles = edgeTiles(d, edge);
+      const wet = tiles.filter(([x, z]) => d.surf[z][x] === 'w');
+      if (wet.length) {
+        throw new Error(`mesa: ${wet.length} water tiles on the ${edge} rim (first at ${wet[0]});`
+          + ' there is nothing below this edge for it to fall into');
+      }
+      const tally = new Map();
+      for (const [x, z] of tiles) {
+        const e = d.elev[z][x];
+        tally.set(e, (tally.get(e) ?? 0) + 1);
+      }
+      const flat = Math.max(...tally.values()) / tiles.length;
+      if (flat < 0.85) {
+        throw new Error(`mesa: the ${edge} rim steps (only ${pct(flat)} of it is one level);`
+          + ' a bench that runs off a mesa is a terrace hanging in the air');
+      }
+    }
+  },
+
+  /**
+   * The one mixed form, and so the one check that reads the open edges as a
+   * statement about SURFACE rather than height: sea that way, land this way.
+   * Seventy per cent rather than all, because the band's taper crossfades over
+   * the corners and a bay reaching a little way up a side edge is a coast
+   * rather than a mistake.
+   */
+  coast: (d, open) => {
+    if (!open.length) throw new Error('coast: no open edge, so no sea; this is a field');
+    for (const edge of EDGES) {
+      const wet = wetShare(d, edge);
+      if (open.includes(edge)) {
+        if (wet < 0.70) throw new Error(`coast: the open ${edge} edge is only ${pct(wet)} water;`
+          + ' the sea has to reach the edge it is drawn off');
+      } else if (wet > 0.30) {
+        throw new Error(`coast: the closed ${edge} edge is ${pct(wet)} water;`
+          + ' pasture cannot be welded to a shoreline');
+      }
+    }
+  },
+};
+
+export function verifyForm(d, terrain) {
+  const check = FORM_CHECKS[terrain.form];
+  if (!check) throw new Error(`verifyForm: no edge check for form "${terrain.form}"`);
+  check(d, terrain.open ?? formByName(terrain.form).defaultOpen ?? []);
 }

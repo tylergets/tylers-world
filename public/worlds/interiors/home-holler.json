@@ -2,74 +2,86 @@
   "format": "tw.world",
   "version": 1,
   "kind": "interior",
+  "kits": ["kits/holler.kit.json"],
   "meta": {
     "id": "home.holler.interior",
     "name": "The Old Place",
-    "note": "Interior of home.holler in sourwood.json. Hand-authored."
+    "note": "Interior of home.holler in sourwood.json. Hand-authored. The one house in the game with nobody in it, and everything here is arranged to say so: no zone, because there is no owner to be welcome by; two tiles of fallen chimney breast standing in the middle of the floor; a hearth that is cold and, unlike every other kit fixture, does not move at all. It is also the darkest interior -- see ambience."
   },
-  "grid": {"width":11,"height":9,"tileSize":1},
+  "grid": {"width":12,"height":10,"tileSize":1},
+  "ambience": {
+    "sky": "#101215",
+    "sunColor": "#d8e0e8",
+    "hemiSky": "#bfc9d2",
+    "hemiGround": "#4a4a44",
+    "sun": 0.55,
+    "hemi": 1.7
+  },
   "layers": {
     "surface": {
         "palette": {"#":"wall","w":"floor.wood","t":"floor.tile","r":"rug"},
         "data": [
-          "###########",
-          "#wwwtttttt#",
-          "#wwwwwwwww#",
-          "#wwwwwwwww#",
-          "#wwrrrrwww#",
-          "#wwrrrrwww#",
-          "#wwwwwwwww#",
-          "#wwwwwwwww#",
-          "#####tt####"
+          "############",
+          "#ttttwwwwww#",
+          "#ttttwwwwww#",
+          "#wwwwwwwwww#",
+          "#wwww##wwww#",
+          "#wwww##wwww#",
+          "#wwwwwwwwww#",
+          "#wwrwwwwwww#",
+          "#wwwwwwwwww#",
+          "#####tt#####"
         ]
       },
     "elevation": {
         "palette": {"0":"0","4":"4"},
         "data": [
-          "44444444444",
-          "40000000004",
-          "40000000004",
-          "40000000004",
-          "40000000004",
-          "40000000004",
-          "40000000004",
-          "40000000004",
-          "44444004444"
+          "444444444444",
+          "400000000004",
+          "400000000004",
+          "400000000004",
+          "400004400004",
+          "400004400004",
+          "400000000004",
+          "400000000004",
+          "400000000004",
+          "444440044444"
         ]
       },
     "flags": {
         "palette": {".":"none"},
         "data": [
-          "...........",
-          "...........",
-          "...........",
-          "...........",
-          "...........",
-          "...........",
-          "...........",
-          "...........",
-          "..........."
+          "............",
+          "............",
+          "............",
+          "............",
+          "............",
+          "............",
+          "............",
+          "............",
+          "............",
+          "............"
         ]
       }
   },
   "objects": [
-    {"id":"bed","type":"furn.bed","tile":[1,1]},
-    {"id":"counter.kitchen","type":"furn.counter","tile":[4,1],"props":{"label":"Kitchen Counter"}},
-    {"id":"stove","type":"furn.stove","tile":[8,1]},
-    {"id":"table","type":"furn.table","tile":[4,4]},
-    {"id":"chair.west","type":"furn.chair","tile":[3,4]},
-    {"id":"chair.east","type":"furn.chair","tile":[6,5],"rotation":180},
-    {"id":"shelf.books","type":"furn.shelf","tile":[2,7],"props":{"label":"Bookcase"}},
-    {"id":"crate","type":"furn.crate","tile":[9,4]},
-    {"id":"plant","type":"furn.plant","tile":[9,7]}
+    {"id":"hearth.cold","type":"fixture.coldhearth","tile":[1,1],"props":{"label":"Cold Hearth"}},
+    {"id":"range.old","type":"furn.stove","tile":[8,1],"props":{"label":"The Old Range"}},
+    {"id":"bed","type":"furn.bed","tile":[9,3]},
+    {"id":"chair.fallen","type":"furn.chair","tile":[2,6],"rotation":270},
+    {"id":"table","type":"furn.table","tile":[3,6]},
+    {"id":"shelf.books","type":"furn.shelf","tile":[7,8],"props":{"label":"Bookcase"}},
+    {"id":"crate","type":"furn.crate","tile":[1,8]}
   ],
   "items": [
-    {"id":"mushroom.dried","type":"item.mushroom","tile":[7,2]},
-    {"id":"stick.kindling","type":"item.stick","tile":[8,5]}
+    {"id":"stick.kindling","type":"item.stick","tile":[5,2]},
+    {"id":"stone.mantel","type":"item.stone","tile":[8,7]},
+    {"id":"mushroom.damp","type":"item.mushroom","tile":[2,5]},
+    {"id":"mushroom.sill","type":"item.mushroom","tile":[10,6]}
   ],
   "exits": [
-    {"tile":[5,8]},
-    {"tile":[6,8]}
+    {"tile":[5,9]},
+    {"tile":[6,9]}
   ],
-  "spawn": {"tile":[6,7],"facing":"north"}
+  "spawn": {"tile":[6,8],"facing":"north"}
 }

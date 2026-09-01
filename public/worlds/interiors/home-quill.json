@@ -1,0 +1,105 @@
+{
+  "format": "tw.world",
+  "version": 1,
+  "kind": "interior",
+  "kits": ["kits/quill.kit.json"],
+  "meta": {
+    "id": "home.quill.interior",
+    "name": "Quill's Hut",
+    "note": "Interior of home.quill in sedgewater.json. Hand-authored. PRIVATE: see zones. The hut stands on posts over the fen and there is a hole cut in its own floor -- three tiles of open water, indoors, with the eel trap hanging through it. The dry corner he mentions is real: it is the east end, up one step, and it is the only part of this house that is."
+  },
+  "grid": {"width":12,"height":10,"tileSize":1},
+  "ambience": {
+    "sky": "#14181a",
+    "sunColor": "#e4f0e6",
+    "hemiSky": "#d2e4d8",
+    "hemiGround": "#4f5a44",
+    "sun": 0.65,
+    "hemi": 2.05,
+    "fog": [12, 40]
+  },
+  "zones": {
+    "home": {"owner":"folk.quill","label":"Quill's Hut"}
+  },
+  "layers": {
+    "surface": {
+        "palette": {"#":"wall","w":"floor.wood","t":"floor.tile","r":"rug","~":"water"},
+        "data": [
+          "############",
+          "#wwwwwwwwww#",
+          "#wwwwwwwwww#",
+          "#wwww~~~www#",
+          "#wwww~~~www#",
+          "#wwwwwwwwww#",
+          "#wwwwwwwwww#",
+          "#wwwwwwwwww#",
+          "#wwwwwwwwww#",
+          "#####tt#####"
+        ]
+      },
+    "elevation": {
+        "palette": {"0":"0","1":"1","4":"4"},
+        "data": [
+          "444444444444",
+          "400000000004",
+          "400000000004",
+          "400000000004",
+          "400000000004",
+          "400000000004",
+          "400000001114",
+          "400000001114",
+          "400000001114",
+          "444440044444"
+        ]
+      },
+    "flags": {
+        "palette": {".":"none","e":"ramp.east"},
+        "data": [
+          "............",
+          "............",
+          "............",
+          "............",
+          "............",
+          "............",
+          "............",
+          ".......e....",
+          "............",
+          "............"
+        ]
+      },
+    "zones": {
+        "palette": {".":"none","h":"home"},
+        "data": [
+          "............",
+          ".hhhhhhhhhh.",
+          ".hhhhhhhhhh.",
+          ".hhhhhhhhhh.",
+          ".hhhhhhhhhh.",
+          ".hhhhhhhhhh.",
+          ".hhhhhhhhhh.",
+          ".hhhhhhhhhh.",
+          ".hhhhhhhhhh.",
+          ".....hh....."
+        ]
+      }
+  },
+  "objects": [
+    {"id":"table","type":"furn.table","tile":[1,1]},
+    {"id":"chair","type":"furn.chair","tile":[3,1],"rotation":270},
+    {"id":"shelf.reed","type":"furn.shelf","tile":[5,1],"props":{"label":"Reed Bundles"}},
+    {"id":"crate.cuttings","type":"furn.crate","tile":[9,1]},
+    {"id":"plant","type":"furn.plant","tile":[10,1]},
+    {"id":"trap.eel","type":"fixture.eeltrap","tile":[4,3],"props":{"label":"Eel Trap"}},
+    {"id":"shelf.baskets","type":"furn.shelf","tile":[1,5],"props":{"label":"Basket Shelf"}},
+    {"id":"stove","type":"furn.stove","tile":[1,7]},
+    {"id":"bed","type":"furn.bed","tile":[9,6]}
+  ],
+  "items": [
+    {"id":"flower.marigold","type":"item.flower","tile":[3,2]},
+    {"id":"flower.bank","type":"item.flower","tile":[9,4]},
+    {"id":"mushroom.post","type":"item.mushroom","tile":[1,6]},
+    {"id":"stick.bundle","type":"item.stick","tile":[4,8]}
+  ],
+  "exits": [{"tile":[5,9]},{"tile":[6,9]}],
+  "spawn": {"tile":[5,8],"facing":"north"}
+}

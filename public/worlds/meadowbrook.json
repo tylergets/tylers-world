@@ -446,13 +446,24 @@
       "props": {
         "name": "Pim",
         "title": "Loiterer",
-        "roam": 6
+        "roam": 6,
+        "voice": {
+          "pitch": 0.84,
+          "rate": 20,
+          "timbre": "sawtooth"
+        }
       },
       "dialog": {
         "start": "open",
         "nodes": {
           "open": {
             "branch": [
+              {
+                "when": {
+                  "visits": 9
+                },
+                "to": "ninth"
+              },
               {
                 "when": {
                   "flag": "gave"
@@ -472,13 +483,25 @@
           },
           "hello": {
             "text": [
-              "Morning. Chickens been at the flowerbed again.",
-              "Marla's shop is the blue roof, if you're looking. She's fair."
+              "Morning. Chickens been at the flowerbed again. Third time this week, and it is Tuesday.",
+              "Pim. I'm not doing anything, before you ask. Nobody round here believes that either.",
+              "Marla's shop is the blue roof, if you're looking. She's fair. Fairer than she needs to be."
             ],
             "then": "menu"
           },
           "third": {
-            "text": "You do walk about a lot, don't you.",
+            "text": "You do walk about a lot, don't you. I like that in a person. Saves me doing it.",
+            "then": "menu"
+          },
+          "ninth": {
+            "text": [
+              "Here's a thing. I've watched you go past this spot more times than I've seen Tobin leave his house.",
+              "And I have lived here longer than he has."
+            ],
+            "then": "menu"
+          },
+          "after": {
+            "text": "Flowerbed's holding up. Mind the chickens. They know your face now and they have opinions.",
             "then": "menu"
           },
           "menu": {
@@ -487,10 +510,19 @@
               {
                 "text": "Could you spare a flower?",
                 "when": {
-                  "room": {
-                    "type": "item.flower",
-                    "count": 1
-                  }
+                  "all": [
+                    {
+                      "room": {
+                        "type": "item.flower",
+                        "count": 1
+                      }
+                    },
+                    {
+                      "not": {
+                        "flag": "gave"
+                      }
+                    }
+                  ]
                 },
                 "to": "gift"
               },
@@ -503,13 +535,33 @@
                 "to": "folk"
               },
               {
+                "text": "What do you do all day?",
+                "when": {
+                  "not": {
+                    "flag": "asked.day"
+                  }
+                },
+                "to": "day"
+              },
+              {
+                "text": "What's the fountain for?",
+                "to": "fountain"
+              },
+              {
+                "text": "Anyone fallen out with anyone?",
+                "when": {
+                  "visits": 4
+                },
+                "to": "gossip"
+              },
+              {
                 "text": "I'll let you get on.",
                 "to": "bye"
               }
             ]
           },
           "gift": {
-            "text": "Take one, they grow back faster than I can pick them.",
+            "text": "Take one, they grow back faster than I can pick them. Don't tell Bramble where you got it.",
             "do": [
               {
                 "give": {
@@ -524,18 +576,43 @@
             "then": "menu"
           },
           "gate": {
-            "text": "North, out of town. Long walk and nothing at the end of it yet.",
+            "text": [
+              "North, out of town. Long walk and nothing at the end of it yet.",
+              "I say yet. I have been saying yet for eleven years."
+            ],
             "then": "menu"
           },
           "folk": {
             "text": [
-              "Bramble's the one in the green apron, west side. Wren's down on the sand. Tobin you'll smell before you see -- solder.",
+              "Bramble's the one in the green apron, west side. Cottage with the green roof, and half of it is glass -- he grows things in there he will not talk about.",
+              "Wren's down on the sand. Low cabin. She has a boat indoors, upside down, and has had for two summers.",
+              "Tobin you'll smell before you see -- solder. Long house, orange roof. Two rooms and a wall between them, which is unusual round here.",
               "Say hello before you go walking into their houses. They're funny about that, and I'd be too."
             ],
             "then": "menu"
           },
-          "after": {
-            "text": "Flowerbed's holding up. Mind the chickens.",
+          "day": {
+            "text": [
+              "This. I stand here and things happen in front of me, and then I know about them.",
+              "It is not much of a trade but there's no season for it."
+            ],
+            "do": {
+              "set": "asked.day"
+            },
+            "then": "menu"
+          },
+          "fountain": {
+            "text": [
+              "Coin in, wish out. That is the arrangement, and the fountain has never signed anything.",
+              "It gave Tobin his money back once. He put it straight in again, which tells you about Tobin."
+            ],
+            "then": "menu"
+          },
+          "gossip": {
+            "text": [
+              "Bramble thinks Wren leaves the tide out on purpose. Wren thinks Bramble talks to his vegetables.",
+              "They are both right, and they are civil about it, which is the most you get from neighbours."
+            ],
             "then": "menu"
           },
           "bye": {
@@ -555,13 +632,31 @@
       "props": {
         "name": "Bramble",
         "title": "Grows things",
-        "roam": 6
+        "roam": 6,
+        "voice": {
+          "pitch": 0.78,
+          "rate": 20,
+          "timbre": "triangle"
+        }
       },
       "dialog": {
         "start": "open",
         "nodes": {
           "open": {
             "branch": [
+              {
+                "when": {
+                  "all": [
+                    {
+                      "friend": true
+                    },
+                    {
+                      "visits": 7
+                    }
+                  ]
+                },
+                "to": "regular"
+              },
               {
                 "when": {
                   "friend": true
@@ -576,12 +671,20 @@
           "hello": {
             "text": [
               "Don't mind me, I'm up to my wrists in it.",
-              "Bramble. That's my cottage behind you -- the green roof. Door's open to you now we've met."
+              "Bramble. That's my cottage behind you -- green roof, glass along the north side. Door's open to you now we've met.",
+              "Wipe your feet or don't, it is all soil in there anyway."
             ],
             "then": "menu"
           },
           "welcome": {
-            "text": "Back again. Go on in if you like, I'll be out here a while yet.",
+            "text": "Back again. Go on in if you like, I'll be out here a while yet. Lift the frame if you want, just put the glass down gently.",
+            "then": "menu"
+          },
+          "regular": {
+            "text": [
+              "There you are. I told the beans you'd be by.",
+              "They don't answer. That is not the point of telling them."
+            ],
             "then": "menu"
           },
           "menu": {
@@ -592,14 +695,44 @@
                 "when": {
                   "room": {
                     "type": "item.mushroom",
-                    "count": 1
+                    "count": 2
                   }
                 },
                 "to": "gift"
               },
               {
+                "text": "What's under the glass?",
+                "when": {
+                  "not": {
+                    "flag": "asked.frame"
+                  }
+                },
+                "to": "frame"
+              },
+              {
+                "text": "What is all that hanging up inside?",
+                "to": "rack"
+              },
+              {
                 "text": "What is there to do round here?",
                 "to": "advice"
+              },
+              {
+                "text": "How are the neighbours?",
+                "when": {
+                  "visits": 3
+                },
+                "to": "neighbours"
+              },
+              {
+                "text": "I found this. Any use to you?",
+                "when": {
+                  "has": {
+                    "type": "item.stone",
+                    "count": 1
+                  }
+                },
+                "to": "stone"
               },
               {
                 "text": "Just passing.",
@@ -608,7 +741,7 @@
             ]
           },
           "gift": {
-            "text": "Take these. Came up under the pines after the rain.",
+            "text": "Take these. Came up under the pines after the rain, and the rain did all the work.",
             "do": [
               {
                 "give": {
@@ -619,10 +752,52 @@
             ],
             "then": "menu"
           },
+          "frame": {
+            "text": [
+              "Seed frame. Brick sides, glass on top, and about four degrees of difference -- which is the whole of it in March.",
+              "There is a shady corner of it I did not sow and something keeps coming up in it. I have stopped arguing."
+            ],
+            "do": {
+              "set": "asked.frame"
+            },
+            "then": "menu"
+          },
+          "rack": {
+            "text": [
+              "Drying. Everything in this village is either growing or drying and I am the reason for both.",
+              "Do not eat the bundle on the left. It is not food yet and it may never be."
+            ],
+            "then": "menu"
+          },
           "advice": {
             "text": [
               "Walk about. Talk to folk. Half the doors in this town open once you've said hello to whoever's behind them.",
               "The other half you can try, but you'll not be in there long."
+            ],
+            "then": "menu"
+          },
+          "neighbours": {
+            "text": [
+              "Wren is good company if you can stand being told the tide. Which you cannot change, so why she tells me I do not know.",
+              "Tobin is the best of us and would deny it, at length, with numbers."
+            ],
+            "then": "menu"
+          },
+          "stone": {
+            "text": [
+              "A pebble. Aye, I will have that -- goes in the bottom of a pot so the water knows where to leave.",
+              "Here's a coin for it, which is more than it is worth and less than it does."
+            ],
+            "do": [
+              {
+                "take": {
+                  "type": "item.stone",
+                  "count": 1
+                }
+              },
+              {
+                "coins": 7
+              }
             ],
             "then": "menu"
           },
@@ -643,13 +818,31 @@
       "props": {
         "name": "Wren",
         "title": "Works the shallows",
-        "roam": 7
+        "roam": 7,
+        "voice": {
+          "pitch": 1.28,
+          "rate": 32,
+          "timbre": "square"
+        }
       },
       "dialog": {
         "start": "open",
         "nodes": {
           "open": {
             "branch": [
+              {
+                "when": {
+                  "all": [
+                    {
+                      "friend": true
+                    },
+                    {
+                      "flag": "boat"
+                    }
+                  ]
+                },
+                "to": "boatagain"
+              },
               {
                 "when": {
                   "friend": true
@@ -664,12 +857,17 @@
           "hello": {
             "text": [
               "Careful, you nearly went in.",
-              "Wren. Cabin's mine, the low one on the sand. Come in out of the weather whenever, now I know your face."
+              "Wren. Cabin's mine, the low one on the sand. Come in out of the weather whenever, now I know your face.",
+              "Step up at the far end. Everything I care about is on the dry half."
             ],
             "then": "menu"
           },
           "welcome": {
-            "text": "Tide's out. Good day for it.",
+            "text": "Tide's out. Good day for it. Don't say anything nice, I've had a good morning and I'd like to keep it.",
+            "then": "menu"
+          },
+          "boatagain": {
+            "text": "Boat is still upside down, before you ask. It is not a question, it is a season.",
             "then": "menu"
           },
           "menu": {
@@ -686,8 +884,35 @@
                 "to": "gift"
               },
               {
+                "text": "There's a boat in your house.",
+                "when": {
+                  "not": {
+                    "flag": "boat"
+                  }
+                },
+                "to": "boat"
+              },
+              {
+                "text": "What's in the barrel?",
+                "to": "barrel"
+              },
+              {
                 "text": "Marla buys shells, I hear.",
                 "to": "trade"
+              },
+              {
+                "text": "What is the weather doing?",
+                "to": "weather"
+              },
+              {
+                "text": "I have sticks, if you need them.",
+                "when": {
+                  "has": {
+                    "type": "item.stick",
+                    "count": 3
+                  }
+                },
+                "to": "sticks"
               },
               {
                 "text": "I'll leave you to it.",
@@ -696,7 +921,7 @@
             ]
           },
           "gift": {
-            "text": "Here. I've a bucket of them and one pair of hands.",
+            "text": "Here. I've a bucket of them and one pair of hands. Don't thank me.",
             "do": [
               {
                 "give": {
@@ -707,8 +932,50 @@
             ],
             "then": "menu"
           },
+          "boat": {
+            "text": [
+              "There is. Two planks off her port side and one of them is the one that matters.",
+              "She goes back in when she is right and not a day before. You can look under her. Everybody does."
+            ],
+            "do": {
+              "set": "boat"
+            },
+            "then": "menu"
+          },
+          "barrel": {
+            "text": [
+              "Bait. You asked.",
+              "It has been in there since the last time it was cold and it is doing something I have decided not to look at."
+            ],
+            "then": "menu"
+          },
           "trade": {
             "text": "She does, and she pays properly for them. Don't tell her I said so.",
+            "then": "menu"
+          },
+          "weather": {
+            "text": [
+              "Coming round to the north by evening, and that means nothing to you and everything to me.",
+              "Ask me again tomorrow and I will tell you I said so."
+            ],
+            "then": "menu"
+          },
+          "sticks": {
+            "text": [
+              "Three? I will take two. One is for the fire and one is going in that hull whether it likes it or not.",
+              "Here. That is trade, not thanks."
+            ],
+            "do": [
+              {
+                "take": {
+                  "type": "item.stick",
+                  "count": 2
+                }
+              },
+              {
+                "coins": 12
+              }
+            ],
             "then": "menu"
           },
           "bye": {
@@ -728,13 +995,31 @@
       "props": {
         "name": "Tobin",
         "title": "Mends what he can",
-        "roam": 5
+        "roam": 5,
+        "voice": {
+          "pitch": 0.94,
+          "rate": 16,
+          "timbre": "sawtooth"
+        }
       },
       "dialog": {
         "start": "open",
         "nodes": {
           "open": {
             "branch": [
+              {
+                "when": {
+                  "all": [
+                    {
+                      "friend": true
+                    },
+                    {
+                      "flag": "orrery"
+                    }
+                  ]
+                },
+                "to": "orreryagain"
+              },
               {
                 "when": {
                   "friend": true
@@ -749,12 +1034,20 @@
           "hello": {
             "text": [
               "Hm? Oh. Hello.",
-              "Tobin. The long house with the orange roof. You're welcome in it, though I warn you there's nowhere to sit."
+              "Tobin. The long house with the orange roof. You're welcome in it, though I warn you there's nowhere to sit.",
+              "Two rooms. Work in the front, live in the back. The wall was not my idea but it was the right one."
             ],
             "then": "menu"
           },
           "welcome": {
-            "text": "It's you. Mind the crates.",
+            "text": "It's you. Mind the crates. Second one from the door is heavier than it looks and I have stopped apologising for it.",
+            "then": "menu"
+          },
+          "orreryagain": {
+            "text": [
+              "You wound it again.",
+              "It does not mind. Nothing in this house minds being used, that is the entire point of a house."
+            ],
             "then": "menu"
           },
           "menu": {
@@ -775,13 +1068,52 @@
                 "to": "making"
               },
               {
+                "text": "What is the brass thing on the stand?",
+                "when": {
+                  "not": {
+                    "flag": "orrery"
+                  }
+                },
+                "to": "orrery"
+              },
+              {
+                "text": "The bench with the pedal -- what does that do?",
+                "to": "treadle"
+              },
+              {
+                "text": "Could you look at this pebble?",
+                "when": {
+                  "all": [
+                    {
+                      "has": {
+                        "type": "item.stone",
+                        "count": 1
+                      }
+                    },
+                    {
+                      "not": {
+                        "flag": "pebble"
+                      }
+                    }
+                  ]
+                },
+                "to": "pebble"
+              },
+              {
+                "text": "You should charge more.",
+                "when": {
+                  "coins": 200
+                },
+                "to": "charge"
+              },
+              {
                 "text": "Nothing. Sorry.",
                 "to": "bye"
               }
             ]
           },
           "trade": {
-            "text": "I could. Here's for your trouble.",
+            "text": "I could. Ash, is it. Yes. Here's for your trouble.",
             "do": [
               {
                 "take": {
@@ -797,6 +1129,46 @@
           },
           "making": {
             "text": "Nothing. Mending. There's a difference and it's most of my week.",
+            "then": "menu"
+          },
+          "orrery": {
+            "text": [
+              "That is not for anything.",
+              "It goes round. Six turns of the key and it goes round for about a minute, and none of it is labelled.",
+              "I built it the winter I came here, when there was nothing to mend yet. It is the only thing I have made that was not asked for."
+            ],
+            "do": {
+              "set": "orrery"
+            },
+            "then": "menu"
+          },
+          "treadle": {
+            "text": [
+              "Foot goes on the bar, bar drives the cord, cord turns the plate. Then both my hands are free, which is the whole invention.",
+              "Two hundred years old, that idea, and still nobody has improved on having hands."
+            ],
+            "then": "menu"
+          },
+          "pebble": {
+            "text": [
+              "Hm. Turn it over. There -- see the line. That has been through a fire and come out the other side.",
+              "Keep it. I would like to know where you found it, when you remember."
+            ],
+            "do": [
+              {
+                "set": "pebble"
+              },
+              {
+                "coins": 5
+              }
+            ],
+            "then": "menu"
+          },
+          "charge": {
+            "text": [
+              "For mending? No. A thing that is broken is already costing somebody something.",
+              "I am not short. There are coins in the case of that orrery I have not bothered to get out."
+            ],
             "then": "menu"
           },
           "bye": {

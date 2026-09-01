@@ -12,6 +12,12 @@
  * viewer in both views. Exactly the effect of a billboard sprite, from one mesh
  * and one transform.
  *
+ * "Toward the camera" is a direction, not the +z axis, so the hinge turns with
+ * the orbit -- which is why this takes a whole quaternion rather than an angle.
+ * Stage builds it once a frame for everything that lies back (see Stage.render);
+ * hinging around a fixed X here instead would lay the model over sideways as
+ * soon as the camera left north, in the flat view where it is most visible.
+ *
  * Node order matters: tilt is applied in CAMERA space (outer), facing in WORLD
  * space (inner). Swap them and the character keels over sideways when walking
  * east or west.
@@ -77,15 +83,14 @@ export class PlayerView {
 
   /**
    * @param {Player} player
-   * @param {number} t         eased morph amount
-   * @param {number} tiltRad   how far the camera has pitched from its 3D angle
+   * @param {THREE.Quaternion} lieBack  the camera-space lie-back for this frame
    */
-  update(player, t, tiltRad) {
+  update(player, lieBack) {
     this.root.position.set(player.x, player.y, player.z);
     this.yawG.rotation.y = player.yaw;
-    // Positive X rotation lays the model back toward +z, which is where the
-    // camera lives. Hinged at the origin, i.e. at the feet.
-    this.tilt.rotation.x = tiltRad * t;
+    // Hinged at the origin, i.e. at the feet, which is what keeps them planted
+    // on the right tile however far the model is laid over.
+    this.tilt.quaternion.copy(lieBack);
 
     const moving = player.speed > 0.15;
     this.bob.position.y = moving ? Math.abs(Math.sin(player.walkPhase)) * 0.045 : 0;

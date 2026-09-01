@@ -92,6 +92,15 @@ const DEBUG_ROWS = [
   ['control', 'control'],
 ];
 
+/**
+ * A setting id as a label: `sunlit` -> `Sunlit`.
+ *
+ * The names come straight from the setting rather than from a second table
+ * here, so a label cannot disagree with the value it reports on the day
+ * someone appends a fourth water level or a fourth preset.
+ */
+const title = (s) => s[0].toUpperCase() + s.slice(1);
+
 /** Perf rows, same shape, kept in their own block so they can be hidden as one. */
 const PERF_ROWS = [
   ['fps', 'fps'],
@@ -108,17 +117,20 @@ const PERF_ROWS = [
   ['geoms', 'geometries'],
   ['shadows', 'shadows'],
   ['render', 'render'],
-  ['scaler', 'scaler'],
 ];
 
 export class Hud {
-  constructor(root, { onScrub, onToggle, onVoice, onShoreline, onWater, onMap, onWorlds }) {
+  constructor(root, {
+    onScrub, onToggle, onVoice, onShoreline, onWater, onMap, onWorlds,
+    onQuality, onResolution, onShadows, onAntialias, onDayLength,
+  }) {
     root.innerHTML = `
       <div class="hud hud-tl">
         <div class="panel-head">
           <div id="hud-place">
             <div class="world-name" id="hud-world"></div>
             <div class="place-note" id="hud-note" hidden></div>
+            <div class="place-note" id="hud-clock"></div>
           </div>
           <button class="gear" id="hud-gear" title="Settings"
                   aria-label="Settings" aria-expanded="false">&#9881;</button>
@@ -137,17 +149,46 @@ export class Hud {
             <span class="morph-end">2D</span>
           </div>
 
-          <div class="set-title">Options</div>
-          <button class="view-toggle" id="hud-shoreline"
-                  title="Blend sand into shallow water with wet sand and foam">
-            <span class="vt-label">Shoreline</span>
-            <span class="vt-key" id="hud-shoreline-label"></span>
+          <div class="set-title">Video</div>
+          <button class="view-toggle" id="hud-quality"
+                  title="Low, Medium or High -- sets resolution, shadows, water and antialiasing together">
+            <span class="vt-label">Quality</span>
+            <span class="vt-key" id="hud-quality-label"></span>
+          </button>
+          <button class="view-toggle" id="hud-resolution"
+                  title="How many pixels the frame is drawn at. Lower is faster and softer.">
+            <span class="vt-label">Resolution</span>
+            <span class="vt-key" id="hud-resolution-label"></span>
+          </button>
+          <button class="view-toggle" id="hud-shadows"
+                  title="The sun's cast shadows. Off is the biggest single saving here.">
+            <span class="vt-label">Shadows</span>
+            <span class="vt-key" id="hud-shadows-label"></span>
+          </button>
+          <button class="view-toggle" id="hud-antialias"
+                  title="Smooths jagged edges. Takes effect on the next reload.">
+            <span class="vt-label">Antialiasing</span>
+            <span class="vt-key" id="hud-antialias-label"></span>
           </button>
           <button class="view-toggle" id="hud-water"
                   title="Still, rippling, or a full sunlit surface with glints and reflections">
             <span class="vt-label">Water</span>
             <span class="vt-key" id="hud-water-label"></span>
           </button>
+          <button class="view-toggle" id="hud-shoreline"
+                  title="Blend sand into shallow water with wet sand and foam">
+            <span class="vt-label">Shoreline</span>
+            <span class="vt-key" id="hud-shoreline-label"></span>
+          </button>
+
+          <div class="set-title">World</div>
+          <button class="view-toggle" id="hud-daylength"
+                  title="How long a day lasts. Frozen stops the sun where it stands.">
+            <span class="vt-label">Day length</span>
+            <span class="vt-key" id="hud-daylength-label"></span>
+          </button>
+
+          <div class="set-title">Options</div>
           <button class="view-toggle" id="hud-voice">
             <span class="vt-label" id="hud-voice-label"></span>
             <span class="vt-key">M</span>
@@ -205,9 +246,10 @@ export class Hud {
           <b>Shift</b><span>Run</span>
           <b>Click</b><span>Walk there <span class="dim">2D</span></span>
           <b>Tab</b><span>Switch view</span>
+          <b>, .</b><span>Turn camera <span class="dim">snaps in 2D</span></span>
           <b>E</b><span>Talk <span class="dim">&middot;</span> pick up <span class="dim">&middot;</span> enter</span>
           <b>Q</b><span>Drop</span>
-          <b>F</b><span>Use tool <span class="dim">&middot;</span> chop <span class="dim">&middot;</span> dig</span>
+          <b>F</b><span>Use tool <span class="dim">&middot;</span> chop <span class="dim">&middot;</span> dig <span class="dim">&middot;</span> shoot</span>
           <b>[ ]</b><span>Change slot</span>
           <b>Esc</b><span>Walk away</span>
         </div>
@@ -267,9 +309,20 @@ export class Hud {
     this.voiceLabel = root.querySelector('#hud-voice-label');
     this.shorelineLabel = root.querySelector('#hud-shoreline-label');
     this.waterLabel = root.querySelector('#hud-water-label');
+    this.qualityLabel = root.querySelector('#hud-quality-label');
+    this.resolutionLabel = root.querySelector('#hud-resolution-label');
+    this.shadowsLabel = root.querySelector('#hud-shadows-label');
+    this.antialiasLabel = root.querySelector('#hud-antialias-label');
     this.perfLabel = root.querySelector('#hud-perf-label');
+    this.dayLengthLabel = root.querySelector('#hud-daylength-label');
+    this.clockEl = root.querySelector('#hud-clock');
     root.querySelector('#hud-shoreline').addEventListener('click', onShoreline);
     root.querySelector('#hud-water').addEventListener('click', onWater);
+    root.querySelector('#hud-quality').addEventListener('click', onQuality);
+    root.querySelector('#hud-resolution').addEventListener('click', onResolution);
+    root.querySelector('#hud-shadows').addEventListener('click', onShadows);
+    root.querySelector('#hud-antialias').addEventListener('click', onAntialias);
+    root.querySelector('#hud-daylength').addEventListener('click', onDayLength);
     root.querySelector('#hud-voice').addEventListener('click', onVoice);
     root.querySelector('#hud-perf-btn').addEventListener('click', () => this.togglePerf());
     root.querySelector('#hud-worlds').addEventListener('click', onWorlds);
@@ -373,6 +426,30 @@ export class Hud {
   }
 
   /**
+   * Say how long a day is.
+   *
+   * Pushed in already-labelled by the Game, for the same reason the voice and
+   * the map are: settings/game.js owns the names, and a second table of them
+   * here would be a second answer to one question.
+   */
+  setDayLength(label) {
+    this.dayLengthLabel.textContent = label;
+  }
+
+  /**
+   * The date and time, under the name of the place.
+   *
+   * Written every update and NOT gated on a version counter, unlike the bag and
+   * the purse. Those change rarely and redraw expensively; the time changes on
+   * every frame there is, so a counter guarding it would be a more elaborate
+   * way of saying "always". Same treatment as the perf rows, which are the
+   * other continuously-moving numbers on this panel.
+   */
+  setClock(clock) {
+    this.clockEl.textContent = `Day ${clock.day}  ·  ${clock.label}`;
+  }
+
+  /**
    * Say which water the player is getting.
    *
    * The names come straight from the setting rather than from a second table
@@ -380,7 +457,35 @@ export class Hud {
    * bug waiting for the day someone appends a fourth one.
    */
   setWater(style) {
-    this.waterLabel.textContent = style[0].toUpperCase() + style.slice(1);
+    this.waterLabel.textContent = title(style);
+  }
+
+  /**
+   * The quality preset, or `custom` when the individual settings match none.
+   *
+   * The Game derives which one it is rather than remembering what was last
+   * clicked, so turning the shadows off on their own is visible here
+   * immediately -- a preset label that can lie about the frame you are looking
+   * at is worse than no preset at all.
+   */
+  setQuality(preset) {
+    this.qualityLabel.textContent = title(preset);
+  }
+
+  setResolution(res) {
+    this.resolutionLabel.textContent = res;
+  }
+
+  setShadows(mode) {
+    this.shadowsLabel.textContent = title(mode);
+  }
+
+  /**
+   * @param {string} mode  the stored setting
+   * @param {string} note  ' · reload' while the live context disagrees with it
+   */
+  setAntialias(mode, note = '') {
+    this.antialiasLabel.textContent = title(mode) + note;
   }
 
   /**
@@ -447,6 +552,7 @@ export class Hud {
     this.#set('facing', DIR_NAME[player.facing]);
     this.#set('control', game.input.name === 'grid' ? 'grid step' : 'free walk');
     this.#set('here', obj ? (obj.props?.label ?? objectType(obj.type).label) : null);
+    this.setClock(player.clock);
     this.#actionRows(game);
     this.#trespass(game);
     this.#portalRow(world, player);
@@ -477,9 +583,6 @@ export class Hud {
     this.#set('geoms', stage.renderer.info.memory.geometries);
     this.#set('shadows', stage.renderer.shadowMap.enabled ? 'on' : 'off');
     this.#set('render', `${stage.resolution.x}×${stage.resolution.y} @ ${stage.quality.toFixed(2)}`);
-    // Why the scale is where it is. "held · cpu-bound" is the interesting one:
-    // it means the frame is over budget and resolution is not the lever.
-    this.#set('scaler', game.scaler);
     if (this.device.textContent !== stage.gpu) this.device.textContent = stage.gpu;
   }
 

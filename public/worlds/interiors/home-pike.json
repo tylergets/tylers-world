@@ -1,0 +1,106 @@
+{
+  "format": "tw.world",
+  "version": 1,
+  "kind": "interior",
+  "kits": ["kits/pike.kit.json"],
+  "meta": {
+    "id": "home.pike.interior",
+    "name": "Pike's Place",
+    "note": "Interior of home.pike in rimrock.json. Hand-authored. PRIVATE: see zones. The only house in the game with a porch INSIDE it: a walled vestibule two tiles deep behind the front door, because on a mesa the thing you are keeping out is not weather, it is sand. There is dust in the air here -- see ambience.fog, which no other interior sets."
+  },
+  "grid": {"width":12,"height":10,"tileSize":1},
+  "ambience": {
+    "sky": "#1c1712",
+    "sunColor": "#ffe6bc",
+    "hemiSky": "#ffe8c0",
+    "hemiGround": "#8a7550",
+    "sun": 0.8,
+    "hemi": 2.1,
+    "fog": [10, 34]
+  },
+  "zones": {
+    "home": {"owner":"folk.pike","label":"Pike's Place"}
+  },
+  "layers": {
+    "surface": {
+        "palette": {"#":"wall","w":"floor.wood","t":"floor.tile","r":"rug"},
+        "data": [
+          "############",
+          "#wwwwwwwwww#",
+          "#wwwwwwwwww#",
+          "#wwwrrrwwww#",
+          "#wwwrrrwwww#",
+          "#wwwwwwwwww#",
+          "#wwwwwwwwww#",
+          "#www#tt#www#",
+          "#www#tt#www#",
+          "#####tt#####"
+        ]
+      },
+    "elevation": {
+        "palette": {"0":"0","4":"4"},
+        "data": [
+          "444444444444",
+          "400000000004",
+          "400000000004",
+          "400000000004",
+          "400000000004",
+          "400000000004",
+          "400000000004",
+          "400040040004",
+          "400040040004",
+          "444440044444"
+        ]
+      },
+    "flags": {
+        "palette": {".":"none"},
+        "data": [
+          "............",
+          "............",
+          "............",
+          "............",
+          "............",
+          "............",
+          "............",
+          "............",
+          "............",
+          "............"
+        ]
+      },
+    "zones": {
+        "palette": {".":"none","h":"home"},
+        "data": [
+          "............",
+          ".hhhhhhhhhh.",
+          ".hhhhhhhhhh.",
+          ".hhhhhhhhhh.",
+          ".hhhhhhhhhh.",
+          ".hhhhhhhhhh.",
+          ".hhhhhhhhhh.",
+          ".hhh.hh.hhh.",
+          ".hhh.hh.hhh.",
+          ".....hh....."
+        ]
+      }
+  },
+  "objects": [
+    {"id":"sifter","type":"fixture.sifter","tile":[1,1],"props":{"label":"Sand Sifter"}},
+    {"id":"shelf.hinges","type":"furn.shelf","tile":[4,1],"props":{"label":"Hinges & Parts"}},
+    {"id":"shelf.axles","type":"furn.shelf","tile":[7,1],"props":{"label":"Axles"}},
+    {"id":"crate.grit","type":"furn.crate","tile":[10,1]},
+    {"id":"counter","type":"furn.counter","tile":[1,3],"props":{"label":"Bench"}},
+    {"id":"bed","type":"furn.bed","tile":[9,3]},
+    {"id":"table","type":"furn.table","tile":[3,5]},
+    {"id":"chair","type":"furn.chair","tile":[2,6],"rotation":90},
+    {"id":"crate.sand","type":"furn.crate","tile":[1,8]},
+    {"id":"plant","type":"furn.plant","tile":[10,8]}
+  ],
+  "items": [
+    {"id":"stone.paperweight","type":"item.stone","tile":[6,2]},
+    {"id":"stone.drift","type":"item.stone","tile":[2,8]},
+    {"id":"stick.bundle","type":"item.stick","tile":[3,4]},
+    {"id":"flower.jar","type":"item.flower","tile":[9,6]}
+  ],
+  "exits": [{"tile":[5,9]},{"tile":[6,9]}],
+  "spawn": {"tile":[5,8],"facing":"north"}
+}

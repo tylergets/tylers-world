@@ -34,6 +34,7 @@ import { sweep, turnToward } from './body.js';
 import { Inventory } from './Inventory.js';
 import { Purse } from './Purse.js';
 import { Friends } from './Friends.js';
+import { Clock } from './Clock.js';
 
 export class Player {
   constructor(world) {
@@ -49,6 +50,11 @@ export class Player {
     // has to be able to ask whether its owner would mind, and its owner is not
     // in the room. See Friends.js.
     this.friends = new Friends();
+    // Time, and it belongs here for the plainest version of the reason: walking
+    // into a shop must not put the sun back where it was. Everything else on
+    // this list crosses a doorway because it is in your pockets; the clock
+    // crosses one because it is not in the room. See Clock.js.
+    this.clock = new Clock();
     this.placeIn(world, world.spawn.tile, world.spawn.facing);
   }
 

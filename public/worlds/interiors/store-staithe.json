@@ -1,0 +1,369 @@
+{
+  "format": "tw.world",
+  "version": 1,
+  "kind": "interior",
+  "meta": {
+    "id": "store.staithe.interior",
+    "name": "The Staithe",
+    "note": "Interior of store.staithe in sedgewater.json. Hand-authored."
+  },
+  "grid": {
+    "width": 13,
+    "height": 10,
+    "tileSize": 1
+  },
+  "zones": {
+    "back": {
+      "owner": "keep.wilf",
+      "label": "behind the counter"
+    }
+  },
+  "layers": {
+    "surface": {
+      "palette": {
+        "#": "wall",
+        "w": "floor.wood",
+        "t": "floor.tile",
+        "r": "rug"
+      },
+      "data": [
+        "#############",
+        "#ttttttttttt#",
+        "#ttttttttttt#",
+        "#tttwwwwwttt#",
+        "#wwwwwwwwwww#",
+        "#wwwwrrrwwww#",
+        "#wwwwrrrwwww#",
+        "#wwwwwwwwwww#",
+        "#wwwwwwwwwww#",
+        "######tt#####"
+      ]
+    },
+    "elevation": {
+      "palette": {
+        "0": "0",
+        "4": "4"
+      },
+      "data": [
+        "4444444444444",
+        "4000000000004",
+        "4000000000004",
+        "4000000000004",
+        "4000000000004",
+        "4000000000004",
+        "4000000000004",
+        "4000000000004",
+        "4000000000004",
+        "4444440044444"
+      ]
+    },
+    "flags": {
+      "palette": {
+        ".": "none"
+      },
+      "data": [
+        ".............",
+        ".............",
+        ".............",
+        ".............",
+        ".............",
+        ".............",
+        ".............",
+        ".............",
+        ".............",
+        "............."
+      ]
+    },
+    "zones": {
+      "palette": {
+        ".": "none",
+        "b": "back"
+      },
+      "data": [
+        ".............",
+        ".bbbbbbbbbbb.",
+        ".bbbbbbbbbbb.",
+        ".............",
+        ".............",
+        ".............",
+        ".............",
+        ".............",
+        ".............",
+        "............."
+      ]
+    }
+  },
+  "objects": [
+    {
+      "id": "shelf.a",
+      "type": "furn.shelf",
+      "tile": [
+        1,
+        1
+      ],
+      "props": {
+        "label": "Reed & Thatch"
+      }
+    },
+    {
+      "id": "shelf.b",
+      "type": "furn.shelf",
+      "tile": [
+        4,
+        1
+      ],
+      "props": {
+        "label": "Boards & Nails"
+      }
+    },
+    {
+      "id": "shelf.c",
+      "type": "furn.shelf",
+      "tile": [
+        7,
+        1
+      ],
+      "props": {
+        "label": "Dry Goods"
+      }
+    },
+    {
+      "id": "shelf.d",
+      "type": "furn.shelf",
+      "tile": [
+        10,
+        1
+      ],
+      "props": {
+        "label": "Lamps"
+      }
+    },
+    {
+      "id": "counter",
+      "type": "furn.counter",
+      "tile": [
+        2,
+        3
+      ],
+      "props": {
+        "label": "Register"
+      }
+    },
+    {
+      "id": "stove",
+      "type": "furn.stove",
+      "tile": [
+        9,
+        3
+      ],
+      "props": {
+        "label": "Stove"
+      }
+    },
+    {
+      "id": "chair.loafers",
+      "type": "furn.chair",
+      "tile": [
+        11,
+        4
+      ]
+    },
+    {
+      "id": "crate.west",
+      "type": "furn.crate",
+      "tile": [
+        1,
+        6
+      ]
+    },
+    {
+      "id": "crate.east",
+      "type": "furn.crate",
+      "tile": [
+        11,
+        6
+      ]
+    },
+    {
+      "id": "crate.door",
+      "type": "furn.crate",
+      "tile": [
+        1,
+        8
+      ]
+    },
+    {
+      "id": "plant",
+      "type": "furn.plant",
+      "tile": [
+        11,
+        8
+      ]
+    }
+  ],
+  "npcs": [
+    {
+      "id": "keep.wilf",
+      "type": "folk.shopkeep",
+      "tile": [
+        3,
+        2
+      ],
+      "facing": "south",
+      "props": {
+        "name": "Wilf",
+        "title": "The Staithe"
+      },
+      "shop": {
+        "name": "Boards & Baskets",
+        "markup": 1.24,
+        "buyRate": 0.7,
+        "takes": [
+          "item.stick",
+          "item.flower",
+          "item.mushroom",
+          "tool.axe",
+          "tool.shovel",
+          "tool.gun",
+          "item.shot",
+          "item.game"
+        ],
+        "stock": [
+          {
+            "type": "item.apple",
+            "count": 5
+          },
+          {
+            "type": "item.stone",
+            "count": 8
+          },
+          {
+            "type": "item.mushroom",
+            "count": null
+          },
+          {
+            "type": "tool.shovel",
+            "count": 1,
+            "price": 145
+          },
+          {
+            "type": "tool.axe",
+            "count": 1,
+            "price": 215
+          },
+          {
+            "type": "tool.gun",
+            "count": 1,
+            "price": 480
+          },
+          {
+            "type": "item.shot",
+            "count": null
+          }
+        ]
+      },
+      "dialog": {
+        "start": "open",
+        "nodes": {
+          "open": {
+            "branch": [
+              {
+                "when": {
+                  "flag": "met"
+                },
+                "to": "again"
+              },
+              {
+                "to": "hello"
+              }
+            ]
+          },
+          "hello": {
+            "text": [
+              "Wipe them. I know it is a fen. Wipe them anyway.",
+              "Wilf. Half of what I sell is board and nails, and the other half is why you needed board and nails."
+            ],
+            "do": {
+              "set": "met"
+            },
+            "then": "menu"
+          },
+          "again": {
+            "text": "Dry in here, at least. What is it?",
+            "then": "menu"
+          },
+          "menu": {
+            "text": "Trading?",
+            "choices": [
+              {
+                "text": "Trading.",
+                "do": {
+                  "shop": true
+                },
+                "to": "after"
+              },
+              {
+                "text": "What'll you take?",
+                "to": "takes"
+              },
+              {
+                "text": "Just dripping on your floor.",
+                "to": "bye"
+              }
+            ]
+          },
+          "takes": {
+            "text": "Alder, marigold and anything that grew on a bank. Stone I sell -- hard standing is money here.",
+            "then": "menu"
+          },
+          "after": {
+            "text": "Right you are.",
+            "then": "menu"
+          },
+          "bye": {
+            "text": "Boards, mind. Not the shortcut."
+          }
+        }
+      }
+    }
+  ],
+  "items": [
+    {
+      "id": "stick.bundle",
+      "type": "item.stick",
+      "tile": [
+        3,
+        8
+      ]
+    },
+    {
+      "id": "flower.jar",
+      "type": "item.flower",
+      "tile": [
+        6,
+        4
+      ]
+    }
+  ],
+  "exits": [
+    {
+      "tile": [
+        6,
+        9
+      ]
+    },
+    {
+      "tile": [
+        7,
+        9
+      ]
+    }
+  ],
+  "spawn": {
+    "tile": [
+      7,
+      8
+    ],
+    "facing": "north"
+  }
+}

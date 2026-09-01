@@ -1,0 +1,52 @@
+{
+  "format": "tw.kit",
+  "version": 1,
+  "meta": { "id": "sennen", "name": "Sennen's Cottage" },
+
+  "types": {
+    "fixture.bell": {
+      "kind": "object",
+      "label": "The Bell",
+      "footprint": { "w": 2, "d": 2 },
+      "height": 1.52,
+      "squash": 0.32,
+
+      "palette": {
+        "frame":     "#8a6242",
+        "frameDark": "#6b4a30",
+        "bronze":    "#a8843c",
+        "bronzeHi":  "#cfa855",
+        "rope":      "#d9c7a4",
+        "iron":      "#6b6f74"
+      },
+
+      "parts": [
+        { "prim": "box", "at": [0, 0.06, 0], "size": [1.44, 0.12, 0.52], "color": "frameDark" },
+        { "prim": "box", "at": [-0.56, 0.72, 0], "size": [0.14, 1.32, 0.14], "color": "frame" },
+        { "prim": "box", "at": [0.56, 0.72, 0], "size": [0.14, 1.32, 0.14], "color": "frame" },
+        { "prim": "box", "at": [0, 1.36, 0], "size": [1.44, 0.14, 0.16], "color": "frameDark" },
+        { "prim": "box", "at": [0, 1.20, 0], "size": [0.50, 0.10, 0.14], "color": "frameDark" },
+        { "prim": "cyl", "at": [0, 1.12, 0], "size": [0.030, 0.14, 0.030], "color": "iron" },
+
+        { "prim": "taper", "at": [0, 0.88, 0], "size": [0.30, 0.48, 0.30], "rot": [180, 0, 0], "color": "bronze",
+          "anim": { "bob": { "amp": 0.016, "rate": 0.42, "phase": 0.0 } } },
+        { "prim": "cyl", "at": [0, 0.65, 0], "size": [0.31, 0.05, 0.31], "color": "bronzeHi",
+          "anim": { "bob": { "amp": 0.016, "rate": 0.42, "phase": 0.0 } } },
+        { "prim": "blob", "at": [0, 0.72, 0], "size": [0.05, 0.06, 0.05], "color": "iron",
+          "anim": { "bob": { "amp": 0.044, "rate": 0.86, "phase": 0.2 } } },
+
+        { "prim": "cyl", "at": [0.56, 0.62, 0.22], "size": [0.011, 1.16, 0.011], "color": "rope",
+          "anim": { "bob": { "amp": 0.046, "rate": 0.33, "phase": 0.0 } } },
+        { "prim": "blob", "at": [0.56, 0.07, 0.22], "size": [0.05, 0.045, 0.05], "color": "rope",
+          "anim": { "bob": { "amp": 0.046, "rate": 0.33, "phase": 0.0 } } }
+      ],
+
+      "state": { "rings": 0 },
+
+      "interact": {
+        "label": "Ring it",
+        "run": "sennen-bell.js"
+      }
+    }
+  }
+}

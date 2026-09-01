@@ -1,0 +1,369 @@
+{
+  "format": "tw.world",
+  "version": 1,
+  "kind": "interior",
+  "meta": {
+    "id": "store.slickrock.interior",
+    "name": "Slickrock Post",
+    "note": "Interior of store.slickrock in rimrock.json. Hand-authored."
+  },
+  "grid": {
+    "width": 13,
+    "height": 10,
+    "tileSize": 1
+  },
+  "zones": {
+    "back": {
+      "owner": "keep.marl",
+      "label": "behind the counter"
+    }
+  },
+  "layers": {
+    "surface": {
+      "palette": {
+        "#": "wall",
+        "w": "floor.wood",
+        "t": "floor.tile",
+        "r": "rug"
+      },
+      "data": [
+        "#############",
+        "#ttttttttttt#",
+        "#ttttttttttt#",
+        "#tttwwwwwttt#",
+        "#wwwwwwwwwww#",
+        "#wwwwrrrwwww#",
+        "#wwwwrrrwwww#",
+        "#wwwwwwwwwww#",
+        "#wwwwwwwwwww#",
+        "######tt#####"
+      ]
+    },
+    "elevation": {
+      "palette": {
+        "0": "0",
+        "4": "4"
+      },
+      "data": [
+        "4444444444444",
+        "4000000000004",
+        "4000000000004",
+        "4000000000004",
+        "4000000000004",
+        "4000000000004",
+        "4000000000004",
+        "4000000000004",
+        "4000000000004",
+        "4444440044444"
+      ]
+    },
+    "flags": {
+      "palette": {
+        ".": "none"
+      },
+      "data": [
+        ".............",
+        ".............",
+        ".............",
+        ".............",
+        ".............",
+        ".............",
+        ".............",
+        ".............",
+        ".............",
+        "............."
+      ]
+    },
+    "zones": {
+      "palette": {
+        ".": "none",
+        "b": "back"
+      },
+      "data": [
+        ".............",
+        ".bbbbbbbbbbb.",
+        ".bbbbbbbbbbb.",
+        ".............",
+        ".............",
+        ".............",
+        ".............",
+        ".............",
+        ".............",
+        "............."
+      ]
+    }
+  },
+  "objects": [
+    {
+      "id": "shelf.water",
+      "type": "furn.shelf",
+      "tile": [
+        1,
+        1
+      ],
+      "props": {
+        "label": "Water & Kegs"
+      }
+    },
+    {
+      "id": "shelf.rope",
+      "type": "furn.shelf",
+      "tile": [
+        4,
+        1
+      ],
+      "props": {
+        "label": "Rope"
+      }
+    },
+    {
+      "id": "shelf.iron",
+      "type": "furn.shelf",
+      "tile": [
+        7,
+        1
+      ],
+      "props": {
+        "label": "Ironmongery"
+      }
+    },
+    {
+      "id": "shelf.dry",
+      "type": "furn.shelf",
+      "tile": [
+        10,
+        1
+      ],
+      "props": {
+        "label": "Dry Goods"
+      }
+    },
+    {
+      "id": "counter",
+      "type": "furn.counter",
+      "tile": [
+        2,
+        3
+      ],
+      "props": {
+        "label": "Register"
+      }
+    },
+    {
+      "id": "stove",
+      "type": "furn.stove",
+      "tile": [
+        9,
+        3
+      ],
+      "props": {
+        "label": "Range"
+      }
+    },
+    {
+      "id": "chair.shade",
+      "type": "furn.chair",
+      "tile": [
+        11,
+        4
+      ]
+    },
+    {
+      "id": "crate.west",
+      "type": "furn.crate",
+      "tile": [
+        1,
+        6
+      ]
+    },
+    {
+      "id": "crate.east",
+      "type": "furn.crate",
+      "tile": [
+        11,
+        6
+      ]
+    },
+    {
+      "id": "crate.door",
+      "type": "furn.crate",
+      "tile": [
+        1,
+        8
+      ]
+    },
+    {
+      "id": "plant",
+      "type": "furn.plant",
+      "tile": [
+        11,
+        8
+      ]
+    }
+  ],
+  "npcs": [
+    {
+      "id": "keep.marl",
+      "type": "folk.shopkeep",
+      "tile": [
+        3,
+        2
+      ],
+      "facing": "south",
+      "props": {
+        "name": "Marl",
+        "title": "Slickrock Post"
+      },
+      "shop": {
+        "name": "Post & Water",
+        "markup": 1.35,
+        "buyRate": 0.6,
+        "takes": [
+          "item.stone",
+          "item.stick",
+          "item.flower",
+          "tool.axe",
+          "tool.shovel",
+          "tool.gun",
+          "item.shot",
+          "item.game"
+        ],
+        "stock": [
+          {
+            "type": "item.apple",
+            "count": 5
+          },
+          {
+            "type": "item.mushroom",
+            "count": 4
+          },
+          {
+            "type": "item.stick",
+            "count": 10
+          },
+          {
+            "type": "tool.shovel",
+            "count": 1,
+            "price": 155
+          },
+          {
+            "type": "tool.axe",
+            "count": 1,
+            "price": 225
+          },
+          {
+            "type": "tool.gun",
+            "count": 1,
+            "price": 480
+          },
+          {
+            "type": "item.shot",
+            "count": null
+          }
+        ]
+      },
+      "dialog": {
+        "start": "open",
+        "nodes": {
+          "open": {
+            "branch": [
+              {
+                "when": {
+                  "flag": "met"
+                },
+                "to": "again"
+              },
+              {
+                "to": "hello"
+              }
+            ]
+          },
+          "hello": {
+            "text": [
+              "Shut it behind you. The dust does not pay for anything.",
+              "Marl. Last shop before a very long way down, which is a joke I have made every day for nine years."
+            ],
+            "do": {
+              "set": "met"
+            },
+            "then": "menu"
+          },
+          "again": {
+            "text": "Still here. Still dusty.",
+            "then": "menu"
+          },
+          "menu": {
+            "text": "Buying, or sheltering?",
+            "choices": [
+              {
+                "text": "Buying.",
+                "do": {
+                  "shop": true
+                },
+                "to": "after"
+              },
+              {
+                "text": "What'll you take?",
+                "to": "takes"
+              },
+              {
+                "text": "Sheltering.",
+                "to": "bye"
+              }
+            ]
+          },
+          "takes": {
+            "text": "Stone, wood and anything that flowered. Water I sell and never buy, before you ask.",
+            "then": "menu"
+          },
+          "after": {
+            "text": "Right you are.",
+            "then": "menu"
+          },
+          "bye": {
+            "text": "Sit where you like. Do not lean on the shelves."
+          }
+        }
+      }
+    }
+  ],
+  "items": [
+    {
+      "id": "stone.doorstop",
+      "type": "item.stone",
+      "tile": [
+        3,
+        8
+      ]
+    },
+    {
+      "id": "apple.counter",
+      "type": "item.apple",
+      "tile": [
+        6,
+        4
+      ]
+    }
+  ],
+  "exits": [
+    {
+      "tile": [
+        6,
+        9
+      ]
+    },
+    {
+      "tile": [
+        7,
+        9
+      ]
+    }
+  ],
+  "spawn": {
+    "tile": [
+      7,
+      8
+    ],
+    "facing": "north"
+  }
+}

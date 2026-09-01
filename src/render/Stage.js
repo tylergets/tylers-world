@@ -48,11 +48,15 @@ import { AnimalBatch } from './AnimalBatch.js';
 import { NpcView } from './NpcView.js';
 import { ItemBatch } from './ItemBatch.js';
 import { DigBatch } from './DigBatch.js';
-import { flatUniform, timeUniform } from './flatten.js';
+import { flatUniform, timeUniform, tintUniform } from './flatten.js';
+import { daylightAt } from './daylight.js';
 import { waterUniforms, WATER_LEVELS } from './water.js';
 
 /** Half-width of the shadow frustum, in tiles. Sized to the top-down view. */
 const SHADOW_SPAN = 17;
+
+/** Scratch for the daylight lerps. One, reused: see daylight.js on litter. */
+const _c1 = new THREE.Color();
 
 /** How long a struck tree sways for, and how far its top leans while it does. */
 const SWAY_TIME = 0.34;
@@ -81,6 +85,8 @@ const AMBIENCE = {
     sun: 1.9, sunColor: 0xfff2d8, sunOffset: [-20, 34, 15],
     hemi: 1.55, hemiSky: 0xcfe8ff, hemiGround: 0x6f7f52,
     pitch3d: 38, dist3d: 12.5, dist2d: 24,
+    // Outdoors the sun is the sun: it arcs, and it goes right down to night.
+    sunArc: 1, nightFloor: 0,
   },
   interior: {
     // Warm, low-contrast, and lit from almost straight overhead: a raking sun
@@ -91,6 +97,12 @@ const AMBIENCE = {
     sun: 0.85, sunColor: 0xffe9c4, sunOffset: [-4, 26, 6],
     hemi: 2.1, hemiSky: 0xffe6c0, hemiGround: 0x7a5c42,
     pitch3d: 48, dist3d: 13.5, dist2d: 15,
+    // A room does NOT get an arcing key light -- that is the bug the note above
+    // exists to prevent, arriving by a new route. And it never goes properly
+    // dark, because a house has lamps in it: what changes indoors after sunset
+    // is the COLOUR, warm and low, not the amount. A pitch-black room you
+    // cannot cross is a punishment, not an atmosphere.
+    sunArc: 0, nightFloor: 0.72,
   },
 };
 
@@ -101,6 +113,36 @@ const AMBIENCE = {
  * should read the same in both views, and the morph is a change to how the
  * WORLD is shaded, not to how a cursor is.
  */
+/**
+ * The line a shot took.
+ *
+ * Unlit, unfogged and drawn over everything, on exactly the doctrine the walk
+ * marker is built on: it is UI that happens to live in the scene, so it must
+ * read the same in both views. That is also why it is a TRACER and not a muzzle
+ * flash -- a flash at the barrel is three pixels from directly overhead and
+ * invisible on the map, whereas a line lying along the ground plane says what
+ * happened from any angle. The ray resolver is otherwise entirely invisible,
+ * and this is the only thing that shows the player what it decided.
+ *
+ * Built once, at the origin, pointing down +z with its near end at 0, so a
+ * shot is a position, a yaw and a scale rather than new geometry.
+ */
+function makeTracer() {
+  const geometry = new THREE.BoxGeometry(0.045, 0.02, 1);
+  geometry.translate(0, 0, 0.5);
+  const mesh = new THREE.Mesh(geometry, new THREE.MeshBasicMaterial({
+    color: 0xfff3c4, transparent: true, opacity: 0.9,
+    depthTest: false, depthWrite: false, fog: false,
+  }));
+  mesh.name = 'shot-tracer';
+  mesh.renderOrder = 10;
+  mesh.visible = false;
+  return mesh;
+}
+
+/** How long a tracer hangs about. Long enough to see, short enough not to sit there. */
+const TRACER_TIME = 0.11;
+
 function makeMarker() {
   const geometry = new THREE.RingGeometry(0.3, 0.44, 28);
   geometry.rotateX(-Math.PI / 2);
@@ -115,10 +157,22 @@ function makeMarker() {
 }
 
 export class Stage {
-  constructor(canvas) {
+  /**
+   * @param {HTMLCanvasElement} canvas
+   * @param {{antialias?: boolean}} options
+   *
+   * `antialias` is read ONCE, here, because it is a property of the GL context
+   * and not of the scene: changing it means a new context, which means every
+   * cached place would have to be re-meshed against it. The settings drawer
+   * says "on reload" on that button for exactly this reason.
+   */
+  constructor(canvas, { antialias = true } = {}) {
     this.renderer = new THREE.WebGLRenderer({
-      canvas, antialias: true, powerPreference: 'high-performance',
+      canvas, antialias, powerPreference: 'high-performance',
     });
+    /** What the context was actually built with, so the drawer can say when
+     *  the stored setting and the running frame disagree. */
+    this.antialias = antialias ? 'on' : 'off';
     this.quality = 1;
     this.#applyPixelRatio();
 
@@ -176,6 +230,17 @@ export class Stage {
     this.player = new PlayerView();
     this.scene.add(this.player.root);
 
+    /**
+     * The hour, as a fraction of a day. Written by the Game; read by
+     * #applyDaylight. Starts at midday so a Stage that is never told the time
+     * draws the identity frame rather than a midnight one.
+     */
+    this.dayT = 0.5;
+    this._sunAt = new THREE.Vector3();
+    this._keyShadow = 1;
+    this._fogMul = 1;
+    this.base = null;
+
     this.built = new Map();     // place id -> built Group
     this.fauna = new Map();     // place id -> AnimalBatch
     this.folkViews = new Map(); // place id -> { group, pairs } of npc views
@@ -191,15 +256,25 @@ export class Stage {
     this.edits = null;          // the Edits it is mirroring
     this.chopping = null;       // { key, until } while a struck prop is still swaying
     this.group = null;          // the one currently in the scene
-    this.amb = AMBIENCE.exterior;
-    this.sky3d = new THREE.Color(this.amb.sky);
-    this.sky2d = new THREE.Color(this.amb.flatSky);
+    // Opening values only. Both are overwritten by #applyDaylight on the first
+    // frame; they exist so the scene is never constructed holding nothing.
+    this.sky3d = new THREE.Color(AMBIENCE.exterior.sky);
+    this.sky2d = new THREE.Color(AMBIENCE.exterior.flatSky);
     this.resolution = new THREE.Vector2();
 
     this._pivot = new THREE.Vector3();
     this._ray = new THREE.Raycaster();
+    // The camera-space lie-back, rebuilt once a frame and handed to every view
+    // that billboards itself (see `render`). One object, shared by reference to
+    // four call sites, because it is the SAME rotation for all of them and four
+    // copies of it are four chances for one to be a frame behind.
+    this._lieBack = new THREE.Quaternion();
+    this._camRight = new THREE.Vector3();
     this.marker = makeMarker();
     this.scene.add(this.marker);
+    this.tracer = makeTracer();
+    this.scene.add(this.tracer);
+    this._tracerUntil = -1;
   }
 
   /**
@@ -229,6 +304,19 @@ export class Stage {
    * is the tile its wall stands on, which from overhead is under a roof. A
    * marker you cannot see is the same as no feedback at all.
    */
+  /**
+   * Show where a shot went. Chest height, so it does not z-fight the ground.
+   *
+   * @param {number} dist  how far along the line the shot actually stopped
+   */
+  setShot(x, y, z, yaw, dist, time) {
+    this.tracer.position.set(x, y + 0.55, z);
+    this.tracer.rotation.set(0, yaw, 0);
+    this.tracer.scale.set(1, 1, Math.max(0.5, dist));
+    this.tracer.visible = true;
+    this._tracerUntil = time + TRACER_TIME;
+  }
+
   setMarker(tile) {
     this.marker.visible = tile !== null;
     if (!tile) return;
@@ -292,13 +380,16 @@ export class Stage {
    * pass stops running but the shaders keep sampling a map nobody is filling,
    * and the scene goes blotchy instead of shadowless.
    */
-  toggleShadows() {
-    const on = !this.renderer.shadowMap.enabled;
+  setShadows(on) {
+    if (this.renderer.shadowMap.enabled === on) return on;
     this.renderer.shadowMap.enabled = on;
     this.sun.castShadow = on;
     this.scene.traverse((o) => { if (o.material) o.material.needsUpdate = true; });
     return on;
   }
+
+  /** The same switch, flipped. Kept for the debug key. */
+  toggleShadows() { return this.setShadows(!this.renderer.shadowMap.enabled); }
 
   /**
    * Throw away every meshed place.
@@ -487,9 +578,15 @@ export class Stage {
     if (!entry) {
       entry = new AnimalBatch(fauna.animals);
       entry.group.name = `fauna:${id}`;
+      entry.version = fauna.version;
       this.fauna.set(id, entry);
     }
 
+    // Held so #syncFauna can notice the flock changing. A cached batch is one
+    // built when this place was last open, and an animal may have been shot in
+    // it since -- or a night may have put one back -- so the version is
+    // compared on the very next frame rather than trusted.
+    this.faunaOf = fauna;
     this.live = entry;
     this.scene.add(entry.group);
   }
@@ -545,6 +642,7 @@ export class Stage {
     this.ground = ground;
     this.liveLoose = entry;
     this.scene.add(entry.group);
+    this.#syncFauna();
     this.#syncGround();
   }
 
@@ -556,6 +654,21 @@ export class Stage {
    * to discover that nothing happened is the kind of cost that only shows up
    * once a beach has three hundred shells on it.
    */
+  /**
+   * Bring the animal batch into line with the flock.
+   *
+   * One integer compare on an ordinary frame, exactly like #syncGround and
+   * #syncEdits -- and for the same reason. An animal MOVING is what this
+   * renderer does sixty times a second and must never trigger a repartition;
+   * an animal LEAVING is rare and does.
+   */
+  #syncFauna() {
+    const entry = this.live, fauna = this.faunaOf;
+    if (!entry || !fauna || entry.version === fauna.version) return;
+    entry.version = fauna.version;
+    entry.reconcile(fauna.animals);
+  }
+
   #syncGround() {
     const entry = this.liveLoose, ground = this.ground;
     if (!entry || !ground || entry.version === ground.version) return;
@@ -642,29 +755,95 @@ export class Stage {
     leanProp(this.group, c.key, amp, amp * 0.4);
   }
 
+  /**
+   * Resolve what this PLACE looks like, before the hour touches it.
+   *
+   * Everything here is a fact about the room or the field, fixed for as long as
+   * you are standing in it. What the time of day does to it is #applyDaylight,
+   * every frame, and the split is the whole reason a cellar at midnight is
+   * still recognisably a cellar -- see daylight.js.
+   *
+   * The colours are resolved to THREE.Color ONCE, here, because the two sources
+   * disagree about type: the AMBIENCE defaults are hex numbers and a world
+   * file's overrides are strings ("#151a1f"). `Color.set` takes both happily,
+   * and doing it once means the per-frame path never has to ask which it got.
+   */
   #applyAmbience(world) {
-    const base = AMBIENCE[world.kind] ?? AMBIENCE.exterior;
-    this.amb = { ...base, ...(world.ambience ?? {}) };
+    const kind = AMBIENCE[world.kind] ?? AMBIENCE.exterior;
+    const base = { ...kind, ...(world.ambience ?? {}) };
+    this.base = base;
 
-    this.sky3d.set(this.amb.sky);
-    this.sky2d.set(this.amb.flatSky);
+    this._baseSun = new THREE.Color(base.sunColor);
+    this._baseHemi = new THREE.Color(base.hemiSky);
+    this._baseSky = new THREE.Color(base.sky);
+    this._baseFlatSky = new THREE.Color(base.flatSky);
+    this._sunLen = Math.hypot(...base.sunOffset) || 1;
 
-    this.sun.intensity = this.amb.sun;
-    this.sun.color.set(this.amb.sunColor);
-    // The glint on the water has to come from THIS place's sun, or the
-    // highlight sits somewhere the light plainly is not. The offset is where
-    // the sun stands relative to the player, so normalised it is the direction
-    // any point on the water looks to find it.
-    waterUniforms.sun.value.set(...this.amb.sunOffset).normalize();
-    waterUniforms.sunColor.value.set(this.amb.sunColor);
-    this.hemi.intensity = this.amb.hemi;
-    this.hemi.color.set(this.amb.hemiSky);
-    this.hemi.groundColor.set(this.amb.hemiGround);
+    this.hemi.groundColor.set(base.hemiGround);
 
-    this.rig.pitch3d = this.amb.pitch3d * (Math.PI / 180);
-    this.rig.dist3d = this.amb.dist3d;
-    this.rig.dist2d = this.amb.dist2d;
+    this.rig.pitch3d = base.pitch3d * (Math.PI / 180);
+    this.rig.dist3d = base.dist3d;
+    this.rig.dist2d = base.dist2d;
+
+    this.#applyDaylight();
   }
+
+  /**
+   * Lay the hour over the place. Called every frame, before anything is drawn.
+   *
+   * MODULATES, never replaces -- daylight.js returns multipliers and tint
+   * amounts precisely so this method cannot flatten every room in the game onto
+   * one midnight blue. Every multiplier is 1 and every tint is 0 at midday, so
+   * the noon frame is the frame this renderer drew before there was a clock,
+   * and that is the acceptance test for the whole subsystem.
+   *
+   * `nightFloor` is what keeps an interior lit after dark. Remapping the
+   * multipliers through it means a room never drops below a set fraction of its
+   * daytime brightness and what actually changes indoors is the colour, which
+   * reads as lamplight rather than as a power cut.
+   */
+  #applyDaylight() {
+    const base = this.base;
+    if (!base) return;
+    const key = daylightAt(this.dayT);
+    const floor = base.nightFloor ?? 0;
+    const lift = (mul) => mul + (1 - mul) * floor;
+
+    this.sun.intensity = base.sun * lift(key.sunMul);
+    this.sun.color.copy(this._baseSun).lerp(_c1.set(key.sun), key.sunTint * (1 - floor));
+
+    this.hemi.intensity = base.hemi * lift(key.hemiMul);
+    this.hemi.color.copy(this._baseHemi).lerp(_c1.set(key.hemiSky), key.hemiTint);
+
+    this.sky3d.copy(this._baseSky).lerp(_c1.set(key.sky), key.skyTint);
+    this.sky2d.copy(this._baseFlatSky).lerp(_c1.set(key.flatSky), key.flatSkyTint);
+
+    // The one channel the top-down view has. See flatten.js.
+    tintUniform.value.setRGB(key.flat[0], key.flat[1], key.flat[2]);
+
+    // Where the sun stands. An exterior takes the arc at its own distance; an
+    // interior keeps its authored near-overhead offset, because a raking key
+    // light indoors is the courtyard bug the AMBIENCE note warns about.
+    const arc = base.sunArc ?? 0;
+    const L = this._sunLen;
+    this._sunAt.set(
+      base.sunOffset[0] + (key.dir[0] * L - base.sunOffset[0]) * arc,
+      base.sunOffset[1] + (key.dir[1] * L - base.sunOffset[1]) * arc,
+      base.sunOffset[2] + (key.dir[2] * L - base.sunOffset[2]) * arc,
+    );
+
+    // The glint has to come from where the sun ACTUALLY is, which is now a
+    // moving target -- pinned at noon in #applyAmbience it would leave a
+    // highlight sitting in a corner of the sky the sun left hours ago.
+    waterUniforms.sun.value.copy(this._sunAt).normalize();
+    waterUniforms.sunColor.value.copy(this.sun.color);
+
+    this._keyShadow = key.shadow;
+    this._fogMul = key.fogMul;
+  }
+
+  /** Which fraction of a day it is. Written by the Game each frame. */
+  setTimeOfDay(t) { this.dayT = t; }
 
   resize(w, h) {
     this.renderer.setSize(w, h, false);
@@ -676,8 +855,9 @@ export class Stage {
    * @param {Player} player
    * @param {number} t      raw morph amount in [0,1]
    * @param {number} time   seconds, for the water surface
+   * @param {number} yaw    which way the camera is facing (see render/orbit.js)
    */
-  render(player, t, time) {
+  render(player, t, time, yaw = 0) {
     const mark0 = performance.now();
     // Smoothstep: linear t makes the camera start and stop abruptly.
     const e = t * t * (3 - 2 * t);
@@ -685,11 +865,18 @@ export class Stage {
     flatUniform.value = e;
     timeUniform.value = time;
 
-    // Overhead, a cast shadow just reads as smudged dirt on the map.
-    this.sun.shadow.intensity = 1 - e;
+    // The hour, laid over the place, before anything reads a light or a colour.
+    this.#applyDaylight();
+
+    // Overhead, a cast shadow just reads as smudged dirt on the map -- and a
+    // LOW sun casts a shadow longer than the +/-17 tile frustum can hold, which
+    // would show as a shadow stopping in mid-air. Fading them out as the sun
+    // drops answers both, and it is what a long shadow does anyway.
+    this.sun.shadow.intensity = (1 - e) * this._keyShadow;
     // Fog is depth cueing; depth is exactly what the flat view is denying.
     // A place with no fog starts already pushed out of sight.
-    const [fogNear, fogFar] = this.amb.fog ?? [4000, 9000];
+    const [fogNear, fogFarBase] = this.base?.fog ?? [4000, 9000];
+    const fogFar = fogFarBase * this._fogMul;
     this.scene.fog.near = fogNear + e * 4000;
     this.scene.fog.far = fogFar + e * 8000;
     this.bg.copy(this.sky3d).lerp(this.sky2d, e);
@@ -698,29 +885,53 @@ export class Stage {
     // while that sky is lerping toward the flat one mid-morph.
     waterUniforms.sky.value.copy(this.bg);
 
-    // Keep the shadow frustum centred on the player.
-    const [ox, oy, oz] = this.amb.sunOffset;
-    this.sun.position.set(player.x + ox, player.y + oy, player.z + oz);
+    // Keep the shadow frustum centred on the player. The offset is where the
+    // sun stands NOW -- #applyDaylight moved it along its arc this frame.
+    this.sun.position.set(
+      player.x + this._sunAt.x, player.y + this._sunAt.y, player.z + this._sunAt.z);
     this.sun.target.position.set(player.x, player.y, player.z);
     this.sun.target.updateMatrixWorld();
 
     // Pivot slightly above the feet so the player sits a touch below centre in
     // 3D, which leaves more of the world visible ahead of them.
     this._pivot.set(player.x, player.y + 0.6 * (1 - e), player.z);
+    this.rig.yaw = yaw;
     this.rig.update(e, this._pivot);
 
     // A still ring reads as scenery; a breathing one reads as a pending order.
+    // The tracer fades out on its own clock and hides itself. Driven from the
+    // render clock rather than a dt, so a paused world leaves it where it is
+    // instead of freezing one on screen forever.
+    if (this.tracer.visible) {
+      const u = (this._tracerUntil - time) / TRACER_TIME;
+      if (u <= 0) this.tracer.visible = false;
+      else this.tracer.material.opacity = 0.9 * u;
+    }
+
     if (this.marker.visible) {
       const pulse = 1 + 0.09 * Math.sin(time * 6);
       this.marker.scale.set(pulse, 1, pulse);
     }
 
-    const tilt = this.rig.pitch2d - this.rig.pitch3d;
-    this.player.update(player, e, tilt);
-    this.live?.update(e, tilt);
-    if (this.liveFolk) for (const { npc, view } of this.liveFolk.pairs) view.update(npc, e, tilt, time);
+    // The counter-rotation that keeps a model presenting the same silhouette
+    // from overhead as it does from behind: it lies back by exactly as much as
+    // the camera has pitched down, hinged at its feet. See PlayerView.
+    //
+    // The hinge is the camera's own RIGHT axis, not world X, and that is the
+    // whole reason this is built here rather than four times in four views:
+    // `Ry(yaw)` carries x-hat to (cos, 0, -sin), which is the axis the camera
+    // pitches about, so the model lies back toward the viewer wherever the
+    // viewer has orbited to. At yaw 0 it collapses to the plain X rotation this
+    // used to be, which is why nothing about the two views changed.
+    const tilt = (this.rig.pitch2d - this.rig.pitch3d) * e;
+    this._camRight.set(Math.cos(yaw), 0, -Math.sin(yaw));
+    this._lieBack.setFromAxisAngle(this._camRight, tilt);
+
+    this.player.update(player, this._lieBack);
+    this.live?.update(this._lieBack);
+    if (this.liveFolk) for (const { npc, view } of this.liveFolk.pairs) view.update(npc, this._lieBack, time);
     this.#syncGround();
-    this.liveLoose?.batch.update(e, tilt, time);
+    this.liveLoose?.batch.update(this._lieBack, time);
     // Holes and felled props: one version compare on a still frame, and the
     // sway is the only thing here that touches a merged buffer per frame --
     // one prop's worth of vertices, and only while a tree is being chopped.

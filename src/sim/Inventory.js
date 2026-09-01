@@ -107,6 +107,36 @@ export class Inventory {
    * Remove up to `n` from one slot, emptying it when the stack runs out.
    * Returns the type removed and how many, or null if the slot was empty.
    */
+  /**
+   * Take `n` of a type from wherever they happen to be, or take nothing.
+   *
+   * The mirror of `add`, and it exists because ammunition is the first thing in
+   * this game that is spent BY TYPE rather than from a slot. `removeFrom` takes
+   * a slot index because the player is pointing at one -- selling and dropping
+   * are both "this one, here". Firing is not: the shot comes out of the bag,
+   * and which of two part-used boxes it came from is not a decision anybody
+   * made or would want to make.
+   *
+   * ALL OR NOTHING, on the rule Shop already runs on. A shot that fired without
+   * paying and one that paid without firing are both bugs, and the second is
+   * the one players never forgive.
+   */
+  spend(typeId, n = 1) {
+    if (n <= 0) return true;
+    if (this.count(typeId) < n) return false;
+    let left = n;
+    for (let i = 0; i < this.slots.length && left > 0; i++) {
+      const s = this.slots[i];
+      if (!s || s.typeId !== typeId) continue;
+      const took = Math.min(s.count, left);
+      s.count -= took;
+      left -= took;
+      if (s.count === 0) this.slots[i] = null;
+    }
+    this.version++;
+    return true;
+  }
+
   removeFrom(i, n = 1) {
     const s = this.slots[i];
     if (!s) return null;

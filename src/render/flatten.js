@@ -22,8 +22,33 @@
  * walking every material every frame.
  */
 
+import * as THREE from 'three';
+
 /** Shared morph amount. 0 = full 3D, 1 = full top-down. Write `.value` only. */
 export const flatUniform = { value: 0 };
+
+/**
+ * What the FLAT view multiplies its albedo by. White is noon.
+ *
+ * The top-down view throws every light away -- that is the point of the line
+ * below, and it is what makes the map a map. The cost is that the map is
+ * time-blind: sun intensity, sun colour and hemisphere colour have all been
+ * multiplied out, so 2 a.m. and 2 p.m. draw the same pixels. Since the map is
+ * where a player plans, it is exactly where knowing that it is getting dark
+ * matters most.
+ *
+ * So the flat term gets one channel of its own. Shared BY REFERENCE into every
+ * patched material, like `flatUniform` above and for the same reason: one write
+ * a frame updates the whole scene. It is scoped by `uFlat`, so in the 3D view
+ * the term is multiplied by nothing and the real lights keep doing all the
+ * work -- no double-darkening, and the tint is only ever what the flat view
+ * uses INSTEAD of lighting.
+ *
+ * MIRRORED IN render/Terrain.js, which injects its own copy of this chunk. The
+ * two must agree exactly, or the ground goes dark while the trees standing on
+ * it do not, and it reads as a terrain bug rather than as a missing multiply.
+ */
+export const tintUniform = { value: new THREE.Color(1, 1, 1) };
 
 /**
  * Patch a standard three material so it participates in the morph.
@@ -49,13 +74,16 @@ export function patchFlatten(material, squash = 1) {
       .replace('#include <begin_vertex>', `#include <begin_vertex>
         transformed.y = aBaseY + (transformed.y - aBaseY) * mix(1.0, uSquash, uFlat);`);
 
+    shader.uniforms.uTint = tintUniform;             // shared by reference too
+
     shader.fragmentShader = shader.fragmentShader
       .replace('#include <common>', `#include <common>
-        uniform float uFlat;`)
+        uniform float uFlat;
+        uniform vec3 uTint;`)
       // `opaque_fragment` is where three writes gl_FragColor from outgoingLight
       // (chunk name is r152+; this project pins three ^0.185).
       .replace('#include <opaque_fragment>', `
-        outgoingLight = mix(outgoingLight, diffuseColor.rgb * 1.04, uFlat);
+        outgoingLight = mix(outgoingLight, diffuseColor.rgb * 1.04 * uTint, uFlat);
         #include <opaque_fragment>`);
   };
 

@@ -1,0 +1,54 @@
+{
+  "format": "tw.kit",
+  "version": 1,
+  "meta": { "id": "quill", "name": "Quill's Hut" },
+
+  "types": {
+    "fixture.eeltrap": {
+      "kind": "object",
+      "label": "Eel Trap",
+      "footprint": { "w": 1, "d": 2 },
+      "height": 1.28,
+      "squash": 0.34,
+
+      "palette": {
+        "reed":     "#c0a05a",
+        "reedDark": "#8a7038",
+        "rope":     "#d9c7a4",
+        "weed":     "#4f7a4a",
+        "iron":     "#6b6f74",
+        "wet":      "#3f5a4a"
+      },
+
+      "parts": [
+        { "prim": "cyl", "at": [0, 0.60, -0.86], "size": [0.05, 1.20, 0.05], "color": "reedDark" },
+        { "prim": "box", "at": [0, 1.16, -0.40], "size": [0.06, 0.06, 0.96], "color": "reedDark" },
+        { "prim": "cyl", "at": [0, 1.02, 0.10], "size": [0.012, 0.16, 0.012], "color": "iron" },
+        { "prim": "cyl", "at": [0, 0.06, -0.70], "size": [0.18, 0.08, 0.18], "color": "rope" },
+        { "prim": "cyl", "at": [0, 0.12, -0.70], "size": [0.13, 0.05, 0.13], "color": "rope" },
+
+        { "prim": "cyl", "at": [0, 0.84, 0.10], "size": [0.010, 0.36, 0.010], "color": "rope",
+          "anim": { "bob": { "amp": 0.030, "rate": 0.34, "phase": 0.0 } } },
+        { "prim": "taper", "at": [0, 0.42, 0.10], "size": [0.26, 0.54, 0.26], "color": "reed",
+          "anim": { "bob": { "amp": 0.036, "rate": 0.34, "phase": 0.0 } } },
+        { "prim": "cyl", "at": [0, 0.50, 0.10], "size": [0.27, 0.04, 0.27], "color": "reedDark",
+          "anim": { "bob": { "amp": 0.036, "rate": 0.34, "phase": 0.0 } } },
+        { "prim": "cyl", "at": [0, 0.68, 0.10], "size": [0.21, 0.05, 0.21], "color": "reedDark",
+          "anim": { "bob": { "amp": 0.036, "rate": 0.34, "phase": 0.0 } } },
+        { "prim": "cyl", "at": [0, 0.18, 0.10], "size": [0.22, 0.05, 0.22], "color": "wet",
+          "anim": { "bob": { "amp": 0.036, "rate": 0.34, "phase": 0.0 } } },
+        { "prim": "taper", "at": [0.17, 0.30, 0.30], "size": [0.05, 0.32, 0.05], "rot": [180, 0, 0], "color": "weed",
+          "anim": { "bob": { "amp": 0.048, "rate": 0.27, "phase": 0.4 } } },
+        { "prim": "taper", "at": [-0.15, 0.34, 0.24], "size": [0.04, 0.26, 0.04], "rot": [180, 0, 0], "color": "weed",
+          "anim": { "bob": { "amp": 0.042, "rate": 0.31, "phase": 0.7 } } }
+      ],
+
+      "state": { "hauls": 0 },
+
+      "interact": {
+        "label": "Haul the trap",
+        "run": "quill-eeltrap.js"
+      }
+    }
+  }
+}

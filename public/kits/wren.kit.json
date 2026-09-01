@@ -1,0 +1,88 @@
+{
+  "format": "tw.kit",
+  "version": 1,
+  "meta": { "id": "wren", "name": "Wren's Cabin" },
+
+  "types": {
+    "fixture.skiff": {
+      "kind": "object",
+      "label": "Half-mended Skiff",
+      "footprint": { "w": 4, "d": 2 },
+      "height": 0.78,
+      "squash": 0.4,
+
+      "palette": {
+        "hull":   "#7d6248",
+        "plank":  "#b98d5f",
+        "keel":   "#5c4a38",
+        "patch":  "#c9b27c",
+        "tar":    "#3f3a34",
+        "rope":   "#d9c7a4",
+        "copper": "#9c6b3f"
+      },
+
+      "parts": [
+        { "prim": "box", "at": [0, 0.06, -0.92], "size": [3.60, 0.12, 0.14], "color": "keel" },
+        { "prim": "box", "at": [0, 0.06, 0.92], "size": [3.60, 0.12, 0.14], "color": "keel" },
+
+        { "prim": "box", "at": [0, 0.44, -0.36], "size": [3.56, 0.07, 0.82], "rot": [-30, 0, 0], "color": "plank" },
+        { "prim": "box", "at": [0, 0.44, 0.36], "size": [3.56, 0.07, 0.82], "rot": [30, 0, 0], "color": "plank" },
+        { "prim": "box", "at": [0, 0.30, -0.62], "size": [3.50, 0.06, 0.46], "rot": [-13, 0, 0], "color": "hull" },
+        { "prim": "box", "at": [0, 0.30, 0.62], "size": [3.50, 0.06, 0.46], "rot": [13, 0, 0], "color": "hull" },
+
+        { "prim": "box", "at": [0, 0.66, 0], "size": [3.72, 0.10, 0.15], "color": "keel" },
+        { "prim": "box", "at": [-1.88, 0.32, 0], "size": [0.16, 0.56, 0.62], "color": "keel" },
+        { "prim": "box", "at": [1.88, 0.30, 0], "size": [0.16, 0.50, 0.92], "color": "keel" },
+
+        { "prim": "box", "at": [0.74, 0.52, -0.32], "size": [0.58, 0.05, 0.44], "rot": [-30, 0, 0], "color": "patch" },
+        { "prim": "box", "at": [-0.62, 0.52, 0.32], "size": [0.42, 0.05, 0.34], "rot": [30, 0, 0], "color": "tar" },
+        { "prim": "box", "at": [0.20, 0.38, 0.58], "size": [0.26, 0.04, 0.22], "rot": [13, 0, 0], "color": "copper" },
+
+        { "prim": "cyl", "at": [1.42, 0.09, 0.74], "size": [0.24, 0.10, 0.24], "color": "rope" },
+        { "prim": "cyl", "at": [1.42, 0.16, 0.74], "size": [0.17, 0.06, 0.17], "color": "rope" }
+      ],
+
+      "state": { "looks": 0 },
+
+      "interact": {
+        "label": "Look under the hull",
+        "run": "wren-skiff.js"
+      }
+    },
+
+    "fixture.baitbarrel": {
+      "kind": "object",
+      "label": "Bait Barrel",
+      "footprint": { "w": 1, "d": 1 },
+      "height": 0.92,
+      "squash": 0.4,
+
+      "palette": {
+        "stave": "#8a6242",
+        "band":  "#6b6f74",
+        "brine": "#4a6a5a",
+        "cork":  "#d9b294",
+        "float": "#c9564a",
+        "net":   "#cfc7ae"
+      },
+
+      "parts": [
+        { "prim": "cyl", "at": [0, 0.30, 0], "size": [0.36, 0.60, 0.36], "color": "stave" },
+        { "prim": "cyl", "at": [0, 0.12, 0], "size": [0.375, 0.06, 0.375], "color": "band" },
+        { "prim": "cyl", "at": [0, 0.50, 0], "size": [0.375, 0.06, 0.375], "color": "band" },
+
+        { "prim": "cyl", "at": [0, 0.58, 0], "size": [0.32, 0.03, 0.32], "color": "brine",
+          "anim": { "bob": { "amp": 0.010, "rate": 0.42, "phase": 0.0 } } },
+        { "prim": "blob", "at": [0.13, 0.61, 0.07], "size": [0.05, 0.04, 0.05], "color": "cork",
+          "anim": { "bob": { "amp": 0.022, "rate": 0.63, "phase": 0.15 } } },
+        { "prim": "blob", "at": [-0.11, 0.61, -0.12], "size": [0.045, 0.035, 0.045], "color": "float",
+          "anim": { "bob": { "amp": 0.026, "rate": 0.49, "phase": 0.55 } } },
+        { "prim": "blob", "at": [0.02, 0.61, 0.19], "size": [0.04, 0.03, 0.04], "color": "cork",
+          "anim": { "bob": { "amp": 0.018, "rate": 0.77, "phase": 0.83 } } },
+
+        { "prim": "box", "at": [0, 0.64, -0.30], "size": [0.52, 0.03, 0.24], "rot": [-26, 0, 0], "color": "net" },
+        { "prim": "cyl", "at": [-0.19, 0.76, -0.04], "size": [0.02, 0.52, 0.02], "rot": [0, 0, 10], "color": "stave" }
+      ]
+    }
+  }
+}

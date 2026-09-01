@@ -38,6 +38,7 @@
 import { PORTAL } from './world/World.js';
 import { Places } from './world/places.js';
 import { Stage } from './render/Stage.js';
+import { Orbit } from './render/orbit.js';
 import { Player } from './sim/Player.js';
 import { Fauna } from './sim/Fauna.js';
 import { Folk } from './sim/Folk.js';
@@ -45,7 +46,7 @@ import { Dialogue } from './sim/Dialogue.js';
 import { Ground } from './sim/Ground.js';
 import { Edits } from './sim/Edits.js';
 import { Fixtures, interactOf } from './sim/Fixtures.js';
-import { toolTarget, chopDrops, stumpDrops, digFind } from './sim/tools.js';
+import { toolTarget, toolOf, chopDrops, stumpDrops, digFind, AMMO, killDrops } from './sim/tools.js';
 import { FreeInput, GridInput } from './sim/inputs.js';
 import { findPath } from './sim/pathfind.js';
 import { Keyboard } from './sim/Keyboard.js';
@@ -53,24 +54,22 @@ import { Hud } from './ui/hud.js';
 import { WorldsPanel } from './ui/worlds.js';
 import { Chat } from './ui/dialogue.js';
 import { VOICE_MODES } from './audio/voice.js';
+import * as sfx from './audio/sfx.js';
 import { generate, worldId } from './world/generate.js';
 import {
   SHORELINE_STYLES, WATER_STYLES, MAP_MODES, MAP_SIZES,
+  SHADOW_MODES, ANTIALIAS_MODES, RENDER_SCALES, SCALE_VALUES,
+  QUALITY_PRESETS, PRESETS, presetOf,
   readGraphicsSettings, writeGraphicsSettings,
 } from './settings/graphics.js';
+import {
+  DAY_LENGTHS, DAY_SECONDS as DAY_LENGTH_SECONDS, DAY_LABELS,
+  readGameSettings, writeGameSettings,
+} from './settings/game.js';
 import {
   SAVE_VERSION, listSaves, readSave, writeSave, deleteSave,
   sessionSaveId, setSessionSaveId, newSaveId, STARTERS,
 } from './sim/Save.js';
-
-/**
- * Render-scale rungs, coarse on purpose: a scale change reallocates the
- * framebuffer, so a controller with fine steps spends its time resizing.
- */
-const QUALITY_STEPS = [0.5, 0.6, 0.75, 0.85, 1];
-
-/** Frame budget, in ms. 60Hz -- the rate the scaler exists to protect. */
-const FRAME_BUDGET = 1000 / 60;
 
 const MORPH_TIME = 0.8;   // seconds for a full 3D <-> 2D transition
 const FADE_TIME = 0.26;   // seconds for each half of a doorway fade
@@ -141,9 +140,16 @@ class Game {
     this.legalTile = null; // the last tile in THIS place we were welcome on
 
     this.graphics = readGraphicsSettings();
-    this.stage = new Stage(canvas);
+    this.gameSettings = readGameSettings();
+    /** When the gun is next ready. Game state, so the resolver stays pure. */
+    this._readyAt = 0;
+    // Antialiasing is a context property, so it is passed in at construction
+    // and cannot be changed after. Everything else below is a live switch.
+    this.stage = new Stage(canvas, { antialias: this.graphics.antialias === 'on' });
     this.stage.setShorelineBlend(this.graphics.shoreline === 'natural' ? 1 : 0);
     this.stage.setWaterQuality(WATER_STYLES.indexOf(this.graphics.water));
+    this.stage.setShadows(this.graphics.shadows === 'on');
+    this.stage.setQuality(SCALE_VALUES[this.graphics.resolution]);
     this.player = new Player(world);
     this.keys = new Keyboard();
     canvas.addEventListener('pointerdown', (e) => this.pointAt(e));
@@ -156,6 +162,10 @@ class Game {
     this.viewT = 0;        // current morph amount
     this.viewTarget = 0;   // where it is heading
     this.scrubbing = false;
+    // Which way the camera faces. View state like the morph, and kept beside
+    // it: the simulation never reads it, only the two input filters do, and
+    // only to turn a key on the screen into a direction in the world.
+    this.orbit = new Orbit();
 
     // Which world this is and which save slot it writes to. Both are set
     // properly by `beginSession`, which every route into a world goes through
@@ -182,6 +192,11 @@ class Game {
       onVoice: () => this.cycleVoice(),
       onShoreline: () => this.cycleShoreline(),
       onWater: () => this.cycleWater(),
+      onQuality: () => this.cycleQuality(),
+      onResolution: () => this.cycleResolution(),
+      onShadows: () => this.cycleShadows(),
+      onAntialias: () => this.cycleAntialias(),
+      onDayLength: () => this.cycleDayLength(),
       onMap: (sizesOnly) => this.cycleMap(sizesOnly),
       onWorlds: () => this.openWorlds(),
     });
@@ -203,16 +218,15 @@ class Game {
     // hands the keyboard to a conversation nobody can see.
     this.chat = new Chat(hudRoot, { mode: readVoiceMode() });
     this.hud.setVoice(this.chat.mode);
-    this.hud.setShoreline(this.graphics.shoreline);
-    this.hud.setWater(this.graphics.water);
     this.hud.setMap(this.graphics.map);
+    this.syncGraphics();
+    this.syncGameSettings();
 
     this.setPlace(world, world.spawn.tile, world.spawn.facing);
 
     this.time = 0;
     this.fps = 0;
-    this._fpsAccum = 0; this._fpsFrames = 0; this._hudT = 0; this._slow = 0; this._fast = 0;
-    this.scaler = 'full';   // what the render-scale controller last decided
+    this._fpsAccum = 0; this._fpsFrames = 0; this._hudT = 0;
     // CPU cost, split so the HUD can say WHERE a frame went. Accumulated over
     // the same window as the fps average, because a single frame's timing is
     // mostly scheduler noise at this resolution.
@@ -257,8 +271,8 @@ class Game {
     const current = SHORELINE_STYLES.indexOf(this.graphics.shoreline);
     this.graphics.shoreline = SHORELINE_STYLES[(current + 1) % SHORELINE_STYLES.length];
     this.stage.setShorelineBlend(this.graphics.shoreline === 'natural' ? 1 : 0);
-    this.hud.setShoreline(this.graphics.shoreline);
     writeGraphicsSettings(this.graphics);
+    this.syncGraphics();
   }
 
   /**
@@ -272,8 +286,125 @@ class Game {
     const current = WATER_STYLES.indexOf(this.graphics.water);
     this.graphics.water = WATER_STYLES[(current + 1) % WATER_STYLES.length];
     this.stage.setWaterQuality(WATER_STYLES.indexOf(this.graphics.water));
-    this.hud.setWater(this.graphics.water);
     writeGraphicsSettings(this.graphics);
+    this.syncGraphics();
+  }
+
+  // ------------------------------------------------------------------- time --
+
+  /**
+   * Push the day length at the clock and at the label that reports it.
+   *
+   * The same shape as syncGraphics and for the same reason: one place where the
+   * setting reaches everything that reads it, so the drawer cannot drift from
+   * the game. Called on boot AND on every restore, because a save carries the
+   * day it was on but never the speed the player likes it running at -- that is
+   * a preference and lives in settings/game.js.
+   */
+  syncGameSettings() {
+    const length = this.gameSettings.dayLength;
+    this.player.clock.daySeconds = DAY_LENGTH_SECONDS[length];
+    this.hud.setDayLength(DAY_LABELS[length]);
+  }
+
+  /**
+   * Step through the day lengths, briskest first, and round again through
+   * `frozen` -- which is a length like any other and not a separate switch.
+   *
+   * Free and instant: nothing is rebuilt, because the only thing that reads it
+   * is the divisor in Clock.advance. Changing it mid-day does not move the sun,
+   * it changes how fast the sun is moving, which is the honest behaviour.
+   */
+  cycleDayLength() {
+    const at = DAY_LENGTHS.indexOf(this.gameSettings.dayLength);
+    this.gameSettings.dayLength = DAY_LENGTHS[(at + 1) % DAY_LENGTHS.length];
+    writeGameSettings(this.gameSettings);
+    this.syncGameSettings();
+  }
+
+  // ------------------------------------------------------------------ video --
+
+  /**
+   * Push every graphics setting at the labels that report it.
+   *
+   * One function rather than a `hud.setX` next to each change, because the
+   * QUALITY label is derived from four of the others: turn the shadows off and
+   * the preset must stop saying "High" on its own, without `cycleShadows`
+   * having to know that a preset exists. Everything that changes a setting
+   * ends here, and the drawer cannot drift from the settings.
+   */
+  syncGraphics() {
+    const g = this.graphics;
+    this.hud.setQuality(presetOf(g));
+    this.hud.setResolution(g.resolution);
+    this.hud.setShadows(g.shadows);
+    this.hud.setAntialias(g.antialias, g.antialias === this.stage.antialias ? '' : ' · reload');
+    this.hud.setShoreline(g.shoreline);
+    this.hud.setWater(g.water);
+  }
+
+  /**
+   * Step through the presets, and apply everything one names.
+   *
+   * Cycling starts from whatever preset the settings currently amount to, so a
+   * `custom` mix lands on `low` and walks up from there rather than jumping
+   * somewhere arbitrary. Resolution and shadows apply now; antialias waits for
+   * a reload and the label says so.
+   */
+  cycleQuality() {
+    const at = QUALITY_PRESETS.indexOf(presetOf(this.graphics));
+    const next = QUALITY_PRESETS[(at + 1) % QUALITY_PRESETS.length];
+    Object.assign(this.graphics, PRESETS[next]);
+    this.applyGraphics();
+  }
+
+  /** Everything a preset can move, pushed at the Stage. */
+  applyGraphics() {
+    const g = this.graphics;
+    this.stage.setWaterQuality(WATER_STYLES.indexOf(g.water));
+    this.stage.setShadows(g.shadows === 'on');
+    this.stage.setQuality(SCALE_VALUES[g.resolution]);
+    this.resize();
+    writeGraphicsSettings(g);
+    this.syncGraphics();
+  }
+
+  /** Draw the frame at this share of the window. */
+  setResolution(res) {
+    if (!RENDER_SCALES.includes(res)) return;
+    this.graphics.resolution = res;
+    this.stage.setQuality(SCALE_VALUES[res]);
+    this.resize();
+    writeGraphicsSettings(this.graphics);
+    this.syncGraphics();
+  }
+
+  cycleResolution() {
+    const at = RENDER_SCALES.indexOf(this.graphics.resolution);
+    this.setResolution(RENDER_SCALES[(at + 1) % RENDER_SCALES.length]);
+  }
+
+  cycleShadows() {
+    const at = SHADOW_MODES.indexOf(this.graphics.shadows);
+    this.graphics.shadows = SHADOW_MODES[(at + 1) % SHADOW_MODES.length];
+    this.stage.setShadows(this.graphics.shadows === 'on');
+    writeGraphicsSettings(this.graphics);
+    this.syncGraphics();
+  }
+
+  /**
+   * Choose antialiasing for the NEXT run.
+   *
+   * Nothing is pushed at the Stage, because nothing can be: see the note on
+   * the Stage constructor. The setting is stored and the label grows a
+   * "· reload" tail until the context actually matches it, which is the only
+   * honest thing a control that cannot take effect yet can do.
+   */
+  cycleAntialias() {
+    const at = ANTIALIAS_MODES.indexOf(this.graphics.antialias);
+    this.graphics.antialias = ANTIALIAS_MODES[(at + 1) % ANTIALIAS_MODES.length];
+    writeGraphicsSettings(this.graphics);
+    this.syncGraphics();
   }
 
   /**
@@ -294,9 +425,18 @@ class Game {
     writeGraphicsSettings(this.graphics);
   }
 
+  /**
+   * Whether the view is HEADING for top-down -- the target, not the current
+   * morph amount, so a toggle commits the moment it is pressed rather than
+   * halfway through the tilt. Both the control handoff and the camera's
+   * quarter-turn snapping read it, because a grid step and a snapped camera
+   * are the same decision seen from two sides.
+   */
+  get flatView() { return this.viewTarget > 0.5; }
+
   /** Queue the input filter that matches the target view. */
   syncControl() {
-    this.pendingInput = this.viewTarget > 0.5 ? this.grid : this.free;
+    this.pendingInput = this.flatView ? this.grid : this.free;
     // Dropped the moment the view starts heading back to 3D, not when control
     // actually changes hands: a route is a thing you asked the MAP for, and
     // watching the player finish walking it while the camera tilts down behind
@@ -343,14 +483,21 @@ class Game {
     // could ever satisfy -- is still findable by the same route as any other.
     this.placeUrls.set(world.meta.id, world.url);
     this.stage.setWorld(world);
+    // EDITS BEFORE FAUNA, and the order is load-bearing. A place's edits are
+    // where "this animal is not here any more" is written down, and a place is
+    // rebuilt from its file every time it is dropped from the cache -- so
+    // building the flock first would put every animal you have ever shot back
+    // on its authored tile, for one frame on a re-entry and permanently on a
+    // save that is restored straight into this room.
+    this.edits = this.editsFor(world);
+    this.stage.setEdits(this.edits);
     this.live = this.faunaFor(world);
+    this.live.sync(this.edits.culled);
     this.stage.setFauna(this.live);
     this.people = this.folkFor(world);
     this.stage.setFolk(this.people);
     this.loose = this.groundFor(world);
     this.stage.setGround(this.loose);
-    this.edits = this.editsFor(world);
-    this.stage.setEdits(this.edits);
     this.fixtures = this.fixturesFor(world);
     this.player.placeIn(world, tile, facing);
     // A conversation is with someone in the room you just left. Ending it here
@@ -539,6 +686,12 @@ class Game {
     this.player.inventory.restore(restore?.inventory ?? { slots: [], selected: 0 });
     this.player.purse.restore(restore?.coins);
     this.player.friends.restore(restore?.friends ?? []);
+    // A save from before there was time has no clock in it, and the sensible
+    // reading of that is the morning of the first day -- which is what
+    // Clock.restore does with an absent block. See Save.js on why the save
+    // version is NOT bumped for an additive field.
+    this.player.clock.restore(restore?.clock);
+    this.syncGameSettings();
     // A new game starts with the two tools in the bag. They are ordinary items
     // -- sellable, droppable, and buyable again over a counter -- so this is a
     // starting KIT and not a permanent ability. What it buys is that every
@@ -700,6 +853,7 @@ class Game {
         inventory: p.inventory.snapshot(),
         coins: p.purse.coins,
         friends: p.friends.snapshot(),
+        clock: p.clock.snapshot(),
       },
       places,
     };
@@ -731,7 +885,14 @@ class Game {
     return `${this.world.meta.id}|${p.tileX},${p.tileZ}|${this.stack.length}`
       + `|${p.inventory.version}|${p.purse.version}|${p.friends.version}`
       + `|${this.loose.version}|${this.edits.version}|${this.fixtures.version}`
-      + `|${this._talked ?? 0}`;
+      + `|${this._talked ?? 0}`
+      // The DAY, and deliberately not the time of day. This string is the
+      // autosave's change detector, and a value that moves every frame would
+      // turn it into a more expensive way of writing `true` -- a save every
+      // fifteen seconds forever, whatever the player was doing. A crossed
+      // midnight is worth a save; a passing minute is not, and it rides along
+      // on whatever save happens next for a reason of its own.
+      + `|${this.player.clock.day}`;
   }
 
   /**
@@ -1017,6 +1178,46 @@ class Game {
   }
 
   /**
+   * A new day.
+   *
+   * Everything the world does on its own happens here, which is the point of
+   * having a clock at all: until now the only thing that could change this
+   * place was the player standing in it, so a town could only ever be more
+   * used up than it was yesterday.
+   *
+   * Says so out loud, and that is not decoration. A renewal nobody notices is
+   * indistinguishable from no renewal -- the player was asleep for it by
+   * definition -- so the morning line is the whole difference between a feature
+   * and a felt one. It is a note rather than a dialog for the reason `use`
+   * gives: waking up is something you do on the way past.
+   *
+   * @param {number} days  boundaries crossed since the last frame, normally 1.
+   */
+  dawn(days) {
+    let back = 0;
+
+    // EVERY place this session knows about, not merely the one underfoot. A
+    // dawn that only reached the room you were standing in would leave the
+    // meadow you shot out yesterday shot out forever, purely because you
+    // happened to be indoors when the sun came up.
+    for (const [id, edits] of this.changes) {
+      const owed = edits.forgetCulled();
+      if (!owed) continue;
+      // The record is cleared now; the animals themselves are rebuilt by
+      // whichever Fauna exists. A place that is not currently loaded has none,
+      // and needs none -- it will be built from its file, and the record that
+      // would have removed them is already gone. That is the same laziness the
+      // save uses for Ground and Folk, arriving at the same answer.
+      back += this.fauna.get(id)?.restock() ?? owed;
+    }
+
+    this.note(back
+      ? `Day ${this.player.clock.day}. Something is moving out there again.`
+      : `Day ${this.player.clock.day}.`);
+    return days;
+  }
+
+  /**
    * Start a conversation -- and, if it happens somewhere you are welcome, make
    * a friend of whoever you are talking to.
    *
@@ -1157,6 +1358,13 @@ class Game {
       fauna: this.live,
       player: this.player,
       typeId: held?.typeId ?? null,
+      // Read-only, all three. The gun's resolver reports why the key would
+      // refuse -- an empty bag, or a barrel still cooling -- without being able
+      // to change either, which is what keeps toolTarget free to be polled ten
+      // times a second by the HUD.
+      inventory: this.player.inventory,
+      now: this.time,
+      readyAt: this._readyAt ?? 0,
     });
   }
 
@@ -1168,7 +1376,54 @@ class Game {
     if (what.verb === 'dig') return this.dig(what);
     if (what.verb === 'fill') return this.edits.fill(...what.tile) ? what : null;
     if (what.verb === 'clear') return this.grub(what);
+    if (what.verb === 'shoot') return this.shoot(what);
     return null;
+  }
+
+  /**
+   * Fire at whatever the ray found.
+   *
+   * SPEND FIRST, then act, on the rule Shop.buy states: a shot that fired
+   * without paying and one that paid without firing are both bugs, and only one
+   * of them is recoverable. `toolTarget` has already refused an empty bag and a
+   * cooling barrel, so a failed spend here would be a bug worth noticing rather
+   * than an ordinary state -- which is why it returns instead of carrying on.
+   *
+   * An NPC is knocked down and an animal is killed, and the asymmetry is the
+   * design rather than a shortcut. A person gets up: it is four seconds and a
+   * grudge, and it is not saved, on the precedent Edits.js sets about axe
+   * swings. An animal does not: it is written into the place's edits and it
+   * survives a reload -- but it comes back at dawn, because a world you can
+   * permanently strip is a world with nothing to do in it by the second day.
+   */
+  shoot(what) {
+    const tool = toolOf(this.player.inventory.held?.typeId);
+    if (!tool) return null;
+    if (!this.player.inventory.spend(AMMO, 1)) return null;
+
+    this._readyAt = this.time + (tool.cooldown ?? 0.9);
+    this.stage.setShot(
+      this.player.x, this.player.y, this.player.z,
+      this.player.yaw, what.range ?? tool.range ?? 8, this.time);
+    sfx.shot();
+
+    if (what.kind === 'npc') {
+      what.target.knockDown();
+      // Shooting somebody is the exact inverse of saying hello, and it costs
+      // exactly what saying hello bought: the friendship, and with it their
+      // front door -- the trespass clock starts again the moment you are no
+      // longer welcome. Recoverable by going back and saying hello, which is
+      // deliberate. See Friends.js.
+      this.player.friends.anger(what.target.id);
+      this.note(`${what.target.name} will remember that.`);
+      return what;
+    }
+
+    const animal = this.live.kill(what.target.id);
+    if (!animal) return null;
+    this.edits.cull(animal.id);
+    for (const typeId of killDrops(animal)) this.spill(typeId, what.tile);
+    return what;
   }
 
   /**
@@ -1297,6 +1552,11 @@ class Game {
       }
     }
 
+    // Same reasoning, same place: a turn is view state, so it keeps easing
+    // through a doorway and behind a conversation. What it does NOT do there is
+    // take orders -- see turnCamera.
+    this.turnCamera(dt);
+
     // Mid-doorway the screen is black and the player is between two places, so
     // there is nothing sensible for input to act on. The camera morph above
     // still runs -- it is view state, and freezing it would strand a toggle.
@@ -1312,6 +1572,18 @@ class Game {
     // worse, the trespass clock running -- would mean coming back from a
     // decision you had not made yet to consequences you had not chosen.
     if (this.worlds.open) { this.keys.endFrame(); return; }
+
+    // Time, and where it sits in this list is the whole of what it means.
+    //
+    // AFTER travel, so it pauses for the quarter-second a doorway is black --
+    // there is no world on screen to be a time of day in. AFTER the worlds
+    // panel, which is documented above as the one thing that stops the world.
+    // But BEFORE the conversation branch, so time keeps passing while you are
+    // talking: a chat that froze the sun would let a player park midnight, and
+    // it is the same argument that keeps the trespass clock running through one.
+    this.stage.setTimeOfDay(this.player.clock.t);
+    const dawned = this.player.clock.advance(dt);
+    if (dawned) this.dawn(dawned);
 
     // Whether the floor under the player is someone's, and what happens when
     // it has been for too long. Before the conversation branch and not after
@@ -1347,21 +1619,31 @@ class Game {
 
     if (this.keys.pressed('KeyO')) { this.openWorlds(); this.keys.endFrame(); return; }
 
-    // Perf probes. Setting one by hand pins it, so auto-scaling stops fighting.
-    if (this.keys.pressed('Digit0')) this.stage.toggleShadows();
+    // Shadows are a SETTING, so the key goes through the setting rather than
+    // straight at the Stage -- otherwise the drawer would still read "on" over
+    // a scene that has none, and the next reload would silently undo the key.
+    if (this.keys.pressed('Digit0')) this.cycleShadows();
     if (this.keys.pressed('KeyP')) this.hud.togglePerf();
     // Bisect probes: hide a class of content and read the delta in `submit`.
+    // These are diagnostics and NOT settings: nothing remembers them, on
+    // purpose, because a world that came back with its trees hidden would be a
+    // bug report rather than a preference.
+    // Push the sun along by about an in-game hour. A diagnostic like the probes
+    // below, with one difference worth saying out loud: this one CHANGES SAVED
+    // STATE, because it moves the real clock rather than previewing one. It is
+    // here because a twenty-minute day makes "does dusk look right" a
+    // twenty-minute question otherwise.
+    if (this.keys.pressed('KeyT')) {
+      const dawned = this.player.clock.skip();
+      if (dawned) this.dawn(dawned);
+    }
     if (this.keys.pressed('Digit4')) this.stage.toggleGroup('items');
     if (this.keys.pressed('Digit5')) this.stage.toggleGroup('fauna');
     if (this.keys.pressed('Digit7')) this.stage.toggleGroup('folk');
     if (this.keys.pressed('Digit6')) this.stage.toggleGroup('place');
-    for (const [code, q] of [['Digit1', 0.5], ['Digit2', 0.75], ['Digit3', 1]]) {
-      if (this.keys.pressed(code)) {
-        this.pinnedQuality = true;
-        this.scaler = 'pinned';
-        this.stage.setQuality(q);
-        this.resize();
-      }
+    // 1/2/3 pick a resolution, same as the drawer and remembered the same way.
+    for (const [code, res] of [['Digit1', '50%'], ['Digit2', '75%'], ['Digit3', '100%']]) {
+      if (this.keys.pressed(code)) this.setResolution(res);
     }
 
     // The controller swap waits for a clean boundary.
@@ -1371,7 +1653,13 @@ class Game {
       if (this.input === this.grid) this.settleOnGrid();
     }
 
-    const { vx, vz } = this.input.update(dt, this.player, this.keys.state, this.world);
+    // The yaw the keys are read against, and NOT the same number in both
+    // views: free movement follows the camera exactly, while a grid step takes
+    // it snapped to a quarter so the step stays one whole tile. Each filter
+    // asks for the one it wants rather than deciding here, because which yaw a
+    // filter steers by is a fact about that filter.
+    const camYaw = this.input === this.grid ? this.orbit.stepYaw : this.orbit.yaw;
+    const { vx, vz } = this.input.update(dt, this.player, this.keys.state, this.world, camYaw);
     this.player.move(dt, vx, vz);
 
     // Interaction reads the position the player is standing in NOW, so it runs
@@ -1398,6 +1686,30 @@ class Game {
   }
 
   /**
+   * Read the turn keys and advance the camera's heading.
+   *
+   * The two keys are read TWICE, as a held state and as an edge, because the
+   * two views want different things from them: an orbit is something you hold
+   * and a quarter turn is something you tap. Orbit takes both and uses whichever
+   * matches the view it is told it is in.
+   *
+   * Input is gated but the animation is not. A turn already in flight finishes
+   * while the screen is black mid-doorway or while a conversation is up -- it is
+   * view state, exactly like the morph a few lines above -- but neither of those
+   * is a moment the game is taking orders, and a conversation OWNS the keyboard
+   * outright. Reading the edge unconditionally would also be harmless (endFrame
+   * clears the press set every frame either way), but "who may turn the camera"
+   * is worth stating rather than leaving to that.
+   */
+  turnCamera(dt) {
+    const live = !this.travel && !this.worlds.open && !this.chat.active;
+    const k = this.keys;
+    const held = live ? (k.state.turnRight ? 1 : 0) - (k.state.turnLeft ? 1 : 0) : 0;
+    const tap = live ? (k.pressed('Period') ? 1 : 0) - (k.pressed('Comma') ? 1 : 0) : 0;
+    this.orbit.update(dt, held, tap, this.flatView);
+  }
+
+  /**
    * Ease onto the nearest tile centre when grid control takes over.
    *
    * This is a SEEK, not a teleport: GridInput steers there and Player.move
@@ -1409,135 +1721,6 @@ class Game {
     const tx = Math.round(p.x - 0.5), tz = Math.round(p.z - 0.5);
     const ok = this.world.canOccupy(tx, tz, p.tileX, p.tileZ);
     this.grid.seek(ok ? tx : p.tileX, ok ? tz : p.tileZ);
-  }
-
-  /**
-   * Match render scale to the frame budget, in both directions.
-   *
-   * RENDER SCALE ONLY BUYS BACK GPU TIME. That is the whole design constraint,
-   * and the previous version did not know it: it watched fps alone, so a frame
-   * that was slow on the CPU made it shed pixels, which could not possibly
-   * help, and it only ever ratcheted DOWN, so the softer image was permanent.
-   * Observed in the wild at 0.5 scale and 26ms of CPU per frame -- half the
-   * resolution, none of the speed, and no way back.
-   *
-   * So the controller reasons about the two costs separately, which it can now
-   * do because Stage measures them separately:
-   *
-   *   cpu = msUpdate + msRender   how long we take to BUILD the frame
-   *   gpu = stage.gpuMs           how long the hardware takes to DRAW it
-   *
-   * These pipeline across frames rather than adding up, so the frame is paced
-   * by whichever is larger. Scaling by `q` scales pixel count -- and so the
-   * GPU's share -- by q^2, while leaving the CPU's share untouched. That gives
-   * an actual prediction of what a rung would cost, and the controller only
-   * moves when the prediction says the move is worth making. Predicting rather
-   * than probing is also what removes the oscillation the old comment worried
-   * about: a step it would immediately have to undo is never taken.
-   */
-  adaptQuality() {
-    if (this.fps === 0 || this.pinnedQuality) return;
-
-    const cpu = this.msUpdate + this.msRender;
-    const gpu = this.stage.gpuMs;
-    const q = this.stage.quality;
-    const rung = this.#rung();
-    // No timer query on this driver means no evidence about where the time
-    // goes, so fall back to the old fps-only rule rather than guessing.
-    const blind = gpu <= 0;
-    const slow = 1000 / this.fps > FRAME_BUDGET;
-    const note = slow && !blind && cpu >= gpu ? ' · cpu-bound' : '';
-
-    // -- shed pixels on any sustained miss ------------------------------------
-    // This used to require `gpu > cpu` -- shed only when pixels are provably
-    // what is over budget. That guard assumed the split between `cpu` and `gpu`
-    // is trustworthy, and the note on `free` below explains why it is not: the
-    // timer query misses the resolve and the present, and the vsync wait inside
-    // render() is booked as CPU. A frame that is fill-bound in ways the query
-    // cannot see reads as `cpu >= gpu` and the guard refused the one lever that
-    // would have helped, which is how a 30fps frame ends up pinned at 1.00.
-    //
-    // So a sustained miss is now reason enough to try. That is safe here in a
-    // way it was not for the fps-only controller this replaced, because the
-    // ratchet is no longer one-way: `fits` climbs back the moment the frame is
-    // genuinely inside budget, so a wrong guess costs one rung for half a
-    // second and corrects itself, while a right one buys the frame back.
-    if (slow) {
-      this._fast = 0;
-      const down = QUALITY_STEPS[Math.max(0, rung - 1)];
-      if (down >= q) {
-        // Already at the coarsest rung and still missing budget. Nothing left
-        // to give, and the readout must say that rather than claim it is
-        // still working on it.
-        this._slow = 0;
-        this.scaler = 'held · floor';
-        return;
-      }
-      if (++this._slow >= 2) {
-        this._slow = 0;
-        this.scaler = 'easing down';
-        this.stage.setQuality(down);
-        this.resize();
-      }
-      return;
-    }
-    this._slow = 0;
-
-    // -- climb back ----------------------------------------------------------
-    const up = QUALITY_STEPS[Math.min(QUALITY_STEPS.length - 1, rung + 1)];
-    const gpuAtUp = gpu * (up / q) ** 2;
-
-    // Two independent reasons a bigger framebuffer is affordable, and the
-    // second is the one the old controller could never see. `fits` is the
-    // ordinary case: the whole frame still lands inside budget. `free` is the
-    // CPU-bound case: the GPU is so far off the critical path that the extra
-    // pixels are absorbed by time it spends waiting anyway, so the sharper
-    // image costs nothing. Without `free`, a frame that is slow for reasons
-    // resolution cannot touch would sit at half scale for ever -- soft image,
-    // no speed, which is exactly the state this rewrite exists to end.
-    //
-    // BUT `free` MAY NEVER FIRE WHILE THE FRAME IS MISSING BUDGET, because both
-    // of the numbers it reasons from understate the true cost of a pixel:
-    //
-    //   gpuMs  is a TIME_ELAPSED query around the draw commands, so it counts
-    //          neither the MSAA resolve nor the present/composite. Both scale
-    //          with resolution, and both are invisible here.
-    //   cpu    is wall-clock around render(), and a WebGL call blocks on the
-    //          previous frame's buffer swap. A frame that is over budget for
-    //          ANY reason therefore books its vsync wait as CPU time.
-    //
-    // Slow and cpu >= gpu is exactly the state those two errors produce, and
-    // the old rule read it as "pixels are free" and bought the most expensive
-    // framebuffer on offer -- observed sitting at 1.00 while holding 30fps
-    // against a 60fps budget. Climbing is a bet that there is headroom; a
-    // sustained miss is the one proof there is not.
-    const fits = Math.max(cpu, gpuAtUp) < FRAME_BUDGET * 0.85;
-    const free = !blind && !slow && gpuAtUp < cpu * 0.9;
-
-    if (up > q && (fits || free)) {
-      if (++this._fast >= 6) {
-        this._fast = 0;
-        this.scaler = `easing up${note}`;
-        this.stage.setQuality(up);
-        this.resize();
-      }
-      return;
-    }
-
-    this._fast = 0;
-    this.scaler = note ? `held${note}`
-      : q >= 1 ? 'full'
-        : 'held · no headroom';
-  }
-
-  /** Index of the nearest rung to the current scale. */
-  #rung() {
-    let best = 0;
-    for (let i = 1; i < QUALITY_STEPS.length; i++) {
-      if (Math.abs(QUALITY_STEPS[i] - this.stage.quality)
-        < Math.abs(QUALITY_STEPS[best] - this.stage.quality)) best = i;
-    }
-    return best;
   }
 
   frame(now) {
@@ -1553,7 +1736,7 @@ class Game {
     const t0 = performance.now();
     this.update(dt);
     const t1 = performance.now();
-    this.stage.render(this.player, this.viewT, this.time);
+    this.stage.render(this.player, this.viewT, this.time, this.orbit.yaw);
     const t2 = performance.now();
     // The map is drawn EVERY frame, unlike the rest of the HUD below: it is a
     // moving picture of a moving world, and at the readout's ten-a-second it
@@ -1580,7 +1763,6 @@ class Game {
       this._mapAccum = 0;
       this.fps = this._fpsFrames / this._fpsAccum;
       this._fpsAccum = 0; this._fpsFrames = 0;
-      this.adaptQuality();
     }
     // The readout rebuilds DOM; at 60Hz that is pure layout churn for numbers
     // nobody can read that fast.

@@ -35,12 +35,23 @@ Every world has a shopkeeper and two or three neighbours who walk around during
 the day. Their conversations, the shop's prices and its stock are all data in
 the world file — see [`docs/WORLD_FORMAT.md`](docs/WORLD_FORMAT.md).
 
-**The four worlds** — *Meadowbrook*, an island with a bluff over the town;
+**The eight worlds** — *Meadowbrook*, an island with a bluff over the town;
 *Sourwood Holler*, a valley with a creek in the bottom; *Tidewrack Atoll*, a
-ring of land around a lagoon you cannot cut across; and *Thistledown Gap*, a
-pass open at both ends with pasture stepping up either wall. Each is one recipe
-in `src/world/recipes.js`, and the same recipes build the random worlds the
-picker offers, so a rolled atoll is the same kind of place as the shipped one.
+ring of land around a lagoon you cannot cut across; *Thistledown Gap*, a pass
+open at both ends with pasture stepping up either wall; *Rimrock Mesa*, a table
+in the sky with the ground falling away on all four sides; *Ashkettle Caldera*,
+a crater with a warm lake in it and no way out in any direction; *Sedgewater
+Fen*, sedge and channels where the walk between two doors a hundred paces apart
+goes back past the middle; and *Bellrock Coast*, a beach at the bottom of the
+town with downs stepping up behind it. Each is one recipe in
+`src/world/recipes.js`, and the same recipes build the random worlds the picker
+offers, so a rolled atoll is the same kind of place as the shipped one.
+
+What is off the EDGE of each of them is a `form` — one word in the world file
+that tells the renderer what to wrap around the grid, and the answer to why you
+cannot walk out. Six of them: sea, ridges, a cliff you are on top of, a rim with
+no mouth, standing water, and — on a coast — sea one way and farmland the other.
+See `src/world/forms.js`.
 
 **You start with an axe and a shovel**, and both work on the tile you are facing.
 Three swings of the axe fells a tree, which drops its wood where it stood and
@@ -149,13 +160,14 @@ on one the player could not leave.
 ## Layout
 
 ```
-public/worlds/*.json              the four worlds (hand-editable; see docs/)
+public/worlds/*.json              the eight worlds (hand-editable; see docs/)
 src/
   core/         constants, coordinate conventions, seeded RNG
   world/        ← no three.js anywhere in here, so the sim is headless-testable
     WorldFile.js    parse + validate JSON, with useful errors
     World.js        runtime typed arrays, derived collision, spatial buckets
     surfaces.js     ground type registry
+    forms.js        what is off the edge: one band recipe per world form
     objectTypes.js  object type registry: footprint, mask, height, palette
     animalTypes.js  animal species registry: size, speeds, behaviour, palette
     npcTypes.js     npc registry: size, palette, which body mesh to build

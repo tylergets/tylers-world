@@ -334,24 +334,15 @@ function modelFor(typeId) {
   return m;
 }
 
+/** How far a shot animal rolls. Just short of flat, so it still catches light. */
+const FALL_ANGLE = Math.PI / 2 * 0.94;
+
 export class AnimalBatch {
   constructor(animals) {
     this.group = new THREE.Group();
     this.batches = [];
-
-    const byType = new Map();
-    for (const animal of animals) {
-      let members = byType.get(animal.typeId);
-      if (!members) byType.set(animal.typeId, (members = []));
-      members.push(animal);
-    }
-    for (const [typeId, members] of byType) {
-      const model = modelFor(typeId);
-      const body = this.#mesh(model.body, model.material, members.length, `${typeId}:body`);
-      const head = this.#mesh(model.head, model.material, members.length, `${typeId}:head`);
-      this.group.add(body, head);
-      this.batches.push({ members, model, body, head });
-    }
+    this.byType = new Map();
+    this.reconcile(animals);
 
     this._position = new THREE.Vector3();
     this._scale = new THREE.Vector3(1, 1, 1);
@@ -366,8 +357,61 @@ export class AnimalBatch {
     this._head = new THREE.Matrix4();
   }
 
-  update(t, tiltRad) {
-    this._tilt.makeRotationX(tiltRad * t);
+  /**
+   * Re-partition the flock by species.
+   *
+   * Called from the constructor and then only when `Fauna.version` moves --
+   * which is to say when an animal dies or a night puts one back, and never for
+   * mere movement. Everything else this class does is per frame; this is the
+   * rare event, and guarding it behind one integer compare in Stage is what
+   * keeps it off the hot path.
+   *
+   * Capacity grows to a power of two and is never given back, which is the same
+   * bargain ItemBatch strikes: a flock that shrinks tonight and is restocked at
+   * dawn must not churn a buffer twice a day.
+   */
+  reconcile(animals) {
+    const byType = new Map();
+    for (const animal of animals) {
+      if (animal.dying >= 1) continue;
+      let members = byType.get(animal.typeId);
+      if (!members) byType.set(animal.typeId, (members = []));
+      members.push(animal);
+    }
+
+    for (const [typeId, batch] of this.byType) {
+      batch.members = byType.get(typeId) ?? [];
+      this.#ensureCapacity(batch, batch.members.length);
+      batch.body.count = batch.members.length;
+      batch.head.count = batch.members.length;
+      byType.delete(typeId);
+    }
+    for (const [typeId, members] of byType) {
+      const batch = { typeId, members, model: modelFor(typeId), body: null, head: null, capacity: 0 };
+      this.byType.set(typeId, batch);
+      this.#ensureCapacity(batch, members.length);
+      batch.body.count = members.length;
+      batch.head.count = members.length;
+    }
+    this.batches = [...this.byType.values()];
+  }
+
+  #ensureCapacity(batch, count) {
+    if (batch.body && batch.capacity >= count) return;
+    if (batch.body) {
+      this.group.remove(batch.body, batch.head);
+      batch.body.dispose();
+      batch.head.dispose();
+    }
+    const m = batch.model;
+    batch.capacity = Math.max(1, THREE.MathUtils.ceilPowerOfTwo(Math.max(1, count)));
+    batch.body = this.#mesh(m.body, m.material, batch.capacity, `${batch.typeId}:body`);
+    batch.head = this.#mesh(m.head, m.material, batch.capacity, `${batch.typeId}:head`);
+    this.group.add(batch.body, batch.head);
+  }
+
+  update(lieBack) {
+    this._tilt.makeRotationFromQuaternion(lieBack);
     for (const { members, model, body, head } of this.batches) {
       const gait = model.gait;
       for (let i = 0; i < members.length; i++) {
@@ -379,7 +423,17 @@ export class AnimalBatch {
         this._root.makeTranslation(animal.x, animal.y, animal.z);
         this._yaw.makeRotationY(animal.yaw);
         this._position.set(0, running ? Math.abs(stride) * gait.bob : 0, 0);
-        this._euler.set(running ? gait.lean : 0, 0, running ? stride * gait.roll : 0);
+        // Toppling rides the ROLL channel the gait already drives, so a dying
+        // animal costs one add and one multiply in the hot loop and no new
+        // node, no new matrix and no new material. Eased out so it goes over
+        // fast and settles, rather than rotating at a constant rate like a
+        // door.
+        const d = animal.dying;
+        const fall = d === null || d === undefined ? 0 : (1 - (1 - d) * (1 - d)) * FALL_ANGLE;
+        this._euler.set(
+          running ? gait.lean : 0,
+          0,
+          (running ? stride * gait.roll : 0) + fall);
         this._rotation.setFromEuler(this._euler);
         this._bob.compose(this._position, this._rotation, this._scale);
 

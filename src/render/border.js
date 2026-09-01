@@ -6,7 +6,11 @@
  * the 3D frame -- so the band is what turns "the array ran out" into a place
  * with an outside. Which outside it is comes from the world's form (forms.js):
  * an island's band is open water, a holler's is the ridges that make it a
- * holler at all.
+ * holler at all, a mesa's is the drop it stands on top of.
+ *
+ * This file knows about exactly three shapes of band -- water, ground, and a
+ * crossfade between the two -- and nothing at all about the six forms that use
+ * them. Adding a seventh is an entry in forms.js and no edit here.
  *
  * THE LATTICE
  * -----------
@@ -47,8 +51,17 @@ import { hashString } from '../core/rng.js';
  */
 const RINGS = [0, 0.5, 1.25, 2.5, 4.5, 7.5, 12, 18, 26, 36];
 
-/** How far the band's outer rim drops, so the horizon is not see-through. */
+/**
+ * How far down the band's outer rim hangs, so the horizon is not see-through.
+ *
+ * A floor rather than a fixed height: it is deep enough for every band that
+ * CLIMBS, and a band that falls -- a mesa's -- goes past it, so the skirt takes
+ * whichever is lower. See the rim loop.
+ */
 const RIM_Y = -8;
+
+/** How far below the far ring the skirt hangs when the band has dropped past RIM_Y. */
+const RIM_DROP = 4;
 
 /** Sea level: water tiles sit this far below their tile's elevation. */
 const SEA_Y = -WATER_DROP;
@@ -61,6 +74,8 @@ const SEA_Y = -WATER_DROP;
 const climb = (r) => 1 - Math.exp(-r / 4.5);
 
 const smoothstep = (t) => (t <= 0 ? 0 : t >= 1 ? 1 : t * t * (3 - 2 * t));
+
+const clamp01 = (t) => (t <= 0 ? 0 : t >= 1 ? 1 : t);
 
 /** Sun direction for the band's baked hillshade. Matches Stage's default sun. */
 const LIGHT = (() => {
@@ -189,19 +204,55 @@ export function buildBorder(world, b, cornerY) {
     p.wobble = ridgeWobble(i, n);
   }
 
-  /** Band height at ring distance `r` from boundary param `p`. */
-  const heightAt = band.water
-    ? (p, r) => p.innerY + (SEA_Y - p.innerY) * smoothstep(r / band.shore)
-    : (p, r) => p.innerY + climb(r) * (band.rise * p.wobble * (1 - p.open) - band.fall * p.open);
+  // The sea half of a MIXED band (forms.js: `coast`), or null for the five
+  // forms whose outside is all one thing.
+  const sea = band.sea ?? null;
 
-  /** Colour at a point, given how far out it is and how much it has risen. */
+  /** A water surface: falls from the weld to sea level over `shore` tiles. */
+  const wetY = (p, r, shore) => p.innerY + (SEA_Y - p.innerY) * smoothstep(r / shore);
+
+  /** Ground: climbs toward the horizon, or -- with a negative rise -- drops away. */
+  const dryY = (p, r) => p.innerY
+    + climb(r) * (band.rise * p.wobble * (1 - p.open) - (band.fall ?? 0) * p.open);
+
+  const wetColor = (w, r) => _lerpColor(w.near, w.far, Math.min(1, r / 22));
+
+  /**
+   * `lift / rise` rather than `max(0, lift) / rise`, which is what makes a
+   * NEGATIVE rise work. A mesa's band drops, so both the lift and the rise come
+   * out negative and the ratio is the same 0..1 walk from `low` at the weld to
+   * `high` at full relief that a climbing band gets. Clamping instead would
+   * have painted every mesa a single flat colour.
+   */
+  const dryColor = (r, lift) => _lerpColor(
+    _lerpColor(band.low, band.high, clamp01(lift / band.rise)),
+    band.far,
+    Math.min(1, r / 26),
+  );
+
+  /**
+   * MIXED BANDS. On a coast the wall is farmland over the closed edges and open
+   * sea past the `open` ones, and the crossfade between them is `p.open` -- the
+   * very same taper that opens a holler's mouth, doing a second job. It drives
+   * the height, the colour, the shimmer flag and the rim colour from one
+   * number, so those four can never disagree about where the water starts.
+   */
+  const heightAt = band.water
+    ? (p, r) => wetY(p, r, band.shore)
+    : sea
+      ? (p, r) => { const dry = dryY(p, r); return dry + (wetY(p, r, sea.shore) - dry) * p.open; }
+      : dryY;
+
   const colorAt = band.water
-    ? (r) => _lerpColor(band.near, band.far, Math.min(1, r / 22))
-    : (r, lift) => _lerpColor(
-      _lerpColor(band.low, band.high, Math.min(1, Math.max(0, lift) / band.rise)),
-      band.far,
-      Math.min(1, r / 26),
-    );
+    ? (r) => wetColor(band, r)
+    : sea
+      ? (r, lift, open) => _lerpColor(dryColor(r, lift), wetColor(sea, r), open)
+      : dryColor;
+
+  /** How much this quad shimmers: all, none, or -- on a coast -- part way. */
+  const wetness = band.water ? () => 1 : sea ? (open) => open : () => 0;
+
+  const skirtAt = sea ? (open) => _lerpColor(band.skirt, sea.skirt, open) : () => band.skirt;
 
   const point = (p, r) => [p.px + p.ox * r, heightAt(p, r), p.pz + p.oz * r];
 
@@ -217,10 +268,11 @@ export function buildBorder(world, b, cornerY) {
 
       const mid = (r0 + r1) / 2;
       const lift = ((a[1] - p.innerY) + (d[1] - q.innerY)) / 2;
+      const open = (p.open + q.open) / 2;
       const { normal, shade } = quadShade(a, c, d);
-      b.addQuad(a, c, d, e, colorAt(mid, lift), {
+      b.addQuad(a, c, d, e, colorAt(mid, lift, open), {
         normal,
-        water: band.water ? 1 : 0,
+        water: wetness(open),
         shades: [shade, shade, shade, shade],
       });
     }
@@ -233,10 +285,14 @@ export function buildBorder(world, b, cornerY) {
   for (let i = 0; i < n; i++) {
     const p = params[i], q = params[(i + 1) % n];
     const a = point(p, rMax), c = point(q, rMax);
+    // ALWAYS below the far ring. A mesa's band has fallen fourteen units by the
+    // time it gets here, well past RIM_Y, and a skirt pinned to a fixed depth
+    // would stand up out of the horizon as a wall instead of hanging under it.
+    const rimY = Math.min(RIM_Y, a[1] - RIM_DROP, c[1] - RIM_DROP);
     b.addQuad(
       [a[0], a[1], a[2]], [c[0], c[1], c[2]],
-      [c[0], RIM_Y, c[2]], [a[0], RIM_Y, a[2]],
-      band.skirt, {},
+      [c[0], rimY, c[2]], [a[0], rimY, a[2]],
+      skirtAt((p.open + q.open) / 2), {},
     );
   }
 }

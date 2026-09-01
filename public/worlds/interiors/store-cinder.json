@@ -1,0 +1,369 @@
+{
+  "format": "tw.world",
+  "version": 1,
+  "kind": "interior",
+  "meta": {
+    "id": "store.cinder.interior",
+    "name": "The Cinder Shop",
+    "note": "Interior of store.cinder in ashkettle.json. Hand-authored."
+  },
+  "grid": {
+    "width": 13,
+    "height": 10,
+    "tileSize": 1
+  },
+  "zones": {
+    "back": {
+      "owner": "keep.oram",
+      "label": "behind the counter"
+    }
+  },
+  "layers": {
+    "surface": {
+      "palette": {
+        "#": "wall",
+        "w": "floor.wood",
+        "t": "floor.tile",
+        "r": "rug"
+      },
+      "data": [
+        "#############",
+        "#ttttttttttt#",
+        "#ttttttttttt#",
+        "#tttwwwwwttt#",
+        "#wwwwwwwwwww#",
+        "#wwwwrrrwwww#",
+        "#wwwwrrrwwww#",
+        "#wwwwwwwwwww#",
+        "#wwwwwwwwwww#",
+        "######tt#####"
+      ]
+    },
+    "elevation": {
+      "palette": {
+        "0": "0",
+        "4": "4"
+      },
+      "data": [
+        "4444444444444",
+        "4000000000004",
+        "4000000000004",
+        "4000000000004",
+        "4000000000004",
+        "4000000000004",
+        "4000000000004",
+        "4000000000004",
+        "4000000000004",
+        "4444440044444"
+      ]
+    },
+    "flags": {
+      "palette": {
+        ".": "none"
+      },
+      "data": [
+        ".............",
+        ".............",
+        ".............",
+        ".............",
+        ".............",
+        ".............",
+        ".............",
+        ".............",
+        ".............",
+        "............."
+      ]
+    },
+    "zones": {
+      "palette": {
+        ".": "none",
+        "b": "back"
+      },
+      "data": [
+        ".............",
+        ".bbbbbbbbbbb.",
+        ".bbbbbbbbbbb.",
+        ".............",
+        ".............",
+        ".............",
+        ".............",
+        ".............",
+        ".............",
+        "............."
+      ]
+    }
+  },
+  "objects": [
+    {
+      "id": "shelf.a",
+      "type": "furn.shelf",
+      "tile": [
+        1,
+        1
+      ],
+      "props": {
+        "label": "Dry Goods"
+      }
+    },
+    {
+      "id": "shelf.b",
+      "type": "furn.shelf",
+      "tile": [
+        4,
+        1
+      ],
+      "props": {
+        "label": "Ironmongery"
+      }
+    },
+    {
+      "id": "shelf.c",
+      "type": "furn.shelf",
+      "tile": [
+        7,
+        1
+      ],
+      "props": {
+        "label": "Rope & Line"
+      }
+    },
+    {
+      "id": "shelf.d",
+      "type": "furn.shelf",
+      "tile": [
+        10,
+        1
+      ],
+      "props": {
+        "label": "Sundries"
+      }
+    },
+    {
+      "id": "counter",
+      "type": "furn.counter",
+      "tile": [
+        2,
+        3
+      ],
+      "props": {
+        "label": "Register"
+      }
+    },
+    {
+      "id": "stove",
+      "type": "furn.stove",
+      "tile": [
+        9,
+        3
+      ],
+      "props": {
+        "label": "Range"
+      }
+    },
+    {
+      "id": "chair.loafers",
+      "type": "furn.chair",
+      "tile": [
+        11,
+        4
+      ]
+    },
+    {
+      "id": "crate.west",
+      "type": "furn.crate",
+      "tile": [
+        1,
+        6
+      ]
+    },
+    {
+      "id": "crate.east",
+      "type": "furn.crate",
+      "tile": [
+        11,
+        6
+      ]
+    },
+    {
+      "id": "crate.door",
+      "type": "furn.crate",
+      "tile": [
+        1,
+        8
+      ]
+    },
+    {
+      "id": "plant",
+      "type": "furn.plant",
+      "tile": [
+        11,
+        8
+      ]
+    }
+  ],
+  "npcs": [
+    {
+      "id": "keep.oram",
+      "type": "folk.shopkeep",
+      "tile": [
+        3,
+        2
+      ],
+      "facing": "south",
+      "props": {
+        "name": "Oram",
+        "title": "The Cinder Shop"
+      },
+      "shop": {
+        "name": "Cinder & Sundry",
+        "markup": 1.28,
+        "buyRate": 0.66,
+        "takes": [
+          "item.stone",
+          "item.stick",
+          "item.mushroom",
+          "tool.axe",
+          "tool.shovel",
+          "tool.gun",
+          "item.shot",
+          "item.game"
+        ],
+        "stock": [
+          {
+            "type": "item.apple",
+            "count": 6
+          },
+          {
+            "type": "item.flower",
+            "count": 5
+          },
+          {
+            "type": "item.stick",
+            "count": 12
+          },
+          {
+            "type": "tool.axe",
+            "count": 1,
+            "price": 205
+          },
+          {
+            "type": "tool.shovel",
+            "count": 1,
+            "price": 170
+          },
+          {
+            "type": "tool.gun",
+            "count": 1,
+            "price": 480
+          },
+          {
+            "type": "item.shot",
+            "count": null
+          }
+        ]
+      },
+      "dialog": {
+        "start": "open",
+        "nodes": {
+          "open": {
+            "branch": [
+              {
+                "when": {
+                  "flag": "met"
+                },
+                "to": "again"
+              },
+              {
+                "to": "hello"
+              }
+            ]
+          },
+          "hello": {
+            "text": [
+              "Everything in here has been carried round the ring at least once. Price reflects it.",
+              "Oram. Only shop in the bowl, which I am told is not the same as the best shop in the bowl."
+            ],
+            "do": {
+              "set": "met"
+            },
+            "then": "menu"
+          },
+          "again": {
+            "text": "Round again. What is it this time?",
+            "then": "menu"
+          },
+          "menu": {
+            "text": "Trading, or warming up?",
+            "choices": [
+              {
+                "text": "Trading.",
+                "do": {
+                  "shop": true
+                },
+                "to": "after"
+              },
+              {
+                "text": "What'll you take?",
+                "to": "takes"
+              },
+              {
+                "text": "Warming up.",
+                "to": "bye"
+              }
+            ]
+          },
+          "takes": {
+            "text": "Stone, wood and mushrooms. Not the ones off the warm ground, mind. I can tell.",
+            "then": "menu"
+          },
+          "after": {
+            "text": "Right you are.",
+            "then": "menu"
+          },
+          "bye": {
+            "text": "Mind the step. It is warm."
+          }
+        }
+      }
+    }
+  ],
+  "items": [
+    {
+      "id": "stone.doorstop",
+      "type": "item.stone",
+      "tile": [
+        3,
+        8
+      ]
+    },
+    {
+      "id": "mushroom.jar",
+      "type": "item.mushroom",
+      "tile": [
+        6,
+        4
+      ]
+    }
+  ],
+  "exits": [
+    {
+      "tile": [
+        6,
+        9
+      ]
+    },
+    {
+      "tile": [
+        7,
+        9
+      ]
+    }
+  ],
+  "spawn": {
+    "tile": [
+      7,
+      8
+    ],
+    "facing": "north"
+  }
+}

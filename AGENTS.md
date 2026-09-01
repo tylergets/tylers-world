@@ -38,10 +38,21 @@ a stale copy silently deletes whatever landed in between.
 ## In-game diagnostics belong on screen
 
 The HUD carries the performance panel (`P` toggles it): the CPU cost split into
-simulation, our own node walk and three's render; real GPU time from a timer
-query; draw calls, triangles, live program and geometry counts; and the render
-scale with the reason the scaler chose it. Keys `0`–`6` toggle shadows, pin the
-render scale, and hide content classes for bisecting.
+simulation, our own node walk, three's render and the minimap; real GPU time
+from a timer query; draw calls, triangles, live program and geometry counts;
+and the render scale. Keys `4`–`7` hide content classes for bisecting, which is
+the probe that answers "is this the scene at all" — if hiding everything does
+not move the frame rate, the cost is not in what we are drawing.
+
+Video settings live behind the gear (Quality, Resolution, Shadows,
+Antialiasing, Water, Shoreline) and are the player's to choose. There is
+deliberately no adaptive render-scale controller: one used to live in
+`adaptQuality` and it was worse than nothing, because deciding whether the CPU
+or the GPU is over budget needs instruments this codebase does not have — the
+timer query stops before the MSAA resolve, and the wall clock around `render()`
+counts the vsync wait as work. Guessing wrong meant reallocating the drawing
+buffer, which is a visible black frame, to make the picture worse. Do not
+reintroduce one.
 
 When you need a new measurement, **add a row to the HUD** and ask the user to
 read it. That keeps the instrument in the product, where the user can use it

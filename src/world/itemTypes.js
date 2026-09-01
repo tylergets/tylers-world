@@ -119,6 +119,46 @@ export const ITEM_TYPES = {
     palette: { haft: 0xb98d5f, haftHi: 0xcaa070, blade: 0x8d9498, bladeHi: 0xbcc3c7, grip: 0x6b4a30 },
     tool: { verb: 'dig' },
   },
+  // `range` and `cooldown` sit in the tool block for the reason `swings` does:
+  // how far a gun reaches is a fact about THAT gun, the way how many blows an
+  // axe takes is a fact about that axe. What `shoot` MEANS -- what stops a
+  // shot, what it hits, what falls out of it -- is a rule of the simulation
+  // and lives in sim/tools.js.
+  'tool.gun': {
+    label: 'Gun',
+    stack: 1,
+    value: 320,
+    height: 0.3,
+    swatch: 0x6b5a4a,
+    palette: { stock: 0x6b4a30, stockHi: 0x8a6242, barrel: 0x585f66, barrelHi: 0x8f969c, band: 0x3a3f45 },
+    tool: { verb: 'shoot', range: 8, cooldown: 0.9 },
+  },
+
+  // ---------------------------------------------------------------- spent --
+  // Ammunition is the first thing in this game that is CONSUMED. Every other
+  // item is a thing you carry until you sell it, which is why the only money
+  // sinks so far are two tools you buy once each and never again. A box of
+  // shot is the first recurring reason to have coins, and it is what makes
+  // each shot a decision rather than a key that is always available.
+  'item.shot': {
+    label: 'Shot',
+    stack: 40,
+    value: 6,
+    height: 0.12,
+    swatch: 0xb08d3f,
+    palette: { brass: 0xb08d3f, brassHi: 0xd8b45e, wad: 0xc8402f },
+  },
+  // And the other half of that loop: what a shot animal is worth over a
+  // counter. Ammunition is the sink, game is the source, and the shop prices
+  // both off `value` without being told about either.
+  'item.game': {
+    label: 'Game',
+    stack: 10,
+    value: 45,
+    height: 0.16,
+    swatch: 0x9c5a4a,
+    palette: { meat: 0x9c5a4a, meatHi: 0xbe7565, fat: 0xe8d6bc },
+  },
 };
 
 export function itemType(typeId) {

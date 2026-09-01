@@ -17,14 +17,29 @@
  * instead of one the keys asked for -- but both of those are still just "pick a
  * step, take it". The step is the atom, and everything else is a source of
  * opinions about which one to take next. See GridInput.update.
+ *
+ * BOTH ARE CAMERA-RELATIVE. A key means a direction on SCREEN -- "up" is away
+ * from the viewer -- so each filter rotates the pressed vector by the camera
+ * yaw before it becomes a request. Nothing downstream knows: Player.move, the
+ * pathfinder and the world queries all still speak in x and z. The difference
+ * between the two is only WHICH yaw: free movement uses the camera's exact
+ * angle, and the grid uses it snapped to a quarter turn, for the reason in
+ * GridInput.update.
  */
 
 import {
-  STEP8, STEP8_YAW, angleDelta, isDiagonal, step8Index, yawFromVec,
+  STEP8, STEP8_YAW, angleDelta, isDiagonal, rotateY, step8Index, yawFromVec,
 } from '../core/constants.js';
 
 /** Radians per second the grid walker pivots at, turning in place or mid-step. */
 const TURN_RATE = 22;
+
+/**
+ * Scratch for the camera-relative rotation below. Both filters run in the same
+ * frame at most once each and neither holds the result past its own return, so
+ * one object serves both -- see `rotateY`.
+ */
+const _dir = { x: 0, z: 0 };
 
 export class FreeInput {
   constructor({ walk = 3.6, run = 5.8 } = {}) {
@@ -36,13 +51,17 @@ export class FreeInput {
 
   reset() {}                  // and it carries no state to clear
 
-  update(dt, player, keys) {
-    let dx = (keys.right ? 1 : 0) - (keys.left ? 1 : 0);
-    let dz = (keys.down ? 1 : 0) - (keys.up ? 1 : 0);
-    if (dx === 0 && dz === 0) return { vx: 0, vz: 0 };
+  update(dt, player, keys, world, camYaw = 0) {
+    const kx = (keys.right ? 1 : 0) - (keys.left ? 1 : 0);
+    const kz = (keys.down ? 1 : 0) - (keys.up ? 1 : 0);
+    if (kx === 0 && kz === 0) return { vx: 0, vz: 0 };
 
-    const len = Math.hypot(dx, dz);
-    dx /= len; dz /= len;
+    // Camera-relative, at the camera's exact angle: this filter owns the 3D
+    // view, where the orbit is continuous, so there is nothing to snap to and
+    // "forward" is however far round the camera happens to have got.
+    const { x: rx, z: rz } = rotateY(kx, kz, camYaw, _dir);
+    const len = Math.hypot(rx, rz);
+    const dx = rx / len, dz = rz / len;
 
     player.turnToward(yawFromVec(dx, dz), dt, 12);
 
@@ -112,13 +131,27 @@ export class GridInput {
     this.destination = route[route.length - 1];
   }
 
-  update(dt, player, keys, world) {
+  /**
+   * @param {number} camYaw  a QUARTER turn -- Orbit.stepYaw, not Orbit.yaw.
+   */
+  update(dt, player, keys, world, camYaw = 0) {
     const speed = (1 / this.stepTime) * player.surfaceSpeed();
 
     // Keys outrank the route, always. Auto-walk is a convenience, and a player
     // reaching for the keys has stopped finding it convenient.
-    const kx = (keys.right ? 1 : 0) - (keys.left ? 1 : 0);
-    const kz = (keys.down ? 1 : 0) - (keys.up ? 1 : 0);
+    //
+    // Rotated into world space before anything reads them, so the rest of this
+    // filter never learns that the camera can turn. The caller passes a yaw
+    // already snapped to a quarter, which is what keeps the step a TILE step: a
+    // quarter turn permutes the eight directions among themselves, so the
+    // rounding below is only mopping up the float dust in cos(pi/2), and a
+    // diagonal stays a diagonal instead of landing between two tiles.
+    const raw = rotateY(
+      (keys.right ? 1 : 0) - (keys.left ? 1 : 0),
+      (keys.down ? 1 : 0) - (keys.up ? 1 : 0),
+      camYaw, _dir,
+    );
+    const kx = Math.round(raw.x), kz = Math.round(raw.z);
     if (kx !== 0 || kz !== 0) this.cancel();
 
     // 1. Finish the step in progress.

@@ -480,13 +480,24 @@
       "props": {
         "name": "Dell",
         "title": "Minds the gate",
-        "roam": 6
+        "roam": 6,
+        "voice": {
+          "pitch": 0.92,
+          "rate": 24,
+          "timbre": "sawtooth"
+        }
       },
       "dialog": {
         "start": "open",
         "nodes": {
           "open": {
             "branch": [
+              {
+                "when": {
+                  "visits": 8
+                },
+                "to": "regular"
+              },
               {
                 "when": {
                   "flag": "told"
@@ -507,12 +518,24 @@
           "hello": {
             "text": [
               "Through, or stopping? Most are through.",
-              "Dell. That's the top of the gap behind me and the low road out the other end. Everything worth anything is in between."
+              "Dell. That's the top of the gap behind me and the low road out the other end. Everything worth anything is in between.",
+              "I do not stop anybody. I just like to know. There is a difference and I am the only one who keeps it."
             ],
             "then": "menu"
           },
           "third": {
-            "text": "You are stopping, then. Good.",
+            "text": "You are stopping, then. Good. I have you down as stopping.",
+            "then": "menu"
+          },
+          "after": {
+            "text": "Wind is up the gap today. It usually is. I would not call that news.",
+            "then": "menu"
+          },
+          "regular": {
+            "text": [
+              "Eight times through this gate and not once with a cart. That is unusual and I have noticed it.",
+              "I am not asking. I am saying I noticed."
+            ],
             "then": "menu"
           },
           "menu": {
@@ -537,6 +560,22 @@
                 "to": "trade"
               },
               {
+                "text": "Do you keep a record of all this?",
+                "when": {
+                  "not": {
+                    "flag": "log"
+                  }
+                },
+                "to": "log"
+              },
+              {
+                "text": "Does anyone ever come through you do not know?",
+                "when": {
+                  "visits": 4
+                },
+                "to": "stranger"
+              },
+              {
                 "text": "I'll get on.",
                 "to": "bye"
               }
@@ -553,7 +592,11 @@
             "then": "menu"
           },
           "folk": {
-            "text": "Nan at the croft, halfway down. Rook sat at the tarn, where he always is. Edda keeps The Wether at the far end.",
+            "text": [
+              "Nan at the croft, halfway down. Fire in the wall and a loom in the window, and she will put you to work on both.",
+              "Rook sat at the tarn, where he always is. Do not open with a question.",
+              "Edda keeps The Wether at the far end and knows exactly what everything costs, including this conversation."
+            ],
             "then": "menu"
           },
           "trade": {
@@ -571,12 +614,26 @@
             ],
             "then": "menu"
           },
-          "after": {
-            "text": "Wind is up the gap today. It usually is.",
+          "log": {
+            "text": [
+              "There is no log.",
+              "There was going to be. I got as far as ruling the lines and then I found I had it all anyway.",
+              "Forty years and I could tell you who went down this road on any day you name. Try me some time when I am not busy."
+            ],
+            "do": {
+              "set": "log"
+            },
+            "then": "menu"
+          },
+          "stranger": {
+            "text": [
+              "Twice. Once in the wet year, and once about a month before you.",
+              "Went down, did not come back up. There is a low road, mind. People do use it."
+            ],
             "then": "menu"
           },
           "bye": {
-            "text": "Right you are."
+            "text": "Right you are. Down and to your left."
           }
         }
       }
@@ -592,13 +649,31 @@
       "props": {
         "name": "Nan",
         "title": "Keeps the west bench",
-        "roam": 6
+        "roam": 6,
+        "voice": {
+          "pitch": 1.1,
+          "rate": 19,
+          "timbre": "triangle"
+        }
       },
       "dialog": {
         "start": "open",
         "nodes": {
           "open": {
             "branch": [
+              {
+                "when": {
+                  "all": [
+                    {
+                      "friend": true
+                    },
+                    {
+                      "visits": 8
+                    }
+                  ]
+                },
+                "to": "regular"
+              },
               {
                 "when": {
                   "friend": true
@@ -613,12 +688,20 @@
           "hello": {
             "text": [
               "Stand still a moment, they are counting you.",
-              "Nan. The croft is mine and so are the sheep on that bench. Door is open to you now we have met."
+              "Nan. The croft is mine and so are the sheep on that bench. Door is open to you now we have met.",
+              "Fire is in the wall and there is a chair in there beside it. Sit in it. It is not for anybody."
             ],
             "then": "menu"
           },
           "welcome": {
-            "text": "Go on in. Kettle is where it always is.",
+            "text": "Go on in, duck. Kettle is where it always is and the fire does not go out.",
+            "then": "menu"
+          },
+          "regular": {
+            "text": [
+              "You have been in and out of my house more than my own sister, and she is nearer.",
+              "I am not complaining. I am telling you so you know I keep count."
+            ],
             "then": "menu"
           },
           "menu": {
@@ -639,13 +722,52 @@
                 "to": "why"
               },
               {
+                "text": "What are you weaving?",
+                "when": {
+                  "not": {
+                    "flag": "cloth"
+                  }
+                },
+                "to": "loom"
+              },
+              {
+                "text": "The fire is a long way into that wall.",
+                "to": "hearth"
+              },
+              {
+                "text": "I brought an apple back.",
+                "when": {
+                  "all": [
+                    {
+                      "has": {
+                        "type": "item.apple",
+                        "count": 1
+                      }
+                    },
+                    {
+                      "not": {
+                        "flag": "apple"
+                      }
+                    }
+                  ]
+                },
+                "to": "apple"
+              },
+              {
+                "text": "Has it always been just you?",
+                "when": {
+                  "visits": 4
+                },
+                "to": "alone"
+              },
+              {
                 "text": "Just saying hello.",
                 "to": "bye"
               }
             ]
           },
           "gift": {
-            "text": "Under the thorn on the second bench. Take them, I have a basket.",
+            "text": "Under the thorn on the second bench. Take them, I have a basket and one mouth.",
             "do": {
               "give": {
                 "type": "item.mushroom",
@@ -661,8 +783,48 @@
             ],
             "then": "menu"
           },
+          "loom": {
+            "text": [
+              "A blanket, and it has been a blanket for two winters, so do not hold your breath.",
+              "Throw the shuttle if you go in. Every row counts, mind -- I know the number and I will know if it has gone up.",
+              "I am not saying do not. I am saying I will know."
+            ],
+            "do": {
+              "set": "cloth"
+            },
+            "then": "menu"
+          },
+          "hearth": {
+            "text": [
+              "That is the whole point of it, duck. The wall is three foot of stone and the fire lives inside it.",
+              "You can stand right in there beside it in February and be warm on both sides. Nothing else in this gap can say that."
+            ],
+            "then": "menu"
+          },
+          "apple": {
+            "text": [
+              "Off my own tree, that. It goes down to the store and comes back to me at a profit, and now here it is for nothing.",
+              "You keep it. Take a coin for the carrying and do not argue."
+            ],
+            "do": [
+              {
+                "set": "apple"
+              },
+              {
+                "coins": 10
+              }
+            ],
+            "then": "menu"
+          },
+          "alone": {
+            "text": [
+              "It has been just me since the wet year. It was not always.",
+              "That is why the chair by the fire is a chair and not two chairs, and that is as much as you are getting."
+            ],
+            "then": "menu"
+          },
           "bye": {
-            "text": "Mind the gate on your way through."
+            "text": "Mind the gate on your way through. Dell will have counted you."
           }
         }
       }
@@ -678,13 +840,24 @@
       "props": {
         "name": "Rook",
         "title": "Sits at the tarn",
-        "roam": 5
+        "roam": 5,
+        "voice": {
+          "pitch": 0.86,
+          "rate": 14,
+          "timbre": "triangle"
+        }
       },
       "dialog": {
         "start": "open",
         "nodes": {
           "open": {
             "branch": [
+              {
+                "when": {
+                  "visits": 12
+                },
+                "to": "old"
+              },
               {
                 "when": {
                   "visits": 5
@@ -707,6 +880,13 @@
             "text": "You again. Sit if you like, it is not my water.",
             "then": "menu"
           },
+          "old": {
+            "text": [
+              "You have sat here twelve times now and said less each time. That is the right direction.",
+              "Give it another year and we will get on."
+            ],
+            "then": "menu"
+          },
           "menu": {
             "text": "Well?",
             "choices": [
@@ -723,6 +903,26 @@
               {
                 "text": "Nothing at all in there?",
                 "to": "nothing"
+              },
+              {
+                "text": "How deep is it?",
+                "when": {
+                  "not": {
+                    "flag": "deep"
+                  }
+                },
+                "to": "deep"
+              },
+              {
+                "text": "Do you ever go down to the village?",
+                "when": {
+                  "visits": 3
+                },
+                "to": "village"
+              },
+              {
+                "text": "What do you do when it rains?",
+                "to": "rain"
               },
               {
                 "text": "I'll leave you to it.",
@@ -744,6 +944,30 @@
             "text": [
               "Something. Never seen it. Forty years of never seeing it.",
               "You will hear it take a fly some evening and then you will be sat here too."
+            ],
+            "then": "menu"
+          },
+          "deep": {
+            "text": [
+              "Nobody knows.",
+              "A man put a stone on a line once and ran out of line."
+            ],
+            "do": {
+              "set": "deep"
+            },
+            "then": "menu"
+          },
+          "village": {
+            "text": [
+              "For flour.",
+              "They are all very kind to me down there and it takes an hour off my day."
+            ],
+            "then": "menu"
+          },
+          "rain": {
+            "text": [
+              "Sit here.",
+              "The water goes the colour of a knife and every ring on it is a different rain. It is the best of the year and nobody comes up for it."
             ],
             "then": "menu"
           },

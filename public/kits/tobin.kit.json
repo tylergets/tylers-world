@@ -1,0 +1,98 @@
+{
+  "format": "tw.kit",
+  "version": 1,
+  "meta": { "id": "tobin", "name": "Tobin's Workshop" },
+
+  "types": {
+    "fixture.orrery": {
+      "kind": "object",
+      "label": "Brass Orrery",
+      "footprint": { "w": 1, "d": 1 },
+      "height": 0.98,
+      "squash": 0.36,
+
+      "palette": {
+        "wood":    "#6b4a30",
+        "brass":   "#c9a227",
+        "brassHi": "#e6c65a",
+        "iron":    "#6b6f74",
+        "sun":     "#f2e6a0",
+        "pearl":   "#cfe8ff",
+        "ruby":    "#b4544e"
+      },
+
+      "parts": [
+        { "prim": "cyl", "at": [0, 0.06, 0], "size": [0.26, 0.12, 0.26], "color": "wood" },
+        { "prim": "cyl", "at": [0, 0.14, 0], "size": [0.20, 0.05, 0.20], "color": "brass" },
+        { "prim": "taper", "at": [0, 0.36, 0], "size": [0.06, 0.44, 0.06], "color": "brass" },
+        { "prim": "cyl", "at": [0, 0.56, 0], "size": [0.10, 0.03, 0.10], "color": "brassHi" },
+        { "prim": "blob", "at": [0, 0.68, 0], "size": [0.075, 0.075, 0.075], "color": "sun" },
+
+        { "prim": "cyl", "at": [0, 0.68, 0], "size": [0.29, 0.014, 0.29], "rot": [0, 0, 78], "color": "brass",
+          "anim": { "spin": { "rate": 0.09, "phase": 0.0 } } },
+        { "prim": "cyl", "at": [0, 0.68, 0], "size": [0.24, 0.014, 0.24], "rot": [70, 0, 18], "color": "brassHi",
+          "anim": { "spin": { "rate": 0.16, "phase": 0.3 } } },
+        { "prim": "box", "at": [0, 0.68, 0], "size": [0.52, 0.012, 0.012], "color": "brassHi",
+          "anim": { "spin": { "rate": 0.25, "phase": 0.0 } } },
+        { "prim": "box", "at": [0, 0.68, 0], "size": [0.012, 0.012, 0.38], "color": "brass",
+          "anim": { "spin": { "rate": 0.25, "phase": 0.0 } } },
+
+        { "prim": "blob", "at": [0, 0.79, 0], "size": [0.028, 0.028, 0.028], "color": "pearl",
+          "anim": { "bob": { "amp": 0.014, "rate": 0.33, "phase": 0.0 } } },
+        { "prim": "blob", "at": [0.16, 0.15, -0.16], "size": [0.026, 0.026, 0.026], "color": "ruby" },
+
+        { "prim": "cyl", "at": [0.18, 0.24, 0.12], "size": [0.014, 0.13, 0.014], "rot": [0, 0, 90], "color": "iron" },
+        { "prim": "box", "at": [0.26, 0.24, 0.12], "size": [0.05, 0.02, 0.02], "color": "iron" }
+      ],
+
+      "state": { "winds": 0 },
+
+      "interact": {
+        "label": "Wind it up",
+        "run": "tobin-orrery.js"
+      }
+    },
+
+    "fixture.treadle": {
+      "kind": "object",
+      "label": "Treadle Bench",
+      "footprint": { "w": 2, "d": 2 },
+      "height": 0.98,
+      "squash": 0.38,
+
+      "palette": {
+        "bench":  "#b98d5f",
+        "frame":  "#6b4a30",
+        "iron":   "#6b6f74",
+        "ironHi": "#9aa0a6",
+        "belt":   "#3f3a34",
+        "brass":  "#c9a227"
+      },
+
+      "parts": [
+        { "prim": "box", "at": [0, 0.78, 0], "size": [1.80, 0.10, 0.92], "color": "bench" },
+        { "prim": "box", "at": [-0.78, 0.39, -0.36], "size": [0.12, 0.78, 0.12], "color": "frame" },
+        { "prim": "box", "at": [0.78, 0.39, -0.36], "size": [0.12, 0.78, 0.12], "color": "frame" },
+        { "prim": "box", "at": [-0.78, 0.39, 0.36], "size": [0.12, 0.78, 0.12], "color": "frame" },
+        { "prim": "box", "at": [0.78, 0.39, 0.36], "size": [0.12, 0.78, 0.12], "color": "frame" },
+        { "prim": "box", "at": [0, 0.44, -0.36], "size": [1.56, 0.06, 0.08], "color": "frame" },
+
+        { "prim": "box", "at": [0, 0.10, 0.30], "size": [1.40, 0.06, 0.22], "color": "frame",
+          "anim": { "bob": { "amp": 0.048, "rate": 0.78, "phase": 0.0 } } },
+        { "prim": "cyl", "at": [0.42, 0.44, 0.28], "size": [0.012, 0.64, 0.012], "color": "belt",
+          "anim": { "bob": { "amp": 0.040, "rate": 0.78, "phase": 0.5 } } },
+
+        { "prim": "cyl", "at": [-0.46, 0.86, 0], "size": [0.24, 0.06, 0.24], "color": "iron",
+          "anim": { "spin": { "rate": 0.52, "phase": 0.0 } } },
+        { "prim": "box", "at": [-0.46, 0.91, 0], "size": [0.42, 0.03, 0.03], "color": "ironHi",
+          "anim": { "spin": { "rate": 0.52, "phase": 0.0 } } },
+
+        { "prim": "box", "at": [0.56, 0.90, -0.26], "size": [0.20, 0.14, 0.16], "color": "iron" },
+        { "prim": "box", "at": [0.56, 0.90, -0.11], "size": [0.20, 0.10, 0.05], "color": "ironHi" },
+        { "prim": "chunk", "at": [0.62, 0.87, 0.24], "size": [0.08, 0.06, 0.08], "color": "brass" },
+        { "prim": "chunk", "at": [0.30, 0.86, 0.32], "size": [0.06, 0.05, 0.06], "color": "ironHi" },
+        { "prim": "chunk", "at": [0.14, 0.85, 0.16], "size": [0.05, 0.04, 0.05], "color": "brass" }
+      ]
+    }
+  }
+}

@@ -40,24 +40,36 @@
  */
 
 import { heal, verifyForm } from './draft.js';
-import { meadowbrook, sourwood, thistledown, tidewrack } from './recipes.js';
+import {
+  ashkettle, bellrock, meadowbrook, rimrock, sedgewater, sourwood, thistledown, tidewrack,
+} from './recipes.js';
 
 /**
  * The landforms you can ask for, in the order the picker lists them.
  *
- * One per recipe, which is what makes this list the same length as STARTERS:
- * every shipped world is a roll of one of these with the numbers it was
- * authored at, so anything you can start you can also ask for a fresh one of.
+ * ONE PER RECIPE, which is the invariant worth stating: every shipped world is
+ * a roll of one of these with the numbers it was authored at, so anything you
+ * can start you can also ask for a fresh one of. These ids are the RECIPE's
+ * name to a player, not the world file's `terrain.form` -- an atoll and an
+ * island are two different places wrapped in the same sea, and a caldera and a
+ * holler are two different arguments about the same ridges.
  */
 export const FORMS = [
   { id: 'island', label: 'Island', note: 'A shore all the way round, and a bluff over the town.' },
   { id: 'holler', label: 'Holler', note: 'A creek in the bottom, benches climbing both walls.' },
   { id: 'atoll', label: 'Atoll', note: 'A ring of land round a lagoon you cannot cut across.' },
   { id: 'gap', label: 'Gap', note: 'A pass open at both ends, with pasture stepping up either side.' },
+  { id: 'mesa', label: 'Mesa', note: 'A table in the sky. The world drops away on all four sides.' },
+  { id: 'caldera', label: 'Caldera', note: 'A crater with a lake in it and terraces stepping down to the water.' },
+  { id: 'fen', label: 'Fen', note: 'Sedge and channels. The ground gives out long before the water does.' },
+  { id: 'coast', label: 'Coast', note: 'A beach along the bottom, and downs stepping up behind the town.' },
 ];
 
 /** form -> the recipe that builds it. */
-const RECIPES = { island: meadowbrook, holler: sourwood, atoll: tidewrack, gap: thistledown };
+const RECIPES = {
+  island: meadowbrook, holler: sourwood, atoll: tidewrack, gap: thistledown,
+  mesa: rimrock, caldera: ashkettle, fen: sedgewater, coast: bellrock,
+};
 
 /** How many seeds to try before admitting the request was a bad one. */
 const ATTEMPTS = 12;
@@ -75,6 +87,10 @@ const LAST = {
   holler: ['Holler', 'Hollow', 'Bottom', 'Draw', 'Gap', 'Fork', 'Run', 'Branch'],
   atoll: ['Atoll', 'Ring', 'Lagoon', 'Reef', 'Key', 'Roads', 'Shoals', 'Wrack'],
   gap: ['Gap', 'Pass', 'Saddle', 'Notch', 'Col', 'Bench', 'Rise', 'Gate'],
+  mesa: ['Mesa', 'Butte', 'Rim', 'Table', 'Bench', 'Cap', 'Head', 'Flat'],
+  caldera: ['Caldera', 'Kettle', 'Crater', 'Basin', 'Cauldron', 'Bowl', 'Ring', 'Pan'],
+  fen: ['Fen', 'Marsh', 'Mire', 'Moss', 'Carr', 'Slough', 'Water', 'Levels'],
+  coast: ['Coast', 'Head', 'Shore', 'Ness', 'Haven', 'Quay', 'Foreland', 'Strand'],
 };
 
 /** mulberry32, the same one the Draft uses. Same seed, same place, forever. */
@@ -255,6 +271,163 @@ function gapOpts(rnd, seed, meta) {
 }
 
 /**
+ * The mesa's shape, rolled.
+ *
+ * Everything is bounded so the RIM stays a rim. `verifyForm` will not pass a
+ * mesa with water on its outermost row, nor one whose edge steps -- so the seep
+ * is kept well inside, and the caprock is kept clear of the north edge the way
+ * Meadowbrook's bluff is kept over the middle columns.
+ */
+function mesaOpts(rnd, seed, meta) {
+  const size = spanInt(rnd, 58, 66);
+  return {
+    seed,
+    size,
+    rim: span(rnd, 0.68, 0.75),
+    wash: [span(rnd, 1.4, 2.1), span(rnd, 3.6, 6.0), rnd() * Math.PI * 2],
+    rimWobble: [
+      [4, span(rnd, 0.04, 0.07), rnd() * Math.PI * 2],
+      [7, span(rnd, 0.025, 0.042), rnd() * Math.PI * 2],
+    ],
+    cap: [spanInt(rnd, -2, 2), spanInt(rnd, -13, -10), span(rnd, 8.6, 10.2)],
+    seep: [spanInt(rnd, -3, 3), spanInt(rnd, 14, 17), span(rnd, 3.0, 4.2)],
+    meta,
+  };
+}
+
+/**
+ * The caldera's shape, rolled.
+ *
+ * `floor` is the number everything else defers to. It sets how wide the ring of
+ * walkable bottom is, and the bottom has to hold a beach, a road and a
+ * five-by-four store measured STRAIGHT OUT from the middle -- so it moves over
+ * a narrow range, and the ash beach is derived from the lake rather than rolled
+ * beside it, which is what keeps the two from crossing.
+ */
+function calderaOpts(rnd, seed, meta) {
+  const lake = span(rnd, 0.22, 0.27);
+  const ring = span(rnd, 0.42, 0.48);
+  const bearing = () => rnd() * Math.PI * 2;
+  const town = bearing();
+  // North or south, because that is where a five-wide gate fits on a ring --
+  // see the `sites` note on the recipe. The two gates take opposite poles,
+  // which also puts the water gate as far from the rim gate as the bowl allows.
+  const pole = rnd() < 0.5 ? -Math.PI / 2 : Math.PI / 2;
+  return {
+    seed,
+    size: spanInt(rnd, 72, 80),
+    floor: span(rnd, 0.66, 0.72),
+    step: span(rnd, 0.085, 0.095),
+    bands: { lake, ash: lake + 0.06 },
+    lakeWobble: [
+      [2, span(rnd, 0.07, 0.12), rnd() * Math.PI * 2],
+      [4, span(rnd, 0.05, 0.08), rnd() * Math.PI * 2],
+    ],
+    ring,
+    vents: [
+      [bearing(), span(rnd, 0.34, 0.40), span(rnd, 1.3, 1.7)],
+      [bearing(), span(rnd, 0.60, 0.66), span(rnd, 1.2, 1.6)],
+    ],
+    // Bearings are spread by CONSTRUCTION rather than by luck. Three houses a
+    // third of a circle apart is the most a ring town can manage, and the whole
+    // point of a ring town is that you cannot see one neighbour from the next;
+    // rolling three independent angles would put two of them side by side about
+    // a third of the time and quietly throw the place away.
+    sites: {
+      gate: pole + span(rnd, -0.4, 0.4),
+      home: [town, span(rnd, 0.48, 0.58)],
+      store: [town + 2.09, span(rnd, 0.48, 0.58)],
+      cottage: [town + 4.19, span(rnd, 0.48, 0.58)],
+      quay: [-pole + span(rnd, -0.4, 0.4), span(rnd, 0.34, 0.38)],
+    },
+    meta,
+  };
+}
+
+/**
+ * The fen's shape, rolled.
+ *
+ * The channel count is the one number that changes what the place IS: four
+ * wedges is a crossroads, six is a maze. Everything else is bounded to keep the
+ * outer shore comfortably inside the grid, because a fen that reaches its own
+ * edge is a fen whose band of standing water welds to a bank.
+ */
+function fenOpts(rnd, seed, meta) {
+  const size = spanInt(rnd, 60, 68);
+  const sedge = span(rnd, 0.76, 0.80);
+  const count = 4 + Math.floor(rnd() * 3);
+  const phase = rnd() * Math.PI * 2;
+  /** The middle of wedge `k`, which is where a boardwalk runs and a house sits. */
+  const wedge = (k) => phase + ((k + 0.5) * 2 * Math.PI) / count;
+  return {
+    seed,
+    size,
+    spread: span(rnd, 0.40, 0.43),
+    bands: { sedge, mud: sedge + 0.10 },
+    wobble: [
+      [3, span(rnd, 0.06, 0.10), rnd() * Math.PI * 2],
+      [5, span(rnd, 0.04, 0.07), rnd() * Math.PI * 2],
+      [8, span(rnd, 0.025, 0.045), rnd() * Math.PI * 2],
+    ],
+    channels: {
+      count,
+      phase,
+      width: span(rnd, 2.0, 2.6),
+      core: span(rnd, 0.24, 0.29),
+      open: span(rnd, 0.22, 0.28),
+    },
+    toft: [spanInt(rnd, -2, 2), spanInt(rnd, -5, -2), span(rnd, 5.0, 6.2)],
+    planks: [
+      [wedge(0) + Math.PI / count, span(rnd, 0.48, 0.58), 5],
+      [wedge(1) + Math.PI / count, span(rnd, 0.50, 0.62), 5],
+    ],
+    // One house per wedge, and never two in the same one: the walk between two
+    // doors on the same spur is a walk, and the walk between two doors on
+    // different spurs is the reason the place exists.
+    sites: {
+      home: wedge(0),
+      store: wedge(Math.floor(count / 3) + 1),
+      cottage: wedge(count - 1),
+    },
+    meta,
+  };
+}
+
+/**
+ * The coast's shape, rolled.
+ *
+ * The shoreline is the constraint. `verifyForm` wants the south edge almost all
+ * water and the side edges almost all dry, and those two pull against each
+ * other: push the sea north to make the south edge safe and it climbs the sides
+ * instead. The row and the two amplitudes are bounded together so both hold on
+ * every roll rather than on most of them.
+ */
+function coastOpts(rnd, seed, meta) {
+  return {
+    seed,
+    width: spanInt(rnd, 56, 64),
+    height: spanInt(rnd, 64, 72),
+    shore: span(rnd, 0.78, 0.82),
+    shoreWave: [
+      [span(rnd, 0.070, 0.095), span(rnd, 2.4, 3.4), rnd() * Math.PI * 2],
+      [span(rnd, 0.18, 0.24), span(rnd, 1.0, 1.6), rnd() * Math.PI * 2],
+    ],
+    beach: span(rnd, 2.8, 3.6),
+    benchFrom: span(rnd, 0.38, 0.45),
+    benchStep: span(rnd, 3.2, 4.2),
+    climbs: [-spanInt(rnd, 9, 13), spanInt(rnd, 10, 14)],
+    tarn: [-spanInt(rnd, 11, 16), span(rnd, 0.56, 0.63), span(rnd, 2.6, 3.4)],
+    sites: {
+      home: span(rnd, 0.58, 0.66),
+      store: span(rnd, 0.58, 0.66),
+      cottage: span(rnd, 0.38, 0.50),
+      down: span(rnd, 0.08, 0.14),
+    },
+    meta,
+  };
+}
+
+/**
  * Build a world from a form and a seed.
  *
  * Returns `{ data, form, seed, name, id, attempts }`. `data` is a world file in
@@ -268,6 +441,7 @@ function gapOpts(rnd, seed, meta) {
  */
 Object.assign(OPTS, {
   island: islandOpts, holler: hollerOpts, atoll: atollOpts, gap: gapOpts,
+  mesa: mesaOpts, caldera: calderaOpts, fen: fenOpts, coast: coastOpts,
 });
 
 export function generate({ form = 'island', seed = randomSeed(), name } = {}) {

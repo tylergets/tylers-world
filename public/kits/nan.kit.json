@@ -1,0 +1,109 @@
+{
+  "format": "tw.kit",
+  "version": 1,
+  "meta": { "id": "nan", "name": "Nan's Croft" },
+
+  "types": {
+    "fixture.loom": {
+      "kind": "object",
+      "label": "Upright Loom",
+      "footprint": { "w": 2, "d": 2 },
+      "height": 1.9,
+      "squash": 0.3,
+
+      "palette": {
+        "frame":     "#8a6242",
+        "frameDark": "#6b4a30",
+        "warp":      "#efe6d4",
+        "cloth":     "#e8dcc0",
+        "weft":      "#b4544e",
+        "weftHi":    "#d8a840",
+        "shuttle":   "#c9a227"
+      },
+
+      "parts": [
+        { "prim": "box", "at": [-0.80, 0.95, 0.30], "size": [0.12, 1.90, 0.12], "color": "frame" },
+        { "prim": "box", "at": [0.80, 0.95, 0.30], "size": [0.12, 1.90, 0.12], "color": "frame" },
+        { "prim": "box", "at": [0, 1.82, 0.30], "size": [1.80, 0.14, 0.16], "color": "frameDark" },
+        { "prim": "box", "at": [0, 0.22, 0.30], "size": [1.80, 0.14, 0.16], "color": "frameDark" },
+        { "prim": "box", "at": [-0.80, 0.95, -0.30], "size": [0.10, 1.60, 0.10], "rot": [12, 0, 0], "color": "frame" },
+        { "prim": "box", "at": [0.80, 0.95, -0.30], "size": [0.10, 1.60, 0.10], "rot": [12, 0, 0], "color": "frame" },
+
+        { "prim": "cyl", "at": [-0.60, 1.05, 0.30], "size": [0.008, 1.50, 0.008], "color": "warp" },
+        { "prim": "cyl", "at": [-0.40, 1.05, 0.30], "size": [0.008, 1.50, 0.008], "color": "warp" },
+        { "prim": "cyl", "at": [-0.20, 1.05, 0.30], "size": [0.008, 1.50, 0.008], "color": "warp" },
+        { "prim": "cyl", "at": [0.00, 1.05, 0.30], "size": [0.008, 1.50, 0.008], "color": "warp" },
+        { "prim": "cyl", "at": [0.20, 1.05, 0.30], "size": [0.008, 1.50, 0.008], "color": "warp" },
+        { "prim": "cyl", "at": [0.40, 1.05, 0.30], "size": [0.008, 1.50, 0.008], "color": "warp" },
+        { "prim": "cyl", "at": [0.60, 1.05, 0.30], "size": [0.008, 1.50, 0.008], "color": "warp" },
+
+        { "prim": "box", "at": [0, 0.52, 0.30], "size": [1.50, 0.50, 0.04], "color": "cloth" },
+        { "prim": "box", "at": [0, 0.72, 0.30], "size": [1.50, 0.05, 0.05], "color": "weftHi" },
+        { "prim": "box", "at": [0, 0.80, 0.30], "size": [1.50, 0.07, 0.055], "color": "weft",
+          "anim": { "bob": { "amp": 0.028, "rate": 0.24, "phase": 0.0 } } },
+        { "prim": "box", "at": [0.28, 0.87, 0.30], "size": [0.26, 0.05, 0.08], "color": "shuttle",
+          "anim": { "bob": { "amp": 0.050, "rate": 0.58, "phase": 0.35 } } },
+        { "prim": "box", "at": [0, 0.08, -0.22], "size": [1.20, 0.06, 0.18], "color": "frameDark",
+          "anim": { "bob": { "amp": 0.030, "rate": 0.29, "phase": 0.6 } } },
+
+        { "prim": "box", "at": [0, 0.34, -0.58], "size": [1.40, 0.08, 0.30], "color": "frame" },
+        { "prim": "box", "at": [-0.56, 0.16, -0.58], "size": [0.10, 0.34, 0.10], "color": "frameDark" },
+        { "prim": "box", "at": [0.56, 0.16, -0.58], "size": [0.10, 0.34, 0.10], "color": "frameDark" }
+      ],
+
+      "state": { "rows": 0 },
+
+      "interact": {
+        "label": "Throw the shuttle",
+        "run": "nan-loom.js"
+      }
+    },
+
+    "fixture.hearth": {
+      "kind": "object",
+      "label": "Nan's Hearth",
+      "footprint": { "w": 3, "d": 1 },
+      "height": 1.45,
+      "squash": 0.34,
+
+      "palette": {
+        "stone":     "#a8a49c",
+        "stoneDark": "#82807a",
+        "log":       "#6b4a30",
+        "ember":     "#d9622f",
+        "emberHi":   "#f2a13a",
+        "iron":      "#4a4a4a",
+        "kettle":    "#565c63",
+        "steam":     "#cfd6da"
+      },
+
+      "parts": [
+        { "prim": "box", "at": [0, 0.70, -0.38], "size": [2.90, 1.40, 0.22], "color": "stone" },
+        { "prim": "box", "at": [-1.32, 0.55, 0], "size": [0.30, 1.10, 0.90], "color": "stoneDark" },
+        { "prim": "box", "at": [1.32, 0.55, 0], "size": [0.30, 1.10, 0.90], "color": "stoneDark" },
+        { "prim": "box", "at": [0, 1.22, 0.04], "size": [2.90, 0.22, 0.94], "color": "stone" },
+        { "prim": "box", "at": [0, 0.05, 0.10], "size": [2.30, 0.10, 0.74], "color": "stoneDark" },
+
+        { "prim": "cyl", "at": [-0.22, 0.17, 0], "size": [0.09, 0.72, 0.09], "rot": [0, 0, 90], "color": "log" },
+        { "prim": "cyl", "at": [0.16, 0.17, 0.12], "size": [0.08, 0.62, 0.08], "rot": [0, 22, 90], "color": "log" },
+
+        { "prim": "blob", "at": [0, 0.16, 0], "size": [0.32, 0.10, 0.26], "color": "ember",
+          "anim": { "pulse": { "amp": 0.22, "rate": 0.9, "phase": 0.0 } } },
+        { "prim": "cone", "at": [-0.10, 0.36, 0], "size": [0.16, 0.38, 0.14], "color": "emberHi",
+          "anim": { "pulse": { "amp": 0.30, "rate": 1.5, "phase": 0.2 } } },
+        { "prim": "cone", "at": [0.20, 0.31, 0.04], "size": [0.12, 0.28, 0.11], "color": "ember",
+          "anim": { "pulse": { "amp": 0.34, "rate": 1.9, "phase": 0.6 } } },
+
+        { "prim": "cyl", "at": [-1.14, 0.60, 0.30], "size": [0.035, 0.70, 0.035], "color": "iron" },
+        { "prim": "box", "at": [-0.86, 0.94, 0.24], "size": [0.60, 0.05, 0.05], "color": "iron" },
+        { "prim": "cyl", "at": [-0.58, 0.86, 0.24], "size": [0.010, 0.18, 0.010], "color": "iron" },
+        { "prim": "blob", "at": [-0.58, 0.70, 0.24], "size": [0.16, 0.14, 0.16], "color": "kettle",
+          "anim": { "bob": { "amp": 0.014, "rate": 0.30, "phase": 0.0 } } },
+        { "prim": "blob", "at": [-0.58, 1.00, 0.24], "size": [0.07, 0.06, 0.07], "color": "steam",
+          "anim": { "pulse": { "amp": 0.50, "rate": 0.62, "phase": 0.0 } } },
+        { "prim": "blob", "at": [-0.52, 1.14, 0.20], "size": [0.05, 0.045, 0.05], "color": "steam",
+          "anim": { "pulse": { "amp": 0.60, "rate": 0.48, "phase": 0.4 } } }
+      ]
+    }
+  }
+}

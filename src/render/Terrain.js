@@ -20,7 +20,7 @@ import { STEP_HEIGHT, WATER_DROP } from '../core/constants.js';
 import { FLAG } from '../world/WorldFile.js';
 import { hashString } from '../core/rng.js';
 import { GeoBuilder } from './geo.js';
-import { flatUniform, timeUniform } from './flatten.js';
+import { flatUniform, timeUniform, tintUniform } from './flatten.js';
 import { waterUniforms, WATER_FRAGMENT, WATER_FRAGMENT_HEAD } from './water.js';
 import { buildBorder } from './border.js';
 
@@ -225,6 +225,9 @@ function terrainMaterial() {
 
   m.onBeforeCompile = (shader) => {
     shader.uniforms.uFlat = flatUniform;
+    // Mirrors the injection in flatten.js exactly. The two MUST agree: this
+    // material draws the ground and that one draws everything standing on it.
+    shader.uniforms.uTint = tintUniform;
     shader.uniforms.uTime = timeUniform;
     shader.uniforms.uShorelineBlend = shorelineBlendUniform;
     shader.uniforms.uWaterQuality = waterUniforms.quality;
@@ -250,6 +253,7 @@ function terrainMaterial() {
     shader.fragmentShader = shader.fragmentShader
       .replace('#include <common>', `#include <common>
         uniform float uFlat;
+        uniform vec3 uTint;
         uniform float uTime;
         uniform float uShorelineBlend;
         ${WATER_FRAGMENT_HEAD}
@@ -260,7 +264,7 @@ function terrainMaterial() {
       .replace('#include <opaque_fragment>', `
         ${WATER_FRAGMENT}
 
-        outgoingLight = mix(outgoingLight, diffuseColor.rgb * 1.04, uFlat);
+        outgoingLight = mix(outgoingLight, diffuseColor.rgb * 1.04 * uTint, uFlat);
 
         // Natural shoreline. The interpolated proximity removes the hard
         // one-colour boundary; world-space waves break up its tile-straight

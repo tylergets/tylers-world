@@ -2,12 +2,20 @@
   "format": "tw.world",
   "version": 1,
   "kind": "interior",
+  "kits": ["kits/tobin.kit.json"],
   "meta": {
     "id": "home.tobin.interior",
     "name": "Tobin's Bungalow",
-    "note": "Interior of home.tobin in meadowbrook.json. Hand-authored. PRIVATE: see zones."
+    "note": "Interior of home.tobin in meadowbrook.json. Hand-authored. PRIVATE: see zones. Two rooms and an interior wall, which no other house here has: the north half is the workshop, tiled, benched along its whole wall; the south half is where he lives, and it is smaller. You get between them down either side, never through the middle."
   },
-  "grid": {"width":13,"height":9,"tileSize":1},
+  "grid": {"width":15,"height":11,"tileSize":1},
+  "ambience": {
+    "sky": "#14171b",
+    "hemiSky": "#e8eef5",
+    "hemiGround": "#6b6257",
+    "sun": 1.05,
+    "hemi": 2.15
+  },
   "zones": {
     "his": {"owner": "folk.tobin", "label": "Tobin's Bungalow"}
   },
@@ -15,80 +23,94 @@
     "surface": {
         "palette": {"#":"wall","w":"floor.wood","t":"floor.tile","r":"rug"},
         "data": [
-          "#############",
-          "#ttttttttttt#",
-          "#ttttttttttt#",
-          "#wwwwwwwwwww#",
-          "#wwwwrrwwwww#",
-          "#wwwwrrwwwww#",
-          "#wwwwwwwwwww#",
-          "#wwwwwwwwwww#",
-          "#####tt######"
+          "###############",
+          "#ttttttttttttt#",
+          "#ttttttttttttt#",
+          "#ttttttttttttt#",
+          "#ttttttttttttt#",
+          "#ww#########ww#",
+          "#wwwwwwwwwwwww#",
+          "#wwwwwrrrwwwww#",
+          "#wwwwwrrrwwwww#",
+          "#wwwwwwwwwwwww#",
+          "#######tt######"
         ]
       },
     "elevation": {
         "palette": {"0":"0","4":"4"},
         "data": [
-          "4444444444444",
-          "4000000000004",
-          "4000000000004",
-          "4000000000004",
-          "4000000000004",
-          "4000000000004",
-          "4000000000004",
-          "4000000000004",
-          "4444400444444"
+          "444444444444444",
+          "400000000000004",
+          "400000000000004",
+          "400000000000004",
+          "400000000000004",
+          "400444444444004",
+          "400000000000004",
+          "400000000000004",
+          "400000000000004",
+          "400000000000004",
+          "444444400444444"
         ]
       },
     "flags": {
         "palette": {".":"none"},
         "data": [
-          ".............",
-          ".............",
-          ".............",
-          ".............",
-          ".............",
-          ".............",
-          ".............",
-          ".............",
-          "............."
+          "...............",
+          "...............",
+          "...............",
+          "...............",
+          "...............",
+          "...............",
+          "...............",
+          "...............",
+          "...............",
+          "...............",
+          "..............."
         ]
       },
     "zones": {
-        "palette": {".":"none","t":"his"},
+        "palette": {".":"none","h":"his"},
         "data": [
-          ".............",
-          ".ttttttttttt.",
-          ".ttttttttttt.",
-          ".ttttttttttt.",
-          ".ttttttttttt.",
-          ".ttttttttttt.",
-          ".ttttttttttt.",
-          ".ttttttttttt.",
-          ".....tt......"
+          "...............",
+          ".hhhhhhhhhhhhh.",
+          ".hhhhhhhhhhhhh.",
+          ".hhhhhhhhhhhhh.",
+          ".hhhhhhhhhhhhh.",
+          ".hh.........hh.",
+          ".hhhhhhhhhhhhh.",
+          ".hhhhhhhhhhhhh.",
+          ".hhhhhhhhhhhhh.",
+          ".hhhhhhhhhhhhh.",
+          ".......hh......"
         ]
       }
   },
   "objects": [
-    {"id":"bench","type":"furn.counter","tile":[1,1],"props":{"label":"Workbench"}},
-    {"id":"stove","type":"furn.stove","tile":[6,1]},
-    {"id":"shelf.parts","type":"furn.shelf","tile":[9,1],"props":{"label":"Parts Shelf"}},
-    {"id":"bed","type":"furn.bed","tile":[10,4]},
-    {"id":"table","type":"furn.table","tile":[4,4]},
-    {"id":"chair","type":"furn.chair","tile":[3,5],"rotation":90},
-    {"id":"crate.0","type":"furn.crate","tile":[1,4]},
-    {"id":"crate.1","type":"furn.crate","tile":[1,5]},
-    {"id":"crate.2","type":"furn.crate","tile":[1,7]},
-    {"id":"plant","type":"furn.plant","tile":[11,7]}
+    {"id":"bench.west","type":"furn.counter","tile":[1,1],"props":{"label":"Workbench"}},
+    {"id":"bench.east","type":"furn.counter","tile":[6,1],"props":{"label":"Workbench"}},
+    {"id":"treadle","type":"fixture.treadle","tile":[11,1],"props":{"label":"Treadle Bench"}},
+    {"id":"plant","type":"furn.plant","tile":[13,1]},
+    {"id":"shelf.parts","type":"furn.shelf","tile":[1,3],"props":{"label":"Parts Shelf"}},
+    {"id":"orrery","type":"fixture.orrery","tile":[5,3],"props":{"label":"Brass Orrery"}},
+    {"id":"crate.parts","type":"furn.crate","tile":[8,3]},
+    {"id":"crate.tins","type":"furn.crate","tile":[13,4]},
+    {"id":"stove","type":"furn.stove","tile":[4,6]},
+    {"id":"bed","type":"furn.bed","tile":[1,7]},
+    {"id":"crate.laundry","type":"furn.crate","tile":[3,9]},
+    {"id":"crate.spare","type":"furn.crate","tile":[13,7]},
+    {"id":"table","type":"furn.table","tile":[9,7]},
+    {"id":"chair","type":"furn.chair","tile":[8,8],"rotation":90},
+    {"id":"shelf.books","type":"furn.shelf","tile":[12,9],"props":{"label":"Manuals"}}
   ],
   "items": [
-    {"id":"stick.stock","type":"item.stick","tile":[8,2]},
-    {"id":"stone.weight","type":"item.stone","tile":[2,3]},
-    {"id":"apple.lunch","type":"item.apple","tile":[7,6]}
+    {"id":"stick.stock","type":"item.stick","tile":[10,4]},
+    {"id":"stick.dowel","type":"item.stick","tile":[4,2]},
+    {"id":"stone.weight","type":"item.stone","tile":[12,3]},
+    {"id":"apple.lunch","type":"item.apple","tile":[6,7]}
   ],
   "exits": [
-    {"tile":[5,8]},
-    {"tile":[6,8]}
+    {"tile":[7,10]},
+    {"tile":[8,10]}
   ],
-  "spawn": {"tile":[6,7],"facing":"north"}
+  "spawn": {"tile":[7,9],"facing":"north"}
 }

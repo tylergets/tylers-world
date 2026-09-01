@@ -7,7 +7,11 @@
     "name": "General Store",
     "note": "Interior of store.nook in meadowbrook.json. Hand-authored."
   },
-  "grid": {"width":14,"height":11,"tileSize":1},
+  "grid": {
+    "width": 14,
+    "height": 11,
+    "tileSize": 1
+  },
   "ambience": {
     "sky": "#191d24",
     "sun": 0.95,
@@ -15,109 +19,274 @@
     "hemiSky": "#fff0d2"
   },
   "zones": {
-    "back": {"owner": "keep.marla", "label": "behind the counter"}
+    "back": {
+      "owner": "keep.marla",
+      "label": "behind the counter"
+    }
   },
   "layers": {
     "surface": {
-        "palette": {"#":"wall","w":"floor.wood","t":"floor.tile","r":"rug"},
-        "data": [
-          "##############",
-          "#wwwwwwwwwwww#",
-          "#wwwwwwwwwwww#",
-          "#tttttttttttt#",
-          "#tttttttttttt#",
-          "#tttttttttttt#",
-          "#ttttrrrrtttt#",
-          "#ttttrrrrtttt#",
-          "#tttttttttttt#",
-          "#tttttttttttt#",
-          "######tt######"
-        ]
+      "palette": {
+        "#": "wall",
+        "w": "floor.wood",
+        "t": "floor.tile",
+        "r": "rug"
       },
+      "data": [
+        "##############",
+        "#wwwwwwwwwwww#",
+        "#wwwwwwwwwwww#",
+        "#tttttttttttt#",
+        "#tttttttttttt#",
+        "#tttttttttttt#",
+        "#ttttrrrrtttt#",
+        "#ttttrrrrtttt#",
+        "#tttttttttttt#",
+        "#tttttttttttt#",
+        "######tt######"
+      ]
+    },
     "elevation": {
-        "palette": {"0":"0","4":"4"},
-        "data": [
-          "44444444444444",
-          "40000000000004",
-          "40000000000004",
-          "40000000000004",
-          "40000000000004",
-          "40000000000004",
-          "40000000000004",
-          "40000000000004",
-          "40000000000004",
-          "40000000000004",
-          "44444400444444"
-        ]
+      "palette": {
+        "0": "0",
+        "4": "4"
       },
+      "data": [
+        "44444444444444",
+        "40000000000004",
+        "40000000000004",
+        "40000000000004",
+        "40000000000004",
+        "40000000000004",
+        "40000000000004",
+        "40000000000004",
+        "40000000000004",
+        "40000000000004",
+        "44444400444444"
+      ]
+    },
     "flags": {
-        "palette": {".":"none"},
-        "data": [
-          "..............",
-          "..............",
-          "..............",
-          "..............",
-          "..............",
-          "..............",
-          "..............",
-          "..............",
-          "..............",
-          "..............",
-          ".............."
-        ]
+      "palette": {
+        ".": "none"
       },
+      "data": [
+        "..............",
+        "..............",
+        "..............",
+        "..............",
+        "..............",
+        "..............",
+        "..............",
+        "..............",
+        "..............",
+        "..............",
+        ".............."
+      ]
+    },
     "zones": {
-        "palette": {".":"none","b":"back"},
-        "data": [
-          "..............",
-          ".bbbbbbbbbbbb.",
-          ".bbbbbbbbbbbb.",
-          "..............",
-          "..............",
-          "..............",
-          "..............",
-          "..............",
-          "..............",
-          "..............",
-          ".............."
-        ]
-      }
+      "palette": {
+        ".": "none",
+        "b": "back"
+      },
+      "data": [
+        "..............",
+        ".bbbbbbbbbbbb.",
+        ".bbbbbbbbbbbb.",
+        "..............",
+        "..............",
+        "..............",
+        "..............",
+        "..............",
+        "..............",
+        "..............",
+        ".............."
+      ]
+    }
   },
   "objects": [
-    {"id":"counter.west","type":"furn.counter","tile":[2,3],"props":{"label":"Front Counter"}},
-    {"id":"counter.east","type":"furn.counter","tile":[8,3],"props":{"label":"Front Counter"}},
-    {"id":"stool","type":"furn.chair","tile":[6,2],"rotation":180},
-    {"id":"shelf.nw","type":"furn.shelf","tile":[1,5]},
-    {"id":"shelf.ne","type":"furn.shelf","tile":[11,5]},
-    {"id":"shelf.sw","type":"furn.shelf","tile":[1,8]},
-    {"id":"shelf.se","type":"furn.shelf","tile":[11,8]},
-    {"id":"table.display","type":"furn.table","tile":[6,6],"props":{"label":"Display Table"}},
-    {"id":"chair.display","type":"furn.chair","tile":[5,7],"rotation":90},
-    {"id":"crate.0","type":"furn.crate","tile":[2,1]},
-    {"id":"crate.1","type":"furn.crate","tile":[4,1]},
-    {"id":"crate.2","type":"furn.crate","tile":[10,1]},
-    {"id":"plant.back","type":"furn.plant","tile":[12,9]},
-    {"id":"plant.front","type":"furn.plant","tile":[1,9]}
+    {
+      "id": "counter.west",
+      "type": "furn.counter",
+      "tile": [
+        2,
+        3
+      ],
+      "props": {
+        "label": "Front Counter"
+      }
+    },
+    {
+      "id": "counter.east",
+      "type": "furn.counter",
+      "tile": [
+        8,
+        3
+      ],
+      "props": {
+        "label": "Front Counter"
+      }
+    },
+    {
+      "id": "stool",
+      "type": "furn.chair",
+      "tile": [
+        6,
+        2
+      ],
+      "rotation": 180
+    },
+    {
+      "id": "shelf.nw",
+      "type": "furn.shelf",
+      "tile": [
+        1,
+        5
+      ]
+    },
+    {
+      "id": "shelf.ne",
+      "type": "furn.shelf",
+      "tile": [
+        11,
+        5
+      ]
+    },
+    {
+      "id": "shelf.sw",
+      "type": "furn.shelf",
+      "tile": [
+        1,
+        8
+      ]
+    },
+    {
+      "id": "shelf.se",
+      "type": "furn.shelf",
+      "tile": [
+        11,
+        8
+      ]
+    },
+    {
+      "id": "table.display",
+      "type": "furn.table",
+      "tile": [
+        6,
+        6
+      ],
+      "props": {
+        "label": "Display Table"
+      }
+    },
+    {
+      "id": "chair.display",
+      "type": "furn.chair",
+      "tile": [
+        5,
+        7
+      ],
+      "rotation": 90
+    },
+    {
+      "id": "crate.0",
+      "type": "furn.crate",
+      "tile": [
+        2,
+        1
+      ]
+    },
+    {
+      "id": "crate.1",
+      "type": "furn.crate",
+      "tile": [
+        4,
+        1
+      ]
+    },
+    {
+      "id": "crate.2",
+      "type": "furn.crate",
+      "tile": [
+        10,
+        1
+      ]
+    },
+    {
+      "id": "plant.back",
+      "type": "furn.plant",
+      "tile": [
+        12,
+        9
+      ]
+    },
+    {
+      "id": "plant.front",
+      "type": "furn.plant",
+      "tile": [
+        1,
+        9
+      ]
+    }
   ],
   "npcs": [
     {
       "id": "keep.marla",
       "type": "folk.shopkeep",
-      "tile": [4, 2],
+      "tile": [
+        4,
+        2
+      ],
       "facing": "south",
-      "props": {"name": "Marla", "title": "Keeps the store"},
+      "props": {
+        "name": "Marla",
+        "title": "Keeps the store"
+      },
       "shop": {
         "name": "Marla's Shelves",
         "markup": 1.5,
         "buyRate": 0.5,
         "stock": [
-          {"type": "item.apple", "count": null},
-          {"type": "item.stick", "count": null},
-          {"type": "item.mushroom", "count": 4},
-          {"type": "item.flower", "count": 3, "price": 28},
-          {"type": "item.shell", "count": 1, "price": 70},
-          {"type": "tool.axe", "count": 1, "price": 210},
-          {"type": "tool.shovel", "count": 1, "price": 165}
+          {
+            "type": "item.apple",
+            "count": null
+          },
+          {
+            "type": "item.stick",
+            "count": null
+          },
+          {
+            "type": "item.mushroom",
+            "count": 4
+          },
+          {
+            "type": "item.flower",
+            "count": 3,
+            "price": 28
+          },
+          {
+            "type": "item.shell",
+            "count": 1,
+            "price": 70
+          },
+          {
+            "type": "tool.axe",
+            "count": 1,
+            "price": 210
+          },
+          {
+            "type": "tool.shovel",
+            "count": 1,
+            "price": 165
+          },
+          {
+            "type": "tool.gun",
+            "count": 1,
+            "price": 480
+          },
+          {
+            "type": "item.shot",
+            "count": null
+          }
         ]
       },
       "dialog": {
@@ -125,9 +294,23 @@
         "nodes": {
           "open": {
             "branch": [
-              {"when": {"not": {"flag": "met"}}, "to": "hello"},
-              {"when": {"visits": 6}, "to": "regular"},
-              {"to": "again"}
+              {
+                "when": {
+                  "not": {
+                    "flag": "met"
+                  }
+                },
+                "to": "hello"
+              },
+              {
+                "when": {
+                  "visits": 6
+                },
+                "to": "regular"
+              },
+              {
+                "to": "again"
+              }
             ]
           },
           "hello": {
@@ -135,7 +318,9 @@
               "Well now. You'll be the one who took the place up by the pines.",
               "Marla. I keep the shelves, and I'll take most things off your hands -- within reason."
             ],
-            "do": {"set": "met"},
+            "do": {
+              "set": "met"
+            },
             "then": "menu"
           },
           "again": {
@@ -149,19 +334,58 @@
           "menu": {
             "text": "What'll it be?",
             "choices": [
-              {"text": "Let's trade.", "do": {"shop": true}, "to": "after"},
+              {
+                "text": "Let's trade.",
+                "do": {
+                  "shop": true
+                },
+                "to": "after"
+              },
               {
                 "text": "I brought you apples.",
-                "when": {"all": [
-                  {"has": {"type": "item.apple", "count": 3}},
-                  {"room": {"type": "item.flower", "count": 1}},
-                  {"not": {"flag": "paid.apples"}}
-                ]},
+                "when": {
+                  "all": [
+                    {
+                      "has": {
+                        "type": "item.apple",
+                        "count": 3
+                      }
+                    },
+                    {
+                      "room": {
+                        "type": "item.flower",
+                        "count": 1
+                      }
+                    },
+                    {
+                      "not": {
+                        "flag": "paid.apples"
+                      }
+                    }
+                  ]
+                },
                 "to": "apples"
               },
-              {"text": "What do you buy?", "when": {"not": {"flag": "asked"}}, "to": "buys"},
-              {"text": "You must do well out of me.", "when": {"coins": 250}, "to": "rich"},
-              {"text": "That's all for now.", "to": "bye"}
+              {
+                "text": "What do you buy?",
+                "when": {
+                  "not": {
+                    "flag": "asked"
+                  }
+                },
+                "to": "buys"
+              },
+              {
+                "text": "You must do well out of me.",
+                "when": {
+                  "coins": 250
+                },
+                "to": "rich"
+              },
+              {
+                "text": "That's all for now.",
+                "to": "bye"
+              }
             ]
           },
           "buys": {
@@ -169,16 +393,32 @@
               "Shells, mostly. There's a fellow along the coast road pays silly money for them.",
               "Sticks and pebbles I'll take too, but don't go planning your retirement on it."
             ],
-            "do": {"set": "asked"},
+            "do": {
+              "set": "asked"
+            },
             "then": "menu"
           },
           "apples": {
             "text": "Three, and not a bruise on one of them. Here -- coin for your trouble, and take a flower for the window.",
             "do": [
-              {"take": {"type": "item.apple", "count": 3}},
-              {"give": {"type": "item.flower", "count": 1}},
-              {"coins": 40},
-              {"set": "paid.apples"}
+              {
+                "take": {
+                  "type": "item.apple",
+                  "count": 3
+                }
+              },
+              {
+                "give": {
+                  "type": "item.flower",
+                  "count": 1
+                }
+              },
+              {
+                "coins": 40
+              },
+              {
+                "set": "paid.apples"
+              }
             ],
             "then": "menu"
           },
@@ -198,13 +438,50 @@
     }
   ],
   "items": [
-    {"id":"apple.crate","type":"item.apple","tile":[3,2]},
-    {"id":"shell.display","type":"item.shell","tile":[8,6]},
-    {"id":"mushroom.basket","type":"item.mushroom","tile":[9,8]}
+    {
+      "id": "apple.crate",
+      "type": "item.apple",
+      "tile": [
+        3,
+        2
+      ]
+    },
+    {
+      "id": "shell.display",
+      "type": "item.shell",
+      "tile": [
+        8,
+        6
+      ]
+    },
+    {
+      "id": "mushroom.basket",
+      "type": "item.mushroom",
+      "tile": [
+        9,
+        8
+      ]
+    }
   ],
   "exits": [
-    {"tile":[6,10]},
-    {"tile":[7,10]}
+    {
+      "tile": [
+        6,
+        10
+      ]
+    },
+    {
+      "tile": [
+        7,
+        10
+      ]
+    }
   ],
-  "spawn": {"tile":[7,9],"facing":"north"}
+  "spawn": {
+    "tile": [
+      7,
+      9
+    ],
+    "facing": "north"
+  }
 }

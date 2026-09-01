@@ -2,15 +2,18 @@
   "format": "tw.world",
   "version": 1,
   "kind": "interior",
+  "kits": ["kits/wren.kit.json"],
   "meta": {
     "id": "home.wren.interior",
     "name": "Wren's Cabin",
-    "note": "Interior of home.wren in meadowbrook.json. Hand-authored. PRIVATE: see zones."
+    "note": "Interior of home.wren in meadowbrook.json. Hand-authored. PRIVATE: see zones. Two levels: a flagged working floor with a boat upside down on it, and a plank platform up one step at the east end where she sleeps, out of the damp. The only way up is the ramp -- the rest of that step is a step."
   },
-  "grid": {"width":11,"height":9,"tileSize":1},
+  "grid": {"width":14,"height":9,"tileSize":1},
   "ambience": {
     "sky": "#151a1f",
     "hemiSky": "#d6ecff",
+    "hemiGround": "#5a6a72",
+    "sun": 0.8,
     "hemi": 2.0
   },
   "zones": {
@@ -20,77 +23,82 @@
     "surface": {
         "palette": {"#":"wall","w":"floor.wood","t":"floor.tile","r":"rug"},
         "data": [
-          "###########",
-          "#wwwwwwwww#",
-          "#wwwwwwwww#",
-          "#wwwwwwwww#",
-          "#wwrrrrwww#",
-          "#wwrrrrwww#",
-          "#wwwwwwwww#",
-          "#wwwwwwwww#",
-          "####tt#####"
+          "##############",
+          "#ttttttttwwww#",
+          "#ttttttttwwww#",
+          "#ttttttttwwww#",
+          "#ttttttttwwww#",
+          "#ttttttttwwww#",
+          "#ttttttttwwww#",
+          "#ttttttttwwww#",
+          "#####tt#######"
         ]
       },
     "elevation": {
-        "palette": {"0":"0","4":"4"},
+        "palette": {"0":"0","1":"1","4":"4"},
         "data": [
-          "44444444444",
-          "40000000004",
-          "40000000004",
-          "40000000004",
-          "40000000004",
-          "40000000004",
-          "40000000004",
-          "40000000004",
-          "44440044444"
+          "44444444444444",
+          "40000000011114",
+          "40000000011114",
+          "40000000011114",
+          "40000000011114",
+          "40000000011114",
+          "40000000011114",
+          "40000000011114",
+          "44444004444444"
         ]
       },
     "flags": {
-        "palette": {".":"none"},
+        "palette": {".":"none","e":"ramp.east"},
         "data": [
-          "...........",
-          "...........",
-          "...........",
-          "...........",
-          "...........",
-          "...........",
-          "...........",
-          "...........",
-          "..........."
+          "..............",
+          "..............",
+          "..............",
+          "........e.....",
+          "........e.....",
+          "..............",
+          "..............",
+          "..............",
+          ".............."
         ]
       },
     "zones": {
-        "palette": {".":"none","w":"hers"},
+        "palette": {".":"none","h":"hers"},
         "data": [
-          "...........",
-          ".wwwwwwwww.",
-          ".wwwwwwwww.",
-          ".wwwwwwwww.",
-          ".wwwwwwwww.",
-          ".wwwwwwwww.",
-          ".wwwwwwwww.",
-          ".wwwwwwwww.",
-          "....ww....."
+          "..............",
+          ".hhhhhhhhhhhh.",
+          ".hhhhhhhhhhhh.",
+          ".hhhhhhhhhhhh.",
+          ".hhhhhhhhhhhh.",
+          ".hhhhhhhhhhhh.",
+          ".hhhhhhhhhhhh.",
+          ".hhhhhhhhhhhh.",
+          ".....hh......."
         ]
       }
   },
   "objects": [
-    {"id":"bed","type":"furn.bed","tile":[1,1]},
-    {"id":"shelf.tackle","type":"furn.shelf","tile":[4,1],"props":{"label":"Tackle Shelf"}},
-    {"id":"crate.bait","type":"furn.crate","tile":[7,1]},
-    {"id":"crate.rope","type":"furn.crate","tile":[9,1]},
-    {"id":"table","type":"furn.table","tile":[7,5]},
-    {"id":"chair","type":"furn.chair","tile":[6,5],"rotation":90},
-    {"id":"plant","type":"furn.plant","tile":[9,7]}
+    {"id":"skiff","type":"fixture.skiff","tile":[1,1],"props":{"label":"Half-mended Skiff"}},
+    {"id":"shelf.lines","type":"furn.shelf","tile":[6,1],"props":{"label":"Line Shelf"}},
+    {"id":"crate.bait","type":"furn.crate","tile":[8,1]},
+    {"id":"stove","type":"furn.stove","tile":[6,3]},
+    {"id":"barrel.bait","type":"fixture.baitbarrel","tile":[1,4],"props":{"label":"Bait Barrel"}},
+    {"id":"shelf.tackle","type":"furn.shelf","tile":[1,6],"props":{"label":"Tackle Shelf"}},
+    {"id":"crate.rope","type":"furn.crate","tile":[4,6]},
+    {"id":"bed","type":"furn.bed","tile":[11,1]},
+    {"id":"table","type":"furn.table","tile":[11,5]},
+    {"id":"chair","type":"furn.chair","tile":[10,6],"rotation":270}
   ],
   "items": [
-    {"id":"shell.bucket","type":"item.shell","tile":[3,2]},
-    {"id":"shell.sill","type":"item.shell","tile":[9,4]},
-    {"id":"stick.rod","type":"item.stick","tile":[2,7]}
+    {"id":"shell.sill","type":"item.shell","tile":[6,2]},
+    {"id":"shell.step","type":"item.shell","tile":[10,4]},
+    {"id":"shell.table","type":"item.shell","tile":[9,7]},
+    {"id":"stick.peg","type":"item.stick","tile":[2,7]},
+    {"id":"stone.ballast","type":"item.stone","tile":[7,7]}
   ],
   "exits": [
-    {"tile":[4,8]},
-    {"tile":[5,8]}
+    {"tile":[5,8]},
+    {"tile":[6,8]}
   ],
   "spawn": {"tile":[5,7],"facing":"north"}
 }

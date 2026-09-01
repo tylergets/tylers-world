@@ -23,11 +23,17 @@ const MAP = {
   ArrowLeft: 'left', KeyA: 'left',
   ArrowRight: 'right', KeyD: 'right',
   ShiftLeft: 'run', ShiftRight: 'run',
+  // Held for a continuous orbit in the 3D view. The same two keys are ALSO read
+  // as single presses, for the flat view's quarter turns -- see Game.turnCamera.
+  Comma: 'turnLeft', Period: 'turnRight',
 };
 
 export class Keyboard {
   constructor(target = window) {
-    this.state = { up: false, down: false, left: false, right: false, run: false };
+    this.state = {
+      up: false, down: false, left: false, right: false, run: false,
+      turnLeft: false, turnRight: false,
+    };
     this._press = new Set();
 
     target.addEventListener('keydown', (e) => {

@@ -55,9 +55,20 @@ export function toolOf(typeId) {
  * standing in, and digging the tile you are standing on would drop you into
  * your own hole -- see `Edits.dig`, which blocks the tile it digs.
  */
-export function toolTarget({ world, edits, ground, people, fauna, player, typeId }) {
+export function toolTarget({
+  world, edits, ground, people, fauna, player, typeId,
+  inventory = null, now = 0, readyAt = 0,
+}) {
   const tool = toolOf(typeId);
-  if (!tool || !edits) return null;
+  if (!tool) return null;
+
+  // Asked BEFORE the tile ahead is resolved, because a gun does not care what
+  // is on it -- and before the `edits` guard, because shooting is the one verb
+  // that changes nothing about the place's terrain.
+  if (tool.verb === 'shoot') {
+    return shootTarget({ world, people, fauna, player, tool, inventory, now, readyAt });
+  }
+  if (!edits) return null;
 
   const [x, z] = player.aheadTile();
   if (!world.inBounds(x, z)) return null;
@@ -65,6 +76,125 @@ export function toolTarget({ world, edits, ground, people, fauna, player, typeId
   if (tool.verb === 'chop') return chopTarget(world, edits, tool, x, z);
   if (tool.verb === 'dig') return digTarget({ world, edits, ground, people, fauna, x, z });
   return null;
+}
+
+/**
+ * What the gun is pointing at, or why it is pointing at nothing.
+ *
+ * Its own resolver rather than a branch of `toolTarget`, because it is the one
+ * verb in the game that does not act on the tile in front of you. An axe and a
+ * shovel reach exactly one tile; a gun reaches down a LINE, and the difference
+ * between those two questions is the whole of this function.
+ *
+ * WHY NOT `aheadTile()`
+ * --------------------
+ * Because it is four-way. Rounding the player's heading to a cardinal is
+ * harmless at one tile -- you are either facing the tree or you are not -- and
+ * it is ruinous at eight, where 45 degrees of rounding puts the shot five tiles
+ * wide of what the player was plainly aiming at. The camera can be orbited and
+ * `yaw` is continuous, so the ray reads `yaw` and nothing else.
+ *
+ * TWO DIFFERENT QUESTIONS, ASKED TWO DIFFERENT WAYS
+ * -------------------------------------------------
+ * The world is a grid and answers tile questions, so what stops a bullet is
+ * found by walking cells (an Amanatides-Woo DDA -- exact, and at most 2*range
+ * steps). Animals and people are not on the grid: they stand at float
+ * positions and carry a radius, exactly like the player, so they are found by
+ * projecting each one onto the ray. Doing both with one loop would be O(tiles x
+ * bodies) AND wrong -- a chicken a twentieth of a tile over a boundary is
+ * standing on a tile the walk never tested. This is the same split body.js
+ * already makes, for the same reason.
+ *
+ * MUTATES NOTHING, and allocates nothing in either pass: the walk and both
+ * projections are scalars only. The one allocation is the result object, which
+ * `chopTarget` and `digTarget` have always made once per poll -- and `tile` is
+ * an array only on a hit, so merely walking around with a gun out costs one
+ * small object and no array. The HUD asks ten times a second.
+ *
+ * `now` and `readyAt` are READ, never written: the cooldown belongs to the
+ * game loop, and this only reports it so the prompt can say why the key will
+ * refuse instead of the key silently doing nothing.
+ */
+function shootTarget({ world, people, fauna, player, tool, inventory, now, readyAt }) {
+  if (inventory && !inventory.count(AMMO)) {
+    return { verb: 'shoot', tile: null, label: null, blocked: 'out of shot' };
+  }
+  if (now < readyAt) {
+    return { verb: 'shoot', tile: null, label: null, blocked: 'reloading' };
+  }
+
+  const px = player.x, pz = player.z;
+  const ox = Math.sin(player.yaw), oz = Math.cos(player.yaw);
+  const reach = tool.range ?? 8;
+  const stop = ddaBlock(world, px, pz, ox, oz, reach);
+
+  let bestT = stop, best = null, kind = null;
+
+  for (const a of (fauna?.animals ?? [])) {
+    if (a.dying !== null && a.dying !== undefined) continue;
+    const dx = a.x - px, dz = a.z - pz;
+    const t = dx * ox + dz * oz;
+    if (t <= 0 || t >= bestT) continue;
+    if (Math.abs(dx * oz - dz * ox) > a.radius + PELLET) continue;
+    bestT = t; best = a; kind = 'animal';
+  }
+
+  for (const n of (people?.npcs ?? [])) {
+    if (n.downed > 0) continue;
+    const dx = n.x - px, dz = n.z - pz;
+    const t = dx * ox + dz * oz;
+    if (t <= 0 || t >= bestT) continue;
+    if (Math.abs(dx * oz - dz * ox) > n.radius + PELLET) continue;
+    bestT = t; best = n; kind = 'npc';
+  }
+
+  if (!best) {
+    return { verb: 'shoot', tile: null, label: null, blocked: 'nothing in your sights' };
+  }
+  return {
+    verb: 'shoot',
+    tile: [Math.floor(best.x), Math.floor(best.z)],
+    label: kind === 'npc' ? best.name : best.type.label,
+    blocked: null,
+    kind,
+    target: best,
+    range: bestT,
+  };
+}
+
+/** How far off the line a body can stand and still be hit. A shot is not a laser. */
+const PELLET = 0.16;
+
+/** The ammunition a gun spends. One box type, named once. */
+export const AMMO = 'item.shot';
+
+/**
+ * How far the shot travels before the world stops it.
+ *
+ * Amanatides-Woo: step whichever axis has the nearer next boundary, so every
+ * cell the line actually crosses is visited exactly once and none that it does
+ * not is. Scalars only, no allocation, at most 2*range iterations.
+ *
+ * Returns the distance to the blocking face, or `reach` if nothing blocks --
+ * a distance and not a tile, because what the caller compares it against is
+ * how far along the line an animal is standing.
+ */
+function ddaBlock(world, px, pz, ox, oz, reach) {
+  let x = Math.floor(px), z = Math.floor(pz);
+  const stepX = ox > 0 ? 1 : -1, stepZ = oz > 0 ? 1 : -1;
+  const invX = ox === 0 ? Infinity : 1 / Math.abs(ox);
+  const invZ = oz === 0 ? Infinity : 1 / Math.abs(oz);
+  let tMaxX = ox === 0 ? Infinity : ((ox > 0 ? x + 1 - px : px - x) * invX);
+  let tMaxZ = oz === 0 ? Infinity : ((oz > 0 ? z + 1 - pz : pz - z) * invZ);
+
+  for (let i = 0; i < 64; i++) {
+    const t = Math.min(tMaxX, tMaxZ);
+    if (t > reach) return reach;
+    if (tMaxX < tMaxZ) { x += stepX; tMaxX += invX; } else { z += stepZ; tMaxZ += invZ; }
+    // Out of the world stops a shot as surely as a wall does.
+    if (!world.inBounds(x, z) || world.isBlocked(x, z)) return t;
+  }
+  return reach;
 }
 
 function chopTarget(world, edits, tool, x, z) {
@@ -142,6 +272,30 @@ export function stumpDrops(id) {
   const rng = makeRng(`stump:${id}`);
   const out = ['item.stick'];
   if (rng() < 0.5) out.push('item.stick');
+  return out;
+}
+
+/**
+ * Species big enough to be worth two of anything.
+ *
+ * A set and not a size threshold on the type, because "how much meat is on it"
+ * is a judgement about the animal and not a function of its collision radius,
+ * and a rabbit that grew a tile wider should not quietly become dinner twice.
+ */
+const BIG_GAME = new Set(['sheep', 'goat']);
+
+/**
+ * What a shot animal leaves on the ground.
+ *
+ * Seeded by the animal's own id, exactly like the wood a given oak pays: the
+ * same chicken yields the same thing whether you shoot it today or after it has
+ * come back at dawn, because what it is worth is a fact about that animal and
+ * not about the moment you happened to catch it.
+ */
+export function killDrops(animal) {
+  const rng = makeRng(`kill:${animal.id}`);
+  const out = ['item.game'];
+  if (BIG_GAME.has(animal.typeId) && rng() < 0.8) out.push('item.game');
   return out;
 }
 

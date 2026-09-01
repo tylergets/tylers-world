@@ -145,7 +145,7 @@ export class WorldsPanel {
   }
 
   /**
-   * The four ways to start: the two shipped places, and a roll of each form.
+   * Every way to start: the shipped places, then a fresh roll of each form.
    *
    * Built once. Only the `on` class moves as you pick, so the list cannot
    * reflow under the pointer mid-click.

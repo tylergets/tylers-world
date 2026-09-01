@@ -1,0 +1,108 @@
+{
+  "format": "tw.world",
+  "version": 1,
+  "kind": "interior",
+  "kits": ["kits/vesper.kit.json"],
+  "meta": {
+    "id": "home.vesper.interior",
+    "name": "Vesper's",
+    "note": "Interior of home.vesper in ashkettle.json. Hand-authored. PRIVATE: see zones. The corners are walled off, so the room is an octagon with a fire in the middle of it and everything else facing that fire -- the only round room in the game, and the reason she can live on the far side of a caldera on her own without it feeling like exile."
+  },
+  "grid": {"width":11,"height":11,"tileSize":1},
+  "ambience": {
+    "sky": "#1c1210",
+    "sunColor": "#ffcf9a",
+    "hemiSky": "#ffc9a0",
+    "hemiGround": "#6b4a3a",
+    "sun": 0.6,
+    "hemi": 2.3
+  },
+  "zones": {
+    "home": {"owner":"folk.vesper","label":"Vesper's"}
+  },
+  "layers": {
+    "surface": {
+        "palette": {"#":"wall","w":"floor.wood","t":"floor.tile","r":"rug"},
+        "data": [
+          "###########",
+          "###wwwww###",
+          "##wwwwwww##",
+          "#wwwwwwwww#",
+          "#wwwrrrwww#",
+          "#wwwrrrwww#",
+          "#wwwrrrwww#",
+          "#wwwwwwwww#",
+          "##wwwwwww##",
+          "###wwwww###",
+          "#####tt####"
+        ]
+      },
+    "elevation": {
+        "palette": {"0":"0","4":"4"},
+        "data": [
+          "44444444444",
+          "44400000444",
+          "44000000044",
+          "40000000004",
+          "40000000004",
+          "40000000004",
+          "40000000004",
+          "40000000004",
+          "44000000044",
+          "44400000444",
+          "44444004444"
+        ]
+      },
+    "flags": {
+        "palette": {".":"none"},
+        "data": [
+          "...........",
+          "...........",
+          "...........",
+          "...........",
+          "...........",
+          "...........",
+          "...........",
+          "...........",
+          "...........",
+          "...........",
+          "..........."
+        ]
+      },
+    "zones": {
+        "palette": {".":"none","h":"home"},
+        "data": [
+          "...........",
+          "...hhhhh...",
+          "..hhhhhhh..",
+          ".hhhhhhhhh.",
+          ".hhhhhhhhh.",
+          ".hhhhhhhhh.",
+          ".hhhhhhhhh.",
+          ".hhhhhhhhh.",
+          "..hhhhhhh..",
+          "...hhhhh...",
+          ".....hh...."
+        ]
+      }
+  },
+  "objects": [
+    {"id":"shelf.odds","type":"furn.shelf","tile":[3,1],"props":{"label":"Odds & Ends"}},
+    {"id":"lamp.signal","type":"fixture.signallamp","tile":[5,1],"props":{"label":"Signal Lamp"}},
+    {"id":"shelf.tools","type":"furn.shelf","tile":[6,1],"props":{"label":"Tools"}},
+    {"id":"bed","type":"furn.bed","tile":[1,3]},
+    {"id":"table","type":"furn.table","tile":[7,3]},
+    {"id":"firepit","type":"fixture.firepit","tile":[4,4],"props":{"label":"Fire Pit"}},
+    {"id":"chair","type":"furn.chair","tile":[7,5],"rotation":180},
+    {"id":"stove","type":"furn.stove","tile":[7,8]},
+    {"id":"crate","type":"furn.crate","tile":[2,8]},
+    {"id":"plant","type":"furn.plant","tile":[3,9]}
+  ],
+  "items": [
+    {"id":"stick.hearth","type":"item.stick","tile":[3,6]},
+    {"id":"stone.sill","type":"item.stone","tile":[7,7]},
+    {"id":"mushroom.string","type":"item.mushroom","tile":[5,8]}
+  ],
+  "exits": [{"tile":[5,10]},{"tile":[6,10]}],
+  "spawn": {"tile":[5,9],"facing":"north"}
+}

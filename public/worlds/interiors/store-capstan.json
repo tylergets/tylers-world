@@ -1,0 +1,370 @@
+{
+  "format": "tw.world",
+  "version": 1,
+  "kind": "interior",
+  "meta": {
+    "id": "store.capstan.interior",
+    "name": "The Capstan",
+    "note": "Interior of store.capstan in bellrock.json. Hand-authored."
+  },
+  "grid": {
+    "width": 13,
+    "height": 10,
+    "tileSize": 1
+  },
+  "zones": {
+    "back": {
+      "owner": "keep.ivy",
+      "label": "behind the counter"
+    }
+  },
+  "layers": {
+    "surface": {
+      "palette": {
+        "#": "wall",
+        "w": "floor.wood",
+        "t": "floor.tile",
+        "r": "rug"
+      },
+      "data": [
+        "#############",
+        "#ttttttttttt#",
+        "#ttttttttttt#",
+        "#tttwwwwwttt#",
+        "#wwwwwwwwwww#",
+        "#wwwwrrrwwww#",
+        "#wwwwrrrwwww#",
+        "#wwwwwwwwwww#",
+        "#wwwwwwwwwww#",
+        "######tt#####"
+      ]
+    },
+    "elevation": {
+      "palette": {
+        "0": "0",
+        "4": "4"
+      },
+      "data": [
+        "4444444444444",
+        "4000000000004",
+        "4000000000004",
+        "4000000000004",
+        "4000000000004",
+        "4000000000004",
+        "4000000000004",
+        "4000000000004",
+        "4000000000004",
+        "4444440044444"
+      ]
+    },
+    "flags": {
+      "palette": {
+        ".": "none"
+      },
+      "data": [
+        ".............",
+        ".............",
+        ".............",
+        ".............",
+        ".............",
+        ".............",
+        ".............",
+        ".............",
+        ".............",
+        "............."
+      ]
+    },
+    "zones": {
+      "palette": {
+        ".": "none",
+        "b": "back"
+      },
+      "data": [
+        ".............",
+        ".bbbbbbbbbbb.",
+        ".bbbbbbbbbbb.",
+        ".............",
+        ".............",
+        ".............",
+        ".............",
+        ".............",
+        ".............",
+        "............."
+      ]
+    }
+  },
+  "objects": [
+    {
+      "id": "shelf.a",
+      "type": "furn.shelf",
+      "tile": [
+        1,
+        1
+      ],
+      "props": {
+        "label": "Chandlery"
+      }
+    },
+    {
+      "id": "shelf.b",
+      "type": "furn.shelf",
+      "tile": [
+        4,
+        1
+      ],
+      "props": {
+        "label": "Feed"
+      }
+    },
+    {
+      "id": "shelf.c",
+      "type": "furn.shelf",
+      "tile": [
+        7,
+        1
+      ],
+      "props": {
+        "label": "Dry Goods"
+      }
+    },
+    {
+      "id": "shelf.d",
+      "type": "furn.shelf",
+      "tile": [
+        10,
+        1
+      ],
+      "props": {
+        "label": "Sundries"
+      }
+    },
+    {
+      "id": "counter",
+      "type": "furn.counter",
+      "tile": [
+        2,
+        3
+      ],
+      "props": {
+        "label": "Register"
+      }
+    },
+    {
+      "id": "stove",
+      "type": "furn.stove",
+      "tile": [
+        9,
+        3
+      ],
+      "props": {
+        "label": "Range"
+      }
+    },
+    {
+      "id": "chair.loafers",
+      "type": "furn.chair",
+      "tile": [
+        11,
+        4
+      ]
+    },
+    {
+      "id": "crate.west",
+      "type": "furn.crate",
+      "tile": [
+        1,
+        6
+      ]
+    },
+    {
+      "id": "crate.east",
+      "type": "furn.crate",
+      "tile": [
+        11,
+        6
+      ]
+    },
+    {
+      "id": "crate.door",
+      "type": "furn.crate",
+      "tile": [
+        1,
+        8
+      ]
+    },
+    {
+      "id": "plant",
+      "type": "furn.plant",
+      "tile": [
+        11,
+        8
+      ]
+    }
+  ],
+  "npcs": [
+    {
+      "id": "keep.ivy",
+      "type": "folk.shopkeep",
+      "tile": [
+        3,
+        2
+      ],
+      "facing": "south",
+      "props": {
+        "name": "Ivy",
+        "title": "The Capstan"
+      },
+      "shop": {
+        "name": "Chandlery & Feed",
+        "markup": 1.3,
+        "buyRate": 0.68,
+        "takes": [
+          "item.shell",
+          "item.stone",
+          "item.stick",
+          "item.flower",
+          "tool.axe",
+          "tool.shovel",
+          "tool.gun",
+          "item.shot",
+          "item.game"
+        ],
+        "stock": [
+          {
+            "type": "item.apple",
+            "count": 7
+          },
+          {
+            "type": "item.mushroom",
+            "count": 5
+          },
+          {
+            "type": "item.shell",
+            "count": 6
+          },
+          {
+            "type": "tool.axe",
+            "count": 1,
+            "price": 200
+          },
+          {
+            "type": "tool.shovel",
+            "count": 1,
+            "price": 160
+          },
+          {
+            "type": "tool.gun",
+            "count": 1,
+            "price": 480
+          },
+          {
+            "type": "item.shot",
+            "count": null
+          }
+        ]
+      },
+      "dialog": {
+        "start": "open",
+        "nodes": {
+          "open": {
+            "branch": [
+              {
+                "when": {
+                  "flag": "met"
+                },
+                "to": "again"
+              },
+              {
+                "to": "hello"
+              }
+            ]
+          },
+          "hello": {
+            "text": [
+              "Boots. Either sand or sheep, and I would rather guess than know.",
+              "Ivy. I sell to the boats and I sell to the hill, and neither lot will admit the other keeps me open."
+            ],
+            "do": {
+              "set": "met"
+            },
+            "then": "menu"
+          },
+          "again": {
+            "text": "Back down, or back up? What is it?",
+            "then": "menu"
+          },
+          "menu": {
+            "text": "Trading, or sheltering?",
+            "choices": [
+              {
+                "text": "Trading.",
+                "do": {
+                  "shop": true
+                },
+                "to": "after"
+              },
+              {
+                "text": "What'll you take?",
+                "to": "takes"
+              },
+              {
+                "text": "Sheltering.",
+                "to": "bye"
+              }
+            ]
+          },
+          "takes": {
+            "text": "Shells, stone, wood, flowers. Doss will beat me on shells and he will tell you so himself.",
+            "then": "menu"
+          },
+          "after": {
+            "text": "Right you are.",
+            "then": "menu"
+          },
+          "bye": {
+            "text": "Pull it to. The wind takes it."
+          }
+        }
+      }
+    }
+  ],
+  "items": [
+    {
+      "id": "shell.counter",
+      "type": "item.shell",
+      "tile": [
+        6,
+        4
+      ]
+    },
+    {
+      "id": "stone.doorstop",
+      "type": "item.stone",
+      "tile": [
+        3,
+        8
+      ]
+    }
+  ],
+  "exits": [
+    {
+      "tile": [
+        6,
+        9
+      ]
+    },
+    {
+      "tile": [
+        7,
+        9
+      ]
+    }
+  ],
+  "spawn": {
+    "tile": [
+      7,
+      8
+    ],
+    "facing": "north"
+  }
+}

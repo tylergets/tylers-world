@@ -1,0 +1,97 @@
+{
+  "format": "tw.kit",
+  "version": 1,
+  "meta": { "id": "bramble", "name": "Bramble's Garden Room" },
+
+  "types": {
+    "fixture.coldframe": {
+      "kind": "object",
+      "label": "Cold Frame",
+      "footprint": { "w": 2, "d": 1 },
+      "height": 0.62,
+      "squash": 0.42,
+
+      "palette": {
+        "wood":     "#8a6242",
+        "woodDark": "#6b4a30",
+        "brick":    "#b07a5a",
+        "soil":     "#4a3a2b",
+        "glass":    "#bfe0ea",
+        "sprout":   "#6fbf5a",
+        "sproutHi": "#8fd97a"
+      },
+
+      "parts": [
+        { "prim": "box", "at": [0, 0.11, 0], "size": [1.92, 0.22, 0.92], "color": "brick" },
+        { "prim": "box", "at": [0, 0.24, 0], "size": [1.78, 0.06, 0.80], "color": "soil" },
+
+        { "prim": "blob", "at": [-0.70, 0.30, -0.14], "size": [0.07, 0.09, 0.07], "color": "sprout",
+          "anim": { "pulse": { "amp": 0.20, "rate": 0.55, "phase": 0.00 } } },
+        { "prim": "blob", "at": [-0.34, 0.30, 0.16], "size": [0.06, 0.08, 0.06], "color": "sproutHi",
+          "anim": { "pulse": { "amp": 0.24, "rate": 0.62, "phase": 0.22 } } },
+        { "prim": "blob", "at": [0.02, 0.30, -0.10], "size": [0.07, 0.09, 0.07], "color": "sprout",
+          "anim": { "pulse": { "amp": 0.18, "rate": 0.48, "phase": 0.44 } } },
+        { "prim": "blob", "at": [0.38, 0.30, 0.18], "size": [0.06, 0.08, 0.06], "color": "sproutHi",
+          "anim": { "pulse": { "amp": 0.26, "rate": 0.70, "phase": 0.66 } } },
+        { "prim": "cone", "at": [0.72, 0.34, -0.06], "size": [0.06, 0.18, 0.06], "color": "sprout",
+          "anim": { "pulse": { "amp": 0.16, "rate": 0.40, "phase": 0.88 } } },
+
+        { "prim": "box", "at": [0, 0.45, -0.02], "size": [1.96, 0.035, 0.98], "rot": [-7, 0, 0], "color": "glass" },
+        { "prim": "box", "at": [0, 0.42, 0.46], "size": [1.96, 0.07, 0.07], "color": "wood" },
+        { "prim": "box", "at": [0, 0.49, -0.46], "size": [1.96, 0.07, 0.07], "color": "woodDark" },
+        { "prim": "cyl", "at": [0.86, 0.34, 0.40], "size": [0.02, 0.26, 0.02], "rot": [0, 0, 11], "color": "wood" }
+      ],
+
+      "state": { "lifted": 0 },
+
+      "interact": {
+        "label": "Lift the frame",
+        "run": "bramble-coldframe.js"
+      }
+    },
+
+    "fixture.dryrack": {
+      "kind": "object",
+      "label": "Drying Rack",
+      "footprint": { "w": 1, "d": 3 },
+      "height": 1.75,
+      "squash": 0.3,
+
+      "palette": {
+        "post":   "#8a6242",
+        "rail":   "#6b4a30",
+        "twine":  "#d9c7a4",
+        "herb":   "#6f8a4a",
+        "herbHi": "#8fa863",
+        "bundle": "#c0a05a"
+      },
+
+      "parts": [
+        { "prim": "cyl", "at": [0, 0.85, -1.34], "size": [0.055, 1.70, 0.055], "color": "post" },
+        { "prim": "cyl", "at": [0, 0.85, 1.34], "size": [0.055, 1.70, 0.055], "color": "post" },
+        { "prim": "box", "at": [0, 1.66, 0], "size": [0.10, 0.08, 2.80], "color": "rail" },
+        { "prim": "box", "at": [0, 0.32, 0], "size": [0.36, 0.05, 2.60], "color": "rail" },
+
+        { "prim": "cyl", "at": [0, 1.55, -1.10], "size": [0.012, 0.18, 0.012], "color": "twine" },
+        { "prim": "taper", "at": [0, 1.26, -1.10], "size": [0.13, 0.44, 0.13], "rot": [180, 0, 0], "color": "herb",
+          "anim": { "bob": { "amp": 0.018, "rate": 0.31, "phase": 0.00 } } },
+
+        { "prim": "cyl", "at": [0, 1.55, -0.55], "size": [0.012, 0.18, 0.012], "color": "twine" },
+        { "prim": "taper", "at": [0, 1.24, -0.55], "size": [0.11, 0.48, 0.11], "rot": [180, 0, 0], "color": "bundle",
+          "anim": { "bob": { "amp": 0.022, "rate": 0.27, "phase": 0.31 } } },
+
+        { "prim": "cyl", "at": [0, 1.55, 0], "size": [0.012, 0.18, 0.012], "color": "twine" },
+        { "prim": "taper", "at": [0, 1.27, 0], "size": [0.14, 0.42, 0.14], "rot": [180, 0, 0], "color": "herbHi",
+          "anim": { "bob": { "amp": 0.016, "rate": 0.36, "phase": 0.58 } } },
+
+        { "prim": "cyl", "at": [0, 1.55, 0.55], "size": [0.012, 0.18, 0.012], "color": "twine" },
+        { "prim": "taper", "at": [0, 1.23, 0.55], "size": [0.12, 0.50, 0.12], "rot": [180, 0, 0], "color": "herb",
+          "anim": { "bob": { "amp": 0.020, "rate": 0.24, "phase": 0.79 } } },
+
+        { "prim": "cyl", "at": [0, 1.55, 1.10], "size": [0.012, 0.18, 0.012], "color": "twine" },
+        { "prim": "taper", "at": [0, 1.28, 1.10], "size": [0.10, 0.40, 0.10], "rot": [180, 0, 0], "color": "bundle",
+          "anim": { "bob": { "amp": 0.024, "rate": 0.33, "phase": 0.12 } } }
+      ]
+    }
+  }
+}

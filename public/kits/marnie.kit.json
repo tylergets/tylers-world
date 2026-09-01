@@ -1,0 +1,98 @@
+{
+  "format": "tw.kit",
+  "version": 1,
+  "meta": { "id": "marnie", "name": "Marnie's Cottage" },
+
+  "types": {
+    "fixture.spyglass": {
+      "kind": "object",
+      "label": "Brass Spyglass",
+      "footprint": { "w": 1, "d": 1 },
+      "height": 1.25,
+      "squash": 0.34,
+
+      "palette": {
+        "brass":   "#c9a227",
+        "brassHi": "#e6c65a",
+        "lens":    "#bfe0ea",
+        "leather": "#6b4a30",
+        "wood":    "#8a6242",
+        "iron":    "#6b6f74"
+      },
+
+      "parts": [
+        { "prim": "cyl", "at": [0.16, 0.35, 0.10], "size": [0.022, 0.72, 0.022], "rot": [0, 0, -14], "color": "wood" },
+        { "prim": "cyl", "at": [-0.16, 0.35, 0.10], "size": [0.022, 0.72, 0.022], "rot": [0, 0, 14], "color": "wood" },
+        { "prim": "cyl", "at": [0, 0.35, -0.20], "size": [0.022, 0.72, 0.022], "rot": [-16, 0, 0], "color": "wood" },
+        { "prim": "box", "at": [0, 0.24, 0], "size": [0.30, 0.02, 0.02], "color": "leather" },
+
+        { "prim": "cyl", "at": [0, 0.72, 0], "size": [0.05, 0.07, 0.05], "color": "iron" },
+        { "prim": "cyl", "at": [0, 0.88, -0.02], "size": [0.055, 0.50, 0.055], "rot": [56, 0, 0], "color": "brass" },
+        { "prim": "cyl", "at": [0, 0.74, 0.19], "size": [0.048, 0.10, 0.048], "rot": [56, 0, 0], "color": "leather" },
+        { "prim": "cyl", "at": [0, 0.99, -0.18], "size": [0.058, 0.04, 0.058], "rot": [56, 0, 0], "color": "brassHi" },
+        { "prim": "cyl", "at": [0, 1.06, -0.23], "size": [0.050, 0.03, 0.050], "rot": [56, 0, 0], "color": "lens" },
+
+        { "prim": "cyl", "at": [0.30, 0.20, 0.22], "size": [0.035, 0.42, 0.035], "rot": [0, 0, 22], "color": "leather" }
+      ],
+
+      "state": { "looks": 0 },
+
+      "interact": {
+        "label": "Look through it",
+        "run": "marnie-spyglass.js"
+      }
+    },
+
+    "fixture.chime": {
+      "kind": "object",
+      "label": "Shell Chime",
+      "footprint": { "w": 1, "d": 1 },
+      "height": 1.8,
+      "squash": 0.28,
+
+      "palette": {
+        "post":    "#8a6242",
+        "rail":    "#6b4a30",
+        "twine":   "#d9c7a4",
+        "shell":   "#f0d9c2",
+        "shellHi": "#faeade",
+        "glass":   "#9fd4e8",
+        "drift":   "#cfc7ae"
+      },
+
+      "parts": [
+        { "prim": "cyl", "at": [0, 0.88, 0], "size": [0.048, 1.76, 0.048], "color": "post" },
+        { "prim": "cyl", "at": [0, 0.05, 0], "size": [0.20, 0.10, 0.20], "color": "rail" },
+        { "prim": "box", "at": [0, 1.72, 0.16], "size": [0.06, 0.06, 0.44], "color": "rail" },
+
+        { "prim": "box", "at": [0, 1.54, 0.34], "size": [0.52, 0.05, 0.05], "color": "drift",
+          "anim": { "spin": { "rate": 0.055, "phase": 0.0 } } },
+
+        { "prim": "cyl", "at": [-0.19, 1.40, 0.34], "size": [0.008, 0.26, 0.008], "color": "twine",
+          "anim": { "bob": { "amp": 0.014, "rate": 0.44, "phase": 0.00 } } },
+        { "prim": "blob", "at": [-0.19, 1.22, 0.34], "size": [0.052, 0.036, 0.052], "color": "shell",
+          "anim": { "bob": { "amp": 0.020, "rate": 0.44, "phase": 0.00 } } },
+
+        { "prim": "cyl", "at": [-0.09, 1.36, 0.34], "size": [0.008, 0.32, 0.008], "color": "twine",
+          "anim": { "bob": { "amp": 0.016, "rate": 0.57, "phase": 0.21 } } },
+        { "prim": "blob", "at": [-0.09, 1.15, 0.34], "size": [0.044, 0.030, 0.044], "color": "glass",
+          "anim": { "bob": { "amp": 0.023, "rate": 0.57, "phase": 0.21 } } },
+
+        { "prim": "cyl", "at": [0.01, 1.42, 0.34], "size": [0.008, 0.22, 0.008], "color": "twine",
+          "anim": { "bob": { "amp": 0.012, "rate": 0.36, "phase": 0.48 } } },
+        { "prim": "blob", "at": [0.01, 1.26, 0.34], "size": [0.056, 0.040, 0.056], "color": "shellHi",
+          "anim": { "bob": { "amp": 0.018, "rate": 0.36, "phase": 0.48 } } },
+
+        { "prim": "cyl", "at": [0.11, 1.34, 0.34], "size": [0.008, 0.36, 0.008], "color": "twine",
+          "anim": { "bob": { "amp": 0.019, "rate": 0.66, "phase": 0.72 } } },
+        { "prim": "blob", "at": [0.11, 1.12, 0.34], "size": [0.040, 0.028, 0.040], "color": "shell",
+          "anim": { "bob": { "amp": 0.026, "rate": 0.66, "phase": 0.72 } } },
+
+        { "prim": "cyl", "at": [0.21, 1.39, 0.34], "size": [0.008, 0.28, 0.008], "color": "twine",
+          "anim": { "bob": { "amp": 0.015, "rate": 0.50, "phase": 0.90 } } },
+        { "prim": "blob", "at": [0.21, 1.20, 0.34], "size": [0.048, 0.034, 0.048], "color": "shellHi",
+          "anim": { "bob": { "amp": 0.021, "rate": 0.50, "phase": 0.90 } } }
+      ]
+    }
+  }
+}

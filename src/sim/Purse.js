@@ -13,8 +13,20 @@
  * Inventory.js): pockets are the only thing that crosses a doorway.
  */
 
-/** What you start with. Enough to buy a few things and not enough to buy everything. */
-export const START_COINS = 120;
+/**
+ * What you start with.
+ *
+ * Deliberately far more than the shops can absorb: the dearest thing on any
+ * shelf is the gun at 480, so this buys every counter in the game out several
+ * times over and the price of a thing stops being a reason not to have it.
+ *
+ * That is a decision about what the opening is FOR right now. There is no
+ * earning curve worth protecting while the rest of the game is still being
+ * built, and walking into a shop unable to try anything in it is a worse first
+ * five minutes than walking in able to buy the lot. Turn it back down to
+ * something like 120 the day the economy is the thing being played.
+ */
+export const START_COINS = 10000;
 
 export class Purse {
   constructor(coins = START_COINS) {

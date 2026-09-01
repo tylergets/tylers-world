@@ -1,0 +1,86 @@
+{
+  "format": "tw.kit",
+  "version": 1,
+  "meta": { "id": "vesper", "name": "Vesper's" },
+
+  "types": {
+    "fixture.signallamp": {
+      "kind": "object",
+      "label": "Signal Lamp",
+      "footprint": { "w": 1, "d": 1 },
+      "height": 1.45,
+      "squash": 0.32,
+
+      "palette": {
+        "post":    "#4a4540",
+        "iron":    "#6b6f74",
+        "ironHi":  "#9aa0a6",
+        "glass":   "#ffd98a",
+        "glassHi": "#fff3c4",
+        "brass":   "#c9a227",
+        "soot":    "#33302c"
+      },
+
+      "parts": [
+        { "prim": "cyl", "at": [0, 0.06, 0], "size": [0.22, 0.12, 0.22], "color": "iron" },
+        { "prim": "cyl", "at": [0, 0.52, 0], "size": [0.045, 0.92, 0.045], "color": "post" },
+        { "prim": "box", "at": [0, 0.95, 0], "size": [0.20, 0.06, 0.20], "color": "soot" },
+        { "prim": "box", "at": [0, 1.06, 0], "size": [0.26, 0.30, 0.26], "color": "iron" },
+
+        { "prim": "box", "at": [0, 1.06, 0], "size": [0.22, 0.23, 0.22], "color": "glass",
+          "anim": { "pulse": { "amp": 0.10, "rate": 0.45, "phase": 0.0 } } },
+        { "prim": "cone", "at": [0, 1.03, 0], "size": [0.06, 0.15, 0.06], "color": "glassHi",
+          "anim": { "pulse": { "amp": 0.38, "rate": 2.10, "phase": 0.3 } } },
+
+        { "prim": "pyr", "at": [0, 1.28, 0], "size": [0.20, 0.16, 0.20], "color": "iron" },
+        { "prim": "box", "at": [0.16, 1.06, 0.12], "size": [0.03, 0.28, 0.24], "rot": [0, 35, 0], "color": "ironHi" },
+        { "prim": "cyl", "at": [0, 1.39, 0], "size": [0.05, 0.02, 0.05], "color": "brass" }
+      ],
+
+      "state": { "lit": 0 },
+
+      "interact": {
+        "label": "Light it",
+        "run": "vesper-lamp.js"
+      }
+    },
+
+    "fixture.firepit": {
+      "kind": "object",
+      "label": "Fire Pit",
+      "footprint": { "w": 2, "d": 2 },
+      "height": 0.85,
+      "squash": 0.4,
+
+      "palette": {
+        "stone":   "#7d7469",
+        "shade":   "#5c554c",
+        "ash":     "#a8a096",
+        "log":     "#5c4a38",
+        "ember":   "#d9622f",
+        "emberHi": "#f2a13a",
+        "iron":    "#4a4a4a"
+      },
+
+      "parts": [
+        { "prim": "cyl", "at": [0, 0.10, 0], "size": [0.92, 0.20, 0.92], "color": "shade" },
+        { "prim": "cyl", "at": [0, 0.24, 0], "size": [0.86, 0.10, 0.86], "color": "stone" },
+        { "prim": "cyl", "at": [0, 0.27, 0], "size": [0.70, 0.06, 0.70], "color": "ash" },
+
+        { "prim": "cyl", "at": [-0.18, 0.34, 0], "size": [0.08, 0.72, 0.08], "rot": [0, 12, 90], "color": "log" },
+        { "prim": "cyl", "at": [0.14, 0.34, 0.12], "size": [0.07, 0.62, 0.07], "rot": [0, -34, 90], "color": "log" },
+
+        { "prim": "blob", "at": [0, 0.32, 0], "size": [0.34, 0.11, 0.30], "color": "ember",
+          "anim": { "pulse": { "amp": 0.20, "rate": 0.85, "phase": 0.0 } } },
+        { "prim": "cone", "at": [-0.06, 0.54, 0], "size": [0.18, 0.42, 0.16], "color": "emberHi",
+          "anim": { "pulse": { "amp": 0.30, "rate": 1.60, "phase": 0.2 } } },
+        { "prim": "cone", "at": [0.20, 0.48, 0.08], "size": [0.13, 0.30, 0.12], "color": "ember",
+          "anim": { "pulse": { "amp": 0.36, "rate": 2.05, "phase": 0.55 } } },
+
+        { "prim": "cyl", "at": [-0.72, 0.42, -0.68], "size": [0.030, 0.84, 0.030], "rot": [0, 0, 9], "color": "iron" },
+        { "prim": "cyl", "at": [0.72, 0.42, -0.68], "size": [0.030, 0.84, 0.030], "rot": [0, 0, -9], "color": "iron" },
+        { "prim": "box", "at": [0, 0.82, -0.68], "size": [1.50, 0.04, 0.04], "color": "iron" }
+      ]
+    }
+  }
+}

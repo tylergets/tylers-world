@@ -29,8 +29,11 @@
  *    becomes parallel to up at exactly pitch 90 -- a degenerate basis, NaN
  *    matrix, black screen -- and pitch 90 is precisely our t=1 endpoint. The
  *    orientation is built from a YXZ Euler instead, which is well-defined
- *    there and, as a bonus, puts +x screen-right and +z screen-down at t=1,
- *    matching the row-major grid layout for free.
+ *    there and, as a bonus, puts +x screen-right and +z screen-down at t=1 and
+ *    yaw 0, matching the row-major grid layout for free. That is also why yaw
+ *    is the OUTER rotation of the YXZ order: it turns the whole rig about world
+ *    up, so the pitch stays a pitch and the top-down view stays flat on the
+ *    ground plane at every angle.
  * 2. Never call `updateProjectionMatrix()` on the render camera; it would
  *    overwrite the lerped matrix with a pure perspective one. Aspect changes
  *    go to the two SOURCE cameras, and then we re-lerp.
@@ -50,6 +53,12 @@ export class CameraRig {
     this.pitch3d = 38 * DEG; this.dist3d = 12.5;
     this.pitch2d = 90 * DEG; this.dist2d = 24;
 
+    /**
+     * Which way the camera faces, in radians about world up. Written by the
+     * caller each frame from render/orbit.js, which owns the animation; this
+     * class only ever reads it. At yaw 0 the camera sits on the +z side of the
+     * pivot, so screen-up is -z and the grid is north-up.
+     */
     this.yaw = 0;
     this.pivot = new THREE.Vector3();
 

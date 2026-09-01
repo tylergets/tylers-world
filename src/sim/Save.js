@@ -144,12 +144,18 @@ export function newSaveId() {
 }
 
 /**
- * A world you can start: the four shipped files, plus whatever you generate.
+ * A world you can start: the eight shipped files, plus whatever you generate.
  *
- * Two pairs, and the pairing is the point. Each form ships twice -- an island
- * and an atoll, a holler and a gap -- because the second of each is the one
- * that proves the first was a choice rather than the only thing the form could
- * do. They also carry different animals, so which world you are in is a
+ * THE FIRST FOUR ARE TWO PAIRS, and the pairing was the point. An island and an
+ * atoll, a holler and a gap: the second of each proves the first was a choice
+ * rather than the only thing that form could do.
+ *
+ * THE SECOND FOUR ARE FOUR SINGLES, one per new form, and the pairing they are
+ * in is with the first four rather than with each other. A mesa is an island
+ * with the water taken away and the drop left behind; a caldera is a holler
+ * bent into a circle until it has no mouth; a fen is what an island's sea would
+ * be if you could stand in it; a coast is the only one that admits the land
+ * carries on. They also carry different animals, so which world you are in is a
  * question the ground answers before anybody says a word.
  *
  * ORDER IS THE ORDER THEY ARE OFFERED IN, and the first is what a session with
@@ -164,6 +170,14 @@ export const STARTERS = [
     note: 'A ring of land round a lagoon. Everyone lives on a different side of it.' },
   { id: 'thistledown', name: 'Thistledown Gap', url: 'worlds/thistledown.json',
     note: 'A pass, open at both ends. Sheep on one wall, goats on the other.' },
+  { id: 'rimrock', name: 'Rimrock Mesa', url: 'worlds/rimrock.json',
+    note: 'A table in the sky. Two lookouts, one seep, and a very long way down.' },
+  { id: 'ashkettle', name: 'Ashkettle Caldera', url: 'worlds/ashkettle.json',
+    note: 'A crater. A warm lake in the middle and no way out in any direction.' },
+  { id: 'sedgewater', name: 'Sedgewater Fen', url: 'worlds/sedgewater.json',
+    note: 'Sedge, channels and boardwalks. Stay on the boards until you know it.' },
+  { id: 'bellrock', name: 'Bellrock Coast', url: 'worlds/bellrock.json',
+    note: 'A beach at the bottom of the town and downs stepping up behind it.' },
 ];
 
 /** How a save says which world it is. */

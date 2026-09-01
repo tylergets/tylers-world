@@ -2,8 +2,9 @@
 
 A kit is a piece of furniture defined in a **file** instead of in code — its
 footprint, its shape, how it moves, and what happens when you press `E` on it.
-The fountain in Meadowbrook's plaza is one, and adding a second fixture to the
-game is two files and no patch to `src/`.
+The fountain in Meadowbrook's plaza is one, every signature object in every
+neighbour's house is one, and adding the next fixture is two files and no patch
+to `src/`.
 
 This document is the schema and the reasoning. The short version of the
 reasoning: everything here that could be a closed vocabulary **is** one, and the
@@ -273,6 +274,46 @@ effect the host will refuse.
 That is the real cost of the script half of this format, stated plainly: a
 dialog graph can be walked exhaustively without executing anything, and a kit
 cannot. The trade bought a definition that travels.
+
+## The kits this build ships
+
+One kit per household, named for whoever lives there, and each one declared by
+the **interior** that places it — not by the town outside, because a cold frame
+that only ever stands in Bramble's front room has no business being registered
+for everybody who walks into Meadowbrook.
+
+| kit | fixtures | in |
+|---|---|---|
+| `fountain` | `fixture.fountain` | Meadowbrook plaza |
+| `bramble` | `fixture.coldframe`, `fixture.dryrack` | Bramble's Cottage |
+| `wren` | `fixture.skiff`, `fixture.baitbarrel` | Wren's Cabin |
+| `tobin` | `fixture.orrery`, `fixture.treadle` | Tobin's Bungalow |
+| `nan` | `fixture.loom`, `fixture.hearth` | Nan's Croft |
+| `marnie` | `fixture.spyglass`, `fixture.chime` | Marnie's Cottage |
+| `holler` | `fixture.coldhearth` | The Old Place |
+| `pike` | `fixture.sifter` | Pike's Place |
+| `vesper` | `fixture.signallamp`, `fixture.firepit` | Vesper's |
+| `quill` | `fixture.eeltrap` | Quill's Hut |
+| `sennen` | `fixture.bell` | Sennen's Cottage |
+
+Each house gets **one fixture you can press `E` on** and, where the room wants
+movement, one that only animates. The interactive one is the person: the loom
+counts rows and remembers the number, the orrery pays out the change Tobin never
+bothered to fish out of it, the spyglass tells you what Marnie already knows.
+The Old Place is the exception and is meant to be — nothing in `holler` moves at
+all, because it is the one interior with nobody in it and the stillness is the
+content.
+
+Two knock-on rules fell out of writing eleven of these:
+
+- **`spin` turns a part about its own `at`, not about the fixture.** There is no
+  orbit channel, so a bead cannot circle a hub — but a long thin part *centred*
+  on the hub reads as an armature turning, which is what `fixture.orrery` does,
+  and a squat cylinder with an offset handle reads as a crank, which is what
+  `fixture.treadle` does. Model the thing that genuinely rotates in place.
+- **A fixture must be usable at least once with a stocked bag.**
+  `npm run checkworld` fails a fixture that refuses all twelve presses, which is
+  what catches a `when` nobody can ever satisfy.
 
 ## Not in v1
 

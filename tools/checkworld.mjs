@@ -51,6 +51,8 @@ import { Fixtures, interactOf } from '../src/sim/Fixtures.js';
 const STARTS = [
   'worlds/meadowbrook.json', 'worlds/sourwood.json',
   'worlds/tidewrack.json', 'worlds/thistledown.json',
+  'worlds/rimrock.json', 'worlds/ashkettle.json',
+  'worlds/sedgewater.json', 'worlds/bellrock.json',
 ];
 const read = (url) => readFileSync(new URL(`../public/${url}`, import.meta.url), 'utf8');
 
@@ -83,6 +85,18 @@ const OBJ = {
   'tree.oak': 'T', 'tree.pine': 'Y', 'tree.palm': 'P', 'rock.small': 'o', 'rock.large': 'O',
   'furn.bed': 'b', 'furn.table': 't', 'furn.chair': 'c', 'furn.shelf': 's',
   'furn.counter': 'n', 'furn.stove': 'v', 'furn.plant': 'p', 'furn.crate': 'x',
+
+  // Kit fixtures. Here and not in the kit files because a glyph is a fact about
+  // THIS tool's picture, not about the thing -- a kit that shipped its own ASCII
+  // letter would be a kit asserting something about a renderer it has never met.
+  // An unlisted fixture draws as '?', which is legible enough to be the prompt
+  // to come and add it.
+  'fixture.fountain': 'W', 'fixture.coldframe': 'F', 'fixture.dryrack': 'R',
+  'fixture.skiff': 'K', 'fixture.baitbarrel': 'J', 'fixture.orrery': 'M',
+  'fixture.treadle': 'L', 'fixture.loom': 'N', 'fixture.hearth': 'A',
+  'fixture.spyglass': 'X', 'fixture.chime': 'Z', 'fixture.coldhearth': 'V',
+  'fixture.sifter': 'E', 'fixture.signallamp': 'I', 'fixture.firepit': 'Q',
+  'fixture.eeltrap': '0', 'fixture.bell': '8',
 };
 
 /** Animals get their own glyph layer: they are placed by position, not footprint. */
@@ -552,6 +566,9 @@ console.log(`
 legend: . grass/floor  " raised grass  + concrete  : sand  ~ water  , tile  = rug  # wall  / ramp  D doorway
         H home  C cottage  B cabin  U bungalow  S store  G gate  T/Y/P trees  o/O rocks
         b bed  t table  c chair  s shelf  n counter  v stove  p plant  x crate
+        F cold frame  R drying rack  K skiff  J bait barrel  M orrery  L treadle bench
+        N loom  A hearth  V cold hearth  X spyglass  Z chime  W fountain
+        E sand sifter  I signal lamp  Q fire pit  0 eel trap  8 bell
         k chicken (where it starts)  @ shopkeeper  & villager
         a apple  m mushroom  i stick  e pebble  h shell  f flower`);
 console.log(`\n${visited.size} places checked, ${problems} problem${problems === 1 ? '' : 's'}`);

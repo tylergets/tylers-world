@@ -7,103 +7,259 @@
     "name": "Branch Store",
     "note": "Interior of store.branch in sourwood.json. Hand-authored."
   },
-  "grid": {"width":13,"height":10,"tileSize":1},
+  "grid": {
+    "width": 13,
+    "height": 10,
+    "tileSize": 1
+  },
   "zones": {
-    "back": {"owner": "keep.hollis", "label": "behind the counter"}
+    "back": {
+      "owner": "keep.hollis",
+      "label": "behind the counter"
+    }
   },
   "layers": {
     "surface": {
-        "palette": {"#":"wall","w":"floor.wood","t":"floor.tile","r":"rug"},
-        "data": [
-          "#############",
-          "#ttttttttttt#",
-          "#ttttttttttt#",
-          "#wwwwwwwwwww#",
-          "#wwwwwwwwwww#",
-          "#wwwrrrrrwww#",
-          "#wwwrrrrrwww#",
-          "#wwwwwwwwwww#",
-          "#wwwwwwwwwww#",
-          "######tt#####"
-        ]
+      "palette": {
+        "#": "wall",
+        "w": "floor.wood",
+        "t": "floor.tile",
+        "r": "rug"
       },
+      "data": [
+        "#############",
+        "#ttttttttttt#",
+        "#ttttttttttt#",
+        "#wwwwwwwwwww#",
+        "#wwwwwwwwwww#",
+        "#wwwrrrrrwww#",
+        "#wwwrrrrrwww#",
+        "#wwwwwwwwwww#",
+        "#wwwwwwwwwww#",
+        "######tt#####"
+      ]
+    },
     "elevation": {
-        "palette": {"0":"0","4":"4"},
-        "data": [
-          "4444444444444",
-          "4000000000004",
-          "4000000000004",
-          "4000000000004",
-          "4000000000004",
-          "4000000000004",
-          "4000000000004",
-          "4000000000004",
-          "4000000000004",
-          "4444440044444"
-        ]
+      "palette": {
+        "0": "0",
+        "4": "4"
       },
+      "data": [
+        "4444444444444",
+        "4000000000004",
+        "4000000000004",
+        "4000000000004",
+        "4000000000004",
+        "4000000000004",
+        "4000000000004",
+        "4000000000004",
+        "4000000000004",
+        "4444440044444"
+      ]
+    },
     "flags": {
-        "palette": {".":"none"},
-        "data": [
-          ".............",
-          ".............",
-          ".............",
-          ".............",
-          ".............",
-          ".............",
-          ".............",
-          ".............",
-          ".............",
-          "............."
-        ]
+      "palette": {
+        ".": "none"
       },
+      "data": [
+        ".............",
+        ".............",
+        ".............",
+        ".............",
+        ".............",
+        ".............",
+        ".............",
+        ".............",
+        ".............",
+        "............."
+      ]
+    },
     "zones": {
-        "palette": {".":"none","b":"back"},
-        "data": [
-          ".............",
-          ".bbbbbbbbbbb.",
-          ".bbbbbbbbbbb.",
-          ".............",
-          ".............",
-          ".............",
-          ".............",
-          ".............",
-          ".............",
-          "............."
-        ]
-      }
+      "palette": {
+        ".": "none",
+        "b": "back"
+      },
+      "data": [
+        ".............",
+        ".bbbbbbbbbbb.",
+        ".bbbbbbbbbbb.",
+        ".............",
+        ".............",
+        ".............",
+        ".............",
+        ".............",
+        ".............",
+        "............."
+      ]
+    }
   },
   "objects": [
-    {"id":"shelf.dry","type":"furn.shelf","tile":[1,1],"props":{"label":"Dry Goods"}},
-    {"id":"shelf.hardware","type":"furn.shelf","tile":[4,1],"props":{"label":"Hardware"}},
-    {"id":"shelf.feed","type":"furn.shelf","tile":[7,1],"props":{"label":"Feed"}},
-    {"id":"shelf.sundries","type":"furn.shelf","tile":[10,1],"props":{"label":"Sundries"}},
-    {"id":"counter","type":"furn.counter","tile":[2,3],"props":{"label":"Register"}},
-    {"id":"stove.pot","type":"furn.stove","tile":[9,3],"props":{"label":"Potbelly Stove"}},
-    {"id":"chair.loafers","type":"furn.chair","tile":[11,4]},
-    {"id":"crate.west","type":"furn.crate","tile":[1,6]},
-    {"id":"crate.east","type":"furn.crate","tile":[11,6]},
-    {"id":"crate.corner","type":"furn.crate","tile":[1,8]},
-    {"id":"plant","type":"furn.plant","tile":[11,8]}
+    {
+      "id": "shelf.dry",
+      "type": "furn.shelf",
+      "tile": [
+        1,
+        1
+      ],
+      "props": {
+        "label": "Dry Goods"
+      }
+    },
+    {
+      "id": "shelf.hardware",
+      "type": "furn.shelf",
+      "tile": [
+        4,
+        1
+      ],
+      "props": {
+        "label": "Hardware"
+      }
+    },
+    {
+      "id": "shelf.feed",
+      "type": "furn.shelf",
+      "tile": [
+        7,
+        1
+      ],
+      "props": {
+        "label": "Feed"
+      }
+    },
+    {
+      "id": "shelf.sundries",
+      "type": "furn.shelf",
+      "tile": [
+        10,
+        1
+      ],
+      "props": {
+        "label": "Sundries"
+      }
+    },
+    {
+      "id": "counter",
+      "type": "furn.counter",
+      "tile": [
+        2,
+        3
+      ],
+      "props": {
+        "label": "Register"
+      }
+    },
+    {
+      "id": "stove.pot",
+      "type": "furn.stove",
+      "tile": [
+        9,
+        3
+      ],
+      "props": {
+        "label": "Potbelly Stove"
+      }
+    },
+    {
+      "id": "chair.loafers",
+      "type": "furn.chair",
+      "tile": [
+        11,
+        4
+      ]
+    },
+    {
+      "id": "crate.west",
+      "type": "furn.crate",
+      "tile": [
+        1,
+        6
+      ]
+    },
+    {
+      "id": "crate.east",
+      "type": "furn.crate",
+      "tile": [
+        11,
+        6
+      ]
+    },
+    {
+      "id": "crate.corner",
+      "type": "furn.crate",
+      "tile": [
+        1,
+        8
+      ]
+    },
+    {
+      "id": "plant",
+      "type": "furn.plant",
+      "tile": [
+        11,
+        8
+      ]
+    }
   ],
   "npcs": [
     {
       "id": "keep.hollis",
       "type": "folk.shopkeep",
-      "tile": [3, 2],
+      "tile": [
+        3,
+        2
+      ],
       "facing": "south",
-      "props": {"name": "Hollis", "title": "Branch Store"},
+      "props": {
+        "name": "Hollis",
+        "title": "Branch Store"
+      },
       "shop": {
         "name": "Feed & Sundries",
         "markup": 1.3,
         "buyRate": 0.65,
-        "takes": ["item.stick", "item.stone", "item.mushroom", "tool.axe", "tool.shovel"],
+        "takes": [
+          "item.stick",
+          "item.stone",
+          "item.mushroom",
+          "tool.axe",
+          "tool.shovel",
+          "tool.gun",
+          "item.shot",
+          "item.game"
+        ],
         "stock": [
-          {"type": "item.mushroom", "count": null},
-          {"type": "item.apple", "count": 6},
-          {"type": "item.stone", "count": 9},
-          {"type": "tool.axe", "count": 1, "price": 210},
-          {"type": "tool.shovel", "count": 1, "price": 165}
+          {
+            "type": "item.mushroom",
+            "count": null
+          },
+          {
+            "type": "item.apple",
+            "count": 6
+          },
+          {
+            "type": "item.stone",
+            "count": 9
+          },
+          {
+            "type": "tool.axe",
+            "count": 1,
+            "price": 210
+          },
+          {
+            "type": "tool.shovel",
+            "count": 1,
+            "price": 165
+          },
+          {
+            "type": "tool.gun",
+            "count": 1,
+            "price": 480
+          },
+          {
+            "type": "item.shot",
+            "count": null
+          }
         ]
       },
       "dialog": {
@@ -111,8 +267,15 @@
         "nodes": {
           "open": {
             "branch": [
-              {"when": {"flag": "met"}, "to": "again"},
-              {"to": "hello"}
+              {
+                "when": {
+                  "flag": "met"
+                },
+                "to": "again"
+              },
+              {
+                "to": "hello"
+              }
             ]
           },
           "hello": {
@@ -120,7 +283,9 @@
               "Come on in, the stove's lit.",
               "Hollis. I pay better than Marla over the ridge, but I'm choosier about what I'll take."
             ],
-            "do": {"set": "met"},
+            "do": {
+              "set": "met"
+            },
             "then": "menu"
           },
           "again": {
@@ -130,9 +295,21 @@
           "menu": {
             "text": "Trading, or just warming up?",
             "choices": [
-              {"text": "Trading.", "do": {"shop": true}, "to": "after"},
-              {"text": "What'll you take?", "to": "takes"},
-              {"text": "Just warming up.", "to": "bye"}
+              {
+                "text": "Trading.",
+                "do": {
+                  "shop": true
+                },
+                "to": "after"
+              },
+              {
+                "text": "What'll you take?",
+                "to": "takes"
+              },
+              {
+                "text": "Just warming up.",
+                "to": "bye"
+              }
             ]
           },
           "takes": {
@@ -151,12 +328,42 @@
     }
   ],
   "items": [
-    {"id":"apple.barrel","type":"item.apple","tile":[4,4]},
-    {"id":"stone.doorstop","type":"item.stone","tile":[3,8]}
+    {
+      "id": "apple.barrel",
+      "type": "item.apple",
+      "tile": [
+        4,
+        4
+      ]
+    },
+    {
+      "id": "stone.doorstop",
+      "type": "item.stone",
+      "tile": [
+        3,
+        8
+      ]
+    }
   ],
   "exits": [
-    {"tile":[6,9]},
-    {"tile":[7,9]}
+    {
+      "tile": [
+        6,
+        9
+      ]
+    },
+    {
+      "tile": [
+        7,
+        9
+      ]
+    }
   ],
-  "spawn": {"tile":[7,8],"facing":"north"}
+  "spawn": {
+    "tile": [
+      7,
+      8
+    ],
+    "facing": "north"
+  }
 }

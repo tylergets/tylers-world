@@ -62,6 +62,17 @@ const FOLK = {
 
   /** Radians/sec he turns to face you at. Unhurried; he has seen you before. */
   turnRate: 5,
+
+  /**
+   * Seconds it takes to get back on his feet after being knocked down.
+   *
+   * Here rather than in sim/tools.js for the reason `turnRate` is here: it is
+   * a fact about a KIND OF PERSON, not about the thing that put him down. Four
+   * and a half seconds is long enough to be a consequence and short enough not
+   * to be a punishment -- you can stand and watch it, which is the only way it
+   * reads as something you did rather than something that broke.
+   */
+  recover: 4.5,
   /** Seconds between idle glances, and how far one turns him from his post. */
   glance: [2.5, 7],
   glanceArc: 0.5,

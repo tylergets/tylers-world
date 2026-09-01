@@ -143,6 +143,43 @@ function shovel(p) {
   return g;
 }
 
+/**
+ * A gun: a stock along one axis, a barrel past it, a band where they meet.
+ *
+ * Lying down like the other two tools, and for the reason the note above
+ * gives -- but the silhouette has to work harder here, because from overhead a
+ * gun and a stick are both a line. The barrel is thinner and brighter than the
+ * stock and runs past it, so what reads from above is a long pale needle with a
+ * short dark grip, which is not a shape anything else in the bag makes.
+ */
+function gun(p) {
+  const g = new GeoBuilder();
+  g.addGeometry(BOX, trs(-0.11, 0.038, 0, 0, 0.2, 0, 0.13, 0.05, 0.055), p.stock);
+  g.addGeometry(BOX, trs(-0.165, 0.052, 0.012, 0, 0.2, 0, 0.06, 0.032, 0.04), p.stockHi);
+  g.addGeometry(CYL, trs(0.09, 0.045, 0, 0, 0.2, Math.PI / 2, 0.019, 0.30, 0.019), p.barrel);
+  g.addGeometry(CYL, trs(0.09, 0.058, 0.016, 0, 0.2, Math.PI / 2, 0.011, 0.28, 0.011), p.barrelHi);
+  g.addGeometry(BOX, trs(-0.02, 0.045, 0, 0, 0.2, 0, 0.035, 0.05, 0.05), p.band);
+  return g;
+}
+
+/** A box of shot: brass cases stood together, with one red wad on top. */
+function shot(p) {
+  const g = new GeoBuilder();
+  g.addGeometry(BOX, trs(0, 0.045, 0, 0, 0.3, 0, 0.1, 0.045, 0.075), p.brass);
+  g.addGeometry(BOX, trs(0.012, 0.072, 0.01, 0, 0.3, 0, 0.07, 0.02, 0.05), p.brassHi);
+  g.addGeometry(CYL, trs(-0.03, 0.095, -0.012, 0, 0.3, 0, 0.018, 0.04, 0.018), p.wad);
+  return g;
+}
+
+/** Game: a wrapped joint, dark with a pale bound edge. */
+function game(p) {
+  const g = new GeoBuilder();
+  g.addGeometry(BLOB, trs(0, 0.062, 0, 0, -0.25, 0, 0.115, 0.062, 0.085), p.meat);
+  g.addGeometry(BLOB, trs(0.022, 0.088, 0.018, 0, -0.25, 0, 0.06, 0.03, 0.045), p.meatHi);
+  g.addGeometry(CYL, trs(-0.06, 0.07, -0.02, 0, -0.25, Math.PI / 2, 0.026, 0.05, 0.026), p.fat);
+  return g;
+}
+
 const BUILDERS = {
   'item.apple': apple,
   'item.mushroom': mushroom,
@@ -152,6 +189,9 @@ const BUILDERS = {
   'item.flower': flower,
   'tool.axe': axe,
   'tool.shovel': shovel,
+  'tool.gun': gun,
+  'item.shot': shot,
+  'item.game': game,
 };
 
 function modelFor(typeId) {
@@ -176,7 +216,6 @@ export class ItemBatch {
     this.batches = new Map();
     this.rest = new Map();
     this._position = new THREE.Vector3();
-    this._tilt = new THREE.Quaternion();
     this._yaw = new THREE.Quaternion();
     this._rotation = new THREE.Quaternion();
     this._matrix = new THREE.Matrix4();
@@ -218,8 +257,7 @@ export class ItemBatch {
   }
 
   /** Upload all item transforms once, then submit each type in one draw. */
-  update(t, tiltRad, time) {
-    this._tilt.setFromAxisAngle(_X_AXIS, tiltRad * t);
+  update(lieBack, time) {
     for (const batch of this.batches.values()) {
       for (let i = 0; i < batch.items.length; i++) {
         const item = batch.items[i];
@@ -230,7 +268,7 @@ export class ItemBatch {
           item.z,
         );
         this._yaw.setFromAxisAngle(THREE.Object3D.DEFAULT_UP, rest.yaw);
-        this._rotation.multiplyQuaternions(this._tilt, this._yaw);
+        this._rotation.multiplyQuaternions(lieBack, this._yaw);
         this._matrix.compose(this._position, this._rotation, this._scale);
         batch.mesh.setMatrixAt(i, this._matrix);
       }
@@ -258,4 +296,3 @@ export class ItemBatch {
   }
 }
 
-const _X_AXIS = new THREE.Vector3(1, 0, 0);
