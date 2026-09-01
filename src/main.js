@@ -1368,16 +1368,27 @@ class Game {
     });
   }
 
-  /** Do whatever the held tool does here. */
+  /**
+   * Do whatever the held tool does here.
+   *
+   * The SWING is played from the one place that knows the verb actually
+   * landed, and not from the key press: `toolAction` can refuse, and so can
+   * every branch below -- a bag with no room for the wood, an animal that was
+   * already dying. Animating on the press would show the axe going through a
+   * tree that never lost a chip, which is the one thing an animation must not
+   * do. See Stage.playerAction.
+   */
   useTool() {
     const what = this.toolAction();
     if (!what || what.blocked) return null;
-    if (what.verb === 'chop') return this.chop(what);
-    if (what.verb === 'dig') return this.dig(what);
-    if (what.verb === 'fill') return this.edits.fill(...what.tile) ? what : null;
-    if (what.verb === 'clear') return this.grub(what);
-    if (what.verb === 'shoot') return this.shoot(what);
-    return null;
+    const done = what.verb === 'chop' ? this.chop(what)
+      : what.verb === 'dig' ? this.dig(what)
+        : what.verb === 'fill' ? (this.edits.fill(...what.tile) ? what : null)
+          : what.verb === 'clear' ? this.grub(what)
+            : what.verb === 'shoot' ? this.shoot(what)
+              : null;
+    if (done) this.stage.playerAction(what.verb, this.time);
+    return done;
   }
 
   /**

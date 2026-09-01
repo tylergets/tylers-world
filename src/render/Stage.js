@@ -317,6 +317,19 @@ export class Stage {
     this._tracerUntil = time + TRACER_TIME;
   }
 
+  /**
+   * Swing whatever the player is holding.
+   *
+   * A pass-through, and deliberately one: the simulation should not have to
+   * know that the player's model has a skeleton, and `chopHit` above is the
+   * precedent -- the game says what HAPPENED and the stage decides what that
+   * looks like. Told on the frame the verb landed and never on the key press,
+   * so a swing is never a lie about a blow that did not connect.
+   */
+  playerAction(verb, time) {
+    this.player.act(verb, time);
+  }
+
   setMarker(tile) {
     this.marker.visible = tile !== null;
     if (!tile) return;
@@ -927,7 +940,7 @@ export class Stage {
     this._camRight.set(Math.cos(yaw), 0, -Math.sin(yaw));
     this._lieBack.setFromAxisAngle(this._camRight, tilt);
 
-    this.player.update(player, this._lieBack);
+    this.player.update(player, this._lieBack, time);
     this.live?.update(this._lieBack);
     if (this.liveFolk) for (const { npc, view } of this.liveFolk.pairs) view.update(npc, this._lieBack, time);
     this.#syncGround();

@@ -194,6 +194,18 @@ const BUILDERS = {
   'item.game': game,
 };
 
+/**
+ * The one model of an item, built on first use and shared from then on.
+ *
+ * Exported because the PLAYER holds these too, and the axe in your hands has to
+ * be the same axe that was lying on the grass a moment ago -- same geometry,
+ * same material, one representation. PlayerView adds only a grip: where a hand
+ * closes on the model and which way its head points. See PlayerView.HOLD.
+ */
+export function itemModel(typeId) {
+  return modelFor(typeId);
+}
+
 function modelFor(typeId) {
   let m = MODELS.get(typeId);
   if (m) return m;
