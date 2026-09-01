@@ -1,0 +1,91 @@
+{
+  "format": "tw.world",
+  "version": 1,
+  "kind": "interior",
+  "meta": {
+    "id": "home.bramble.interior",
+    "name": "Bramble's Cottage",
+    "note": "Interior of home.bramble in meadowbrook.json. Hand-authored. PRIVATE: see zones."
+  },
+  "grid": {"width":12,"height":9,"tileSize":1},
+  "zones": {
+    "his": {"owner": "folk.bramble", "label": "Bramble's Cottage"}
+  },
+  "layers": {
+    "surface": {
+        "palette": {"#":"wall","w":"floor.wood","t":"floor.tile","r":"rug"},
+        "data": [
+          "############",
+          "#wwwwwwwwww#",
+          "#wwwwwwwwww#",
+          "#wwwwwwwwww#",
+          "#wwrrrrwwww#",
+          "#wwrrrrwwww#",
+          "#wwwwwwwwww#",
+          "#wwwwwwwwww#",
+          "#####tt#####"
+        ]
+      },
+    "elevation": {
+        "palette": {"0":"0","4":"4"},
+        "data": [
+          "444444444444",
+          "400000000004",
+          "400000000004",
+          "400000000004",
+          "400000000004",
+          "400000000004",
+          "400000000004",
+          "400000000004",
+          "444440044444"
+        ]
+      },
+    "flags": {
+        "palette": {".":"none"},
+        "data": [
+          "............",
+          "............",
+          "............",
+          "............",
+          "............",
+          "............",
+          "............",
+          "............",
+          "............"
+        ]
+      },
+    "zones": {
+        "palette": {".":"none","h":"his"},
+        "data": [
+          "............",
+          ".hhhhhhhhhh.",
+          ".hhhhhhhhhh.",
+          ".hhhhhhhhhh.",
+          ".hhhhhhhhhh.",
+          ".hhhhhhhhhh.",
+          ".hhhhhhhhhh.",
+          ".hhhhhhhhhh.",
+          ".....hh....."
+        ]
+      }
+  },
+  "objects": [
+    {"id":"bed","type":"furn.bed","tile":[1,1]},
+    {"id":"shelf.seeds","type":"furn.shelf","tile":[4,1],"props":{"label":"Seed Shelf"}},
+    {"id":"table","type":"furn.table","tile":[7,1]},
+    {"id":"chair","type":"furn.chair","tile":[7,3],"rotation":180},
+    {"id":"plant.north","type":"furn.plant","tile":[10,1]},
+    {"id":"plant.south","type":"furn.plant","tile":[10,7]},
+    {"id":"crate","type":"furn.crate","tile":[1,6]}
+  ],
+  "items": [
+    {"id":"mushroom.jar","type":"item.mushroom","tile":[3,2]},
+    {"id":"flower.sill","type":"item.flower","tile":[9,5]},
+    {"id":"stone.paperweight","type":"item.stone","tile":[2,7]}
+  ],
+  "exits": [
+    {"tile":[5,8]},
+    {"tile":[6,8]}
+  ],
+  "spawn": {"tile":[6,7],"facing":"north"}
+}

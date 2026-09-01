@@ -1,0 +1,96 @@
+{
+  "format": "tw.world",
+  "version": 1,
+  "kind": "interior",
+  "meta": {
+    "id": "home.wren.interior",
+    "name": "Wren's Cabin",
+    "note": "Interior of home.wren in meadowbrook.json. Hand-authored. PRIVATE: see zones."
+  },
+  "grid": {"width":11,"height":9,"tileSize":1},
+  "ambience": {
+    "sky": "#151a1f",
+    "hemiSky": "#d6ecff",
+    "hemi": 2.0
+  },
+  "zones": {
+    "hers": {"owner": "folk.wren", "label": "Wren's Cabin"}
+  },
+  "layers": {
+    "surface": {
+        "palette": {"#":"wall","w":"floor.wood","t":"floor.tile","r":"rug"},
+        "data": [
+          "###########",
+          "#wwwwwwwww#",
+          "#wwwwwwwww#",
+          "#wwwwwwwww#",
+          "#wwrrrrwww#",
+          "#wwrrrrwww#",
+          "#wwwwwwwww#",
+          "#wwwwwwwww#",
+          "####tt#####"
+        ]
+      },
+    "elevation": {
+        "palette": {"0":"0","4":"4"},
+        "data": [
+          "44444444444",
+          "40000000004",
+          "40000000004",
+          "40000000004",
+          "40000000004",
+          "40000000004",
+          "40000000004",
+          "40000000004",
+          "44440044444"
+        ]
+      },
+    "flags": {
+        "palette": {".":"none"},
+        "data": [
+          "...........",
+          "...........",
+          "...........",
+          "...........",
+          "...........",
+          "...........",
+          "...........",
+          "...........",
+          "..........."
+        ]
+      },
+    "zones": {
+        "palette": {".":"none","w":"hers"},
+        "data": [
+          "...........",
+          ".wwwwwwwww.",
+          ".wwwwwwwww.",
+          ".wwwwwwwww.",
+          ".wwwwwwwww.",
+          ".wwwwwwwww.",
+          ".wwwwwwwww.",
+          ".wwwwwwwww.",
+          "....ww....."
+        ]
+      }
+  },
+  "objects": [
+    {"id":"bed","type":"furn.bed","tile":[1,1]},
+    {"id":"shelf.tackle","type":"furn.shelf","tile":[4,1],"props":{"label":"Tackle Shelf"}},
+    {"id":"crate.bait","type":"furn.crate","tile":[7,1]},
+    {"id":"crate.rope","type":"furn.crate","tile":[9,1]},
+    {"id":"table","type":"furn.table","tile":[7,5]},
+    {"id":"chair","type":"furn.chair","tile":[6,5],"rotation":90},
+    {"id":"plant","type":"furn.plant","tile":[9,7]}
+  ],
+  "items": [
+    {"id":"shell.bucket","type":"item.shell","tile":[3,2]},
+    {"id":"shell.sill","type":"item.shell","tile":[9,4]},
+    {"id":"stick.rod","type":"item.stick","tile":[2,7]}
+  ],
+  "exits": [
+    {"tile":[4,8]},
+    {"tile":[5,8]}
+  ],
+  "spawn": {"tile":[5,7],"facing":"north"}
+}

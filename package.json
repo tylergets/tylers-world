@@ -1,0 +1,22 @@
+{
+  "name": "tylers-world",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "A dual-view (2D top-down / 3D isometric) browser world prototype.",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview",
+    "genworld": "node tools/genworld.mjs",
+    "checkworld": "node tools/checkworld.mjs",
+    "shoot": "node tools/shoot.mjs"
+  },
+  "dependencies": {
+    "three": "^0.185.1"
+  },
+  "devDependencies": {
+    "puppeteer-core": "^25.9.0",
+    "vite": "^8.2.2"
+  }
+}

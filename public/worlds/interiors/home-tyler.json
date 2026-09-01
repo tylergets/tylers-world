@@ -1,0 +1,79 @@
+{
+  "format": "tw.world",
+  "version": 1,
+  "kind": "interior",
+  "meta": {
+    "id": "home.tyler.interior",
+    "name": "Tyler's House",
+    "note": "Interior of home.player in meadowbrook.json. Hand-authored."
+  },
+  "grid": {"width":12,"height":10,"tileSize":1},
+  "layers": {
+    "surface": {
+        "palette": {"#":"wall","w":"floor.wood","t":"floor.tile","r":"rug"},
+        "data": [
+          "############",
+          "#wwwwtttttt#",
+          "#wwwwtttttt#",
+          "#wwwwwwwwww#",
+          "#wwwwwwwwww#",
+          "#wrrrrwwwww#",
+          "#wrrrrwwwww#",
+          "#wwwwwwwwww#",
+          "#wwwwwwwwww#",
+          "#####tt#####"
+        ]
+      },
+    "elevation": {
+        "palette": {"0":"0","4":"4"},
+        "data": [
+          "444444444444",
+          "400000000004",
+          "400000000004",
+          "400000000004",
+          "400000000004",
+          "400000000004",
+          "400000000004",
+          "400000000004",
+          "400000000004",
+          "444440044444"
+        ]
+      },
+    "flags": {
+        "palette": {".":"none"},
+        "data": [
+          "............",
+          "............",
+          "............",
+          "............",
+          "............",
+          "............",
+          "............",
+          "............",
+          "............",
+          "............"
+        ]
+      }
+  },
+  "objects": [
+    {"id":"bed","type":"furn.bed","tile":[1,1]},
+    {"id":"shelf.books","type":"furn.shelf","tile":[3,1],"props":{"label":"Bookcase"}},
+    {"id":"counter.kitchen","type":"furn.counter","tile":[5,1],"props":{"label":"Kitchen Counter"}},
+    {"id":"stove","type":"furn.stove","tile":[9,1]},
+    {"id":"table","type":"furn.table","tile":[3,5]},
+    {"id":"chair.west","type":"furn.chair","tile":[2,5]},
+    {"id":"chair.east","type":"furn.chair","tile":[5,6],"rotation":180},
+    {"id":"crate","type":"furn.crate","tile":[1,8]},
+    {"id":"plant","type":"furn.plant","tile":[10,8]}
+  ],
+  "items": [
+    {"id":"apple.counter","type":"item.apple","tile":[7,2]},
+    {"id":"flower.jar","type":"item.flower","tile":[9,5]},
+    {"id":"stone.keepsake","type":"item.stone","tile":[2,7]}
+  ],
+  "exits": [
+    {"tile":[5,9]},
+    {"tile":[6,9]}
+  ],
+  "spawn": {"tile":[6,8],"facing":"north"}
+}

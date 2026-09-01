@@ -1,0 +1,258 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='7' fill='%237fbe57'/%3E%3Cpath d='M6 19l10-8 10 8v7H6z' fill='%23d4614f'/%3E%3C/svg%3E">
+<title>Tyler's World</title>
+<style>
+  :root {
+    --ink: #f2f5f8;
+    --dim: #9fb0c2;
+    --panel: rgba(16, 22, 31, 0.9);
+    --edge: rgba(255, 255, 255, 0.13);
+    --accent: #7fd4a8;
+    --font: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+    --mono: ui-monospace, SFMono-Regular, "SF Mono", Menlo, monospace;
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; height: 100%; overflow: hidden; background: #0d1117; }
+  body { font-family: var(--font); color: var(--ink); -webkit-font-smoothing: antialiased; }
+
+  #view { display: block; width: 100vw; height: 100vh; touch-action: none; }
+
+  #hud { position: fixed; inset: 0; pointer-events: none; }
+  .hud {
+    position: absolute; pointer-events: auto;
+    background: var(--panel); border: 1px solid var(--edge);
+    border-radius: 12px; padding: 10px 13px;
+    box-shadow: 0 8px 28px rgba(0, 0, 0, 0.32);
+  }
+  .hud-tl { top: 16px; left: 16px; }
+  .hud-tr { top: 16px; right: 16px; min-width: 186px; }
+  .hud-bl { bottom: 16px; left: 16px; }
+  .hud-bc { bottom: 16px; left: 50%; transform: translateX(-50%); }
+  .hud-tc { top: 16px; left: 50%; transform: translateX(-50%); }
+  .hud-br { bottom: 16px; right: 16px; }
+
+  .world-name {
+    font-size: 17px; font-weight: 650; letter-spacing: -0.01em;
+  }
+  .place-note {
+    font-size: 11px; font-weight: 600; color: var(--dim);
+    letter-spacing: 0.06em; text-transform: uppercase; margin-top: 3px;
+  }
+  #hud-place { margin-bottom: 9px; }
+  .view-toggle {
+    display: flex; align-items: center; gap: 9px; width: 100%;
+    font: inherit; font-size: 12.5px; font-weight: 600; color: var(--ink);
+    background: rgba(255, 255, 255, 0.07); border: 1px solid var(--edge);
+    border-radius: 8px; padding: 6px 9px; cursor: pointer;
+    transition: background 0.16s;
+  }
+  .view-toggle:hover { background: rgba(255, 255, 255, 0.14); }
+  .view-toggle + .view-toggle { margin-top: 5px; }
+  .vt-label { flex: 1; text-align: left; letter-spacing: 0.02em; }
+  .vt-key {
+    font: 600 10px/1 var(--mono); color: var(--dim);
+    background: rgba(0, 0, 0, 0.32); border: 1px solid var(--edge);
+    border-radius: 4px; padding: 3px 5px;
+  }
+
+  /* The trespass warning. Red, centred at the top, and the only thing in the
+     HUD that is ever allowed to look like an alarm -- which is what buys it the
+     attention it needs on the one occasion it appears. It carries no pointer
+     events of its own beyond the panel's, so it can never eat a click meant for
+     the world underneath. */
+  .warn {
+    display: flex; align-items: baseline; gap: 10px;
+    background: rgba(58, 18, 20, 0.92); border-color: rgba(224, 108, 108, 0.5);
+    animation: pulse 1.4s ease-in-out infinite;
+  }
+  .warn-tag {
+    font-size: 11px; font-weight: 700; color: #ff9b9b;
+    letter-spacing: 0.1em; text-transform: uppercase;
+  }
+  .warn-where { font-size: 13px; font-weight: 600; }
+  .warn-clock { font: 600 11.5px/1 var(--mono); color: var(--dim); }
+  @keyframes pulse {
+    0%, 100% { border-color: rgba(224, 108, 108, 0.5); }
+    50% { border-color: rgba(255, 140, 140, 0.95); }
+  }
+
+  .row { display: flex; justify-content: space-between; gap: 14px; font-size: 12px; line-height: 1.75; }
+  .row .k { color: var(--dim); }
+  .row .v { font-family: var(--mono); font-size: 11.5px; }
+
+  .morph { display: flex; align-items: center; gap: 11px; }
+  .morph-end { font-size: 11px; font-weight: 700; color: var(--dim); letter-spacing: 0.06em; }
+  #hud-scrub { width: 220px; accent-color: var(--accent); cursor: grab; }
+
+  /* Inventory. Slot size is set here rather than derived from the chip, so a
+     full slot and an empty one are exactly the same shape -- a bar that
+     reflows as you pick things up is unreadable at a glance. */
+  .bag-head { display: flex; align-items: baseline; gap: 10px; margin-bottom: 7px; }
+  .bag-title {
+    font-size: 11px; font-weight: 700; color: var(--dim);
+    letter-spacing: 0.06em; text-transform: uppercase;
+  }
+  .bag-held { font: 500 11.5px/1 var(--mono); color: var(--ink); opacity: 0.9; }
+  .bag { display: flex; gap: 5px; }
+  .slot {
+    position: relative; width: 34px; height: 34px; padding: 0; cursor: pointer;
+    display: grid; place-items: center;
+    background: rgba(255, 255, 255, 0.07); border: 1px solid var(--edge);
+    border-radius: 8px; transition: border-color 0.14s, background 0.14s;
+  }
+  .slot:hover { background: rgba(255, 255, 255, 0.14); }
+  .slot.on { border-color: var(--accent); background: rgba(127, 212, 168, 0.16); }
+  .slot.empty .chip { display: none; }
+  .chip {
+    width: 17px; height: 17px; border-radius: 50%;
+    box-shadow: inset 0 -3px 5px rgba(0, 0, 0, 0.28), 0 1px 2px rgba(0, 0, 0, 0.35);
+  }
+  .tally {
+    position: absolute; right: 2px; bottom: 1px;
+    font: 700 9.5px/1 var(--mono); color: var(--ink);
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.85);
+  }
+
+
+  /* Conversation + trade. One column, bottom centre, sitting above the morph
+     slider: the box and the panel are one overlay in two modes because a shop
+     is opened from a line of dialog and closes back into another one. */
+  .chat {
+    position: fixed; left: 50%; transform: translateX(-50%);
+    bottom: 74px; width: min(660px, calc(100vw - 32px));
+    display: flex; flex-direction: column; gap: 8px;
+    pointer-events: auto; z-index: 5;
+  }
+  /* An author rule that sets display OUTRANKS the [hidden] rule in the
+     browser's own stylesheet. Anything given a display here therefore has to
+     say what hidden means for itself, or it sits on screen from the first
+     frame with nothing in it. All three of these are toggled from JS: the chat
+     box whenever a conversation opens, a readout row whenever the thing it
+     reports (a doorway ahead, an item in reach, someone to talk to) is not
+     there, and the trespass warning whenever you are somewhere you should not
+     be -- which is the one that shows the trap at its worst, since a warning
+     that is always up is a warning nobody reads. */
+  .chat[hidden], .row[hidden], .warn[hidden] { display: none; }
+  .chat-box {
+    position: relative;
+    background: var(--panel); border: 1px solid var(--edge);
+    border-radius: 14px; padding: 13px 16px 14px;
+    box-shadow: 0 12px 36px rgba(0, 0, 0, 0.45);
+    cursor: pointer; transition: opacity 0.18s;
+  }
+  /* While the shop has the screen the words behind it are context, not the
+     thing you are doing. Dimming says so without moving anything. */
+  .chat-box.dim { opacity: 0.55; }
+  .chat-who { display: flex; align-items: baseline; gap: 9px; margin-bottom: 5px; }
+  .chat-name { font-size: 13.5px; font-weight: 700; color: var(--accent); letter-spacing: 0.01em; }
+  .chat-title {
+    font-size: 10.5px; font-weight: 600; color: var(--dim);
+    letter-spacing: 0.06em; text-transform: uppercase;
+  }
+  .chat-text { font-size: 14.5px; line-height: 1.5; min-height: 2.9em; }
+  .chat-more {
+    position: absolute; right: 13px; bottom: 8px;
+    font-size: 12px; color: var(--accent); animation: nudge 1.1s ease-in-out infinite;
+  }
+  @keyframes nudge { 0%, 100% { transform: translateY(0); opacity: 0.55; } 50% { transform: translateY(3px); opacity: 1; } }
+  .chat-choices { display: flex; flex-direction: column; gap: 4px; margin-top: 9px; }
+  .choice {
+    display: flex; align-items: center; gap: 9px; width: 100%; text-align: left;
+    font: inherit; font-size: 13px; color: var(--ink);
+    background: rgba(255, 255, 255, 0.05); border: 1px solid transparent;
+    border-radius: 8px; padding: 7px 10px; cursor: pointer;
+    transition: background 0.13s, border-color 0.13s;
+  }
+  .choice:hover { background: rgba(255, 255, 255, 0.11); }
+  .choice.on { background: rgba(127, 212, 168, 0.15); border-color: var(--accent); }
+  .choice-key {
+    font: 700 9.5px/1 var(--mono); color: var(--dim);
+    background: rgba(0, 0, 0, 0.34); border: 1px solid var(--edge);
+    border-radius: 4px; padding: 3px 5px;
+  }
+
+  .shop {
+    background: var(--panel); border: 1px solid var(--edge);
+    border-radius: 14px; padding: 12px 14px;
+    box-shadow: 0 12px 36px rgba(0, 0, 0, 0.45);
+  }
+  .shop-head { display: flex; align-items: baseline; justify-content: space-between; margin-bottom: 9px; }
+  .shop-name {
+    font-size: 11px; font-weight: 700; color: var(--dim);
+    letter-spacing: 0.08em; text-transform: uppercase;
+  }
+  .shop-coins { font-size: 12px; color: var(--dim); }
+  .shop-coins b { font-family: var(--mono); font-size: 13px; color: #f3d489; }
+  .shop-tabs { display: flex; gap: 5px; margin-bottom: 8px; }
+  .shop-tab {
+    flex: 1; font: inherit; font-size: 12px; font-weight: 650; color: var(--dim);
+    background: rgba(255, 255, 255, 0.05); border: 1px solid var(--edge);
+    border-radius: 8px; padding: 6px; cursor: pointer;
+  }
+  .shop-tab.on { color: var(--ink); background: rgba(127, 212, 168, 0.16); border-color: var(--accent); }
+  /* Fixed height, not max-height: a panel that grows and shrinks as stock sells
+     out drags the dialog box up and down the screen mid-sentence. */
+  .shop-rows {
+    height: 172px; overflow-y: auto; display: flex; flex-direction: column; gap: 3px;
+    scrollbar-width: thin;
+  }
+  .shop-row {
+    display: flex; align-items: center; gap: 10px; width: 100%;
+    font: inherit; font-size: 12.5px; color: var(--ink);
+    background: rgba(255, 255, 255, 0.05); border: 1px solid transparent;
+    border-radius: 8px; padding: 7px 10px; cursor: pointer;
+  }
+  .shop-row:hover { background: rgba(255, 255, 255, 0.11); }
+  .shop-row.on { background: rgba(127, 212, 168, 0.15); border-color: var(--accent); }
+  /* Unaffordable and sold-out rows stay on screen and stay clickable: the price
+     of a thing you cannot buy yet is information, and hiding it makes the shelf
+     look like it never stocked one. */
+  .shop-row.no { opacity: 0.45; }
+  .shop-label { flex: 1; }
+  .shop-qty { font: 500 11px/1 var(--mono); color: var(--dim); }
+  .shop-price {
+    font: 600 12px/1 var(--mono); color: #f3d489; min-width: 34px; text-align: right;
+  }
+  .shop-empty { padding: 14px 2px; font-size: 12.5px; color: var(--dim); }
+  .shop-foot {
+    display: flex; justify-content: space-between; gap: 12px; align-items: baseline;
+    margin-top: 9px; font-size: 11px; color: var(--dim);
+  }
+  .shop-foot b { color: var(--ink); font-family: var(--mono); font-size: 10px; }
+  .shop-foot .dim { opacity: 0.7; }
+  .shop-warn { color: #ffb4b4; }
+
+  /* Coins, in the pockets panel. */
+  .bag-coins { font: 600 11.5px/1 var(--mono); color: #f3d489; }
+
+  .keys { display: flex; flex-direction: column; gap: 3px; font-size: 11.5px; color: var(--dim); }
+  .keys b { color: var(--ink); font-family: var(--mono); font-size: 10.5px; font-weight: 600; }
+  .keys .dim { opacity: 0.6; }
+
+  /* Covers the swap between places. Opacity is driven from the loop, and the
+     element never takes pointer events, so a fade cannot eat a click. */
+  #fade {
+    position: fixed; inset: 0; background: #05070a;
+    opacity: 0; pointer-events: none; will-change: opacity;
+  }
+
+  #status {
+    position: fixed; inset: 0; display: grid; place-items: center;
+    font-size: 14px; color: var(--dim);
+  }
+  .err { max-width: 640px; padding: 20px; text-align: left; color: #ffb4b4; }
+  .err pre { white-space: pre-wrap; font-size: 12px; margin-top: 8px; color: var(--dim); }
+</style>
+</head>
+<body>
+  <canvas id="view"></canvas>
+  <div id="hud"></div>
+  <div id="fade"></div>
+  <div id="status">Loading Meadowbrook&hellip;</div>
+  <script type="module" src="/src/main.js"></script>
+</body>
+</html>

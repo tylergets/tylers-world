@@ -1,0 +1,75 @@
+{
+  "format": "tw.world",
+  "version": 1,
+  "kind": "interior",
+  "meta": {
+    "id": "home.holler.interior",
+    "name": "The Old Place",
+    "note": "Interior of home.holler in sourwood.json. Hand-authored."
+  },
+  "grid": {"width":11,"height":9,"tileSize":1},
+  "layers": {
+    "surface": {
+        "palette": {"#":"wall","w":"floor.wood","t":"floor.tile","r":"rug"},
+        "data": [
+          "###########",
+          "#wwwtttttt#",
+          "#wwwwwwwww#",
+          "#wwwwwwwww#",
+          "#wwrrrrwww#",
+          "#wwrrrrwww#",
+          "#wwwwwwwww#",
+          "#wwwwwwwww#",
+          "#####tt####"
+        ]
+      },
+    "elevation": {
+        "palette": {"0":"0","4":"4"},
+        "data": [
+          "44444444444",
+          "40000000004",
+          "40000000004",
+          "40000000004",
+          "40000000004",
+          "40000000004",
+          "40000000004",
+          "40000000004",
+          "44444004444"
+        ]
+      },
+    "flags": {
+        "palette": {".":"none"},
+        "data": [
+          "...........",
+          "...........",
+          "...........",
+          "...........",
+          "...........",
+          "...........",
+          "...........",
+          "...........",
+          "..........."
+        ]
+      }
+  },
+  "objects": [
+    {"id":"bed","type":"furn.bed","tile":[1,1]},
+    {"id":"counter.kitchen","type":"furn.counter","tile":[4,1],"props":{"label":"Kitchen Counter"}},
+    {"id":"stove","type":"furn.stove","tile":[8,1]},
+    {"id":"table","type":"furn.table","tile":[4,4]},
+    {"id":"chair.west","type":"furn.chair","tile":[3,4]},
+    {"id":"chair.east","type":"furn.chair","tile":[6,5],"rotation":180},
+    {"id":"shelf.books","type":"furn.shelf","tile":[2,7],"props":{"label":"Bookcase"}},
+    {"id":"crate","type":"furn.crate","tile":[9,4]},
+    {"id":"plant","type":"furn.plant","tile":[9,7]}
+  ],
+  "items": [
+    {"id":"mushroom.dried","type":"item.mushroom","tile":[7,2]},
+    {"id":"stick.kindling","type":"item.stick","tile":[8,5]}
+  ],
+  "exits": [
+    {"tile":[5,8]},
+    {"tile":[6,8]}
+  ],
+  "spawn": {"tile":[6,7],"facing":"north"}
+}

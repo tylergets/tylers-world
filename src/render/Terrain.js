@@ -1,0 +1,238 @@
+/**
+ * Terrain mesh.
+ *
+ * Builds one BufferGeometry for the whole ground: a top face per tile, plus a
+ * wall quad wherever two neighbouring tiles disagree about the height of the
+ * edge they share. That single wall rule covers cliffs, ramp sides AND the
+ * shoreline drop into water, so there is no special-cased "beach" geometry.
+ *
+ * Past the last tile the world's FORM takes over -- open water for an island,
+ * ridges for a holler -- built by border.js and welded to these outer corners.
+ * Only a formless place (an interior) still falls back to the plain skirt.
+ *
+ * Tiles do NOT share vertices. That costs a little memory (4 verts per tile
+ * instead of ~1) and buys crisp per-tile colour, which is the whole look in
+ * top-down mode -- and it is required anyway for hard cliff edges.
+ */
+
+import * as THREE from 'three';
+import { STEP_HEIGHT, WATER_DROP } from '../core/constants.js';
+import { FLAG } from '../world/WorldFile.js';
+import { hashString } from '../core/rng.js';
+import { GeoBuilder } from './geo.js';
+import { flatUniform, timeUniform } from './flatten.js';
+import { buildBorder } from './border.js';
+
+/**
+ * How far a place's outer wall drops, so the map edge isn't see-through.
+ *
+ * A town wants a deep cliff -- it reads as land continuing below the horizon.
+ * A room wants a shallow one: the outer ring of an interior IS its wall, and a
+ * six-unit shaft hanging under a living room reads as a hole in the world
+ * rather than as a skirting board.
+ */
+const SKIRT_Y = { exterior: -6, interior: -0.7 };
+
+/** How dark a fully-occluded terrain corner gets. */
+const AO_STRENGTH = 0.55;
+
+/** Elevation (in steps) of one corner of a tile. Ramps lift two of their four. */
+function cornerElev(world, x, z, cx, cz) {
+  const e = world.elevationAt(x, z);
+  switch (world.flagAt(x, z)) {
+    case FLAG.RAMP_NORTH: return e + (cz === 0 ? 1 : 0);
+    case FLAG.RAMP_SOUTH: return e + (cz === 1 ? 1 : 0);
+    case FLAG.RAMP_WEST: return e + (cx === 0 ? 1 : 0);
+    case FLAG.RAMP_EAST: return e + (cx === 1 ? 1 : 0);
+    default: return e;
+  }
+}
+
+/** World Y of one corner of a tile's top face. Exported because border.js
+ *  welds the world's outer band to these exact values. */
+export function cornerY(world, x, z, cx, cz) {
+  const y = cornerElev(world, x, z, cx, cz) * STEP_HEIGHT;
+  return world.isWater(x, z) ? y - WATER_DROP : y;
+}
+
+/**
+ * Ambient occlusion at one corner of a tile.
+ *
+ * Counts how many of the three tiles sharing this corner stand TALLER here. A
+ * vertical cliff wall is edge-on and therefore invisible from directly above,
+ * so without this the top-down view has no way to show elevation at all -- the
+ * raised terrace would read as flat ground. Darkening the low side of every
+ * height change draws the contour instead, and it doubles as contact shading
+ * along the shoreline, which the 3D view benefits from too.
+ */
+function cornerAO(world, x, z, cx, cz) {
+  const dx = cx ? 1 : -1, dz = cz ? 1 : -1;
+  const my = cornerY(world, x, z, cx, cz);
+  let taller = 0;
+  const around = [
+    [x + dx, z, 1 - cx, cz],
+    [x, z + dz, cx, 1 - cz],
+    [x + dx, z + dz, 1 - cx, 1 - cz],
+  ];
+  for (const [nx, nz, ncx, ncz] of around) {
+    if (!world.inBounds(nx, nz)) continue;
+    if (cornerY(world, nx, nz, ncx, ncz) > my + 1e-4) taller++;
+  }
+  return taller / 3;
+}
+
+/** Per-tile colour jitter, hashed from the tile so it never changes between loads. */
+const _c = new THREE.Color();
+function tileColor(surface, x, z, elevation) {
+  _c.setHex(surface.flat);
+  const h = hashString(`${x}:${z}`);
+  const j = ((h & 0xffff) / 0xffff - 0.5);
+  _c.offsetHSL(j * 0.012, j * 0.03, j * 0.045);
+  // Higher ground reads lighter. Together with the corner AO on the low side of
+  // each drop, this is what gives the top-down view any sense of elevation at
+  // all -- cliff walls themselves are edge-on and invisible from above.
+  if (elevation) _c.offsetHSL(0, 0, elevation * 0.055);
+  return _c.getHex();
+}
+
+export function buildTerrain(world) {
+  const b = new GeoBuilder();
+  const { width, height } = world;
+  const skirtY = SKIRT_Y[world.kind] ?? SKIRT_Y.exterior;
+
+  // -- top faces -----------------------------------------------------------
+  for (let z = 0; z < height; z++) {
+    for (let x = 0; x < width; x++) {
+      const surf = world.surfaceAt(x, z);
+      const col = tileColor(surf, x, z, world.elevationAt(x, z));
+      const water = surf.water ? 1 : 0;
+      // Wound a -> b -> c -> d so the face normal points up (+y).
+      const a = [x, cornerY(world, x, z, 0, 0), z];
+      const bb = [x, cornerY(world, x, z, 0, 1), z + 1];
+      const c = [x + 1, cornerY(world, x, z, 1, 1), z + 1];
+      const d = [x + 1, cornerY(world, x, z, 1, 0), z];
+      b.addQuad(a, bb, c, d, col, {
+        locals: [[0, 0], [0, 1], [1, 1], [1, 0]],
+        shades: [
+          1 - cornerAO(world, x, z, 0, 0) * AO_STRENGTH,
+          1 - cornerAO(world, x, z, 0, 1) * AO_STRENGTH,
+          1 - cornerAO(world, x, z, 1, 1) * AO_STRENGTH,
+          1 - cornerAO(world, x, z, 1, 0) * AO_STRENGTH,
+        ],
+        water,
+      });
+    }
+  }
+
+  // -- walls between mismatched neighbours ---------------------------------
+  const EPS = 1e-4;
+
+  const wall = (p0, p1, q0, q1, color) => {
+    // p* are the taller edge's endpoints, q* the shorter's, at the same XZ.
+    b.addQuad(p0, p1, q1, q0, color, {});
+  };
+
+  for (let z = 0; z < height; z++) {
+    for (let x = 0; x < width; x++) {
+      // East seam: between (x,z) and (x+1,z), in the plane X = x+1.
+      if (x + 1 < width) {
+        const aN = cornerY(world, x, z, 1, 0), aS = cornerY(world, x, z, 1, 1);
+        const bN = cornerY(world, x + 1, z, 0, 0), bS = cornerY(world, x + 1, z, 0, 1);
+        if (Math.abs(aN - bN) > EPS || Math.abs(aS - bS) > EPS) {
+          const higher = (aN + aS) >= (bN + bS) ? world.surfaceAt(x, z) : world.surfaceAt(x + 1, z);
+          wall([x + 1, aN, z], [x + 1, aS, z + 1], [x + 1, bN, z], [x + 1, bS, z + 1], higher.edge);
+        }
+      }
+      // South seam: between (x,z) and (x,z+1), in the plane Z = z+1.
+      if (z + 1 < height) {
+        const aW = cornerY(world, x, z, 0, 1), aE = cornerY(world, x, z, 1, 1);
+        const bW = cornerY(world, x, z + 1, 0, 0), bE = cornerY(world, x, z + 1, 1, 0);
+        if (Math.abs(aW - bW) > EPS || Math.abs(aE - bE) > EPS) {
+          const higher = (aW + aE) >= (bW + bE) ? world.surfaceAt(x, z) : world.surfaceAt(x, z + 1);
+          wall([x, aW, z + 1], [x + 1, aE, z + 1], [x, bW, z + 1], [x + 1, bE, z + 1], higher.edge);
+        }
+      }
+    }
+  }
+
+  // -- what lies beyond ----------------------------------------------------
+  // An exterior gets its form's band: open sea around an island, ridges around
+  // a holler. A place with no form gets the plain skirt, which is all a room
+  // needs behind its walls.
+  if (world.form) {
+    buildBorder(world, b, cornerY);
+  } else {
+    const skirt = 0x6b5f4d;
+    for (let x = 0; x < width; x++) {
+      const nW = cornerY(world, x, 0, 0, 0), nE = cornerY(world, x, 0, 1, 0);
+      wall([x, nW, 0], [x + 1, nE, 0], [x, skirtY, 0], [x + 1, skirtY, 0], skirt);
+      const sW = cornerY(world, x, height - 1, 0, 1), sE = cornerY(world, x, height - 1, 1, 1);
+      wall([x, sW, height], [x + 1, sE, height], [x, skirtY, height], [x + 1, skirtY, height], skirt);
+    }
+    for (let z = 0; z < height; z++) {
+      const wN = cornerY(world, 0, z, 0, 0), wS = cornerY(world, 0, z, 0, 1);
+      wall([0, wN, z], [0, wS, z + 1], [0, skirtY, z], [0, skirtY, z + 1], skirt);
+      const eN = cornerY(world, width - 1, z, 1, 0), eS = cornerY(world, width - 1, z, 1, 1);
+      wall([width, eN, z], [width, eS, z + 1], [width, skirtY, z], [width, skirtY, z + 1], skirt);
+    }
+  }
+
+  const geometry = b.build();
+  const material = terrainMaterial();
+  const mesh = new THREE.Mesh(geometry, material);
+  mesh.receiveShadow = true;
+  mesh.name = 'terrain';
+  return mesh;
+}
+
+/**
+ * Terrain material: the flatten morph, plus two things only the ground needs --
+ * an animated water shimmer, and tile grid lines that fade in as the view goes
+ * top-down. DoubleSide because wall winding depends on which neighbour is
+ * taller, and getting that wrong is a whole class of bug worth designing out.
+ */
+function terrainMaterial() {
+  const m = new THREE.MeshLambertMaterial({ vertexColors: true, side: THREE.DoubleSide });
+
+  m.onBeforeCompile = (shader) => {
+    shader.uniforms.uFlat = flatUniform;
+    shader.uniforms.uTime = timeUniform;
+
+    shader.vertexShader = shader.vertexShader
+      .replace('#include <common>', `#include <common>
+        attribute vec2 aLocal;
+        attribute float aWater;
+        varying vec2 vLocal;
+        varying float vWater;
+        varying vec2 vWorldXZ;`)
+      .replace('#include <begin_vertex>', `#include <begin_vertex>
+        vLocal = aLocal;
+        vWater = aWater;
+        vWorldXZ = (modelMatrix * vec4(transformed, 1.0)).xz;`);
+
+    shader.fragmentShader = shader.fragmentShader
+      .replace('#include <common>', `#include <common>
+        uniform float uFlat;
+        uniform float uTime;
+        varying vec2 vLocal;
+        varying float vWater;
+        varying vec2 vWorldXZ;`)
+      .replace('#include <opaque_fragment>', `
+        // Crossed travelling waves; cheap, and enough to keep water alive.
+        float s1 = sin(vWorldXZ.x * 1.5 + vWorldXZ.y * 0.9 + uTime * 1.3) * 0.5 + 0.5;
+        float s2 = sin(vWorldXZ.x * 0.7 - vWorldXZ.y * 1.9 - uTime * 0.9) * 0.5 + 0.5;
+        outgoingLight += vWater * pow(s1 * s2, 2.0) * 0.14;
+
+        outgoingLight = mix(outgoingLight, diffuseColor.rgb * 1.04, uFlat);
+
+        // Tile grid: invisible in 3D, crisp in top-down. vLocal is 0.5 on wall
+        // quads, which is far from any edge, so walls never get lines.
+        float gEdge = min(min(vLocal.x, 1.0 - vLocal.x), min(vLocal.y, 1.0 - vLocal.y));
+        float line = 1.0 - smoothstep(0.0, 0.05, gEdge);
+        outgoingLight = mix(outgoingLight, outgoingLight * 0.84, line * uFlat);
+
+        #include <opaque_fragment>`);
+  };
+  m.customProgramCacheKey = () => 'terrain';
+  return m;
+}
