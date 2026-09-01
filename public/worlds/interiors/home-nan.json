@@ -8,8 +8,9 @@
     "name": "Nan's Croft",
     "note": "Interior of home.nan in thistledown.json. Hand-authored. PRIVATE: see zones. The room is one square with an inglenook cut three tiles up into the north wall -- the hearth is in it and so is her chair, and you can walk in there and stand beside the fire. The loom has the east window because the light is there."
   },
-  "grid": {"width":13,"height":11,"tileSize":1},
+  "grid": {"width":17,"height":14,"tileSize":1},
   "ambience": {
+    "music": "home",
     "sky": "#1a130e",
     "sunColor": "#ffdcaa",
     "hemiSky": "#ffdfae",
@@ -24,90 +25,102 @@
     "surface": {
         "palette": {"#":"wall","w":"floor.wood","t":"floor.tile","r":"rug"},
         "data": [
-          "#############",
-          "#####ttt#####",
-          "#####ttt#####",
-          "#wwwwwwwwwww#",
-          "#wwwwwwwwwww#",
-          "#wwrrrrrwwww#",
-          "#wwrrrrrwwww#",
-          "#wwrrrrrwwww#",
-          "#wwwwwwwwwww#",
-          "#wwwwwwwwwww#",
-          "#####tt######"
+          "#################",
+          "#######ttt#######",
+          "#######ttt#######",
+          "#wwwwwwwwwwwwwww#",
+          "#wwwwwwwwwwwwwww#",
+          "#wwwwwwwwwwwwwww#",
+          "#wwwwwwwwwwwwwww#",
+          "#wwwwrrrrrwwwwww#",
+          "#wwwwrrrrrwwwwww#",
+          "#wwwwrrrrrwwwwww#",
+          "#wwwwwwwwwwwwwww#",
+          "#wwwwwwwwwwwwwww#",
+          "#wwwwwwwwwwwwwww#",
+          "#######tt########"
         ]
       },
     "elevation": {
         "palette": {"0":"0","4":"4"},
         "data": [
-          "4444444444444",
-          "4444400044444",
-          "4444400044444",
-          "4000000000004",
-          "4000000000004",
-          "4000000000004",
-          "4000000000004",
-          "4000000000004",
-          "4000000000004",
-          "4000000000004",
-          "4444400444444"
+          "44444444444444444",
+          "44444440004444444",
+          "44444440004444444",
+          "40000000000000004",
+          "40000000000000004",
+          "40000000000000004",
+          "40000000000000004",
+          "40000000000000004",
+          "40000000000000004",
+          "40000000000000004",
+          "40000000000000004",
+          "40000000000000004",
+          "40000000000000004",
+          "44444440044444444"
         ]
       },
     "flags": {
         "palette": {".":"none"},
         "data": [
-          ".............",
-          ".............",
-          ".............",
-          ".............",
-          ".............",
-          ".............",
-          ".............",
-          ".............",
-          ".............",
-          ".............",
-          "............."
+          ".................",
+          ".................",
+          ".................",
+          ".................",
+          ".................",
+          ".................",
+          ".................",
+          ".................",
+          ".................",
+          ".................",
+          ".................",
+          ".................",
+          ".................",
+          "................."
         ]
       },
     "zones": {
         "palette": {".":"none","h":"hers"},
         "data": [
-          ".............",
-          ".....hhh.....",
-          ".....hhh.....",
-          ".hhhhhhhhhhh.",
-          ".hhhhhhhhhhh.",
-          ".hhhhhhhhhhh.",
-          ".hhhhhhhhhhh.",
-          ".hhhhhhhhhhh.",
-          ".hhhhhhhhhhh.",
-          ".hhhhhhhhhhh.",
-          ".....hh......"
+          ".................",
+          ".......hhh.......",
+          ".......hhh.......",
+          ".hhhhhhhhhhhhhhh.",
+          ".hhhhhhhhhhhhhhh.",
+          ".hhhhhhhhhhhhhhh.",
+          ".hhhhhhhhhhhhhhh.",
+          ".hhhhhhhhhhhhhhh.",
+          ".hhhhhhhhhhhhhhh.",
+          ".hhhhhhhhhhhhhhh.",
+          ".hhhhhhhhhhhhhhh.",
+          ".hhhhhhhhhhhhhhh.",
+          ".hhhhhhhhhhhhhhh.",
+          ".......hh........"
         ]
       }
   },
   "objects": [
-    {"id":"hearth","type":"fixture.hearth","tile":[5,1],"props":{"label":"Nan's Hearth"}},
-    {"id":"chair.fire","type":"furn.chair","tile":[5,2],"rotation":180},
+    {"id":"hearth","type":"fixture.hearth","tile":[7,1],"props":{"label":"Nan's Hearth"}},
+    {"id":"chair.fire","type":"furn.chair","tile":[7,2],"rotation":180},
     {"id":"range","type":"furn.stove","tile":[1,3],"props":{"label":"Range"}},
-    {"id":"shelf.fleece","type":"furn.shelf","tile":[4,3],"props":{"label":"Fleece Shelf"}},
-    {"id":"loom","type":"fixture.loom","tile":[9,3],"props":{"label":"Upright Loom"}},
-    {"id":"bed","type":"furn.bed","tile":[1,5]},
-    {"id":"chair.table","type":"furn.chair","tile":[7,7],"rotation":90},
-    {"id":"table","type":"furn.table","tile":[8,7]},
-    {"id":"shelf.crocks","type":"furn.shelf","tile":[3,9],"props":{"label":"Crockery Shelf"}},
-    {"id":"crate.wool","type":"furn.crate","tile":[11,9]},
-    {"id":"plant","type":"furn.plant","tile":[1,9]}
+    {"id":"shelf.fleece","type":"furn.shelf","tile":[6,3],"props":{"label":"Fleece Shelf"}},
+    {"id":"loom","type":"fixture.loom","tile":[11,3],"props":{"label":"Upright Loom"}},
+    {"id":"bed","type":"furn.bed","tile":[1,7]},
+    {"id":"chair.table","type":"furn.chair","tile":[9,9],"rotation":90},
+    {"id":"table","type":"furn.table","tile":[10,9]},
+    {"id":"shelf.crocks","type":"furn.shelf","tile":[5,12],"props":{"label":"Crockery Shelf"}},
+    {"id":"crate.wool","type":"furn.crate","tile":[15,12]},
+    {"id":"plant","type":"furn.plant","tile":[1,12]}
   ],
   "items": [
-    {"id":"mushroom.string","type":"item.mushroom","tile":[7,2]},
-    {"id":"flower.bundle","type":"item.flower","tile":[3,4]},
-    {"id":"stick.needle","type":"item.stick","tile":[11,5]},
-    {"id":"apple.bowl","type":"item.apple","tile":[10,8]}
+    {"id":"mushroom.string","type":"item.mushroom","tile":[9,2]},
+    {"id":"flower.bundle","type":"item.flower","tile":[5,4]},
+    {"id":"stick.needle","type":"item.stick","tile":[15,7]},
+    {"id":"apple.bowl","type":"item.apple","tile":[14,10]}
   ],
   "exits": [
-    {"tile":[5,10]},
-    {"tile":[6,10]}
+    {"tile":[7,13]},
+    {"tile":[8,13]}
   ],
-  "spawn": {"tile":[6,9],"facing":"north"}
+  "spawn": {"tile":[8,12],"facing":"north"}
 }

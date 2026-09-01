@@ -127,7 +127,15 @@ const EFFECTS = {
   gift: 'boolean',
   peace: 'boolean',
   errand: 'errandEffect',
+  // How a confrontation about stolen goods ends: paid for, handed back, or
+  // refused. One of three words rather than three booleans, because they are
+  // three answers to one question and a script that could say two of them at
+  // once would be a script with no answer. See world/theft.js.
+  theft: 'theftEffect',
 };
+
+/** The three ways out of a confrontation, in the order they are offered. */
+const THEFT_ANSWERS = ['pay', 'return', 'refuse'];
 
 const RELATIONSHIP_TIERS = ['stranger', 'acquaintance', 'friend', 'close'];
 const ERRAND_STATES = ['available', 'active', 'ready', 'completed'];
@@ -240,6 +248,9 @@ function checkEffects(raw, path) {
       throw new DialogError(`"${key}" must be a house tier from 1 to 3`, p);
     }
     if (kind === 'boolean' && typeof v !== 'boolean') throw new DialogError(`"${key}" must be true or false`, p);
+    if (kind === 'theftEffect' && !THEFT_ANSWERS.includes(v)) {
+      throw new DialogError(`"${key}" must be one of: ${THEFT_ANSWERS.join(', ')}`, p);
+    }
     if (kind === 'itemcount') return { [key]: checkItemRef(v, p) };
     if (kind === 'errandEffect') return { [key]: checkStructured(kind, v, p) };
     return { [key]: v };

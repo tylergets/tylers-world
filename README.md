@@ -19,7 +19,11 @@ switch view. `E` picks things up and talks to people; in a conversation, `↑↓
 picks a line, `←→` switches between buying and selling, `Esc` walks away, and
 `M` cycles the NPC voice (babble / spoken / off). `Q` puts down what you are
 holding; inside your house, a furniture flat-pack is assembled on clear floor
-in front of you, facing the same direction. Placed beds sleep until dawn, and
+in front of you, facing the same direction. **Fence posts** and **ladders** are
+put down the same way and go the other way round — outdoors only. A run of
+fence joins itself up post to post and holds animals in; a ladder set against a
+ridge lets you climb it, up or down, and nothing else in the world can use one.
+Placed beds sleep until dawn, and
 placed crates and bookcases store one inventory stack with `E`. To rearrange,
 empty a piece, face it with the hammer equipped, and press `F` to pack it back
 up. `[` and `]` change the held slot, and `F` uses it if it is a tool.
@@ -40,8 +44,9 @@ uniforms, so switching is instant and rebuilds nothing. Graphics preferences are
 remembered across worlds and save slots.
 
 Every world has a general store, the Turnip & Timber furniture shop, and two or
-three neighbours who walk around during the day. Turnip & Timber puts four of
-its eight pieces on sale each morning. Conversations, prices, permanent stock
+three neighbours who walk around during the day. Turnip & Timber puts ten of
+its three hundred pieces on the floor each morning, and keeps fence posts and
+ladders in stock every day of the week. Conversations, prices, permanent stock
 and daily catalogs are all data in the world file - see
 [`docs/WORLD_FORMAT.md`](docs/WORLD_FORMAT.md).
 

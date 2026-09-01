@@ -8,8 +8,9 @@
     "name": "Marnie's Cottage",
     "note": "Interior of home.marnie in tidewrack.json. Hand-authored. PRIVATE: see zones. The whole north wall is a window bay raised one step, reached by a ramp in the middle of the room, and the spyglass lives up there. Everything else in the house is arranged so she can see out of it from wherever she is sitting."
   },
-  "grid": {"width":13,"height":10,"tileSize":1},
+  "grid": {"width":17,"height":13,"tileSize":1},
   "ambience": {
+    "music": "home",
     "sky": "#161c22",
     "hemiSky": "#e6f2ff",
     "hemiGround": "#8a7a62",
@@ -23,87 +24,99 @@
     "surface": {
         "palette": {"#":"wall","w":"floor.wood","t":"floor.tile","r":"rug"},
         "data": [
-          "#############",
-          "#ttttttttttt#",
-          "#ttttttttttt#",
-          "#wwwwwwwwwww#",
-          "#wwwwwwwwwww#",
-          "#wwrrrrrrwww#",
-          "#wwrrrrrrwww#",
-          "#wwwwwwwwwww#",
-          "#wwwwwwwwwww#",
-          "#####tt######"
+          "#################",
+          "#ttttttttttttttt#",
+          "#ttttttttttttttt#",
+          "#wwwwwwwwwwwwwww#",
+          "#wwwwwwwwwwwwwww#",
+          "#wwwwwwwwwwwwwww#",
+          "#wwwwwwwwwwwwwww#",
+          "#wwwwrrrrrrwwwww#",
+          "#wwwwrrrrrrwwwww#",
+          "#wwwwwwwwwwwwwww#",
+          "#wwwwwwwwwwwwwww#",
+          "#wwwwwwwwwwwwwww#",
+          "#######tt########"
         ]
       },
     "elevation": {
         "palette": {"0":"0","1":"1","4":"4"},
         "data": [
-          "4444444444444",
-          "4111111111114",
-          "4111111111114",
-          "4000000000004",
-          "4000000000004",
-          "4000000000004",
-          "4000000000004",
-          "4000000000004",
-          "4000000000004",
-          "4444400444444"
+          "44444444444444444",
+          "41111111111111114",
+          "41111111111111114",
+          "40000000000000004",
+          "40000000000000004",
+          "40000000000000004",
+          "40000000000000004",
+          "40000000000000004",
+          "40000000000000004",
+          "40000000000000004",
+          "40000000000000004",
+          "40000000000000004",
+          "44444440044444444"
         ]
       },
     "flags": {
         "palette": {".":"none","n":"ramp.north"},
         "data": [
-          ".............",
-          ".............",
-          ".............",
-          ".....nn......",
-          ".............",
-          ".............",
-          ".............",
-          ".............",
-          ".............",
-          "............."
+          ".................",
+          ".................",
+          ".................",
+          ".......nn........",
+          ".................",
+          ".................",
+          ".................",
+          ".................",
+          ".................",
+          ".................",
+          ".................",
+          ".................",
+          "................."
         ]
       },
     "zones": {
         "palette": {".":"none","h":"hers"},
         "data": [
-          ".............",
-          ".hhhhhhhhhhh.",
-          ".hhhhhhhhhhh.",
-          ".hhhhhhhhhhh.",
-          ".hhhhhhhhhhh.",
-          ".hhhhhhhhhhh.",
-          ".hhhhhhhhhhh.",
-          ".hhhhhhhhhhh.",
-          ".hhhhhhhhhhh.",
-          ".....hh......"
+          ".................",
+          ".hhhhhhhhhhhhhhh.",
+          ".hhhhhhhhhhhhhhh.",
+          ".hhhhhhhhhhhhhhh.",
+          ".hhhhhhhhhhhhhhh.",
+          ".hhhhhhhhhhhhhhh.",
+          ".hhhhhhhhhhhhhhh.",
+          ".hhhhhhhhhhhhhhh.",
+          ".hhhhhhhhhhhhhhh.",
+          ".hhhhhhhhhhhhhhh.",
+          ".hhhhhhhhhhhhhhh.",
+          ".hhhhhhhhhhhhhhh.",
+          ".......hh........"
         ]
       }
   },
   "objects": [
     {"id":"shelf.finds","type":"furn.shelf","tile":[1,1],"props":{"label":"Shelf of Finds"}},
-    {"id":"spyglass","type":"fixture.spyglass","tile":[6,1],"props":{"label":"Brass Spyglass"}},
-    {"id":"counter.sort","type":"furn.counter","tile":[7,1],"props":{"label":"Sorting Bench"}},
-    {"id":"plant","type":"furn.plant","tile":[11,1]},
+    {"id":"spyglass","type":"fixture.spyglass","tile":[8,1],"props":{"label":"Brass Spyglass"}},
+    {"id":"counter.sort","type":"furn.counter","tile":[9,1],"props":{"label":"Sorting Bench"}},
+    {"id":"plant","type":"furn.plant","tile":[15,1]},
     {"id":"bed","type":"furn.bed","tile":[1,4]},
-    {"id":"shelf.shells","type":"furn.shelf","tile":[9,4],"props":{"label":"Shell Shelf"}},
-    {"id":"crate.finds","type":"furn.crate","tile":[11,4]},
-    {"id":"chair","type":"furn.chair","tile":[7,7],"rotation":90},
-    {"id":"table","type":"furn.table","tile":[8,7]},
-    {"id":"crate.rope","type":"furn.crate","tile":[1,8]},
-    {"id":"chime","type":"fixture.chime","tile":[11,8],"props":{"label":"Shell Chime"}}
+    {"id":"shelf.shells","type":"furn.shelf","tile":[11,4],"props":{"label":"Shell Shelf"}},
+    {"id":"crate.finds","type":"furn.crate","tile":[15,4]},
+    {"id":"chair","type":"furn.chair","tile":[9,9],"rotation":90},
+    {"id":"table","type":"furn.table","tile":[10,9]},
+    {"id":"crate.rope","type":"furn.crate","tile":[1,11]},
+    {"id":"chime","type":"fixture.chime","tile":[15,11],"props":{"label":"Shell Chime"}}
   ],
   "items": [
-    {"id":"shell.bay","type":"item.shell","tile":[4,1]},
-    {"id":"shell.sill","type":"item.shell","tile":[3,2]},
-    {"id":"shell.table","type":"item.shell","tile":[10,6]},
+    {"id":"shell.bay","type":"item.shell","tile":[6,1]},
+    {"id":"shell.sill","type":"item.shell","tile":[5,2]},
+    {"id":"shell.table","type":"item.shell","tile":[14,8]},
     {"id":"stone.step","type":"item.stone","tile":[2,3]},
-    {"id":"stick.rod","type":"item.stick","tile":[10,8]}
+    {"id":"stick.rod","type":"item.stick","tile":[14,11]}
   ],
   "exits": [
-    {"tile":[5,9]},
-    {"tile":[6,9]}
+    {"tile":[7,12]},
+    {"tile":[8,12]}
   ],
-  "spawn": {"tile":[6,8],"facing":"north"}
+  "spawn": {"tile":[8,11],"facing":"north"}
 }

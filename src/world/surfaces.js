@@ -51,7 +51,7 @@ export const SURFACES = [
   {
     name: 'floor.wood',
     color3d: 0xc08b55, flat: 0xcf9a62, edge: 0x93683d,
-    walkable: true, speed: 1.06, water: false,
+    walkable: true, speed: 1.06, water: false, pattern: 1,
   },
   {
     name: 'floor.tile',
@@ -70,6 +70,41 @@ export const SURFACES = [
     name: 'wall',
     color3d: 0xd9c7a4, flat: 0xcdb894, edge: 0xa48b64,
     walkable: false, speed: 0, water: false, solid: true,
+  },
+  {
+    name: 'floor.wood.dark',
+    color3d: 0x8f603d, flat: 0xa8734a, edge: 0x68442d,
+    walkable: true, speed: 1.06, water: false, pattern: 1,
+  },
+  {
+    name: 'floor.checker',
+    color3d: 0xd9d1bb, flat: 0xeee4ca, edge: 0xa69b81,
+    walkable: true, speed: 1.1, water: false, pattern: 2,
+  },
+  {
+    name: 'floor.parquet',
+    color3d: 0xb7804c, flat: 0xc9935b, edge: 0x815b39,
+    walkable: true, speed: 1.06, water: false, pattern: 3,
+  },
+  {
+    name: 'floor.terracotta',
+    color3d: 0xb96f50, flat: 0xce8060, edge: 0x884d38,
+    walkable: true, speed: 1.04, water: false, pattern: 4,
+  },
+  {
+    name: 'wall.stripe',
+    color3d: 0xe3d2a8, flat: 0xdbc695, edge: 0xbda875,
+    walkable: false, speed: 0, water: false, solid: true, pattern: 5,
+  },
+  {
+    name: 'wall.floral',
+    color3d: 0xe6c9d3, flat: 0xddb9c6, edge: 0xb88e9f,
+    walkable: false, speed: 0, water: false, solid: true, pattern: 6,
+  },
+  {
+    name: 'wall.panel',
+    color3d: 0xc8b18a, flat: 0xd3be98, edge: 0x967a57,
+    walkable: false, speed: 0, water: false, solid: true, pattern: 7,
   },
 ];
 

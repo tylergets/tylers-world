@@ -1,0 +1,516 @@
+{
+  "format": "tw.world",
+  "version": 1,
+  "kind": "interior",
+  "meta": {
+    "id": "store.clothier.interior",
+    "name": "Cuff & Collar",
+    "note": "A clothes shop. Three shirts, one hat and one pair of sunglasses on the rail each morning, drawn from a rail of ten of each."
+  },
+  "grid": {
+    "width": 12,
+    "height": 10,
+    "tileSize": 1
+  },
+  "ambience": {
+    "music": "clothier",
+    "sky": "#211c21",
+    "sun": 0.95,
+    "hemi": 2.4,
+    "hemiSky": "#fff0d2"
+  },
+  "zones": {
+    "back": {
+      "owner": "keep.linnet",
+      "label": "behind the counter"
+    }
+  },
+  "layers": {
+    "surface": {
+      "palette": {
+        "#": "wall.floral",
+        "w": "floor.checker",
+        "r": "rug"
+      },
+      "data": [
+        "############",
+        "#wwwwwwwwww#",
+        "#wwwwwwwwww#",
+        "#wwwwwwwwww#",
+        "#wwwwwwwwww#",
+        "#wwrrrrrrww#",
+        "#wwrrrrrrww#",
+        "#wwwwwwwwww#",
+        "#wwwwwwwwww#",
+        "#####ww#####"
+      ]
+    },
+    "elevation": {
+      "palette": {
+        "0": "0",
+        "4": "4"
+      },
+      "data": [
+        "444444444444",
+        "400000000004",
+        "400000000004",
+        "400000000004",
+        "400000000004",
+        "400000000004",
+        "400000000004",
+        "400000000004",
+        "400000000004",
+        "444440044444"
+      ]
+    },
+    "flags": {
+      "palette": {
+        ".": "none"
+      },
+      "data": [
+        "............",
+        "............",
+        "............",
+        "............",
+        "............",
+        "............",
+        "............",
+        "............",
+        "............",
+        "............"
+      ]
+    },
+    "zones": {
+      "palette": {
+        ".": "none",
+        "b": "back"
+      },
+      "data": [
+        "............",
+        ".bbbbbbbbbb.",
+        ".bbbbbbbbbb.",
+        "............",
+        "............",
+        "............",
+        "............",
+        "............",
+        "............",
+        "............"
+      ]
+    }
+  },
+  "objects": [
+    {
+      "id": "counter",
+      "type": "furn.counter",
+      "tile": [
+        4,
+        3
+      ],
+      "props": {
+        "label": "Fitting Counter"
+      }
+    },
+    {
+      "id": "crate.stock",
+      "type": "furn.crate",
+      "tile": [
+        1,
+        1
+      ]
+    },
+    {
+      "id": "stand.hats.back",
+      "type": "fixture.hat-stand",
+      "tile": [
+        3,
+        1
+      ]
+    },
+    {
+      "id": "wardrobe.back",
+      "type": "fixture.wardrobe",
+      "tile": [
+        9,
+        1
+      ]
+    },
+    {
+      "id": "mirror.west",
+      "type": "fixture.cheval-mirror",
+      "tile": [
+        1,
+        3
+      ]
+    },
+    {
+      "id": "screen.dressing",
+      "type": "fixture.dressing-screen",
+      "tile": [
+        9,
+        3
+      ]
+    },
+    {
+      "id": "table.dressing",
+      "type": "fixture.dressing-table",
+      "tile": [
+        1,
+        5
+      ]
+    },
+    {
+      "id": "stool.dressing",
+      "type": "fixture.dressing-stool",
+      "tile": [
+        1,
+        6
+      ]
+    },
+    {
+      "id": "airer.east",
+      "type": "fixture.clothes-airer",
+      "tile": [
+        10,
+        5
+      ]
+    },
+    {
+      "id": "stand.hats.front",
+      "type": "fixture.hat-stand",
+      "tile": [
+        10,
+        7
+      ]
+    },
+    {
+      "id": "tree.coat",
+      "type": "fixture.coat-tree",
+      "tile": [
+        1,
+        8
+      ]
+    },
+    {
+      "id": "whatnot.display",
+      "type": "fixture.whatnot",
+      "tile": [
+        2,
+        8
+      ]
+    }
+  ],
+  "npcs": [
+    {
+      "id": "keep.linnet",
+      "type": "folk.shopkeep",
+      "tile": [
+        5,
+        2
+      ],
+      "facing": "south",
+      "props": {
+        "name": "Linnet",
+        "title": "Puts the rail out"
+      },
+      "shop": {
+        "hours": {
+          "open": 9,
+          "close": 19
+        },
+        "name": "Today’s Rail",
+        "markup": 1.3,
+        "buyRate": 0.45,
+        "takes": [
+          "wear.shirt.plain",
+          "wear.shirt.sky",
+          "wear.shirt.moss",
+          "wear.shirt.rust",
+          "wear.shirt.plum",
+          "wear.shirt.sand",
+          "wear.shirt.ink",
+          "wear.shirt.rose",
+          "wear.shirt.ochre",
+          "wear.shirt.teal",
+          "wear.hat.cap",
+          "wear.hat.straw",
+          "wear.hat.beanie",
+          "wear.hat.bucket",
+          "wear.hat.felt",
+          "wear.hat.sun",
+          "wear.hat.wool",
+          "wear.hat.ranger",
+          "wear.hat.beret",
+          "wear.hat.top",
+          "wear.glasses.round",
+          "wear.glasses.square",
+          "wear.glasses.aviator",
+          "wear.glasses.cat",
+          "wear.glasses.sport",
+          "wear.glasses.rose",
+          "wear.glasses.mirror",
+          "wear.glasses.amber",
+          "wear.glasses.ink",
+          "wear.glasses.jade"
+        ],
+        "daily": {
+          "shirt": 3,
+          "hat": 1,
+          "glasses": 1
+        },
+        "stock": [
+          {
+            "type": "wear.shirt.plain",
+            "group": "shirt",
+            "count": 1
+          },
+          {
+            "type": "wear.shirt.sky",
+            "group": "shirt",
+            "count": 1
+          },
+          {
+            "type": "wear.shirt.moss",
+            "group": "shirt",
+            "count": 1
+          },
+          {
+            "type": "wear.shirt.rust",
+            "group": "shirt",
+            "count": 1
+          },
+          {
+            "type": "wear.shirt.plum",
+            "group": "shirt",
+            "count": 1
+          },
+          {
+            "type": "wear.shirt.sand",
+            "group": "shirt",
+            "count": 1
+          },
+          {
+            "type": "wear.shirt.ink",
+            "group": "shirt",
+            "count": 1
+          },
+          {
+            "type": "wear.shirt.rose",
+            "group": "shirt",
+            "count": 1
+          },
+          {
+            "type": "wear.shirt.ochre",
+            "group": "shirt",
+            "count": 1
+          },
+          {
+            "type": "wear.shirt.teal",
+            "group": "shirt",
+            "count": 1
+          },
+          {
+            "type": "wear.hat.cap",
+            "group": "hat",
+            "count": 1
+          },
+          {
+            "type": "wear.hat.straw",
+            "group": "hat",
+            "count": 1
+          },
+          {
+            "type": "wear.hat.beanie",
+            "group": "hat",
+            "count": 1
+          },
+          {
+            "type": "wear.hat.bucket",
+            "group": "hat",
+            "count": 1
+          },
+          {
+            "type": "wear.hat.felt",
+            "group": "hat",
+            "count": 1
+          },
+          {
+            "type": "wear.hat.sun",
+            "group": "hat",
+            "count": 1
+          },
+          {
+            "type": "wear.hat.wool",
+            "group": "hat",
+            "count": 1
+          },
+          {
+            "type": "wear.hat.ranger",
+            "group": "hat",
+            "count": 1
+          },
+          {
+            "type": "wear.hat.beret",
+            "group": "hat",
+            "count": 1
+          },
+          {
+            "type": "wear.hat.top",
+            "group": "hat",
+            "count": 1
+          },
+          {
+            "type": "wear.glasses.round",
+            "group": "glasses",
+            "count": 1
+          },
+          {
+            "type": "wear.glasses.square",
+            "group": "glasses",
+            "count": 1
+          },
+          {
+            "type": "wear.glasses.aviator",
+            "group": "glasses",
+            "count": 1
+          },
+          {
+            "type": "wear.glasses.cat",
+            "group": "glasses",
+            "count": 1
+          },
+          {
+            "type": "wear.glasses.sport",
+            "group": "glasses",
+            "count": 1
+          },
+          {
+            "type": "wear.glasses.rose",
+            "group": "glasses",
+            "count": 1
+          },
+          {
+            "type": "wear.glasses.mirror",
+            "group": "glasses",
+            "count": 1
+          },
+          {
+            "type": "wear.glasses.amber",
+            "group": "glasses",
+            "count": 1
+          },
+          {
+            "type": "wear.glasses.ink",
+            "group": "glasses",
+            "count": 1
+          },
+          {
+            "type": "wear.glasses.jade",
+            "group": "glasses",
+            "count": 1
+          }
+        ]
+      },
+      "dialog": {
+        "start": "open",
+        "nodes": {
+          "open": {
+            "branch": [
+              {
+                "when": {
+                  "not": {
+                    "flag": "met"
+                  }
+                },
+                "to": "hello"
+              },
+              {
+                "to": "again"
+              }
+            ]
+          },
+          "hello": {
+            "text": [
+              "Linnet. I put the rail out at nine and I take what is left of it in at seven.",
+              "Three shirts, a hat and a pair of sunglasses. Never the same five twice."
+            ],
+            "do": {
+              "set": "met"
+            },
+            "then": "menu"
+          },
+          "again": {
+            "text": "Rail is where I left it. Have a look.",
+            "then": "menu"
+          },
+          "menu": {
+            "text": "Anything take your eye?",
+            "choices": [
+              {
+                "text": "Show me today’s rail.",
+                "do": {
+                  "shop": true
+                },
+                "to": "after"
+              },
+              {
+                "text": "How do I put it on?",
+                "to": "wearing"
+              },
+              {
+                "text": "What comes in tomorrow?",
+                "to": "tomorrow"
+              },
+              {
+                "text": "Just looking.",
+                "to": "bye"
+              }
+            ]
+          },
+          "wearing": {
+            "text": "Press G and you have your wardrobe. Move with the arrows, E to put a thing on or take it off again. Your old one goes back in the bag — nothing gets lost in here.",
+            "then": "menu"
+          },
+          "tomorrow": {
+            "text": [
+              "Ten shirts on the books, ten hats, ten pairs of glasses. Five of them out at a time.",
+              "So no, I will not fetch one from the back. Come by in the morning."
+            ],
+            "then": "menu"
+          },
+          "after": {
+            "text": "Wear it in good health. I will buy it back off you when you tire of it.",
+            "then": "menu"
+          },
+          "bye": {
+            "text": "Suit yourself. That is rather the idea."
+          }
+        }
+      }
+    }
+  ],
+  "exits": [
+    {
+      "tile": [
+        5,
+        9
+      ]
+    },
+    {
+      "tile": [
+        6,
+        9
+      ]
+    }
+  ],
+  "spawn": {
+    "tile": [
+      6,
+      8
+    ],
+    "facing": "north"
+  },
+  "kits": [
+    "kits/turnip-catalog.kit.json"
+  ]
+}

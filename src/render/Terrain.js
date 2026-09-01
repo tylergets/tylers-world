@@ -148,6 +148,9 @@ export function buildTerrain(world) {
         ],
         water,
         shore: shorelineCorners(world, x, z, surf),
+        // Wallpaper belongs on the exposed vertical face, not the narrow top
+        // of the solid tile that supplies the room's wall height.
+        pattern: surf.solid ? 0 : surf.pattern ?? 0,
       });
     }
   }
@@ -155,9 +158,17 @@ export function buildTerrain(world) {
   // -- walls between mismatched neighbours ---------------------------------
   const EPS = 1e-4;
 
-  const wall = (p0, p1, q0, q1, color) => {
+  const wall = (p0, p1, q0, q1, surface) => {
     // p* are the taller edge's endpoints, q* the shorter's, at the same XZ.
-    b.addQuad(p0, p1, q1, q0, color, {});
+    const patterned = typeof surface === 'object';
+    b.addQuad(p0, p1, q1, q0, patterned ? surface.edge : surface, {
+      pattern: patterned ? surface.pattern ?? 0 : 0,
+      // Horizontal distance along the wall, then height. Patterned wallpaper
+      // needs coordinates; plain cliffs retain 0.5 so the map grid ignores them.
+      locals: patterned && surface.pattern
+        ? [[0, 1], [1, 1], [1, 0], [0, 0]]
+        : undefined,
+    });
   };
 
   for (let z = 0; z < height; z++) {
@@ -168,7 +179,7 @@ export function buildTerrain(world) {
         const bN = cornerY(world, x + 1, z, 0, 0), bS = cornerY(world, x + 1, z, 0, 1);
         if (Math.abs(aN - bN) > EPS || Math.abs(aS - bS) > EPS) {
           const higher = (aN + aS) >= (bN + bS) ? world.surfaceAt(x, z) : world.surfaceAt(x + 1, z);
-          wall([x + 1, aN, z], [x + 1, aS, z + 1], [x + 1, bN, z], [x + 1, bS, z + 1], higher.edge);
+          wall([x + 1, aN, z], [x + 1, aS, z + 1], [x + 1, bN, z], [x + 1, bS, z + 1], higher);
         }
       }
       // South seam: between (x,z) and (x,z+1), in the plane Z = z+1.
@@ -177,7 +188,7 @@ export function buildTerrain(world) {
         const bW = cornerY(world, x, z + 1, 0, 0), bE = cornerY(world, x, z + 1, 1, 0);
         if (Math.abs(aW - bW) > EPS || Math.abs(aE - bE) > EPS) {
           const higher = (aW + aE) >= (bW + bE) ? world.surfaceAt(x, z) : world.surfaceAt(x, z + 1);
-          wall([x, aW, z + 1], [x + 1, aE, z + 1], [x, bW, z + 1], [x + 1, bE, z + 1], higher.edge);
+          wall([x, aW, z + 1], [x + 1, aE, z + 1], [x, bW, z + 1], [x + 1, bE, z + 1], higher);
         }
       }
     }
@@ -205,7 +216,7 @@ export function buildTerrain(world) {
     }
   }
 
-  const geometry = b.build({ shore: true });
+  const geometry = b.build({ shore: true, patterns: true });
   const material = terrainMaterial();
   const mesh = new THREE.Mesh(geometry, material);
   mesh.receiveShadow = true;
@@ -240,14 +251,17 @@ function terrainMaterial() {
         attribute vec2 aLocal;
         attribute float aWater;
         attribute float aShore;
+        attribute float aPattern;
         varying vec2 vLocal;
         varying float vWater;
         varying float vShore;
+        varying float vPattern;
         varying vec3 vWorldPos;`)
       .replace('#include <begin_vertex>', `#include <begin_vertex>
         vLocal = aLocal;
         vWater = aWater;
         vShore = aShore;
+        vPattern = aPattern;
         vWorldPos = (modelMatrix * vec4(transformed, 1.0)).xyz;`);
 
     shader.fragmentShader = shader.fragmentShader
@@ -260,11 +274,46 @@ function terrainMaterial() {
         varying vec2 vLocal;
         varying float vWater;
         varying float vShore;
+        varying float vPattern;
         varying vec3 vWorldPos;`)
       .replace('#include <opaque_fragment>', `
         ${WATER_FRAGMENT}
 
         outgoingLight = mix(outgoingLight, diffuseColor.rgb * 1.04 * uTint, uFlat);
+
+        // Textureless interior finishes. Surface IDs select a pattern, while
+        // tile-local coordinates keep every finish inside the terrain's one
+        // merged draw call. IDs 1-4 are floors; 5-7 are wallpaper.
+        if (vPattern > 0.5 && vPattern < 1.5) {
+          float boards = min(fract(vLocal.x * 4.0), 1.0 - fract(vLocal.x * 4.0));
+          float seam = 1.0 - smoothstep(0.0, 0.055, boards);
+          float stagger = 1.0 - smoothstep(0.0, 0.035,
+            min(fract(vLocal.y * 2.0 + floor(vLocal.x * 4.0) * 0.5),
+              1.0 - fract(vLocal.y * 2.0 + floor(vLocal.x * 4.0) * 0.5)));
+          outgoingLight *= 1.0 - max(seam, stagger) * 0.16;
+        } else if (vPattern > 1.5 && vPattern < 2.5) {
+          float check = mod(floor(vLocal.x * 2.0) + floor(vLocal.y * 2.0), 2.0);
+          outgoingLight *= mix(0.72, 1.08, check);
+        } else if (vPattern > 2.5 && vPattern < 3.5) {
+          float weave = abs(fract((vLocal.x + vLocal.y) * 5.0) - 0.5);
+          float crossWeave = abs(fract((vLocal.x - vLocal.y) * 5.0) - 0.5);
+          outgoingLight *= 0.9 + smoothstep(0.08, 0.16, min(weave, crossWeave)) * 0.12;
+        } else if (vPattern > 3.5 && vPattern < 4.5) {
+          vec2 grout = min(fract(vLocal * vec2(2.0, 3.0)), 1.0 - fract(vLocal * vec2(2.0, 3.0)));
+          outgoingLight *= 1.0 - (1.0 - smoothstep(0.0, 0.06, min(grout.x, grout.y))) * 0.18;
+        } else if (vPattern > 4.5 && vPattern < 5.5) {
+          float stripe = 0.5 + 0.5 * cos(vLocal.x * 12.56637);
+          outgoingLight *= mix(0.84, 1.08, stripe);
+        } else if (vPattern > 5.5 && vPattern < 6.5) {
+          vec2 bloomCell = fract(vLocal * vec2(3.0, 4.0)) - 0.5;
+          float bloom = 1.0 - smoothstep(0.12, 0.24, length(bloomCell));
+          outgoingLight = mix(outgoingLight, outgoingLight * vec3(0.72, 0.82, 0.68), bloom * 0.55);
+        } else if (vPattern > 6.5 && vPattern < 7.5) {
+          vec2 edge = min(vLocal, 1.0 - vLocal);
+          float frame = 1.0 - smoothstep(0.035, 0.075, min(edge.x, edge.y));
+          float rail = 1.0 - smoothstep(0.0, 0.035, abs(vLocal.y - 0.38));
+          outgoingLight *= 1.0 - max(frame, rail) * 0.2;
+        }
 
         // Natural shoreline. The interpolated proximity removes the hard
         // one-colour boundary; world-space waves break up its tile-straight
@@ -294,6 +343,6 @@ function terrainMaterial() {
 
         #include <opaque_fragment>`);
   };
-  m.customProgramCacheKey = () => 'terrain-shoreline-water-v2';
+    m.customProgramCacheKey = () => 'terrain-shoreline-water-patterns-v3';
   return m;
 }

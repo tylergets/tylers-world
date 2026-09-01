@@ -29,7 +29,7 @@ const MAP = {
 };
 
 export class Keyboard {
-  constructor(target = window) {
+  constructor(target = window, onInput = null) {
     this.state = {
       up: false, down: false, left: false, right: false, run: false,
       turnLeft: false, turnRight: false,
@@ -49,6 +49,7 @@ export class Keyboard {
 
     target.addEventListener('keydown', (e) => {
       if (typing(e)) return;
+      onInput?.();
       const a = MAP[e.code];
       if (a) { this.state[a] = true; e.preventDefault(); }
       this._press.add(e.code);

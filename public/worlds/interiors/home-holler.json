@@ -9,8 +9,9 @@
     "role": "player-home",
     "note": "Interior of home.holler in sourwood.json. Hand-authored. The one house in the game with nobody in it, and everything here is arranged to say so: no zone, because there is no owner to be welcome by; two tiles of fallen chimney breast standing in the middle of the floor; a hearth that is cold and, unlike every other kit fixture, does not move at all. It is also the darkest interior -- see ambience."
   },
-  "grid": {"width":12,"height":10,"tileSize":1},
+  "grid": {"width":17,"height":14,"tileSize":1},
   "ambience": {
+    "music": "home",
     "sky": "#101215",
     "sunColor": "#d8e0e8",
     "hemiSky": "#bfc9d2",
@@ -22,68 +23,80 @@
     "surface": {
         "palette": {"#":"wall","w":"floor.wood","t":"floor.tile","r":"rug"},
         "data": [
-          "############",
-          "#ttttwwwwww#",
-          "#ttttwwwwww#",
-          "#wwwwwwwwww#",
-          "#wwww##wwww#",
-          "#wwww##wwww#",
-          "#wwwwwwwwww#",
-          "#wwrwwwwwww#",
-          "#wwwwwwwwww#",
-          "#####tt#####"
+          "#################",
+          "#tttttttwwwwwwww#",
+          "#tttttttwwwwwwww#",
+          "#wwwwwwwwwwwwwww#",
+          "#wwwwwwwwwwwwwww#",
+          "#wwwwwwwwwwwwwww#",
+          "#wwwwwww##wwwwww#",
+          "#wwwwwww##wwwwww#",
+          "#wwwwwwwwwwwwwww#",
+          "#wwwwwwwwwwwwwww#",
+          "#wwwwwwwwwwwwwww#",
+          "#wwrwwwwwwwwwwww#",
+          "#wwwwwwwwwwwwwww#",
+          "########tt#######"
         ]
       },
     "elevation": {
         "palette": {"0":"0","4":"4"},
         "data": [
-          "444444444444",
-          "400000000004",
-          "400000000004",
-          "400000000004",
-          "400004400004",
-          "400004400004",
-          "400000000004",
-          "400000000004",
-          "400000000004",
-          "444440044444"
+          "44444444444444444",
+          "40000000000000004",
+          "40000000000000004",
+          "40000000000000004",
+          "40000000000000004",
+          "40000000000000004",
+          "40000000440000004",
+          "40000000440000004",
+          "40000000000000004",
+          "40000000000000004",
+          "40000000000000004",
+          "40000000000000004",
+          "40000000000000004",
+          "44444444004444444"
         ]
       },
     "flags": {
         "palette": {".":"none"},
         "data": [
-          "............",
-          "............",
-          "............",
-          "............",
-          "............",
-          "............",
-          "............",
-          "............",
-          "............",
-          "............"
+          ".................",
+          ".................",
+          ".................",
+          ".................",
+          ".................",
+          ".................",
+          ".................",
+          ".................",
+          ".................",
+          ".................",
+          ".................",
+          ".................",
+          ".................",
+          "................."
         ]
       }
   },
   "objects": [
     {"id":"hearth.cold","type":"fixture.coldhearth","tile":[1,1],"props":{"label":"Cold Hearth"}},
-    {"id":"range.old","type":"furn.stove","tile":[8,1],"props":{"label":"The Old Range"}},
-    {"id":"bed","type":"furn.bed","tile":[9,3]},
-    {"id":"chair.fallen","type":"furn.chair","tile":[2,6],"rotation":270},
-    {"id":"table","type":"furn.table","tile":[3,6]},
-    {"id":"shelf.books","type":"furn.shelf","tile":[7,8],"props":{"label":"Bookcase"}},
-    {"id":"crate","type":"furn.crate","tile":[1,8]},
-    {"id":"stairs.up","type":"furn.stairs","tile":[7,4],"props":{"label":"Upstairs","interior":"worlds/interiors/home-upper-2.json","requiresHouseStories":2}}
+    {"id":"range.old","type":"furn.stove","tile":[13,1],"props":{"label":"The Old Range"}},
+    {"id":"bed","type":"furn.bed","tile":[14,3]},
+    {"id":"chair.fallen","type":"furn.chair","tile":[2,8],"rotation":270},
+    {"id":"table","type":"furn.table","tile":[3,8]},
+    {"id":"shelf.books","type":"furn.shelf","tile":[10,12],"props":{"label":"Bookcase"}},
+    {"id":"crate","type":"furn.crate","tile":[1,12]},
+    {"id":"stairs.up","type":"furn.stairs","tile":[10,6],"props":{"label":"Upstairs","interior":"worlds/interiors/home-upper-2.json","requiresHouseStories":2}}
   ],
   "items": [
-    {"id":"stick.kindling","type":"item.stick","tile":[5,2]},
-    {"id":"stone.mantel","type":"item.stone","tile":[8,7]},
-    {"id":"mushroom.damp","type":"item.mushroom","tile":[2,5]},
-    {"id":"mushroom.sill","type":"item.mushroom","tile":[10,6]}
+    {"id":"stick.kindling","type":"item.stick","tile":[8,2]},
+    {"id":"stone.mantel","type":"item.stone","tile":[13,11]},
+    {"id":"mushroom.damp","type":"item.mushroom","tile":[2,7]},
+    {"id":"mushroom.sill","type":"item.mushroom","tile":[15,8]}
   ],
   "exits": [
-    {"tile":[5,9]},
-    {"tile":[6,9]}
+    {"tile":[8,13]},
+    {"tile":[9,13]}
   ],
-  "spawn": {"tile":[6,8],"facing":"north"}
+  "spawn": {"tile":[9,12],"facing":"north"}
 }

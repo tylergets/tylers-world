@@ -46,9 +46,11 @@
 import { DIR_NAME, DIR_VEC } from '../core/constants.js';
 import { objectType } from '../world/objectTypes.js';
 import { itemType } from '../world/itemTypes.js';
+import { POCKET_COUNT } from '../sim/Inventory.js';
 import { itemIcon } from './icons.js';
 import { PORTAL } from '../world/World.js';
 import { Minimap } from './minimap.js';
+import { WEATHER_KINDS, weatherOn } from '../world/weather.js';
 
 /** 0xrrggbb -> a CSS colour. */
 const css = (hex) => `#${hex.toString(16).padStart(6, '0')}`;
@@ -65,6 +67,7 @@ const ROWS = [
   ['here', 'here'],
   ['zone', 'floor'],
   ['item', 'take'],
+  ['plant', 'tend'],
   ['furniture', 'use'],
   ['tool', 'use'],
   // A fixture's key text is written by its kit ("Make a wish"), so this label
@@ -125,7 +128,7 @@ const PERF_ROWS = [
 export class Hud {
   constructor(root, {
     onScrub, onToggle, onVoice, onShoreline, onWater, onMap, onWorlds,
-    onQuality, onResolution, onShadows, onAntialias, onDayLength, onGoHome,
+    onQuality, onResolution, onShadows, onAntialias, onDayLength, onDeath, onGoHome,
   }) {
     root.innerHTML = `
       <div class="hud hud-tl">
@@ -190,6 +193,11 @@ export class Hud {
             <span class="vt-label">Day length</span>
             <span class="vt-key" id="hud-daylength-label"></span>
           </button>
+          <button class="view-toggle" id="hud-death"
+                  title="What happens to your pockets when you run out of hearts: keep them, drop them where you fell, or lose them.">
+            <span class="vt-label">On death</span>
+            <span class="vt-key" id="hud-death-label"></span>
+          </button>
 
           <div class="set-title">Options</div>
           <button class="view-toggle" id="hud-voice">
@@ -216,6 +224,8 @@ export class Hud {
         <span class="warn-where" id="hud-trespass-where"></span>
         <span class="warn-clock" id="hud-trespass-clock"></span>
       </div>
+
+      <div class="hud hud-hearts hearts" id="hud-hearts" hidden></div>
 
       <div class="hud-col">
         <div class="hud map-card" id="hud-map" hidden>
@@ -246,7 +256,12 @@ export class Hud {
           <span class="bag-held" id="hud-held"></span>
           <span class="bag-coins" id="hud-coins"></span>
         </div>
-        <div class="bag" id="hud-bag"></div>
+        <div class="pack" id="hud-pack" hidden></div>
+        <div class="bag-row">
+          <div class="bag" id="hud-bag"></div>
+          <button class="bag-btn" id="hud-bag-btn" title="Open bag"
+                  aria-label="Open bag" aria-expanded="false">&#127890;</button>
+        </div>
       </div>
 
       <div class="hud hud-bl">
@@ -259,7 +274,9 @@ export class Hud {
           <b>E</b><span>Talk <span class="dim">&middot;</span> pick up <span class="dim">&middot;</span> enter</span>
           <b>Q</b><span>Drop</span>
           <b>F</b><span>Use tool <span class="dim">&middot;</span> the row above says what</span>
-          <b>[ ]</b><span>Change slot</span>
+          <b>[ ]</b><span>Change tool</span>
+          <b>B</b><span>Open bag</span>
+          <b>G</b><span>Wardrobe</span>
           <b>Esc</b><span>Walk away</span>
         </div>
       </div>`;
@@ -278,12 +295,19 @@ export class Hud {
     this.sepA = root.querySelector('#hud-sep-a');
     this.sepB = root.querySelector('#hud-sep-b');
     this.bag = root.querySelector('#hud-bag');
+    this.pack = root.querySelector('#hud-pack');
+    this.bagBtn = root.querySelector('#hud-bag-btn');
+    this.bagBtn.addEventListener('click', () => this.toggleBag());
     this.held = root.querySelector('#hud-held');
     this.coins = root.querySelector('#hud-coins');
     this._purseVersion = -1;
     // -1 so the first frame always draws: an inventory that starts empty is
     // still an inventory that has to be on screen.
     this._bagVersion = -1;
+    // The inventory last drawn, kept so opening the bag can fill the grid NOW
+    // rather than on the next tenth-of-a-second update -- a panel that opens
+    // empty and populates a beat later reads as a glitch every time.
+    this._inv = null;
 
     // Build every row once; updates only ever touch textContent and `hidden`.
     this.rows = new Map();
@@ -329,6 +353,9 @@ export class Hud {
     this.antialiasLabel = root.querySelector('#hud-antialias-label');
     this.perfLabel = root.querySelector('#hud-perf-label');
     this.dayLengthLabel = root.querySelector('#hud-daylength-label');
+    this.deathLabel = root.querySelector('#hud-death-label');
+    this.hearts = root.querySelector('#hud-hearts');
+    this._heartsVersion = -1;
     this.clockEl = root.querySelector('#hud-clock');
     root.querySelector('#hud-shoreline').addEventListener('click', onShoreline);
     root.querySelector('#hud-water').addEventListener('click', onWater);
@@ -337,6 +364,7 @@ export class Hud {
     root.querySelector('#hud-shadows').addEventListener('click', onShadows);
     root.querySelector('#hud-antialias').addEventListener('click', onAntialias);
     root.querySelector('#hud-daylength').addEventListener('click', onDayLength);
+    root.querySelector('#hud-death').addEventListener('click', onDeath);
     root.querySelector('#hud-voice').addEventListener('click', onVoice);
     root.querySelector('#hud-perf-btn').addEventListener('click', () => this.togglePerf());
     root.querySelector('#hud-worlds').addEventListener('click', onWorlds);
@@ -351,6 +379,23 @@ export class Hud {
     // Keep focus on the canvas so movement keys keep working after a click.
     root.querySelectorAll('button, input').forEach((el) =>
       el.addEventListener('mouseup', () => el.blur()));
+  }
+
+  /**
+   * Open or close the full bag. Returns whether it is now open.
+   *
+   * The pockets row shows the first eight slots and never leaves the screen;
+   * the bag is the other twenty-two, drawn above it on demand. It is a HUD
+   * flap like the settings drawer, not a modal: the world keeps running, and
+   * closing it is a click or the same key again.
+   */
+  toggleBag(open = this.pack.hidden) {
+    this.pack.hidden = !open;
+    this.bagBtn.classList.toggle('on', open);
+    this.bagBtn.setAttribute('aria-expanded', String(open));
+    if (open && this._inv) this.#slots(this.pack, this._inv, 0, this._inv.size);
+    this.#bagBtnState();
+    return open;
   }
 
   /** Open or close the settings drawer. Returns whether it is now open. */
@@ -450,6 +495,10 @@ export class Hud {
     this.dayLengthLabel.textContent = label;
   }
 
+  setDeathPenalty(label) {
+    this.deathLabel.textContent = label;
+  }
+
   /**
    * The date and time, under the name of the place.
    *
@@ -459,8 +508,9 @@ export class Hud {
    * way of saying "always". Same treatment as the perf rows, which are the
    * other continuously-moving numbers on this panel.
    */
-  setClock(clock) {
-    this.clockEl.textContent = `Day ${clock.day}  ·  ${clock.label}`;
+  setClock(clock, weather = null) {
+    const sky = weather ? `  ·  ${WEATHER_KINDS[weather].label}` : '';
+    this.clockEl.textContent = `Day ${clock.day}  ·  ${clock.label}${sky}`;
   }
 
   /**
@@ -575,7 +625,8 @@ export class Hud {
     this.#set('facing', DIR_NAME[player.facing]);
     this.#set('control', game.input.name === 'grid' ? 'grid step' : 'free walk');
     this.#set('here', obj ? (obj.props?.label ?? objectType(obj.type).label) : null);
-    this.setClock(player.clock);
+    this.setClock(player.clock, weatherOn(world, player.clock.day));
+    this.#hearts(player.health);
     this.#actionRows(game);
     this.#trespass(game);
     this.#portalRow(world, player);
@@ -624,10 +675,32 @@ export class Hud {
    * single thing on screen you cannot point at.
    */
   #bag(inv) {
+    this._inv = inv;
     if (inv.version === this._bagVersion) return;
     this._bagVersion = inv.version;
 
-    this.bag.innerHTML = inv.slots.map((slot, i) => {
+    // Pockets are the first eight slots; the rest only exist on screen while
+    // the bag is open, and a closed bag's stale grid costs nothing because
+    // opening it redraws -- see toggleBag.
+    this.#slots(this.bag, inv, 0, POCKET_COUNT);
+    if (!this.pack.hidden) this.#slots(this.pack, inv, 0, inv.size);
+    this.#bagBtnState();
+
+    const held = inv.held;
+    this.held.textContent = held ? `${itemType(held.typeId).label} ${held.count}` : 'empty';
+  }
+
+  /**
+   * Draw slots `from` (inclusive) to `to` (exclusive) into a container.
+   *
+   * One renderer for the pockets row and the open bag, so a slot can never
+   * look different depending on which of the two it happens to be drawn in --
+   * the open bag repeats the pocket slots on purpose, as its first row, so it
+   * reads as the whole inventory rather than a second one.
+   */
+  #slots(parent, inv, from, to) {
+    parent.innerHTML = inv.slots.slice(from, to).map((slot, j) => {
+      const i = from + j;
       const on = i === inv.selected ? ' on' : '';
       if (!slot) return `<button class="slot empty${on}" data-slot="${i}"></button>`;
       const type = itemType(slot.typeId);
@@ -640,12 +713,21 @@ export class Hud {
         + `<span class="tally">${slot.count}</span></button>`;
     }).join('');
 
-    for (const el of this.bag.querySelectorAll('.slot')) {
+    for (const el of parent.querySelectorAll('.slot')) {
       el.addEventListener('click', () => { inv.select(Number(el.dataset.slot)); el.blur(); });
     }
+  }
 
-    const held = inv.held;
-    this.held.textContent = held ? `${itemType(held.typeId).label} ${held.count}` : 'empty';
+  /**
+   * Tint the bag button while the SELECTED slot is inside a closed bag.
+   *
+   * The one state where the player's selection is not on screen -- the held
+   * item's name still shows in the header, but the glowing slot does not, and
+   * a glow on the button says where it went.
+   */
+  #bagBtnState() {
+    this.bagBtn.classList.toggle('sel',
+      this.pack.hidden && (this._inv?.selected ?? 0) >= POCKET_COUNT);
   }
 
   /**
@@ -675,6 +757,9 @@ export class Hud {
     const npc = what?.kind === 'talk' ? what.npc : null;
     const fixture = what?.kind === 'use' ? what.fixture : null;
     const furniture = what?.kind === 'furniture' ? what.object : null;
+    const plant = what?.kind === 'plant' ? what : null;
+    this.#set('plant', plant ? (plant.blocked ?? plant.label) : null,
+      plant?.action === 'sow' ? 'sow' : plant?.action === 'harvest' ? 'harvest' : 'growing');
     const furnitureVerb = what?.action === 'sleep' ? 'sleep'
       : game.edits?.storedIn(furniture?.id) ? 'take' : 'store';
     this.#set('furniture', furniture ? objectType(furniture.type).label : null, furnitureVerb);
@@ -749,6 +834,29 @@ export class Hud {
    * seven seconds with no warning has been handled by a bug, as far as they can
    * tell; one watching the number fall has been given a decision.
    */
+  /**
+   * The hearts, and only when one is missing.
+   *
+   * Rebuilt wholesale rather than by textContent, on the same gate the bag
+   * uses: a heart changes SHAPE when it empties, not just its text, and the
+   * version compare means the rebuild happens on the frame you are shot and on
+   * no other. Hidden while the row is full, which is almost always -- a player
+   * who never picks a fight never learns this readout exists, and does not need
+   * to.
+   */
+  #hearts(health) {
+    if (!health) return;
+    const hide = health.full;
+    this.hearts.hidden = hide;
+    if (hide || this._heartsVersion === health.version) return;
+    this._heartsVersion = health.version;
+    let html = "";
+    for (let i = 0; i < health.max; i++) {
+      html += `<span class="heart${i < health.hearts ? "" : " gone"}">&#9829;</span>`;
+    }
+    this.hearts.innerHTML = html;
+  }
+
   #trespass(game) {
     const zone = game.world.zoneAt?.(game.player.tileX, game.player.tileZ) ?? null;
     const mine = zone && game.player.friends.has(zone.owner);

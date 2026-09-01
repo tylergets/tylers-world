@@ -167,6 +167,18 @@
     50% { border-color: rgba(255, 140, 140, 0.95); }
   }
 
+  /* Hearts. Top centre, under the trespass banner, and on screen ONLY while
+     one is missing -- a full row every frame of a game you can play without
+     ever being shot at is a status bar for a system that is not running. */
+  .hearts {
+    display: flex; gap: 5px; padding: 7px 11px;
+    font-size: 15px; line-height: 1;
+  }
+  .hud-hearts { top: 62px; left: 50%; transform: translateX(-50%); }
+  .heart { color: #e2555f; text-shadow: 0 1px 2px rgba(0, 0, 0, 0.55); }
+  .heart.gone { color: rgba(255, 255, 255, 0.22); text-shadow: none; }
+  .hearts[hidden] { display: none; }
+
   .row { display: flex; justify-content: space-between; gap: 14px; font-size: 12px; line-height: 1.75; }
   .row .k { color: var(--dim); }
   .row .v { font-family: var(--mono); font-size: 11.5px; }
@@ -185,6 +197,32 @@
   }
   .bag-held { font: 500 11.5px/1 var(--mono); color: var(--ink); opacity: 0.9; }
   .bag { display: flex; gap: 5px; }
+  .bag-row { display: flex; align-items: center; gap: 5px; }
+
+  /* The full bag: every slot, eight to a row so its first row sits exactly
+     over the pockets row it repeats. Above the pockets rather than a separate
+     card, because the panel is bottom-anchored and a flap that grows upward
+     never moves the row the player's eye is parked on. */
+  .pack {
+    display: grid; grid-template-columns: repeat(8, 34px); gap: 5px;
+    margin-bottom: 7px; padding-bottom: 7px;
+    border-bottom: 1px solid var(--edge);
+  }
+
+  /* The bag button. Slot-shaped and slot-sized so the row reads as one strip,
+     with a hair more gap to say it is not a ninth pocket. `sel` is the state
+     where the selected slot is inside the closed bag -- the glow follows the
+     selection off screen. */
+  .bag-btn {
+    flex: none; width: 34px; height: 34px; padding: 0; cursor: pointer;
+    display: grid; place-items: center; font-size: 17px; line-height: 1;
+    background: rgba(255, 255, 255, 0.07); border: 1px solid var(--edge);
+    border-radius: 8px; margin-left: 4px;
+    transition: border-color 0.14s, background 0.14s;
+  }
+  .bag-btn:hover { background: rgba(255, 255, 255, 0.14); }
+  .bag-btn.on { border-color: var(--accent); background: rgba(127, 212, 168, 0.16); }
+  .bag-btn.sel { border-color: var(--accent); }
   .slot {
     position: relative; width: 34px; height: 34px; padding: 0; cursor: pointer;
     display: grid; place-items: center;
@@ -366,6 +404,55 @@
   .choice:focus-visible, .shop-tab:focus-visible, .shop-row:focus-visible {
     outline: 2px solid var(--accent); outline-offset: 2px;
   }
+
+  /* Wardrobe. Centred like a conversation, but narrower: this is a list of
+     things already owned, not a shop with a second column for prices. */
+  .wardrobe {
+    position: absolute; inset: 0; z-index: 14; pointer-events: none;
+    display: grid; place-items: center; padding: 18px;
+  }
+  .wardrobe[hidden] { display: none; }
+  .wr-card {
+    pointer-events: auto; width: min(460px, calc(100vw - 36px));
+    max-height: min(650px, calc(100vh - 36px));
+    display: flex; flex-direction: column; overflow: hidden;
+    padding: 16px; background: rgba(16, 22, 31, 0.96);
+    border: 1px solid var(--edge); border-radius: 14px;
+    box-shadow: 0 18px 60px rgba(0, 0, 0, 0.5);
+  }
+  .wr-head { display: flex; align-items: center; gap: 10px; margin-bottom: 11px; }
+  .wr-title { font-size: 18px; font-weight: 700; }
+  .wr-count { font: 500 11px/1 var(--mono); color: var(--dim); }
+  .wr-spacer { flex: 1; }
+  .wr-btn {
+    font: inherit; font-size: 12px; color: var(--ink); cursor: pointer;
+    padding: 6px 9px; background: rgba(255, 255, 255, 0.07);
+    border: 1px solid var(--edge); border-radius: 7px;
+  }
+  .wr-list { min-height: 0; overflow-y: auto; scrollbar-width: thin; }
+  .wr-group {
+    padding: 10px 5px 5px; font-size: 10px; font-weight: 700; color: var(--dim);
+    letter-spacing: 0.09em; text-transform: uppercase;
+  }
+  .wr-row {
+    display: flex; align-items: center; gap: 11px; width: 100%; min-height: 48px;
+    margin-bottom: 5px; padding: 7px 10px; font: inherit; color: var(--ink);
+    text-align: left; cursor: pointer; background: rgba(255, 255, 255, 0.05);
+    border: 1px solid transparent; border-radius: 9px;
+  }
+  .wr-row:hover { background: rgba(255, 255, 255, 0.1); }
+  .wr-row.is-at { border-color: var(--accent); background: rgba(127, 212, 168, 0.14); }
+  .wr-row.is-worn .wr-tag { color: var(--accent); }
+  .wr-art { flex: none; width: 30px; height: 30px; display: grid; place-items: center; }
+  .wr-art .icon { width: 28px; height: 28px; }
+  .wr-chip { display: block; width: 20px; height: 20px; border-radius: 5px; }
+  .wr-name { flex: 1; font-size: 14px; font-weight: 600; }
+  .wr-tag { font: 500 10.5px/1 var(--mono); color: var(--dim); }
+  .wr-empty { padding: 24px 8px; color: var(--dim); font-size: 13px; line-height: 1.5; }
+  .wr-foot { margin-top: 11px; font-size: 12px; color: var(--dim); text-align: center; }
+  .wr-foot b { color: var(--ink); font-family: var(--mono); }
+  .wr-dim { margin: 0 5px; opacity: 0.6; }
+  .wr-row:focus-visible, .wr-btn:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
 
   @media (max-width: 560px) {
     .chat { width: calc(100vw - 20px); }

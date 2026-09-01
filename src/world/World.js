@@ -531,10 +531,32 @@ export class World {
   // ------------------------------------------------------------ traversal --
 
   /**
+   * How many elevation steps a ladder on this tile will carry a body, or 0.
+   *
+   * Derived from the objects standing here, like collision and occupancy are,
+   * and read straight off the occupant rather than kept as a fourth index: a
+   * climb is asked about only when a step has ALREADY failed the edge test,
+   * which is the rarest question this class answers.
+   */
+  climbAt(x, z) {
+    const obj = this.objectAt(x, z);
+    if (!obj) return 0;
+    try { return objectType(obj.type).climb ?? 0; } catch { return 0; }
+  }
+
+  /**
    * Can the player move from tile A to an ORTHOGONALLY ADJACENT tile B?
    * Used directly by grid movement, and as the edge test by free movement.
+   *
+   * `climbing` says the body can use a LADDER, and it is a fact about the body
+   * rather than about the pair of tiles -- which is why it is an argument and
+   * not something this class works out. A chicken and a ladder are both in the
+   * world and the chicken still cannot climb it, and that is the whole reason a
+   * fence keeps anything in: give the rule to every walker and a run of fence
+   * with one ladder inside it is a run of fence with a gate held open. The
+   * default is false, so nothing gets the ability by forgetting to ask.
    */
-  canStep(ax, az, bx, bz) {
+  canStep(ax, az, bx, bz, climbing = false) {
     if (!this.inBounds(bx, bz)) return false;
     if (this.isBlocked(bx, bz)) return false;
 
@@ -543,7 +565,13 @@ export class World {
     if (dir < 0) return false; // not orthogonally adjacent
 
     const back = (dir + 2) % 4;
-    return Math.abs(this.edgeHeight(ax, az, dir) - this.edgeHeight(bx, bz, back)) < 1e-6;
+    const rise = Math.abs(this.edgeHeight(ax, az, dir) - this.edgeHeight(bx, bz, back));
+    if (rise < 1e-6) return true;
+    if (!climbing) return false;
+    // A ladder on EITHER tile carries the step, so one piece serves both
+    // directions: what you climbed up is what you climb back down.
+    const reach = Math.max(this.climbAt(ax, az), this.climbAt(bx, bz));
+    return reach > 0 && rise <= reach + 1e-6;
   }
 
   /**
@@ -553,19 +581,19 @@ export class World {
    * shared orthogonal neighbours to be open, which is the standard fix for
    * squeezing through the corner where two blockers meet.
    */
-  canOccupy(tx, tz, fromX, fromZ) {
+  canOccupy(tx, tz, fromX, fromZ, climbing = false) {
     if (!this.inBounds(tx, tz)) return false;
     if (this.isBlocked(tx, tz)) return false;
     if (tx === fromX && tz === fromZ) return true;
 
     const dx = tx - fromX, dz = tz - fromZ;
     if (Math.abs(dx) <= 1 && Math.abs(dz) <= 1 && dx !== 0 && dz !== 0) {
-      return this.canStep(fromX, fromZ, fromX + dx, fromZ)
-        && this.canStep(fromX + dx, fromZ, tx, tz)
-        && this.canStep(fromX, fromZ, fromX, fromZ + dz)
-        && this.canStep(fromX, fromZ + dz, tx, tz);
+      return this.canStep(fromX, fromZ, fromX + dx, fromZ, climbing)
+        && this.canStep(fromX + dx, fromZ, tx, tz, climbing)
+        && this.canStep(fromX, fromZ, fromX, fromZ + dz, climbing)
+        && this.canStep(fromX, fromZ + dz, tx, tz, climbing);
     }
-    if (Math.abs(dx) + Math.abs(dz) === 1) return this.canStep(fromX, fromZ, tx, tz);
+    if (Math.abs(dx) + Math.abs(dz) === 1) return this.canStep(fromX, fromZ, tx, tz, climbing);
     return !this.isBlocked(tx, tz);
   }
 

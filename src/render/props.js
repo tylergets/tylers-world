@@ -214,15 +214,89 @@ function stairs(c) {
   for (const x of [-0.84, 0.84]) c.box(x, 0.75, 0, 0.08, 1.5, 2.2, p.rail, -0.43);
 }
 
+// A small block alphabet keeps shop names in the same merged geometry as the
+// buildings. Each lit cell becomes one quad, so signs stay cheap and legible
+// without a font asset, canvas texture, or an extra draw call per shop.
+const SIGN_GLYPHS = {
+  A: ['010', '101', '111', '101', '101'], B: ['110', '101', '110', '101', '110'],
+  C: ['011', '100', '100', '100', '011'], D: ['110', '101', '101', '101', '110'],
+  E: ['111', '100', '110', '100', '111'], F: ['111', '100', '110', '100', '100'],
+  G: ['011', '100', '101', '101', '011'], H: ['101', '101', '111', '101', '101'],
+  I: ['111', '010', '010', '010', '111'], J: ['001', '001', '001', '101', '010'],
+  K: ['101', '101', '110', '101', '101'], L: ['100', '100', '100', '100', '111'],
+  M: ['101', '111', '111', '101', '101'], N: ['101', '111', '111', '111', '101'],
+  O: ['010', '101', '101', '101', '010'], P: ['110', '101', '110', '100', '100'],
+  Q: ['010', '101', '101', '111', '011'], R: ['110', '101', '110', '101', '101'],
+  S: ['011', '100', '010', '001', '110'], T: ['111', '010', '010', '010', '010'],
+  U: ['101', '101', '101', '101', '111'], V: ['101', '101', '101', '101', '010'],
+  W: ['101', '101', '111', '111', '101'], X: ['101', '101', '010', '101', '101'],
+  Y: ['101', '101', '010', '010', '010'], Z: ['111', '001', '010', '100', '111'],
+  '&': ['010', '101', '010', '101', '011'], "'": ['010', '010', '000', '000', '000'],
+  '-': ['000', '000', '111', '000', '000'], '?': ['110', '001', '010', '000', '010'],
+};
+
+function signLines(label) {
+  const text = String(label || 'SHOP').toUpperCase().replace(/[^A-Z&' -]/g, '').trim() || 'SHOP';
+  if (text.length <= 12) return [text];
+  const words = text.split(/\s+/);
+  if (words.length === 1) return [text.slice(0, 12), text.slice(12, 24)];
+  let best = 1;
+  for (let i = 2; i < words.length; i++) {
+    const current = Math.max(words.slice(0, i).join(' ').length, words.slice(i).join(' ').length);
+    const previous = Math.max(words.slice(0, best).join(' ').length, words.slice(best).join(' ').length);
+    if (current < previous) best = i;
+  }
+  return [words.slice(0, best).join(' '), words.slice(best).join(' ')];
+}
+
+function shopSign(c, face, zf, centerX, label, color) {
+  const lines = signLines(label);
+  const maxCells = Math.max(...lines.map((line) => line.length * 4 - 1));
+  const unit = Math.min(lines.length === 1 ? 0.09 : 0.058, 3.35 / maxCells);
+  const textH = lines.length * 5 * unit + (lines.length - 1) * unit * 1.5;
+  const top = 2.05 + textH / 2;
+  const z = face + 0.235 * zf;
+
+  for (let li = 0; li < lines.length; li++) {
+    const line = lines[li];
+    const lineW = (line.length * 4 - 1) * unit;
+    const x0 = centerX - lineW / 2;
+    const yTop = top - li * 6.5 * unit;
+    for (let ci = 0; ci < line.length; ci++) {
+      const glyph = SIGN_GLYPHS[line[ci]];
+      if (!glyph) continue;
+      for (let row = 0; row < 5; row++) for (let col = 0; col < 3; col++) {
+        if (glyph[row][col] !== '1') continue;
+        const left = x0 + (ci * 4 + col) * unit;
+        const right = left + unit * 0.78;
+        const high = yTop - row * unit;
+        const low = high - unit * 0.78;
+        if (zf > 0) c.quad([left, low, z], [right, low, z], [right, high, z], [left, high, z], color);
+        else c.quad([right, low, z], [left, low, z], [left, high, z], [right, high, z], color);
+      }
+    }
+  }
+}
+
 function store(c) {
   const p = c.pal;
   const W = 4.5, D = 3.3, wallH = 1.8;
-  c.box(0, wallH / 2, 0, W, wallH, D, p.wall);
+  c.box(0, 0.1, 0, W + 0.16, 0.2, D + 0.16, p.trim);
+  c.box(0, wallH / 2 + 0.1, 0, W, wallH - 0.2, D, p.wall);
+  for (const x of [-W / 2 + 0.1, W / 2 - 0.1]) for (const z of [-D / 2 + 0.1, D / 2 - 0.1]) {
+    c.box(x, 0.94, z, 0.18, 1.68, 0.18, p.trim);
+  }
   // Hipped pyramid roof: reads as a distinct diamond from directly overhead,
   // which is what separates the store from the house on the 2D map.
   const r = Math.hypot(W / 2 + 0.3, D / 2 + 0.3);
   c.add(PYR, trs(0, wallH + 0.62, 0, 0, Math.PI / 4, 0, r, 1.25, r), p.roof);
   c.box(0, wallH + 0.05, 0, W + 0.5, 0.16, D + 0.5, p.roofDark);
+  // A glazed cupola gives the broad roof a silhouette and a little depth from above.
+  c.box(0, 2.63, 0, 0.72, 0.45, 0.72, p.trim);
+  for (const x of [-1, 1]) c.box(x * 0.365, 2.65, 0, 0.025, 0.22, 0.42, p.window);
+  for (const z of [-1, 1]) c.box(0, 2.65, z * 0.365, 0.42, 0.22, 0.025, p.window);
+  c.add(PYR, trs(0, 2.98, 0, 0, Math.PI / 4, 0, 0.72, 0.42, 0.72), p.roofDark);
+  c.box(0, 3.25, 0, 0.05, 0.5, 0.05, p.trim);
 
   const [dx, dz] = c.type.door;
   const fw = c.type.footprint.w, fd = c.type.footprint.d;
@@ -230,18 +304,33 @@ function store(c) {
   const zf = Math.sign(doorZ) || 1;
   const face = (D / 2) * zf;
 
-  c.box(doorX, 0.55, face + 0.04 * zf, 0.8, 1.1, 0.08, p.door);
-  // Striped awning over the shopfront.
-  for (let i = 0; i < 7; i++) {
-    c.box(-1.5 + i * 0.5, 1.32, face + 0.34 * zf, 0.5, 0.1, 0.72,
-      i % 2 ? p.awning : p.wall, 0);
-  }
+  // Deep frames make the door and display windows read as separate storefront pieces.
+  c.box(doorX, 0.68, face + 0.045 * zf, 0.94, 1.36, 0.1, p.trim);
+  c.box(doorX, 0.68, face + 0.105 * zf, 0.72, 1.16, 0.06, p.door);
+  c.box(doorX, 0.91, face + 0.14 * zf, 0.5, 0.5, 0.035, p.window);
+  c.box(doorX, 0.91, face + 0.165 * zf, 0.055, 0.5, 0.025, p.trim);
+  c.box(doorX + 0.25, 0.58, face + 0.17 * zf, 0.055, 0.055, 0.04, p.signText);
   for (const wx of [doorX - 1.5, doorX + 1.5]) {
-    c.box(wx, 0.8, face + 0.04 * zf, 0.9, 0.7, 0.08, p.window);
+    c.box(wx, 0.82, face + 0.045 * zf, 1.08, 0.9, 0.1, p.trim);
+    c.box(wx, 0.82, face + 0.105 * zf, 0.9, 0.7, 0.055, p.window);
+    c.box(wx, 0.82, face + 0.15 * zf, 0.055, 0.7, 0.025, p.trim);
+    c.box(wx, 0.82, face + 0.15 * zf, 0.9, 0.055, 0.025, p.trim);
   }
-  // Sign board above the awning.
-  c.box(doorX, 1.95, face + 0.1 * zf, 2.0, 0.5, 0.12, p.wall);
-  c.box(doorX, 1.95, face + 0.17 * zf, 1.7, 0.26, 0.06, p.roof);
+
+  // Sloped striped canopy, scalloped valance, and its two slender supports.
+  for (let i = 0; i < 8; i++) {
+    const x = -1.79 + i * 0.51;
+    c.add(BOX, trs(x, 1.47, face + 0.36 * zf, 0.16 * zf, 0, 0, 0.51, 0.08, 0.78),
+      i % 2 ? p.awning : p.wall);
+    c.box(x, 1.29, face + 0.76 * zf, 0.49, 0.2, 0.07, i % 2 ? p.awning : p.wall);
+  }
+  for (const x of [-1.98, 1.98]) c.box(x, 0.66, face + 0.73 * zf, 0.055, 1.28, 0.055, p.trim);
+
+  // Framed, named signboard. The actual lettering is merged into the prop batch.
+  c.box(doorX, 2.05, face + 0.11 * zf, 4.02, 0.82, 0.13, p.trim);
+  c.box(doorX, 2.05, face + 0.185 * zf, 3.72, 0.6, 0.055, p.sign);
+  for (const x of [doorX - 1.7, doorX + 1.7]) c.box(x, 1.69, face + 0.08 * zf, 0.08, 0.42, 0.08, p.trim);
+  shopSign(c, face, zf, doorX, c.obj.props?.label ?? c.type.label, p.signText);
 }
 
 function gate(c) {
@@ -370,6 +459,79 @@ function crate(c) {
   c.box(0, s + 0.02, 0, s + 0.04, 0.05, s + 0.04, p.edge, yaw);
 }
 
+// ------------------------------------------------------------------ yard --
+
+/**
+ * A fence post, with rails to whichever neighbours are also fence posts.
+ *
+ * The one builder in this file that reads the world around the object it is
+ * drawing, and it earns that: a run of fence has to look like a RUN. Drawing
+ * four rail stubs regardless would put spurs on every corner and on the lone
+ * post somebody left in a field, and drawing none would make a fence read as a
+ * row of unrelated stakes -- which is the one thing it must not, because the
+ * shape a player is trying to author here is an enclosure.
+ *
+ * Neighbours are looked up in WORLD directions and drawn in LOCAL ones (`side`
+ * below), because a post's rotation is whichever way the player happened to be
+ * facing when they put it down and its rails plainly should not swing with it.
+ *
+ * With no world -- the shop's preview, which draws a TYPE and has no placed
+ * object (see ui/preview.js) -- it draws the east-west pair, which is the
+ * picture of what is being sold: a length of fence, not a stake.
+ */
+function fence(c) {
+  const p = c.pal;
+  c.box(0, 0.5, 0, 0.17, 1.0, 0.17, p.post);
+  c.box(0, 0.36, 0, 0.2, 0.1, 0.2, p.postHi);
+  c.box(0, 1.03, 0, 0.23, 0.09, 0.23, p.cap);
+
+  const [ax, az] = c.obj.tile ?? [0, 0];
+  const turns = ((c.obj.rotation ?? 0) / 90 % 4 + 4) % 4;
+  /** A world-space step turned into the builder's own axes. */
+  const side = (dx, dz) => {
+    for (let i = 0; i < turns; i++) [dx, dz] = [dz, -dx];
+    return [dx, dz];
+  };
+
+  for (const [dx, dz] of [[1, 0], [-1, 0], [0, 1], [0, -1]]) {
+    if (c.world) {
+      const n = c.world.objectAt(ax + dx, az + dz);
+      if (n?.type !== 'yard.fence') continue;
+    } else if (dz !== 0) {
+      continue;                            // no world: draw the east-west run
+    }
+    const [lx, lz] = side(dx, dz);
+    // Half a tile of rail, from the post to the shared edge, where the
+    // neighbour's own half meets it.
+    for (const y of [0.4, 0.74]) {
+      c.box(lx * 0.29, y, lz * 0.29, lx ? 0.58 : 0.07, 0.09, lz ? 0.58 : 0.07, p.rail);
+    }
+  }
+}
+
+/**
+ * A ladder, leaning the way it was placed.
+ *
+ * Authored leaning toward +z -- south, the way every prop in this file faces
+ * unrotated -- because that is the way the player was looking when they set it
+ * down, and what they were looking at was the ridge they want to get up.
+ */
+function ladder(c) {
+  const p = c.pal;
+  const H = 1.8, LEAN = 0.26;
+  for (const sx of [-1, 1]) {
+    // A stile is one box tipped about x, so its top ends up over the ridge and
+    // its foot on the tile it stands on.
+    c.add(BOX, trs(sx * 0.19, H / 2, LEAN / 2, -Math.atan2(LEAN, H), 0, 0, 0.09, H + 0.1, 0.09),
+      sx > 0 ? p.stile : p.stileHi);
+    c.box(sx * 0.19, 0.05, -0.02, 0.14, 0.1, 0.22, p.foot);
+  }
+  for (let i = 0; i < 5; i++) {
+    const f = (i + 0.6) / 5.4;
+    c.box(0, f * H, f * LEAN, 0.42, 0.06, 0.11, p.rung);
+  }
+}
+
 const BUILDERS = {
   'tree.oak': oak,
   'tree.pine': pine,
@@ -382,6 +544,7 @@ const BUILDERS = {
   'building.bungalow': home,
   'building.store': store,
   'building.furniture': store,
+  'building.clothier': store,
   'building.gate': gate,
   'furn.bed': bed,
   'furn.table': table,
@@ -392,6 +555,8 @@ const BUILDERS = {
   'furn.plant': plant,
   'furn.crate': crate,
   'furn.stairs': stairs,
+  'yard.fence': fence,
+  'yard.ladder': ladder,
 };
 
 /**
@@ -484,6 +649,44 @@ export function drawProp(c, typeId) {
 }
 
 /**
+ * One type's model, meshed alone in LOCAL space, for the placement ghost.
+ *
+ * The same builders the town is baked from, reached through the seam
+ * ui/preview.js already buys its pictures through (`drawProp`), so the ghost
+ * of a chair is exactly the chair you will get. LOCAL space -- origin at the
+ * centre of the footprint, base at y = 0, unrotated -- because a ghost MOVES:
+ * it follows the tile the player is facing, so it has to be a mesh with a
+ * transform rather than vertices baked into a place's merged buffer.
+ *
+ * Seeded by the type rather than by a placed object, because there is no
+ * placed object yet -- that is what makes it a ghost. The piece that lands
+ * will re-seed from its real id, so a detail may shift on placement (a
+ * crate's lean, a shelf's books); the alternative is a ghost that lies about
+ * being the finished thing rather than a picture of it.
+ *
+ * @returns {THREE.BufferGeometry|null} null for a type nothing can draw.
+ */
+export function ghostProp(typeId) {
+  // A type that will not draw is a placement with no preview, never a crash
+  // mid-frame -- the same stance ui/preview.js takes, because kit types
+  // arrive from files and this is the other place that runs them.
+  try {
+    const type = objectType(typeId);
+    const g = new GeoBuilder();
+    const ctx = new PropCtx(g, 0, 0, 0, 0,
+      { id: `ghost:${typeId}`, tile: [0, 0], rotation: 0, props: {} }, type);
+    ctx.houseStories = 1;
+    // No ctx.world, deliberately: a fence ghost draws the east-west run the
+    // shop preview draws. Its rails resolve against real neighbours when it
+    // lands.
+    if (!drawProp(ctx, typeId)) return null;
+    return g.build();
+  } catch {
+    return null;
+  }
+}
+
+/**
  * Build every prop in the world, batched by squash factor.
  *
  * Felled objects are still built. The place's geometry is a picture of the
@@ -517,6 +720,10 @@ export function buildProps(world) {
 
     const ctx = new PropCtx(g, cx, baseY, cz, yaw, obj, type);
     ctx.houseStories = world.houseStories;
+    // For the one builder that has to look at its neighbours (`fence`). Left
+    // undefined by the shop's preview, which is drawing a type and has no
+    // place to stand it in -- see ui/preview.js.
+    ctx.world = world;
     g.begin(obj.id, baseY);
     build(ctx);
     g.end();

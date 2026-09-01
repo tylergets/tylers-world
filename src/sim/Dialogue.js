@@ -193,6 +193,12 @@ export class Dialogue {
         // these scripts with no player in the world -- and the sensible thing
         // to do with a feud nobody is keeping track of is nothing.
         case 'peace': if (v) this.ctx.friends?.forgive(this.npc.id); break;
+        // Settling up over stolen goods, which the Game owns for the reason it
+        // owns `houseStories`: paying takes the coins here, but handing the
+        // goods back and being shot at are both things that happen to the
+        // WORLD. An absent callback is a headless format walker, where -- as
+        // with every other effect -- the script still runs and does nothing.
+        case 'theft': this.ctx.settleTheft?.(this.npc, v); break;
         case 'errand':
           if (v.action === 'accept') this.ctx.errands?.accept(this.npc.id, v.id);
           else if (v.action === 'complete') this.ctx.errands?.complete(this.npc, v.id, this.ctx);

@@ -50,7 +50,30 @@ import { DIR_YAW, angleDelta } from '../core/constants.js';
 import { makeRng, range, hashString } from '../core/rng.js';
 import { sweep, turnToward } from './body.js';
 import { makeBehavior } from './behaviors.js';
+import { clearLine } from './tools.js';
 import { Shop } from './Shop.js';
+
+/**
+ * How somebody who has caught you at it behaves.
+ *
+ * The numbers are deliberately kinder than the player's own gun: he fires
+ * slower than you reload, he stops further out than your range, and he gives up
+ * after half a minute. Being shot at in this game is a scene you can run away
+ * from, not a fight you are expected to win -- there is no way to heal, and the
+ * only weapon that helps is the one that started it.
+ */
+const HUNT = {
+  /** Tiles: how far he will take a shot from. */
+  range: 6,
+  /** Tiles: how close he tries to get before firing. */
+  close: 3.2,
+  /** Seconds between his shots. */
+  reload: 1.9,
+  /** Seconds before he calms down on his own, having lost you or made his point. */
+  patience: 30,
+  /** Tiles/sec on top of his ordinary walk. Angry, not athletic. */
+  hurry: 1.35,
+};
 
 export class Npc {
   /** @param {object} spec  `{ id, type, tile, facing, props }` from the world file */
@@ -132,6 +155,44 @@ export class Npc {
     /** Current player-side grudge severity, mirrored by Folk for movement/view. */
     this.grudge = 0;
 
+    /**
+     * Where he is, in the sense the PLAYER means it: at home behind a closed
+     * door, or out where you can see him.
+     *
+     * Not a position -- the position is x/z as always -- but which ROOM he is
+     * standing in, and it is a field on the person rather than a fact about a
+     * place because he is one person who walks between two world files. See
+     * sim/Residents.js, which owns the schedule that flips it, and Folk.admit /
+     * Folk.release, which move him between the two places' people.
+     */
+    this.indoors = false;
+    /** Where he stands when he is indoors, in his own house's coordinates. */
+    this.indoorPost = null;
+    /**
+     * Somewhere he is walking to right now, outranking his station.
+     *
+     * One tile and no route: it is used for the last few steps to his own front
+     * door, which he is always already standing near, and `sweep` slides him
+     * along whatever he clips on the way. A path finder for a doorstep would be
+     * a lot of machinery for a walk you can watch take two seconds.
+     */
+    this.goal = null;
+
+    /**
+     * Seconds left of wanting to shoot you, and what he is owed.
+     *
+     * Both are consequences of being SEEN doing something (sim/Watch.js), and
+     * neither is saved: a man with a gun out is a scene in progress, and the
+     * lasting half of it -- that he is now your enemy -- is written on the
+     * player where every other lasting fact about a person is. See Friends.js.
+     */
+    this.hostile = 0;
+    /** `{ debt, typeId, label }` while walking over to ask you to pay. */
+    this.confront = null;
+    /** Set for exactly one frame when a shot leaves his gun. Read by the Game. */
+    this.firing = false;
+    this._reload = 0;
+
     // Where a walker keeps to: his authored tile, exactly as an animal's home
     // is. He is not fenced to it -- see Stroll -- it is where he keeps ending up.
     this.home = { x: this.x, z: this.z };
@@ -157,6 +218,17 @@ export class Npc {
       this.shopAvailable = !hours || (hours.open < hours.close
         ? hour >= hours.open && hour < hours.close
         : hour >= hours.open || hour < hours.close);
+    }
+
+    // Indoors outranks the schedule outright. The station tiles are written in
+    // the TOWN's coordinates, and applying one to somebody standing in his own
+    // kitchen would walk him at a wall in a room where that tile is a bed.
+    if (this.indoors) {
+      if (this.indoorPost) {
+        this.home.x = this.indoorPost.x;
+        this.home.z = this.indoorPost.z;
+      }
+      return;
     }
 
     if (!this.schedule.length) return;
@@ -193,7 +265,6 @@ export class Npc {
   get tileX() { return Math.floor(this.x); }
   get tileZ() { return Math.floor(this.z); }
 
-  /** True when this NPC has anything to say. */
   /**
    * Whether there is a conversation to be had.
    *
@@ -202,12 +273,84 @@ export class Npc {
    * Game.interaction already tests it on the tile ahead, so both of the two
    * routes into a conversation are closed by the single flag.
    */
-  get talkable() { return this.dialog !== null && this.downed <= 0 && this.available; }
+  get talkable() {
+    // `hostile` and not `roused`: somebody walking over to ask you about the
+    // apple in your pocket is very much available for a conversation -- it is
+    // the conversation he is coming to have -- and the Game hands him the right
+    // script for it. Somebody with the gun already up is not.
+    return this.dialog !== null && this.downed <= 0 && this.available && this.hostile <= 0;
+  }
 
   /** Put him on the floor. He gets up on his own. */
   knockDown() {
     this.downed = this.type.recover ?? 4.5;
     this.attention = null;
+    // Knocked down mid-errand is the errand over. He gets up angry -- `hostile`
+    // survives, and it is what puts him back on his feet still coming -- but he
+    // is not walking anywhere or asking anybody for money while he is flat.
+    this.goal = null;
+    this.confront = null;
+  }
+
+  /**
+   * Draw on the player.
+   *
+   * The end state of every crime somebody actually SAW: a homeowner reaches it
+   * the moment he sees you take something, a shopkeeper reaches it when you
+   * tell her you are not paying. There is no third tier above it -- he shoots,
+   * he runs out of patience, and what is left is the grudge, which is the part
+   * the game keeps.
+   */
+  enrage(seconds = HUNT.patience) {
+    this.hostile = Math.max(this.hostile, seconds);
+    this.confront = null;
+    this.goal = null;
+    this.attention = null;
+    // Half a beat before the first shot, so it reads as him raising the gun
+    // rather than as the theft having a damage number attached to it.
+    this._reload = Math.max(this._reload, 0.7);
+  }
+
+  /** Walk over and ask about it. `debt` is what the shop wants for the goods. */
+  accuse(debt, typeId, label) {
+    if (this.hostile > 0) return;
+    this.confront = { debt, typeId, label };
+  }
+
+  /** Put the gun away and forget it: paid up, or handed back. */
+  calm() {
+    this.hostile = 0;
+    this.confront = null;
+    this.goal = null;
+  }
+
+  /** True while he is coming over about something rather than living his day. */
+  get roused() { return this.hostile > 0 || this.confront !== null; }
+
+  /** Send him to a tile in the place he is standing in. */
+  walkTo(x, z) {
+    this.goal = { x: x + 0.5, z: z + 0.5 };
+  }
+
+  /**
+   * Put him down somewhere in a (possibly different) place.
+   *
+   * The NPC's answer to Player.placeIn, and the only way he ever changes rooms:
+   * going in his own front door and coming back out of it. Everything that was
+   * about the room he left -- who he was looking at, where he was walking --
+   * goes with it.
+   */
+  placeAt(world, x, z, facing = null) {
+    this.x = x + 0.5;
+    this.z = z + 0.5;
+    this.y = world.groundHeight(this.x, this.z);
+    this.speed = 0;
+    this.goal = null;
+    this.attention = null;
+    this.behavior?.reset?.();
+    this.home = { x: this.x, z: this.z };
+    if (facing !== null) { this.post = DIR_YAW[facing]; this.yaw = this.post; }
+    this._target = this.yaw;
   }
 
   /**
@@ -222,7 +365,13 @@ export class Npc {
     this.attention = x === null ? null : { x, z };
   }
 
-  update(dt, world, clock = null) {
+  /**
+   * @param {object} [target]  where the player is, for anybody who is coming
+   *   after them. Absent for a headless caller, and for every ordinary frame it
+   *   changes nothing: an NPC who is neither angry nor owed money never reads it.
+   */
+  update(dt, world, clock = null, target = null) {
+    this.firing = false;
     this.syncClock(clock);
     // Down, and nothing else is true while he is. Above everything, so Stroll
     // never sees the frame -- a walker who kept his errand while flat on his
@@ -231,6 +380,16 @@ export class Npc {
       this.downed = Math.max(0, this.downed - dt);
       this.attention = null;
       this.speed = 0;
+      if (this.hostile > 0) this.hostile = Math.max(0, this.hostile - dt);
+      return;
+    }
+
+    // Coming for you outranks everything except being on the floor -- including
+    // being spoken to. A man walking over with a gun is not available for a
+    // conversation about the weather, and the conversation he IS available for
+    // is one the Game opens on his behalf when he arrives.
+    if (this.roused && target) {
+      this.#pursue(dt, world, target);
       return;
     }
 
@@ -240,6 +399,23 @@ export class Npc {
       if (Math.hypot(dx, dz) > 1e-3) this._target = Math.atan2(dx, dz);
       this.#stand(dt, world);
       return;
+    }
+
+    // A place to be right now -- his own doorstep, on the way in or out --
+    // which outranks the station for as long as it lasts, and then clears
+    // itself. See `walkTo`, and sim/Residents.js, which is the only caller.
+    if (this.goal) {
+      const dx = this.goal.x - this.x, dz = this.goal.z - this.z;
+      const distance = Math.hypot(dx, dz);
+      if (distance > 0.3) {
+        const speed = this.type.walkSpeed;
+        this.yaw = Math.atan2(dx, dz);
+        sweep(world, this, dt, dx / distance * speed, dz / distance * speed);
+        this._target = this.yaw;
+        this.lean = 0;
+        return;
+      }
+      this.goal = null;
     }
 
     if (this._station) {
@@ -279,6 +455,51 @@ export class Npc {
   }
 
   /**
+   * Walk somebody down, and -- if that is the mood he is in -- shoot at them.
+   *
+   * One method for both moods because it is one walk: a shopkeeper crossing her
+   * floor to ask you about a pocketed apple and a villager crossing his to make
+   * you leave are the same steps at the same speed, and the only difference is
+   * what happens when he gets there. She stops and the Game opens her mouth
+   * (see `Game.watchRoused`); he stops and pulls the trigger.
+   *
+   * THE SHOT IS DECIDED HERE AND FIRED ELSEWHERE. All this does is set `firing`
+   * for one frame -- what a shot costs, what it draws and what it does to the
+   * player belongs to the Game, exactly as the player's own gun does. An NPC
+   * that could hurt the player directly would be a second copy of the damage
+   * rules living on the thing least able to say what they are.
+   */
+  #pursue(dt, world, target) {
+    if (this.hostile > 0) this.hostile = Math.max(0, this.hostile - dt);
+    if (this._reload > 0) this._reload = Math.max(0, this._reload - dt);
+
+    const dx = target.x - this.x, dz = target.z - this.z;
+    const distance = Math.hypot(dx, dz);
+    if (distance > 1e-3) this.yaw = Math.atan2(dx, dz);
+    this._target = this.yaw;
+    this.lean = 0;
+    this.y = world.groundHeight(this.x, this.z);
+
+    // Close enough to say his piece, or to shoot from. `close` for the walk and
+    // `range` for the gun are two numbers on purpose: he keeps coming until he
+    // is well inside his own range, so backing off one step does not make the
+    // shooting stop -- and he still fires from wherever he is if he has the
+    // line, rather than politely closing to a mark first.
+    const want = this.hostile > 0 ? HUNT.close : 1.25;
+    if (distance > want) {
+      const speed = this.type.walkSpeed * (this.hostile > 0 ? HUNT.hurry : 1.15);
+      sweep(world, this, dt, dx / distance * speed, dz / distance * speed);
+    } else {
+      this.speed = 0;
+    }
+
+    if (this.hostile <= 0 || this._reload > 0) return;
+    if (!clearLine(world, this.x, this.z, target.x, target.z, HUNT.range)) return;
+    this._reload = HUNT.reload;
+    this.firing = true;
+  }
+
+  /**
    * Turn on the spot, and stop.
    *
    * `speed` has to be written every frame and not just when it changes: it is
@@ -295,3 +516,4 @@ export class Npc {
     this.lean = angleDelta(this.post, this.yaw);
   }
 }
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                  

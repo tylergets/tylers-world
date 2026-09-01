@@ -21,7 +21,7 @@
 
 import { Draft } from './draft.js';
 
-const HOUSE_PRICE = { 2: 1800, 3: 3600 };
+export const HOUSE_PRICE = { 2: 1800, 3: 3600 };
 
 /** Place a recipe-specific housewright on the proven-open approach to the home. */
 function addHousewright(d, home, { id, name, title, voice, flavor }) {
@@ -155,6 +155,11 @@ export function meadowbrook({
     { label: 'General Store', interior: 'worlds/interiors/store-nook.json' }, '0');
   const furniture = d.placeNear('store.furniture', 'building.furniture', cx + 15, cz + 3, ['g'], 12,
     { label: 'Turnip & Timber', interior: 'worlds/interiors/store-furniture.json' }, '0');
+  // The third shop, wished for beside the second so the three of them read as a
+  // parade rather than as three errands in three directions. One interior file
+  // serves every town's, exactly as Turnip & Timber's does.
+  const clothier = d.placeNear('store.clothier', 'building.clothier', furniture[0] + 7, furniture[1], ['g'], 12,
+    { label: 'Cuff & Collar', interior: 'worlds/interiors/store-clothier.json' }, '0');
 
   // THE NEIGHBOURS. Three houses round the plaza, each with somebody living in
   // it, and each interior a place you are not welcome until you have met them
@@ -163,17 +168,18 @@ export function meadowbrook({
   // walking up to a stranger, so the three of them must not be findable from
   // one spot on the square.
   const cottage = d.placeNear('home.bramble', 'building.cottage', cx - 14, cz + 14, ['g'], 10,
-    { label: "Bramble's Cottage", interior: 'worlds/interiors/home-bramble.json' }, '0');
+    { label: "Bramble's Cottage", interior: 'worlds/interiors/home-bramble.json', owner: 'folk.bramble' }, '0');
   const cabin = d.placeNear('home.wren', 'building.cabin', cx + 4, cz + 19, ['g', 's'], 10,
-    { label: "Wren's Cabin", interior: 'worlds/interiors/home-wren.json' }, '0');
+    { label: "Wren's Cabin", interior: 'worlds/interiors/home-wren.json', owner: 'folk.wren' }, '0');
   const bungalow = d.placeNear('home.tobin', 'building.bungalow', cx + 15, cz + 8, ['g'], 10,
-    { label: "Tobin's Bungalow", interior: 'worlds/interiors/home-tobin.json' }, '0');
+    { label: "Tobin's Bungalow", interior: 'worlds/interiors/home-tobin.json', owner: 'folk.tobin' }, '0');
 
   // Approaches, drawn AFTER placement so a building that had to shuffle takes
   // its path with it. Doors face south, so the approach starts below them.
   d.pathL(home[0] + 1, home[1] + 3, cx - 1, cz + 11, { level: '0' });
   d.pathL(store[0] + 2, store[1] + 4, cx, cz + 11, { level: '0' });
   d.pathL(furniture[0] + 2, furniture[1] + 4, cx + 7, cz + 11, { level: '0' });
+  d.pathL(clothier[0] + 2, clothier[1] + 4, cx + 11, cz + 11, { level: '0' });
   d.pathL(cottage[0] + 1, cottage[1] + 3, cx - 10, cz + 12, { level: '0' });
   d.pathL(cabin[0] + 2, cabin[1] + 3, cx + 1, cz + 20, { level: '0' });
   d.pathL(bungalow[0] + 2, bungalow[1] + 3, cx + 11, cz + 12, { level: '0' });
@@ -333,7 +339,7 @@ export function meadowbrook({
     schedule: [
       { at: 6, tile: [cottage[0] + 1, cottage[1] + 3], facing: 'south', activity: 'Tending the beds' },
       { at: 13, tile: [cx - 10, cz + 12], facing: 'east', activity: 'Checking the roadside soil' },
-      { at: 20, tile: [cottage[0] + 1, cottage[1] + 3], facing: 'north', activity: 'Inside for the night', available: false },
+      { at: 20, tile: [cottage[0] + 1, cottage[1] + 3], facing: 'north', activity: 'Inside for the night', available: false, inside: true },
     ],
     errands: [
       { id: 'shade-crop', title: 'Gather mushrooms', objective: { kind: 'gather', item: 'item.mushroom', count: 3 }, reward: { coins: 45, relationship: 18 } },
@@ -468,7 +474,7 @@ export function meadowbrook({
     schedule: [
       { at: 5, tile: [cabin[0] + 2, cabin[1] + 3], facing: 'south', activity: 'Reading the tide' },
       { at: 11, tile: [cx + 1, cz + 20], facing: 'west', activity: 'Working the shallows' },
-      { at: 19, tile: [cabin[0] + 2, cabin[1] + 3], facing: 'north', activity: 'Mending gear', available: false },
+      { at: 19, tile: [cabin[0] + 2, cabin[1] + 3], facing: 'north', activity: 'Mending gear', available: false, inside: true },
     ],
     errands: [
       { id: 'pond-supper', title: 'Catch trout', objective: { kind: 'fish', item: 'item.trout', count: 2 }, reward: { coins: 80, relationship: 22 } },
@@ -588,7 +594,7 @@ export function meadowbrook({
     schedule: [
       { at: 7, tile: [bungalow[0] + 2, bungalow[1] + 3], facing: 'south', activity: 'Sorting repairs' },
       { at: 14, tile: [cx + 11, cz + 12], facing: 'west', activity: 'Looking for straight timber' },
-      { at: 21, tile: [bungalow[0] + 2, bungalow[1] + 3], facing: 'north', activity: 'Workshop closed', available: false },
+      { at: 21, tile: [bungalow[0] + 2, bungalow[1] + 3], facing: 'north', activity: 'Workshop closed', available: false, inside: true },
     ],
     errands: [
       { id: 'clearfall', title: 'Fell trees', objective: { kind: 'change', change: 'fell', category: 'tree', count: 2 }, reward: { item: { type: 'furnitem.crate', count: 1 }, relationship: 20 } },
@@ -881,12 +887,15 @@ export function sourwood({
     { label: 'Branch Store', interior: 'worlds/interiors/store-branch.json' }, '0');
   const furniture = d.placeNear('store.furniture', 'building.furniture', store[0] + 7, store[1], ['g'], 12,
     { label: 'Turnip & Timber', interior: 'worlds/interiors/store-furniture.json' }, '0');
+  const clothier = d.placeNear('store.clothier', 'building.clothier', furniture[0] + 7, furniture[1], ['g'], 12,
+    { label: 'Cuff & Collar', interior: 'worlds/interiors/store-clothier.json' }, '0');
 
   // Each door out to the road. The road is the only through-line in a holler,
   // so everything hangs off it.
   d.pathL(home[0] + 1, home[1] + 3, Math.round(creek(home[1] + 4)) + 4, home[1] + 4, { level: '0' });
   d.pathL(store[0] + 2, store[1] + 4, Math.round(creek(store[1] + 5)) + 4, store[1] + 5, { level: '0' });
   d.pathL(furniture[0] + 2, furniture[1] + 4, Math.round(creek(furniture[1] + 5)) + 4, furniture[1] + 5, { level: '0' });
+  d.pathL(clothier[0] + 2, clothier[1] + 4, Math.round(creek(clothier[1] + 5)) + 4, clothier[1] + 5, { level: '0' });
   d.pathL(gate[0] + 2, gate[1] + 2, Math.round(creek(gate[1] + 3)) + 4, gate[1] + 3, { level: '0' });
   addHousewright(d, home, {
     id: 'folk.eldra', name: 'Eldra', title: 'Holler Carpenter',
@@ -1046,14 +1055,22 @@ export function tidewrack({
     { label: 'Driftwood Stores', interior: 'worlds/interiors/store-driftwood.json' }, '0');
   const furniture = d.placeNear('store.furniture', 'building.furniture', store[0] + 7, store[1], ['g'], 12,
     { label: 'Turnip & Timber', interior: 'worlds/interiors/store-furniture.json' }, '0');
+  // Not east of the furniture shop, the way every other town puts it: east of
+  // there is the outer beach and then the sea. On a ring, "beside the other
+  // shops" has to mean further round the ring, so the clothier takes the arc
+  // north of the middle -- still on the road, still a walk rather than an
+  // expedition, and the only quarter of the loop nothing else is standing in.
+  const clothier = d.placeNear('store.clothier', 'building.clothier', cx + 3, cz - out(0.5), ['g'], 12,
+    { label: 'Cuff & Collar', interior: 'worlds/interiors/store-clothier.json' }, '0');
   const cottage = d.placeNear('home.marnie', 'building.cottage', cx - out(0.57), cz - 3, ['g'], 10,
-    { label: "Marnie's Cottage", interior: 'worlds/interiors/home-marnie.json' }, '0');
+    { label: "Marnie's Cottage", interior: 'worlds/interiors/home-marnie.json', owner: 'folk.marnie' }, '0');
 
   // Doors face south, so every approach starts below its door and runs to the
   // nearest point of the ring road.
   d.pathL(home[0] + 1, home[1] + 3, cx - 1, cz + out(0.54), { level: '0' });
   d.pathL(store[0] + 2, store[1] + 4, cx + out(0.5), cz + 7, { level: '0' });
   d.pathL(furniture[0] + 2, furniture[1] + 4, cx + out(0.5), cz + 9, { level: '0' });
+  d.pathL(clothier[0] + 2, clothier[1] + 4, cx + 3, cz - out(0.44), { level: '0' });
   d.pathL(cottage[0] + 1, cottage[1] + 3, cx - out(0.5), cz + 3, { level: '0' });
   d.pathL(landing[0] + 2, landing[1] + 2, cx, cz + out(0.6), { level: '0' });
   d.pathL(lookout[0] + 2, lookout[1] + 2, cx - 1, cz + dune[1] + 2, { level: '1' });
@@ -1542,12 +1559,15 @@ export function thistledown({
     { label: 'The Wether', interior: 'worlds/interiors/store-wether.json' }, '0');
   const furniture = d.placeNear('store.furniture', 'building.furniture', store[0] + 7, store[1], ['g'], 12,
     { label: 'Turnip & Timber', interior: 'worlds/interiors/store-furniture.json' }, '0');
+  const clothier = d.placeNear('store.clothier', 'building.clothier', furniture[0] + 7, furniture[1], ['g'], 12,
+    { label: 'Cuff & Collar', interior: 'worlds/interiors/store-clothier.json' }, '0');
   const croft = d.placeNear('home.nan', 'building.cottage', road - 8, 24, ['g'], 11,
-    { label: "Nan's Croft", interior: 'worlds/interiors/home-nan.json' }, '0');
+    { label: "Nan's Croft", interior: 'worlds/interiors/home-nan.json', owner: 'folk.nan' }, '0');
 
   d.pathL(home[0] + 1, home[1] + 3, road, home[1] + 4, { level: '0' });
   d.pathL(store[0] + 2, store[1] + 4, road, store[1] + 5, { level: '0' });
   d.pathL(furniture[0] + 2, furniture[1] + 4, road, furniture[1] + 5, { level: '0' });
+  d.pathL(clothier[0] + 2, clothier[1] + 4, road, clothier[1] + 5, { level: '0' });
   d.pathL(croft[0] + 1, croft[1] + 3, road, croft[1] + 4, { level: '0' });
   d.pathL(north[0] + 2, north[1] + 2, road, north[1] + 3, { level: '0' });
   d.pathL(south[0] + 2, south[1] + 2, road, south[1] + 3, { level: '0' });
@@ -2040,12 +2060,15 @@ export function rimrock({
     { label: 'Slickrock Post', interior: 'worlds/interiors/store-slickrock.json' }, '0');
   const furniture = d.placeNear('store.furniture', 'building.furniture', store[0] + 7, store[1], ['g', 's'], 12,
     { label: 'Turnip & Timber', interior: 'worlds/interiors/store-furniture.json' }, '0');
+  const clothier = d.placeNear('store.clothier', 'building.clothier', furniture[0] + 7, furniture[1], ['g', 's'], 12,
+    { label: 'Cuff & Collar', interior: 'worlds/interiors/store-clothier.json' }, '0');
   const cottage = d.placeNear('home.pike', 'building.cottage', cx - 16, cz + 13, ['g', 's'], 11,
-    { label: "Pike's Place", interior: 'worlds/interiors/home-pike.json' }, '0');
+    { label: "Pike's Place", interior: 'worlds/interiors/home-pike.json', owner: 'folk.pike' }, '0');
 
   d.pathL(home[0] + 1, home[1] + 3, cx - 1, cz + 8, { level: '0' });
   d.pathL(store[0] + 2, store[1] + 4, cx, cz + 8, { level: '0' });
   d.pathL(furniture[0] + 2, furniture[1] + 4, cx, cz + 10, { level: '0' });
+  d.pathL(clothier[0] + 2, clothier[1] + 4, cx, cz + 12, { level: '0' });
   d.pathL(cottage[0] + 1, cottage[1] + 3, cx - 1, cz + 12, { level: '0' });
   d.pathL(head[0] + 2, head[1] + 2, cx - 1, cz - 13, { level: '1' });
   d.pathL(lip[0] + 2, lip[1] + 2, cx - 1, cz + 21, { level: '0' });
@@ -2464,9 +2487,11 @@ export function ashkettle({
     { label: 'The Cinder Shop', interior: 'worlds/interiors/store-cinder.json' }, '0');
   const furniture = d.placeNear('store.furniture', 'building.furniture', store[0] + 7, store[1], ['g', 'c'], 12,
     { label: 'Turnip & Timber', interior: 'worlds/interiors/store-furniture.json' }, '0');
+  const clothier = d.placeNear('store.clothier', 'building.clothier', furniture[0] + 7, furniture[1], ['g', 'c'], 12,
+    { label: 'Cuff & Collar', interior: 'worlds/interiors/store-clothier.json' }, '0');
   const [cxx, czz] = at(...sites.cottage);
   const cottage = d.placeNear('home.vesper', 'building.cottage', cxx - 1, czz, ['g', 'c'], 11,
-    { label: "Vesper's", interior: 'worlds/interiors/home-vesper.json' }, '0');
+    { label: "Vesper's", interior: 'worlds/interiors/home-vesper.json', owner: 'folk.vesper' }, '0');
 
   // Every door out to the ring road, which is the only through-line there is.
   const toRing = (door, dz) => {
@@ -2476,6 +2501,7 @@ export function ashkettle({
   toRing([home[0] + 1, home[1]], 3);
   toRing([store[0] + 2, store[1]], 4);
   toRing([furniture[0] + 2, furniture[1]], 4);
+  toRing([clothier[0] + 2, clothier[1]], 4);
   toRing([cottage[0] + 1, cottage[1]], 3);
   toRing([quay[0] + 2, quay[1]], 2);
   addHousewright(d, home, {
@@ -2869,9 +2895,11 @@ export function sedgewater({
     { label: 'The Staithe', interior: 'worlds/interiors/store-staithe.json' }, '0');
   const furniture = d.placeNear('store.furniture', 'building.furniture', store[0] + 7, store[1], ['g'], 12,
     { label: 'Turnip & Timber', interior: 'worlds/interiors/store-furniture.json' }, '0');
+  const clothier = d.placeNear('store.clothier', 'building.clothier', furniture[0] + 7, furniture[1], ['g'], 12,
+    { label: 'Cuff & Collar', interior: 'worlds/interiors/store-clothier.json' }, '0');
   const [qx, qz] = at(sites.cottage, 0.50);
   const cottage = d.placeNear('home.quill', 'building.cottage', qx - 1, qz, ['g'], 12,
-    { label: "Quill's Hut", interior: 'worlds/interiors/home-quill.json' }, '0');
+    { label: "Quill's Hut", interior: 'worlds/interiors/home-quill.json', owner: 'folk.quill' }, '0');
 
   // Every door back to the boardwalk that serves its wedge -- and back to the
   // NEAREST point of it, which is the point the house was wished at. Aiming
@@ -2885,6 +2913,7 @@ export function sedgewater({
   toWalk([home[0] + 1, home[1]], 3, sites.home, 0.42);
   toWalk([store[0] + 2, store[1]], 4, sites.store, 0.44);
   toWalk([furniture[0] + 2, furniture[1]], 4, sites.store, 0.50);
+  toWalk([clothier[0] + 2, clothier[1]], 4, sites.store, 0.56);
   toWalk([cottage[0] + 1, cottage[1]], 3, sites.cottage, 0.50);
   d.pathL(staithe[0] + 2, staithe[1] + 2, cx - 1, cz + toft[1] + 2, { level: '1' });
   addHousewright(d, home, {
@@ -3254,12 +3283,15 @@ export function bellrock({
     { label: 'The Capstan', interior: 'worlds/interiors/store-capstan.json' }, '0');
   const furniture = d.placeNear('store.furniture', 'building.furniture', store[0] + 7, store[1], ['g'], 12,
     { label: 'Turnip & Timber', interior: 'worlds/interiors/store-furniture.json' }, '0');
+  const clothier = d.placeNear('store.clothier', 'building.clothier', furniture[0] + 7, furniture[1], ['g'], 12,
+    { label: 'Cuff & Collar', interior: 'worlds/interiors/store-clothier.json' }, '0');
   const cottage = d.placeNear('home.sennen', 'building.cottage', road + 16, townRow(sites.cottage), ['g'], 12,
-    { label: "Sennen's Cottage", interior: 'worlds/interiors/home-sennen.json' }, '0');
+    { label: "Sennen's Cottage", interior: 'worlds/interiors/home-sennen.json', owner: 'folk.sennen' }, '0');
 
   d.pathL(home[0] + 1, home[1] + 3, road - 6, roadZ, { level: '0' });
   d.pathL(store[0] + 2, store[1] + 4, road + 4, roadZ, { level: '0' });
   d.pathL(furniture[0] + 2, furniture[1] + 4, road + 8, roadZ, { level: '0' });
+  d.pathL(clothier[0] + 2, clothier[1] + 4, road + 10, roadZ, { level: '0' });
   d.pathL(cottage[0] + 1, cottage[1] + 3, road + 12, roadZ, { level: '0' });
   d.pathL(quay[0] + 2, quay[1] + 2, road, quay[1] + 3, { level: '0' });
   addHousewright(d, home, {

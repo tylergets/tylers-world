@@ -39,6 +39,33 @@
  * "which of these six colours IS this thing" is a judgement, not an average.
  */
 
+/**
+ * How much smaller a garment is on the ground than it is on a head.
+ *
+ * A hat drawn at the size it is worn is the widest thing in the game lying on
+ * the grass -- a sun hat's brim is nearly a metre across at world scale -- and
+ * next to an apple it reads as a parasol. Shrinking the ground model is the
+ * same licence render/PlayerView.js already takes in the other direction, where
+ * a held tool is drawn larger than the one on the floor: what matters is that
+ * the thing is legible at the size it is being looked at.
+ *
+ * Up here rather than beside `hat` below, because the table is evaluated before
+ * anything under it and a `const` read from inside it would be in its own
+ * temporal dead zone. Same reason `furnitureItem` is a declaration.
+ */
+const GROUND = 0.42;
+
+/**
+ * The radius of every hat's crown, and it is deliberately not per-hat.
+ *
+ * A crown is the part that has to fit the head, and every head in this game is
+ * the same head (render/PlayerView.js), so a crown that varied would be a hat
+ * that either floated or clipped. What varies is the BRIM, which is the only
+ * part of a hat anybody can tell apart from across a field -- and a brim
+ * narrower than the crown is how a beanie says it has no brim, with no flag.
+ */
+const CROWN_R = 0.265;
+
 export const ITEM_TYPES = {
   'item.apple': {
     label: 'Apple',
@@ -95,6 +122,83 @@ export const ITEM_TYPES = {
     palette: { stem: 0x76623f, petal: 0xb98b55, petalHi: 0xd0ab72, heart: 0x7f5d34 },
   },
 
+  // ---------------------------------------------------------------- garden --
+  // What comes out of the ground when a planting is pulled. Ordinary items in
+  // every way -- they stack, they sell, a shop restocks them -- and the only
+  // thing that marks them as farmed is that a shovel and a packet of seeds is
+  // the cheap way to get them. What growing MEANS lives in world/plantTypes.js.
+  'item.turnip': {
+    label: 'Turnip',
+    stack: 10,
+    value: 16,
+    height: 0.22,
+    swatch: 0xece4d4,
+    palette: { root: 0xece4d4, rootHi: 0xf7f2e7, crown: 0xa87cc0, leaf: 0x4f9e3f },
+  },
+  'item.pumpkin': {
+    label: 'Pumpkin',
+    // One per slot: the one crop you carry home in both arms, and the one
+    // whose single fruit is worth the wait it took.
+    stack: 4,
+    value: 110,
+    height: 0.3,
+    swatch: 0xd97f2e,
+    palette: { skin: 0xd97f2e, skinHi: 0xeda04f, rib: 0xb5661f, stem: 0x6b4a30 },
+  },
+  'item.cress': {
+    label: 'Marsh Cress',
+    stack: 10,
+    value: 20,
+    height: 0.18,
+    swatch: 0x3f9e6a,
+    palette: { leaf: 0x3f9e6a, leafHi: 0x5cba85, sprig: 0xd9e8c4, tie: 0xb98d5f },
+  },
+
+  // A seed packet is an item whose whole identity is the `seed` field: the
+  // plant type it becomes when sown into an open hole (see sowTarget in
+  // sim/tools.js). Everything about growing -- how fast, under which skies,
+  // in which climates at all -- lives on that plant type, so the packet
+  // itself stays as dumb as a box of shot. Each general store carries the
+  // packets its own climate can grow, which is how the rule reaches the
+  // player without a manual: the shop in the fen simply does not sell what
+  // the fen cannot raise.
+  'seed.turnip': {
+    label: 'Turnip Seeds',
+    stack: 20,
+    value: 8,
+    height: 0.16,
+    swatch: 0xa87cc0,
+    seed: 'plant.turnip',
+    palette: { paper: 0xe8dcbc, paperHi: 0xf6eed6, band: 0xa87cc0, mark: 0x4f9e3f },
+  },
+  'seed.flower': {
+    label: 'Flower Seeds',
+    stack: 20,
+    value: 6,
+    height: 0.16,
+    swatch: 0xe8c24b,
+    seed: 'plant.flower',
+    palette: { paper: 0xe8dcbc, paperHi: 0xf6eed6, band: 0xe8c24b, mark: 0x5aa348 },
+  },
+  'seed.pumpkin': {
+    label: 'Pumpkin Seeds',
+    stack: 20,
+    value: 34,
+    height: 0.16,
+    swatch: 0xd97f2e,
+    seed: 'plant.pumpkin',
+    palette: { paper: 0xe8dcbc, paperHi: 0xf6eed6, band: 0xd97f2e, mark: 0x4c8a3c },
+  },
+  'seed.cress': {
+    label: 'Cress Seeds',
+    stack: 20,
+    value: 7,
+    height: 0.16,
+    swatch: 0x3f9e6a,
+    seed: 'plant.cress',
+    palette: { paper: 0xe8dcbc, paperHi: 0xf6eed6, band: 0x3f9e6a, mark: 0x3f9e6a },
+  },
+
   // -------------------------------------------------------------- furniture --
   // Furniture travels as a flat-packed item and becomes its linked world object
   // when placed. One per slot: a bed is bulky even before it is assembled.
@@ -106,6 +210,95 @@ export const ITEM_TYPES = {
   'furnitem.stove': furnitureItem('Stove', 520, 0x8f969c, 'furn.stove'),
   'furnitem.plant': furnitureItem('Potted Plant', 180, 0x63b84e, 'furn.plant'),
   'furnitem.crate': furnitureItem('Crate', 90, 0xc09a5f, 'furn.crate'),
+
+  // ------------------------------------------------------------------ yard --
+  // The same `furniture` link the flat-packs use -- an item that becomes an
+  // object when you put it down -- plus one field saying WHERE it may be put
+  // down. `site` is here rather than on the object type because it is a fact
+  // about the purchase and not about the thing: a bench in the plaza would mesh
+  // and collide perfectly well (see objectTypes.js), and what stops you
+  // assembling a stove in the town square is a rule about the game, which is
+  // the kind of thing the shop's blurb reads out loud.
+  //
+  // These two stack, unlike every flat-pack above them, and that is the whole
+  // difference in how they are used: one bed is a bedroom, and one fence post
+  // is not a fence. A run worth walking round is a dozen of them, and a dozen
+  // slots of parcels would be the entire bag.
+  'yarditem.fence-post': {
+    label: 'Fence Post',
+    stack: 12,
+    value: 34,
+    height: 0.2,
+    swatch: 0x9d7350,
+    furniture: 'yard.fence',
+    site: 'outdoors',
+    palette: { post: 0x9d7350, postHi: 0xb98d5f, rail: 0x8a6242, cap: 0x6b4a30 },
+  },
+  'yarditem.ladder': {
+    label: 'Ladder',
+    stack: 4,
+    value: 150,
+    height: 0.24,
+    swatch: 0xb98d5f,
+    furniture: 'yard.ladder',
+    site: 'outdoors',
+    palette: { stile: 0xb98d5f, stileHi: 0xd6ab7c, rung: 0x8a6242, foot: 0x6b4a30 },
+  },
+
+  // ------------------------------------------------------------- clothing --
+  // The third thing an item can be, after a tool and a flat-pack, and it is the
+  // same trick both of those play: a `wear` block naming the SLOT on the body
+  // this goes in, and nothing at all about what wearing MEANS. Which garment is
+  // on you lives in sim/Outfit.js, drawing it lives in render/PlayerView.js, and
+  // neither of them has to be edited to add an eleventh hat.
+  //
+  // THE SHAPE IS DATA, AND IT IS THE SAME DATA TWICE. `wear` carries the few
+  // numbers that make one hat differ from another -- how wide the brim is, how
+  // tall the crown -- in HEAD units, and both pictures are derived from them:
+  // the model on the player's head (PlayerView) and the model on the ground and
+  // in the shop (`parts`, which render/ItemBatch.js and ui/preview.js already
+  // know how to bake). Authoring the two by hand is how the hat you bought
+  // stops being the hat you wear.
+  //
+  // STACK 1, for the reason two axes in a slot is not a bigger axe.
+  'wear.shirt.plain': shirt('Plain Tee', 60, 0xdfe3ea, 0xb9bfc9),
+  'wear.shirt.sky': shirt('Sky Shirt', 70, 0x4a9be0, 0x3a7cb8),
+  'wear.shirt.moss': shirt('Moss Shirt', 70, 0x6f9c74, 0x577d5c),
+  'wear.shirt.rust': shirt('Rust Shirt', 80, 0xc8624a, 0xa04a37),
+  'wear.shirt.plum': shirt('Plum Shirt', 90, 0x8a6ba8, 0x6b5188),
+  'wear.shirt.sand': shirt('Sand Shirt', 75, 0xe0c489, 0xbfa269),
+  'wear.shirt.ink': shirt('Ink Shirt', 95, 0x3c4453, 0x2a3040),
+  'wear.shirt.rose': shirt('Rose Shirt', 85, 0xe79ab0, 0xc2788e),
+  'wear.shirt.ochre': shirt('Ochre Shirt', 80, 0xd8a03c, 0xb07f27),
+  'wear.shirt.teal': shirt('Teal Shirt', 90, 0x3f9e9a, 0x2d7b78),
+
+  // Brim and crown are the whole of what tells a hat apart from across a field:
+  // a straw hat is a wide flat disc, a top hat is a chimney, and a beanie is a
+  // brim narrow enough that there is no brim.
+  'wear.hat.cap': hat('Ball Cap', 110, { cloth: 0xc8624a, clothHi: 0xdc7a62, band: 0xf1ece2 }, 0.32, 0.10),
+  'wear.hat.straw': hat('Straw Hat', 140, { cloth: 0xe0c489, clothHi: 0xf0dbab, band: 0x8a6242 }, 0.40, 0.12),
+  'wear.hat.beanie': hat('Beanie', 90, { cloth: 0x3f9e9a, clothHi: 0x56b8b3, band: 0x2d7b78 }, 0.27, 0.17),
+  'wear.hat.bucket': hat('Bucket Hat', 120, { cloth: 0x8fa05a, clothHi: 0xa8ba72, band: 0x6b7a40 }, 0.35, 0.14),
+  'wear.hat.felt': hat('Felt Hat', 180, { cloth: 0x6b5a4a, clothHi: 0x86735f, band: 0x3a3128 }, 0.37, 0.18),
+  'wear.hat.sun': hat('Sun Hat', 150, { cloth: 0xf2e6a0, clothHi: 0xfaf3cf, band: 0xe79ab0 }, 0.46, 0.10),
+  'wear.hat.wool': hat('Wool Cap', 100, { cloth: 0x8a6ba8, clothHi: 0xa587c2, band: 0x6b5188 }, 0.28, 0.18),
+  'wear.hat.ranger': hat('Ranger Hat', 200, { cloth: 0x4f7a4a, clothHi: 0x669660, band: 0xb08d3f }, 0.39, 0.19),
+  'wear.hat.beret': hat('Beret', 130, { cloth: 0x9c3f4a, clothHi: 0xbb5a64, band: 0x6f2a33 }, 0.31, 0.08),
+  'wear.hat.top': hat('Top Hat', 320, { cloth: 0x2a2f38, clothHi: 0x444c58, band: 0xb08d3f }, 0.33, 0.34),
+
+  // Sunglasses differ in the lens: how big, how dark, and whether it is a disc
+  // or a slab. Three numbers, and they are enough -- these are a centimetre of
+  // face at the size anybody ever sees them.
+  'wear.glasses.round': glasses('Round Shades', 130, 0x3a3128, 0x4a3f30, 0.052, true),
+  'wear.glasses.square': glasses('Square Shades', 130, 0x2a2f38, 0x2b3340, 0.05, false),
+  'wear.glasses.aviator': glasses('Aviators', 210, 0xb08d3f, 0x5c6b52, 0.056, true),
+  'wear.glasses.cat': glasses('Cat-eye Shades', 190, 0xe79ab0, 0x6b3f52, 0.048, false),
+  'wear.glasses.sport': glasses('Sport Shades', 170, 0x3f9e9a, 0x1f3a44, 0.054, false),
+  'wear.glasses.rose': glasses('Rose Shades', 160, 0xd8a03c, 0x9c4a5a, 0.05, true),
+  'wear.glasses.mirror': glasses('Mirror Shades', 240, 0x9aa0a6, 0x8fd4e0, 0.052, false),
+  'wear.glasses.amber': glasses('Amber Shades', 150, 0x8a6242, 0xb07a2a, 0.05, true),
+  'wear.glasses.ink': glasses('Ink Shades', 140, 0x1f2229, 0x141820, 0.052, false),
+  'wear.glasses.jade': glasses('Jade Shades', 220, 0xd9c7a4, 0x2f7a4a, 0.05, true),
 
   // ---------------------------------------------------------------- tools --
   // A tool is an item like any other: it sits in a slot, it is worth coins, a
@@ -331,6 +524,91 @@ function furnitureItem(label, value, swatch, furniture) {
   };
 }
 
+// ------------------------------------------------------------------ worn --
+/**
+ * A shirt. Two colours: the cloth, and the shade its collar and cuffs are in.
+ *
+ * The dark is stated rather than derived because it is doing two jobs -- it is
+ * the collar on the folded shirt AND the belt and cuff bands on the worn one --
+ * and "the cloth, but darker" is a judgement that goes wrong on a shirt that is
+ * already nearly black.
+ */
+function shirt(label, value, cloth, clothDark) {
+  return {
+    label, stack: 1, value, height: 0.1, swatch: cloth,
+    wear: { slot: 'shirt' },
+    palette: { cloth, clothDark },
+    // Folded, which is the only way a shirt lies down and reads as a shirt: a
+    // flat body, a bright fold across it, a collar at the back and one sleeve
+    // tucked along the side.
+    parts: [
+      { prim: 'box', at: [0, 0.026, 0], rot: [0, 0, 0], size: [0.21, 0.052, 0.15], color: 'cloth' },
+      { prim: 'box', at: [0.012, 0.058, 0.012], rot: [0, 0, 0], size: [0.14, 0.018, 0.09], color: 'cloth' },
+      { prim: 'box', at: [0, 0.064, -0.05], rot: [0, 0, 0], size: [0.08, 0.022, 0.045], color: 'clothDark' },
+      { prim: 'box', at: [-0.105, 0.028, 0.018], rot: [0, 0, 0], size: [0.055, 0.038, 0.085], color: 'clothDark' },
+    ],
+  };
+}
+
+/** A hat: a brim, a crown standing on it, and a band round the join. */
+function hat(label, value, palette, brim, crown) {
+  const g = GROUND;
+  const r = CROWN_R * g;
+  return {
+    label, stack: 1, value, height: 0.02 + crown * g + 0.03, swatch: palette.cloth,
+    wear: { slot: 'hat', brim, crown },
+    palette,
+    parts: [
+      { prim: 'cyl', at: [0, 0.016, 0], rot: [0, 0, 0], size: [brim * g, 0.028, brim * g], color: 'cloth' },
+      { prim: 'cyl', at: [0, 0.016 + crown * g / 2, 0], rot: [0, 0, 0], size: [r, crown * g, r], color: 'cloth' },
+      { prim: 'cyl', at: [0, 0.03, 0], rot: [0, 0, 0], size: [r * 1.07, 0.026, r * 1.07], color: 'band' },
+      {
+        prim: 'cyl', at: [0, 0.014 + crown * g, 0], rot: [0, 0, 0],
+        size: [r * 0.86, 0.018, r * 0.86], color: 'clothHi',
+      },
+    ],
+  };
+}
+
+/**
+ * Sunglasses: two lenses in a frame, lying open on the ground.
+ *
+ * `round` picks the lens primitive rather than a second builder, because that
+ * is genuinely the whole difference between aviators and sport shades at the
+ * size a face is drawn -- a disc or a slab, and one colour each.
+ */
+function glasses(label, value, frame, lens, r, round) {
+  const prim = round ? 'cyl' : 'box';
+  const eye = (side) => ([
+    {
+      prim: 'cyl', at: [side * 0.072, 0.014, 0], rot: [0, 0, 0],
+      size: [r * 1.75, 0.012, r * 1.75], color: 'frame',
+    },
+    {
+      prim, at: [side * 0.072, 0.022, 0], rot: [0, 0, 0],
+      size: [r * 1.5, 0.012, r * 1.5], color: 'lens',
+    },
+    {
+      prim: 'box', at: [side * 0.115, 0.018, -0.06], rot: [0, side * 0.16, 0],
+      size: [0.016, 0.012, 0.12], color: 'frame',
+    },
+  ]);
+  return {
+    label, stack: 1, value, height: 0.06, swatch: lens,
+    wear: { slot: 'glasses', lens: r, round },
+    palette: { frame, lens },
+    parts: [
+      ...eye(-1), ...eye(1),
+      { prim: 'box', at: [0, 0.018, 0], rot: [0, 0, 0], size: [0.06, 0.014, 0.018], color: 'frame' },
+    ],
+  };
+}
+
+/** The body slot a type is worn in, or null for everything that is not clothing. */
+export function wearSlot(typeId) {
+  return ITEM_TYPES[typeId]?.wear?.slot ?? null;
+}
+
 export function itemType(typeId) {
   const t = ITEM_TYPES[typeId];
   if (!t) throw new Error(`Unknown item type: "${typeId}"`);
@@ -340,6 +618,12 @@ export function itemType(typeId) {
 /** The flat-pack item that assembles into an object type, or null. */
 export function furnitureItemFor(objectTypeId) {
   for (const [id, type] of Object.entries(ITEM_TYPES)) if (type.furniture === objectTypeId) return id;
+  return null;
+}
+
+/** The seed packet that sows a plant type, or null. The reverse of `seed`. */
+export function seedItemFor(plantId) {
+  for (const [id, type] of Object.entries(ITEM_TYPES)) if (type.seed === plantId) return id;
   return null;
 }
 

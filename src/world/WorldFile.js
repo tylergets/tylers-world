@@ -92,6 +92,7 @@ import { parseDialog } from './dialog.js';
 import { ITEM_TYPES } from './itemTypes.js';
 import { kits } from './kits.js';
 import { DIR_FROM_NAME } from '../core/constants.js';
+import { MUSIC_STYLES } from './ambience.js';
 
 export const WORLD_FORMAT = 'tw.world';
 export const WORLD_VERSION = 1;
@@ -210,8 +211,35 @@ function parseShop(raw, path) {
   }
   const stock = raw.stock ?? [];
   if (!Array.isArray(stock)) throw new WorldFileError('"stock" must be an array', `${path}.stock`);
-  if (raw.daily !== undefined && (!Number.isInteger(raw.daily) || raw.daily < 1 || raw.daily > stock.length)) {
-    throw new WorldFileError('"daily" must be a whole number between 1 and the stock count', path);
+  // Against the rows that ROTATE, not against every row: an `always` row is on
+  // the shelf regardless and spends none of the day's slots (see sim/Shop.js),
+  // so counting it here would let a shop promise more of a catalogue than it has.
+  const rotating = stock.filter((entry) => entry?.always !== true);
+  // Two shapes, and the second is checked group by group. A count per group is
+  // how a shop puts out three of one thing and one of another every morning
+  // (see sim/Shop.js), and the mistake it invites is asking for four hats out of
+  // a rail of three -- which would silently short the shelf rather than fail, so
+  // it is caught here where every other quiet world-file mistake is.
+  if (raw.daily !== undefined) {
+    if (Number.isInteger(raw.daily)) {
+      if (raw.daily < 1 || raw.daily > rotating.length) {
+        throw new WorldFileError('"daily" must be a whole number between 1 and the rotating stock count', path);
+      }
+    } else if (raw.daily !== null && typeof raw.daily === 'object' && !Array.isArray(raw.daily)) {
+      const groups = Object.entries(raw.daily);
+      if (!groups.length) throw new WorldFileError('"daily" as a group table must name at least one group', path);
+      for (const [group, n] of groups) {
+        const have = rotating.filter((entry) => entry?.group === group).length;
+        if (!Number.isInteger(n) || n < 1 || n > have) {
+          throw new WorldFileError(
+            `"daily" for group "${group}" must be a whole number between 1 and ${have}`
+            + ` -- the rotating rows in that group`, path,
+          );
+        }
+      }
+    } else {
+      throw new WorldFileError('"daily" must be a whole number, or an object of group -> count', path);
+    }
   }
   stock.forEach((entry, i) => {
     const p = `${path}.stock[${i}]`;
@@ -226,6 +254,20 @@ function parseShop(raw, path) {
     if (entry.count !== undefined && entry.count !== null
       && (!Number.isInteger(entry.count) || entry.count < 0)) {
       throw new WorldFileError('"count" must be a whole number, or null for unlimited', p);
+    }
+    // A row that is stock rather than stock-of-the-day: it sits out of the
+    // rotation and is on the shelf every morning (see sim/Shop.js). Only
+    // meaningful next to `daily`, and harmless without it, so it is not an
+    // error to write on a shop that does not rotate.
+    if (entry.always !== undefined && typeof entry.always !== 'boolean') {
+      throw new WorldFileError('"always" must be true or false', p);
+    }
+    // Which shelf this row rotates on. A free-form name and not an enum,
+    // because the groups are a fact about ONE shop's morning -- shirts, hats
+    // and sunglasses at the clothier -- and a list of legal group names here
+    // would be this file holding an opinion about what shops sell.
+    if (entry.group !== undefined && (typeof entry.group !== 'string' || !entry.group)) {
+      throw new WorldFileError('"group" must be a non-empty string', p);
     }
   });
   return raw;
@@ -252,7 +294,15 @@ function parseSchedule(raw, width, height, path) {
     if (DIR_FROM_NAME[facing] === undefined) throw new WorldFileError(`unknown facing "${facing}"`, p);
     if (row.activity !== undefined && typeof row.activity !== 'string') throw new WorldFileError('"activity" must be a string', p);
     if (row.available !== undefined && typeof row.available !== 'boolean') throw new WorldFileError('"available" must be boolean', p);
-    return { at: row.at, tile: [...row.tile], facing: DIR_FROM_NAME[facing], activity: row.activity ?? null, available: row.available ?? true };
+    if (row.inside !== undefined && typeof row.inside !== 'boolean') throw new WorldFileError('"inside" must be boolean', p);
+    return {
+      at: row.at,
+      tile: [...row.tile],
+      facing: DIR_FROM_NAME[facing],
+      activity: row.activity ?? null,
+      available: row.available ?? true,
+      inside: row.inside ?? false,
+    };
   }).sort((a, b) => a.at - b.at);
 }
 
@@ -309,6 +359,16 @@ export function parseWorldFile(raw) {
   const kind = raw.kind ?? 'exterior';
   if (!KINDS.includes(kind)) {
     throw new WorldFileError(`unknown kind "${kind}" (known: ${KINDS.join(', ')})`, 'kind');
+  }
+
+  const ambience = raw.ambience ?? {};
+  if (!ambience || typeof ambience !== 'object' || Array.isArray(ambience)) {
+    throw new WorldFileError('"ambience" must be an object', 'ambience');
+  }
+  if (ambience.music !== undefined && !MUSIC_STYLES.includes(ambience.music)) {
+    throw new WorldFileError(
+      `unknown music style "${ambience.music}" (known: ${MUSIC_STYLES.join(', ')})`, 'ambience.music',
+    );
   }
 
   // -- form ----------------------------------------------------------------
@@ -707,7 +767,7 @@ export function parseWorldFile(raw) {
     items,
     exits,
     spawn: { tile: spawnTile, facing: DIR_FROM_NAME[facingName] },
-    ambience: raw.ambience ?? {},
+    ambience,
   };
 }
 

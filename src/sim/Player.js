@@ -35,6 +35,8 @@ import { Inventory } from './Inventory.js';
 import { Purse } from './Purse.js';
 import { Friends } from './Friends.js';
 import { Clock } from './Clock.js';
+import { Outfit } from './Outfit.js';
+import { Health } from './Health.js';
 
 export class Player {
   constructor(world) {
@@ -50,12 +52,47 @@ export class Player {
     // has to be able to ask whether its owner would mind, and its owner is not
     // in the room. See Friends.js.
     this.friends = new Friends();
+    // What you have on, which crosses a doorway for the plainest reason of all
+    // -- you are wearing it. Separate from the bag because a head holds one hat
+    // and a slot holds a stack of anything. See Outfit.js.
+    this.outfit = new Outfit();
     // Time, and it belongs here for the plainest version of the reason: walking
     // into a shop must not put the sun back where it was. Everything else on
     // this list crosses a doorway because it is in your pockets; the clock
     // crosses one because it is not in the room. See Clock.js.
     this.clock = new Clock();
+    // Hearts, and they are on this list for the plainest reason of all: being
+    // hurt has to follow you through a door. Everything the game can do about
+    // it -- who put you down, where you wake up, what is left in your pockets
+    // -- belongs to the Game; this is only the count. See sim/Health.js.
+    this.health = new Health();
+    /**
+     * Seconds left on the floor, or 0 on your feet.
+     *
+     * The player's half of Npc.downed, and NOT saved for the same reason his is
+     * not: a few seconds flat on your back is a scene, not a fact about the
+     * world. While it runs, `Game.update` stops taking orders -- which is the
+     * entire mechanical difference between being shot at and being shouted at.
+     */
+    this.downed = 0;
     this.placeIn(world, world.spawn.tile, world.spawn.facing);
+  }
+
+  /**
+   * Take a hit. Returns true if that was the last heart.
+   *
+   * The knockdown happens either way and the recovery is the same length, so
+   * the last hit does not feel different from the others in the moment -- what
+   * differs is what the Game does about it while you are down.
+   */
+  hurt(n = 1, downFor = 2.6) {
+    // The view shapes the fall against the WHOLE length of it, so the length is
+    // written down here rather than assumed there -- one number, and the render
+    // cannot disagree with the simulation about how long you are on the floor.
+    this.downFor = downFor;
+    this.downed = Math.max(this.downed, downFor);
+    this.speed = 0;
+    return this.health.hurt(n);
   }
 
   /**
@@ -79,6 +116,11 @@ export class Player {
     this.y = world.groundHeight(this.x, this.z);
     this.speed = 0;               // tiles/sec actually achieved, for animation
     this.radius = PLAYER_RADIUS;  // what body.js sweeps
+    // The one thing in the world with hands. A ladder is a piece of yard kit
+    // the player buys and puts down (see world/objectTypes.js), and only the
+    // player goes up it: give the ability to every walker and the first fence
+    // with a ladder inside it stops containing anything.
+    this.climbs = true;
   }
 
   /** Derived, never stored: which of the four cardinal facings we're nearest. */

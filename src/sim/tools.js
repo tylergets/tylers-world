@@ -228,11 +228,18 @@ function shootTarget({ world, people, fauna, player, tool, inventory, now, ready
   const ox = Math.sin(player.yaw), oz = Math.cos(player.yaw);
   const reach = tool.range ?? 8;
   const stop = ddaBlock(world, px, pz, ox, oz, reach);
-  // What the walk stopped ON, if anything: the shared scratch is written by
-  // every `ddaBlock` call, so it is read here and nowhere later.
-  const wall = STOP.hit ? world.objectAt(STOP.x, STOP.z) : null;
 
   let bestT = stop, best = null, kind = null;
+
+  // Props are not necessarily solid. Rugs, low tables and other walkable
+  // furniture still need to catch a shot, so test every live breakable's
+  // footprint against the ray instead of only asking what blocked the DDA.
+  for (const obj of world.objects) {
+    if (world.objectById(obj.id) !== obj || !breakable(obj)) continue;
+    const t = rayBox(obj, px, pz, ox, oz, bestT);
+    if (t === null || t > bestT) continue;
+    bestT = t; best = obj; kind = 'object';
+  }
 
   for (const a of (fauna?.animals ?? [])) {
     if (a.dying !== null && a.dying !== undefined) continue;
@@ -252,21 +259,17 @@ function shootTarget({ world, people, fauna, player, tool, inventory, now, ready
     bestT = t; best = n; kind = 'npc';
   }
 
-  // Nothing alive on the line, but something the shot can BREAK at the end of
-  // it. Asked last, and it has to be: a chicken standing in front of the tree
-  // is what the shot hits, and the DDA has already been overtaken by any body
-  // nearer than the wall.
-  if (!best && wall && breakable(wall)) {
-    const type = objectType(wall.type);
+  if (kind === 'object') {
+    const type = objectType(best.type);
     return {
       verb: 'shoot',
-      tile: [...wall.tile],
-      label: wall.props?.label ?? type.label,
+      tile: [...best.tile],
+      label: best.props?.label ?? type.label,
       blocked: null,
       kind: 'object',
-      object: wall,
+      object: best,
       hits: 0,
-      range: stop,
+      range: bestT,
     };
   }
 
@@ -282,6 +285,34 @@ function shootTarget({ world, people, fauna, player, tool, inventory, now, ready
     target: best,
     range: bestT,
   };
+}
+
+/** Distance to a prop footprint along a ray, or null when the ray misses it. */
+function rayBox(obj, px, pz, ox, oz, reach) {
+  const minX = obj.tile[0], minZ = obj.tile[1];
+  const maxX = minX + obj.shape.w, maxZ = minZ + obj.shape.d;
+  let lo = 0.05, hi = reach;
+
+  if (Math.abs(ox) < 1e-9) {
+    if (px < minX || px > maxX) return null;
+  } else {
+    let a = (minX - px) / ox, b = (maxX - px) / ox;
+    if (a > b) { const swap = a; a = b; b = swap; }
+    lo = Math.max(lo, a);
+    hi = Math.min(hi, b);
+    if (lo > hi) return null;
+  }
+
+  if (Math.abs(oz) < 1e-9) {
+    if (pz < minZ || pz > maxZ) return null;
+  } else {
+    let a = (minZ - pz) / oz, b = (maxZ - pz) / oz;
+    if (a > b) { const swap = a; a = b; b = swap; }
+    lo = Math.max(lo, a);
+    hi = Math.min(hi, b);
+    if (lo > hi) return null;
+  }
+  return lo;
 }
 
 /**
@@ -355,19 +386,7 @@ export const AMMO = 'item.shot';
  * a distance and not a tile, because what the caller compares it against is
  * how far along the line an animal is standing.
  */
-/**
- * Where the last `ddaBlock` stopped, for the one caller that wants the tile as
- * well as the distance.
- *
- * A shared mutable scratch and not a returned object, on this file's standing
- * rule: the resolvers are polled ten times a second by the HUD and allocate
- * nothing but their result. Read it in the same breath as the call -- the next
- * walk overwrites it.
- */
-const STOP = { hit: false, x: 0, z: 0 };
-
 function ddaBlock(world, px, pz, ox, oz, reach) {
-  STOP.hit = false;
   let x = Math.floor(px), z = Math.floor(pz);
   const stepX = ox > 0 ? 1 : -1, stepZ = oz > 0 ? 1 : -1;
   const invX = ox === 0 ? Infinity : 1 / Math.abs(ox);
@@ -380,11 +399,7 @@ function ddaBlock(world, px, pz, ox, oz, reach) {
     if (t > reach) return reach;
     if (tMaxX < tMaxZ) { x += stepX; tMaxX += invX; } else { z += stepZ; tMaxZ += invZ; }
     // Out of the world stops a shot as surely as a wall does.
-    if (!world.inBounds(x, z) || world.isBlocked(x, z)) {
-      STOP.hit = world.inBounds(x, z);
-      STOP.x = x; STOP.z = z;
-      return t;
-    }
+    if (!world.inBounds(x, z) || world.isBlocked(x, z)) return t;
   }
   return reach;
 }
@@ -398,8 +413,7 @@ function ddaBlock(world, px, pz, ox, oz, reach) {
  * watch you through a wall she could not shoot through, which is the whole
  * difference between being caught and getting away with it.
  *
- * Allocates nothing, and does not touch the shared STOP scratch's meaning for
- * anybody: the caller here wants the distance only.
+ * Allocates nothing: the caller wants the distance only.
  *
  * @returns {boolean} true when the line is clear for the whole distance.
  */
@@ -543,6 +557,9 @@ function mineTarget(world, edits, tool, x, z) {
 }
 
 function digTarget({ world, edits, ground, people, fauna, x, z }) {
+  // A planted bed is tended with E, not filled in underneath the crop with the
+  // shovel. Returning no shovel target keeps the two controls from disagreeing.
+  if (edits.plantingAt(x, z)) return null;
   // A hole you have already dug is a hole to fill in. Asked FIRST, because the
   // tile is blocked once it is a hole and every test below would refuse it.
   if (edits.holeAt(x, z)) {

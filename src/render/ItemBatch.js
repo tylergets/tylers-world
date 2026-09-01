@@ -115,6 +115,46 @@ function flower(p) {
   return g;
 }
 
+function turnip(p) {
+  const g = new GeoBuilder();
+  g.addGeometry(ROUND, trs(0, 0.09, 0, 0, 0, 0, 0.11, 0.1, 0.11), p.root);
+  g.addGeometry(BLOB, trs(-0.03, 0.12, 0.035, 0, 0, 0, 0.065, 0.055, 0.065), p.rootHi);
+  g.addGeometry(CYL, trs(0, 0.18, 0, 0, 0, 0, 0.065, 0.035, 0.065), p.crown);
+  for (const x of [-0.055, 0, 0.055]) {
+    g.addGeometry(BOX, trs(x, 0.24, 0, 0, x * 5, 0.45, 0.06, 0.012, 0.15), p.leaf);
+  }
+  return g;
+}
+
+function pumpkin(p) {
+  const g = new GeoBuilder();
+  g.addGeometry(ROUND, trs(0, 0.13, 0, 0, 0, 0, 0.18, 0.13, 0.18), p.skin);
+  g.addGeometry(BLOB, trs(-0.04, 0.17, 0.04, 0, 0, 0, 0.1, 0.065, 0.1), p.skinHi);
+  for (const x of [-0.1, 0, 0.1]) g.addGeometry(CYL, trs(x, 0.13, 0, 0, 0, 0, 0.018, 0.22, 0.018), p.rib);
+  g.addGeometry(CYL, trs(0, 0.28, 0, 0, 0, 0.15, 0.025, 0.1, 0.025), p.stem);
+  return g;
+}
+
+function cress(p) {
+  const g = new GeoBuilder();
+  for (let i = 0; i < 7; i++) {
+    const a = i / 7 * Math.PI * 2;
+    g.addGeometry(BLOB, trs(Math.cos(a) * 0.07, 0.09 + (i % 2) * 0.035, Math.sin(a) * 0.07,
+      0, -a, 0.5, 0.045, 0.025, 0.11), i % 2 ? p.leaf : p.leafHi);
+  }
+  g.addGeometry(CYL, trs(0, 0.05, 0, 0, 0, 0, 0.08, 0.035, 0.08), p.tie);
+  return g;
+}
+
+function seedPacket(p) {
+  const g = new GeoBuilder();
+  g.addGeometry(BOX, trs(0, 0.018, 0, 0, 0.15, 0, 0.15, 0.025, 0.115), p.paper);
+  g.addGeometry(BOX, trs(0.015, 0.036, 0.01, 0, 0.15, 0, 0.11, 0.01, 0.075), p.paperHi);
+  g.addGeometry(BOX, trs(0, 0.044, 0.025, 0, 0.15, 0, 0.13, 0.008, 0.025), p.band);
+  g.addGeometry(BLOB, trs(0.02, 0.052, -0.02, 0, 0, 0, 0.025, 0.01, 0.025), p.mark);
+  return g;
+}
+
 /** Flat-packed furniture: tied paper with a colour mark naming what is inside. */
 function furniture(p) {
   const g = new GeoBuilder();
@@ -364,6 +404,36 @@ function game(p) {
   return g;
 }
 
+/**
+ * The two yard pieces, lying where they were dropped.
+ *
+ * Not the parcel, unlike every flat-pack above: these two are bought as
+ * themselves and carried as themselves -- a post is a post whether it is in
+ * your arms or in the ground -- so a wrapping would be a picture of something
+ * that never happened. Both lie DOWN, for the reason the stick does: a post
+ * standing on end on a lawn reads as a post somebody has already put in.
+ */
+function fencePost(p) {
+  const g = new GeoBuilder();
+  g.addGeometry(BOX, trs(0, 0.045, 0, 0, 0.3, Math.PI / 2, 0.09, 0.44, 0.09), p.post);
+  g.addGeometry(BOX, trs(0.18, 0.045, 0.055, 0, 0.3, Math.PI / 2, 0.075, 0.09, 0.075), p.cap);
+  g.addGeometry(BOX, trs(-0.02, 0.035, -0.09, 0, 0.42, Math.PI / 2, 0.05, 0.3, 0.05), p.rail);
+  return g;
+}
+
+function ladder(p) {
+  const g = new GeoBuilder();
+  // Flat on the ground, rungs upward: the shape reads from directly overhead,
+  // which is the view this one is most often seen from.
+  for (const dz of [-0.075, 0.075]) {
+    g.addGeometry(BOX, trs(0, 0.03, dz, 0, 0.22, 0, 0.46, 0.05, 0.05), dz < 0 ? p.stile : p.stileHi);
+  }
+  for (let i = 0; i < 4; i++) {
+    g.addGeometry(BOX, trs(-0.16 + i * 0.107, 0.045, 0.023, 0, 0.22, 0, 0.04, 0.03, 0.18), p.rung);
+  }
+  return g;
+}
+
 const BUILDERS = {
   'item.apple': apple,
   'item.mushroom': mushroom,
@@ -372,6 +442,13 @@ const BUILDERS = {
   'item.shell': shell,
   'item.flower': flower,
   'item.dried-flower': flower,
+  'item.turnip': turnip,
+  'item.pumpkin': pumpkin,
+  'item.cress': cress,
+  'seed.turnip': seedPacket,
+  'seed.flower': seedPacket,
+  'seed.pumpkin': seedPacket,
+  'seed.cress': seedPacket,
   'furnitem.bed': furniture,
   'furnitem.table': furniture,
   'furnitem.chair': furniture,
@@ -380,6 +457,8 @@ const BUILDERS = {
   'furnitem.stove': furniture,
   'furnitem.plant': furniture,
   'furnitem.crate': furniture,
+  'yarditem.fence-post': fencePost,
+  'yarditem.ladder': ladder,
   'tool.axe': axe,
   'tool.shovel': shovel,
   'tool.gun': gun,

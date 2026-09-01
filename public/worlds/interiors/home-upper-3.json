@@ -8,69 +8,82 @@
     "name": "Third Floor",
     "note": "Top floor of the upgraded player home."
   },
-  "grid": {"width":12,"height":10,"tileSize":1},
+  "grid": {"width":17,"height":14,"tileSize":1},
+  "ambience": {"music":"home"},
   "layers": {
     "surface": {
       "palette": {"#":"wall","w":"floor.wood","t":"floor.tile","r":"rug"},
       "data": [
-        "############",
-        "#wwwwwwwwww#",
-        "#wwwwwwwwww#",
-        "#wwwwwwwwww#",
-        "#wwwrrrrwww#",
-        "#wwwrrrrwww#",
-        "#wwwwttwwww#",
-        "#wwwwttwwww#",
-        "#wwwttttwww#",
-        "#####tt#####"
+        "#################",
+        "#wwwwwwwwwwwwwww#",
+        "#wwwwwwwwwwwwwww#",
+        "#wwwwwwwwwwwwwww#",
+        "#wwwwwwwwwwwwwww#",
+        "#wwwwwwwwwwwwwww#",
+        "#wwwwwwrrrrwwwww#",
+        "#wwwwwwrrrrwwwww#",
+        "#wwwwwwrrrrwwwww#",
+        "#wwwwwwrrrrwwwww#",
+        "#wwwwwwwttwwwwww#",
+        "#wwwwwwwttwwwwww#",
+        "#wwwwwwttttwwwww#",
+        "########tt#######"
       ]
     },
     "elevation": {
       "palette": {"0":"0","4":"4"},
       "data": [
-        "444444444444",
-        "400000000004",
-        "400000000004",
-        "400000000004",
-        "400000000004",
-        "400000000004",
-        "400000000004",
-        "400000000004",
-        "400000000004",
-        "444440044444"
+        "44444444444444444",
+        "40000000000000004",
+        "40000000000000004",
+        "40000000000000004",
+        "40000000000000004",
+        "40000000000000004",
+        "40000000000000004",
+        "40000000000000004",
+        "40000000000000004",
+        "40000000000000004",
+        "40000000000000004",
+        "40000000000000004",
+        "40000000000000004",
+        "44444444004444444"
       ]
     },
     "flags": {
       "palette": {".":"none"},
       "data": [
-        "............",
-        "............",
-        "............",
-        "............",
-        "............",
-        "............",
-        "............",
-        "............",
-        "............",
-        "............"
+        ".................",
+        ".................",
+        ".................",
+        ".................",
+        ".................",
+        ".................",
+        ".................",
+        ".................",
+        ".................",
+        ".................",
+        ".................",
+        ".................",
+        ".................",
+        "................."
       ]
     }
   },
   "objects": [
     {"id":"shelf","type":"furn.shelf","tile":[1,1]},
-    {"id":"crate.one","type":"furn.crate","tile":[9,1]},
-    {"id":"crate.two","type":"furn.crate","tile":[10,1]},
-    {"id":"table.work","type":"furn.table","tile":[4,4]},
-    {"id":"chair","type":"furn.chair","tile":[6,5],"rotation":270},
-    {"id":"plant","type":"furn.plant","tile":[1,8]}
+    {"id":"crate.one","type":"furn.crate","tile":[14,1]},
+    {"id":"crate.two","type":"furn.crate","tile":[15,1]},
+    {"id":"table.work","type":"furn.table","tile":[7,6]},
+    {"id":"chair","type":"furn.chair","tile":[9,7],"rotation":270},
+    {"id":"plant","type":"furn.plant","tile":[1,12]}
   ],
   "items": [
-    {"id":"stone.rafters","type":"item.stone","tile":[8,6]},
-    {"id":"stick.spare","type":"item.stick","tile":[9,7]}
+    {"id":"stone.rafters","type":"item.stone","tile":[11,10]},
+    {"id":"stick.spare","type":"item.stick","tile":[14,11]}
   ],
   "exits": [
-    {"tile":[5,9],"label":"Downstairs"},
-    {"tile":[6,9],"label":"Downstairs"}
+    {"tile":[8,13],"label":"Downstairs"},
+    {"tile":[9,13],"label":"Downstairs"}
   ],
-  "spawn": {"tile":[6,8],"facing":"north"}
+  "spawn": {"tile":[9,12],"facing":"north"}
 }

@@ -66,11 +66,124 @@ import { itemModel } from './ItemBatch.js';
 const BOX = new THREE.BoxGeometry(1, 1, 1);
 const BLOB = new THREE.IcosahedronGeometry(1, 2);
 const CYL = new THREE.CylinderGeometry(1, 1, 1, 10);
+/** The torso's taper. Hoisted because the torso is rebuilt on a change of shirt. */
+const TORSO = new THREE.CylinderGeometry(0.19, 0.155, 1, 12);
 
 const PAL = {
   skin: 0xf3c9a2, shirt: 0x4a9be0, shirtDark: 0x3a7cb8,
   pants: 0x3c4a68, shoe: 0x2c323d, hair: 0x6b4423, eye: 0x2a2320,
 };
+
+// --------------------------------------------------------------- clothing --
+/**
+ * What a garment does to this model, and the three shapes it can take.
+ *
+ * A SHIRT IS A REBUILD AND THE OTHER TWO ARE A SWAP, and the split falls out of
+ * where the colour lives. The torso and the upper arms carry the shirt in their
+ * VERTICES -- every model in this project is vertex-coloured so that ten meshes
+ * still compile one program -- so a change of shirt is two small geometries
+ * rebuilt and the old two disposed. That is a handful of triangles, once, on a
+ * key press; keeping a material per shirt to avoid it would cost a second
+ * program for the whole of every frame.
+ *
+ * A hat and a pair of glasses are their own meshes hung off the head, so those
+ * are a geometry swap and a `visible` flag, and the geometry is cached per type
+ * -- ten hats built at most once each, however many times you change your mind.
+ *
+ * THE NUMBERS ARE HEAD SPACE, and they are the ones world/itemTypes.js states.
+ * `brim` and `crown` arrive from the item; BRIM_Y and HAT_R are facts about
+ * THIS head and belong here. HAT_R must match CROWN_R in itemTypes.js, which is
+ * the one seam between the two files: the shop's picture and the head's hat are
+ * built from one set of measurements, so a hat cannot be one shape on the shelf
+ * and another on the player.
+ */
+
+/**
+ * Where the brim sits, and it is chosen so the crown always clears the hair.
+ *
+ * The hair is a ball of radius 0.225 centred at 0.21, so it tops out at 0.435
+ * and is 0.218 wide at 0.33. A brim at 0.33 with a 0.265 crown therefore
+ * encloses the head from the brim upward, and any crown at least 0.12 tall caps
+ * it -- which is why no hat in the registry is flatter than that.
+ */
+const BRIM_Y = 0.33;
+const HAT_R = 0.265;
+/** The face: where a lens sits, and how far apart the two of them are. */
+const LENS_Y = 0.17, LENS_Z = 0.222, LENS_X = 0.095;
+
+/** Geometry for one worn garment, built once per type and shared from then on. */
+const WORN = new Map();
+
+function wornGeometry(type) {
+  let g = WORN.get(type);
+  if (g) return g;
+  const b = new GeoBuilder();
+  (type.wear.slot === 'hat' ? hatParts : glassesParts)(b, type);
+  WORN.set(type, (g = b.build()));
+  return g;
+}
+
+/** A brim, a crown standing on it, and a band round the join. */
+function hatParts(b, type) {
+  const p = type.palette;
+  const { brim, crown } = type.wear;
+  b.addGeometry(CYL, trs(0, BRIM_Y, 0, 0, 0, 0, brim, 0.03, brim), p.cloth);
+  b.addGeometry(CYL, trs(0, BRIM_Y + crown / 2, 0, 0, 0, 0, HAT_R, crown, HAT_R), p.cloth);
+  b.addGeometry(CYL, trs(0, BRIM_Y + 0.028, 0, 0, 0, 0, HAT_R * 1.06, 0.032, HAT_R * 1.06), p.band);
+  b.addGeometry(CYL, trs(0, BRIM_Y + crown - 0.008, 0, 0, 0, 0, HAT_R * 0.86, 0.02, HAT_R * 0.86), p.clothHi);
+}
+
+/**
+ * Two lenses and a bridge, and deliberately no temples.
+ *
+ * The arms of a pair of glasses run back along a head that is 0.245 wide here,
+ * so they are either buried in it or standing off it -- and at the size a face
+ * is ever drawn they would be two pixels of frame bought with a clipping bug.
+ * Two dark discs and a bar between them read as sunglasses from any distance
+ * this game puts the camera at.
+ */
+function glassesParts(b, type) {
+  const p = type.palette;
+  const { lens, round } = type.wear;
+  const face = round ? CYL : BOX;
+  for (const side of [-1, 1]) {
+    const x = side * LENS_X;
+    b.addGeometry(CYL, trs(x, LENS_Y, LENS_Z, Math.PI / 2, 0, 0, lens * 1.65, 0.018, lens * 1.65), p.frame);
+    b.addGeometry(face, trs(x, LENS_Y, LENS_Z + 0.012, Math.PI / 2, 0, 0,
+      lens * 2.8, 0.014, lens * 2.6), p.lens);
+  }
+  b.addGeometry(BOX, trs(0, LENS_Y, LENS_Z + 0.006, 0, 0, 0, 0.07, 0.018, 0.03), p.frame);
+}
+
+/** The torso, in whatever shirt is on. Rebuilt on a change; see `#setOutfit`. */
+function torsoGeometry(p) {
+  const b = new GeoBuilder();
+  b.addGeometry(TORSO, trs(0, 0.16, 0, 0, 0, 0, 1, 0.34, 0.85), p.shirt);
+  b.addGeometry(BOX, trs(0, 0.02, 0, 0, 0, 0, 0.34, 0.07, 0.28), p.shirtDark);
+  b.addGeometry(BOX, trs(0, 0.30, 0, 0, 0, 0, 0.21, 0.05, 0.19), p.shirtDark);
+  return b.build();
+}
+
+/** One sleeved upper arm, shared by both sides. Rebuilt with the torso. */
+function upperGeometry(p) {
+  const b = new GeoBuilder();
+  b.addGeometry(BLOB, trs(0, 0, 0, 0, 0, 0, 0.063, 0.063, 0.063), p.shirt);
+  b.addGeometry(CYL, trs(0, -UPPER / 2, 0, 0, 0, 0, 0.052, UPPER, 0.052), p.shirt);
+  return b.build();
+}
+
+// -- knocked down -----------------------------------------------------------
+// The same three numbers NpcView uses, and duplicated rather than shared on
+// purpose: they are the shape of a fall as each view draws it, and a constant
+// exported from one model file into the other would make the player's body
+// depend on the villagers' for no reason beyond having typed it once.
+/** Just short of flat, so a shoulder still catches the light in 3D. */
+const TOPPLE = Math.PI / 2 * 0.92;
+/** Seconds to go over, and seconds to get back up. Falling is faster. */
+const DROP_TIME = 0.28;
+const RISE_TIME = 0.55;
+/** No rotation at all, to blend the lie-back toward while flat. */
+const _UPRIGHT = new THREE.Quaternion();
 
 // ------------------------------------------------------------- proportions --
 // World units. The hip is the one measurement everything else hangs off: the
@@ -489,10 +602,15 @@ export class PlayerView {
     this.root = new THREE.Group();      // world position
     this.tilt = new THREE.Group();      // camera-space lie-back
     this.yawG = new THREE.Group();      // world-space facing
+    this.fall = new THREE.Group();      // knocked flat, hinged at the feet
     this.bob = new THREE.Group();       // walk bounce, roll and hip twist
     this.root.add(this.tilt);
     this.tilt.add(this.yawG);
-    this.yawG.add(this.bob);
+    // Between the facing and the gait, exactly where NpcView puts it: toppling
+    // is about the body and not about which way it was pointed, and a hinge
+    // outside the yaw would lay the player over eastward whatever they faced.
+    this.yawG.add(this.fall);
+    this.fall.add(this.bob);
 
     // One material for the whole body. The parts differ by VERTEX colour, as
     // every other model in this project does, so ten meshes still compile one
@@ -509,10 +627,9 @@ export class PlayerView {
     shinG.addGeometry(BLOB, trs(0, -SHIN + 0.015, 0.025, 0, 0, 0, 0.093, 0.06, 0.125), PAL.shoe);
     const shin = shinG.build();
 
-    const upperG = new GeoBuilder();
-    upperG.addGeometry(BLOB, trs(0, 0, 0, 0, 0, 0, 0.063, 0.063, 0.063), PAL.shirt);
-    upperG.addGeometry(CYL, trs(0, -UPPER / 2, 0, 0, 0, 0, 0.052, UPPER, 0.052), PAL.shirt);
-    const upper = upperG.build();
+    // The two geometries a shirt lives in. Kept on `this` because a change of
+    // shirt rebuilds exactly these and disposes what they were. See `#setOutfit`.
+    this.upperGeo = upperGeometry(PAL);
 
     // Bare forearms, which is what makes an elbow visible at all: a sleeve that
     // ran to the wrist would hide the one joint these animations bend most.
@@ -542,12 +659,9 @@ export class PlayerView {
     this.torso = new THREE.Group();
     this.torso.position.set(0, HIP_Y, 0);
     this.bob.add(this.torso);
-    this.torso.add(mesh((b) => {
-      b.addGeometry(new THREE.CylinderGeometry(0.19, 0.155, 1, 12),
-        trs(0, 0.16, 0, 0, 0, 0, 1, 0.34, 0.85), PAL.shirt);
-      b.addGeometry(BOX, trs(0, 0.02, 0, 0, 0, 0, 0.34, 0.07, 0.28), PAL.shirtDark);
-      b.addGeometry(BOX, trs(0, 0.30, 0, 0, 0, 0, 0.21, 0.05, 0.19), PAL.shirtDark);
-    }, mat));
+    this.torsoM = new THREE.Mesh(torsoGeometry(PAL), mat);
+    this.torsoM.castShadow = true;
+    this.torso.add(this.torsoM);
 
     // ------------------------------------------------------------- head --
     // Oversized on purpose. Chibi proportions survive being seen from above,
@@ -566,19 +680,32 @@ export class PlayerView {
       }
     }, mat));
 
+    // --------------------------------------------------------- worn --
+    // Two empty meshes on the head, hidden until there is something to put in
+    // them. Made here rather than on the frame a hat is first bought so that
+    // putting one on is a geometry assignment and never a change to the scene
+    // graph -- the graph is walked every frame and the hat is not.
+    this.hat = new THREE.Mesh(undefined, mat);
+    this.glasses = new THREE.Mesh(undefined, mat);
+    this.hat.castShadow = true;
+    this.hat.visible = this.glasses.visible = false;
+    this.head.add(this.hat, this.glasses);
+
     // ------------------------------------------------------------- arms --
     this.arms = [];
+    this.upperMeshes = [];
     for (const side of [-1, 1]) {
       const arm = new THREE.Group();
       arm.position.set(side * SHOULDER_X, SHOULDER_Y, 0);
       const elbow = new THREE.Group();
       elbow.position.set(0, -UPPER, 0);
-      const upperM = new THREE.Mesh(upper, mat);
+      const upperM = new THREE.Mesh(this.upperGeo, mat);
       const foreM = new THREE.Mesh(fore, mat);
       upperM.castShadow = foreM.castShadow = true;
       elbow.add(foreM);
       arm.add(upperM, elbow);
       this.torso.add(arm);
+      this.upperMeshes.push(upperM);
       this.arms.push({ arm, elbow, side, shoulder: new THREE.Vector3(side * SHOULDER_X, SHOULDER_Y, 0) });
     }
     [this.armL, this.armR] = this.arms;
@@ -596,6 +723,8 @@ export class PlayerView {
     this.torso.add(this.hold);
     this.heldId = null;
     this.holdData = null;
+    /** -1 so the first frame dresses the model, whatever it is wearing. */
+    this.wornVersion = -1;
 
     /** Smoothed 0..1 "is walking", so a stopped step does not snap the legs. */
     this.gait = 0;
@@ -661,7 +790,20 @@ export class PlayerView {
     // on the right tile however far the model is laid over.
     this.tilt.quaternion.copy(lieBack);
 
+    // Shot, and on the floor for it. The whole move -- quick down, a beat, a
+    // slower rise, and the lie-back blended OUT while flat -- is NpcView's,
+    // because it is the same event happening to the other kind of body in this
+    // game and the two of them looking different would say something untrue
+    // about which one it is worse for. See NpcView.update.
+    const left = player.downed ?? 0;
+    const total = player.downFor ?? left;
+    const down = left <= 0 ? 0
+      : Math.min(1, Math.min((total - left) / DROP_TIME, left / RISE_TIME));
+    this.fall.rotation.z = down * TOPPLE;
+    if (down > 0) this.tilt.quaternion.slerp(_UPRIGHT, down);
+
     this.#setHeld(player.inventory?.held?.typeId ?? null);
+    this.#setOutfit(player.outfit ?? null);
 
     // ------------------------------------------------------------- gait --
     const speed = player.speed ?? 0;
@@ -807,6 +949,41 @@ export class PlayerView {
     _mA.makeBasis(_a1, _a2, _a3).transpose();
     _mB.makeBasis(_u, _e, _b3).multiply(_mA);
     arm.quaternion.setFromRotationMatrix(_mB);
+  }
+
+  /**
+   * Dress the model, and only when the outfit actually changed.
+   *
+   * Guarded on the Outfit's version counter for the reason `#setHeld` is
+   * guarded on the held type: this runs every frame and rebuilds geometry, and
+   * a shirt rebuilt sixty times a second is sixty allocations to draw a picture
+   * that did not move. The counter also makes the guard correct across a load,
+   * where the outfit changes without anybody pressing anything.
+   *
+   * The hat and the glasses are a cached geometry and a flag. The SHIRT is a
+   * rebuild of the torso and of the one upper-arm geometry both sleeves share,
+   * and the old two are disposed here -- this is the only place in the model
+   * that ever replaces a buffer, so it is also the only place that has to.
+   */
+  #setOutfit(outfit) {
+    if (!outfit || outfit.version === this.wornVersion) return;
+    this.wornVersion = outfit.version;
+
+    const shirt = outfit.type('shirt');
+    const pal = shirt
+      ? { ...PAL, shirt: shirt.palette.cloth, shirtDark: shirt.palette.clothDark }
+      : PAL;
+    this.torsoM.geometry.dispose();
+    this.torsoM.geometry = torsoGeometry(pal);
+    this.upperGeo.dispose();
+    this.upperGeo = upperGeometry(pal);
+    for (const m of this.upperMeshes) m.geometry = this.upperGeo;
+
+    for (const [slot, mesh_] of [['hat', this.hat], ['glasses', this.glasses]]) {
+      const type = outfit.type(slot);
+      mesh_.visible = !!type;
+      if (type) mesh_.geometry = wornGeometry(type);
+    }
   }
 
   /**

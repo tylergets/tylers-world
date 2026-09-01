@@ -41,7 +41,10 @@ import { objectType, rotateMask } from './world/objectTypes.js';
 import { Places } from './world/places.js';
 import { kits } from './world/kits.js';
 import { grudgeFor } from './world/grudge.js';
+import { theftFor } from './world/theft.js';
 import { closedFor } from './world/closed.js';
+import { climateOf, CLIMATES, WEATHER_KINDS, weatherOn } from './world/weather.js';
+import { plantType, STAGE_NAMES, yieldOf } from './world/plantTypes.js';
 import { Stage } from './render/Stage.js';
 import { Orbit } from './render/orbit.js';
 import { Player } from './sim/Player.js';
@@ -53,21 +56,27 @@ import { Edits } from './sim/Edits.js';
 import { Fixtures, interactOf } from './sim/Fixtures.js';
 import {
   toolTarget, toolOf, chopDrops, stumpDrops, digFind, AMMO, killDrops, mineDrops,
+  breakDrops, shotsToBreak, breakable,
 } from './sim/tools.js';
+import { Residents } from './sim/Residents.js';
+import { placeOwner, witness } from './sim/Watch.js';
 import { Fishing } from './sim/Fishing.js';
 import { Errands } from './sim/Errands.js';
 import { FreeInput, GridInput } from './sim/inputs.js';
 import { findPath } from './sim/pathfind.js';
 import { Keyboard } from './sim/Keyboard.js';
-import { yawFromVec } from './core/constants.js';
+import { yawFromVec, DIR_VEC } from './core/constants.js';
+import { makeRng } from './core/rng.js';
 import { Hud } from './ui/hud.js';
 import { WorldsPanel } from './ui/worlds.js';
 import { TitleScreen } from './ui/title.js';
 import { Chat } from './ui/dialogue.js';
 import { MapScreen } from './ui/mapscreen.js';
 import { PhotoView } from './ui/photo.js';
+import { Wardrobe } from './ui/wardrobe.js';
 import { VOICE_MODES } from './audio/voice.js';
 import * as sfx from './audio/sfx.js';
+import { setPlaceMusic, unlockMusic } from './audio/music.js';
 import { generate, worldId } from './world/generate.js';
 import {
   SHORELINE_STYLES, WATER_STYLES, MAP_MODES, MAP_SIZES,
@@ -77,6 +86,7 @@ import {
 } from './settings/graphics.js';
 import {
   DAY_LENGTHS, DAY_SECONDS as DAY_LENGTH_SECONDS, DAY_LABELS,
+  DEATH_PENALTIES, DEATH_LABELS,
   readGameSettings, writeGameSettings,
 } from './settings/game.js';
 import {
@@ -93,6 +103,27 @@ const FADE_TIME = 0.26;   // seconds for each half of a doorway fade
  * are facing is the counter and never the person. See Game.talkable.
  */
 const TALK_RANGE = 2.2;
+
+/**
+ * How long a resident will keep trying to reach his own front door before he is
+ * simply put behind it, in seconds.
+ *
+ * A backstop and not a rule. The walk home exists to be watched, and something
+ * has to give when it cannot be finished -- a villager wedged on a fence corner
+ * at nine in the evening should be in bed by ten, not still leaning on it at
+ * dawn. Twelve seconds is several times the longest honest walk to a doorstep
+ * from anywhere its owner strolls.
+ */
+const DOORSTEP_PATIENCE = 12;
+
+/** How close somebody has to get before they will ask you about it, in tiles. */
+const CONFRONT_RANGE = 1.9;
+
+/** Seconds between "is everybody where the hour says they should be" passes. */
+const RESIDENT_TICK = 0.2;
+
+/** A [x, z] tile as the centre point of that tile. */
+const toPoint = ([x, z]) => ({ x: x + 0.5, z: z + 0.5 });
 
 /**
  * How many seconds you get on somebody's floor before you are shown the door.
@@ -151,6 +182,13 @@ class Game {
     this.travel = null;    // the doorway fade in progress, if any
     this.trespass = null;  // { zone, t } while standing somewhere unwelcome
     this.legalTile = null; // the last tile in THIS place we were welcome on
+    // Who lives behind which front door, and whether they are in at this hour.
+    // The one piece of state that is about TWO places at once, which is why it
+    // is not on either of them. See sim/Residents.js.
+    this.residents = new Residents();
+    this._residentT = 0;
+    /** What a keeper is asking about right now, while the box is open. */
+    this.owed = null;
 
     this.graphics = readGraphicsSettings();
     this.gameSettings = readGameSettings();
@@ -171,13 +209,16 @@ class Game {
     this.stage.setQuality(SCALE_VALUES[this.graphics.resolution]);
     this.player = new Player(world);
     this.errands = new Errands(this.player.friends);
-    this.keys = new Keyboard();
+    this.keys = new Keyboard(window, unlockMusic);
     this.pointer = null;
     canvas.addEventListener('pointermove', (e) => {
       this.pointer = { x: e.clientX, y: e.clientY };
     });
     canvas.addEventListener('pointerleave', () => { this.pointer = null; });
-    canvas.addEventListener('pointerdown', (e) => this.pointAt(e));
+    canvas.addEventListener('pointerdown', (e) => {
+      unlockMusic();
+      this.pointAt(e);
+    });
 
     this.free = new FreeInput();
     this.grid = new GridInput();
@@ -224,6 +265,7 @@ class Game {
       onShadows: () => this.cycleShadows(),
       onAntialias: () => this.cycleAntialias(),
       onDayLength: () => this.cycleDayLength(),
+      onDeath: () => this.cycleDeathPenalty(),
       onMap: (sizesOnly) => this.cycleMap(sizesOnly),
       onWorlds: () => this.openWorlds(),
       onGoHome: () => this.goHome(),
@@ -252,6 +294,7 @@ class Game {
     // camera means neither of these is ever seen.
     this.mapScreen = new MapScreen(hudRoot);
     this.photos = new PhotoView(hudRoot);
+    this.wardrobe = new Wardrobe(hudRoot, (row) => this.changeClothes(row));
 
     this.hud.setVoice(this.chat.mode);
     this.hud.setMap(this.graphics.map);
@@ -341,6 +384,7 @@ class Game {
     const length = this.gameSettings.dayLength;
     this.player.clock.daySeconds = DAY_LENGTH_SECONDS[length];
     this.hud.setDayLength(DAY_LABELS[length]);
+    this.hud.setDeathPenalty(DEATH_LABELS[this.gameSettings.deathPenalty]);
   }
 
   /**
@@ -354,6 +398,21 @@ class Game {
   cycleDayLength() {
     const at = DAY_LENGTHS.indexOf(this.gameSettings.dayLength);
     this.gameSettings.dayLength = DAY_LENGTHS[(at + 1) % DAY_LENGTHS.length];
+    writeGameSettings(this.gameSettings);
+    this.syncGameSettings();
+  }
+
+  /**
+   * Step through what dying costs, gentlest first.
+   *
+   * Read at the moment of death and nowhere else, so changing it mid-game is
+   * neither retroactive nor a thing anything has to be rebuilt for -- and a
+   * player who has just lost a bag of turnips to it can put it back the way
+   * they wanted before the walk home is over.
+   */
+  cycleDeathPenalty() {
+    const at = DEATH_PENALTIES.indexOf(this.gameSettings.deathPenalty);
+    this.gameSettings.deathPenalty = DEATH_PENALTIES[(at + 1) % DEATH_PENALTIES.length];
     writeGameSettings(this.gameSettings);
     this.syncGameSettings();
   }
@@ -503,13 +562,13 @@ class Game {
         this.free.cancel();
         this.useTool();
       } else {
-        this.free.follow(findPath(this.world, [this.player.tileX, this.player.tileZ], tile));
+        this.free.follow(findPath(this.world, [this.player.tileX, this.player.tileZ], tile, this.player.climbs));
       }
       return;
     }
 
     if (this.input === this.grid && this.pendingInput !== this.free) {
-      this.grid.follow(findPath(this.world, [this.player.tileX, this.player.tileZ], tile));
+      this.grid.follow(findPath(this.world, [this.player.tileX, this.player.tileZ], tile, this.player.climbs));
     }
   }
 
@@ -528,7 +587,7 @@ class Game {
    */
   walkTo(tile) {
     if (!this.world.inBounds(...tile)) return false;
-    const route = findPath(this.world, [this.player.tileX, this.player.tileZ], tile);
+    const route = findPath(this.world, [this.player.tileX, this.player.tileZ], tile, this.player.climbs);
     if (!route.length) return false;
     (this.pendingInput ?? this.input).follow(route);
     return true;
@@ -550,8 +609,7 @@ class Game {
    * @returns {{tile: [number, number], name: string}|null} null when the
    *   marked home is not in the place you are standing in.
    */
-  homeStep() {
-    const world = this.world;
+  homeStep(world = this.world) {
     const home = world.objects.find(
       (obj) => obj.props?.playerHome && !world.felled.has(obj.id),
     );
@@ -610,6 +668,7 @@ class Game {
    */
   setPlace(world, tile, facing) {
     this.world = world;
+    setPlaceMusic(world);
     // Portal availability is derived from player progression. Do this before
     // either the renderer or HUD sees the place so inaccessible stairs are
     // never advertised for a frame.
@@ -628,10 +687,28 @@ class Game {
     this.edits = this.editsFor(world);
     this.stage.setWorld(world);
     this.stage.setEdits(this.edits);
+    this.growPlantings(this.edits);
+    this.stage.setWeather(weatherOn(world, this.player.clock.day));
     this.live = this.faunaFor(world);
     this.live.sync(this.edits.culled);
     this.stage.setFauna(this.live);
     this.people = this.folkFor(world);
+    // Front doors first, then who is behind them: `learn` reads this place for
+    // houses, and `syncResidents` decides -- for the hour it now is -- which of
+    // them are in. BEFORE the Stage is told about the people, so somebody who
+    // is at home is never on screen for the one frame between arriving and
+    // being noticed.
+    this.residents.learn(world);
+    // The places we came in THROUGH count too. A save restored straight into
+    // somebody's front room has a town on the stack that this session has never
+    // stood in -- so its front doors have never been read, and its people, one
+    // of whom owns this room, have never been built. Both are cheap and both
+    // are idempotent; leaving them undone leaves a house empty at midnight.
+    for (const back of this.stack) {
+      this.residents.learn(back.world);
+      this.folkFor(back.world);
+    }
+    this.syncResidents();
     this.stage.setFolk(this.people);
     this.loose = this.groundFor(world);
     this.stage.setGround(this.loose);
@@ -716,6 +793,106 @@ class Game {
   }
 
   /**
+   * The live person with this id, wherever in the session they are.
+   *
+   * Searched over every place's ROSTER (`Folk.own`) rather than over who is
+   * currently standing in each room, because the point of the search is usually
+   * to find somebody who is not standing in this one -- the owner of the house
+   * you are burgling, who is out in his garden two world files away.
+   */
+  findNpc(id) {
+    if (!id) return null;
+    for (const folk of this.folk.values()) {
+      const npc = folk.own.find((n) => n.id === id);
+      if (npc) return npc;
+    }
+    return null;
+  }
+
+  /**
+   * Put everybody with a front door on the right side of it.
+   *
+   * The whole of "people go home", and it is a RECONCILE rather than a set of
+   * events: it asks, of every resident, whether the hour says they are in, and
+   * then makes the two Folk lists agree with the answer. Written that way
+   * because the alternative -- firing a transition when the clock crosses an
+   * hour -- has to be right on frames the game was not running for. Sleeping
+   * through eight in the evening, loading a save at midnight, or skipping the
+   * clock forward with `T` would each need their own hook, and a missed one
+   * leaves somebody standing in the street all night.
+   *
+   * NOBODY IS SIMULATED IN A ROOM YOU ARE NOT IN. If the interior has never
+   * been opened there is no Folk to put him in, and none is built: he is marked
+   * indoors and taken out of the town, and the moment you open his front door
+   * `folkFor` builds the room's people and this hands him over. That is the
+   * same laziness the save uses for every other kind of place state.
+   *
+   * @param {number} dt  seconds since the last call, for the walk to the door
+   */
+  syncResidents(dt = 0) {
+    const clock = this.player.clock;
+    let changed = false;
+
+    for (const [id, home] of this.residents.homes) {
+      const npc = this.findNpc(id);
+      if (!npc) continue;
+
+      const inside = this.residents.homeTime(npc, clock);
+      const townFolk = this.folk.get(home.worldId) ?? null;
+      const inner = this.places.byUrl?.get(home.url) ?? null;
+      const innerFolk = inner ? this.folk.get(inner.meta.id) ?? null : null;
+
+      if (npc.indoors !== inside) {
+        npc.indoors = inside;
+        // Whatever he was in the middle of is over: a man who has gone in for
+        // the night is not still walking across the square with a gun out.
+        npc.calm();
+        changed = true;
+      }
+
+      if (inside) {
+        // Walk to his own door FIRST, if you are standing in the street to
+        // watch him do it. Vanishing from the middle of the square is the one
+        // thing this feature must not look like -- and when nobody is out
+        // there, the walk is skipped entirely, because a journey with no
+        // witness is indistinguishable from having already made it.
+        if (townFolk?.has(npc) && this.world === townFolk.world
+          && Math.hypot(npc.x - (home.step[0] + 0.5), npc.z - (home.step[1] + 0.5)) > 1.1
+          && !npc.roused) {
+          npc.homing = (npc.homing ?? 0) + dt;
+          if (npc.homing < DOORSTEP_PATIENCE) {
+            if (!npc.goal) npc.walkTo(...home.step);
+            continue;
+          }
+        }
+        npc.homing = 0;
+        if (townFolk?.release(npc)) changed = true;
+        if (innerFolk && !innerFolk.has(npc)) {
+          npc.indoorPost ??= toPoint(this.residents.indoorPost(inner));
+          npc.placeAt(inner, Math.floor(npc.indoorPost.x), Math.floor(npc.indoorPost.z));
+          innerFolk.admit(npc);
+          changed = true;
+        }
+      } else {
+        npc.homing = 0;
+        if (innerFolk?.release(npc)) changed = true;
+        if (townFolk && !townFolk.has(npc)) {
+          // Out of his own front door and onto the step, from where his
+          // ordinary day -- a station, or a stroll -- takes him wherever he
+          // spends it. No walk to arrange: the step IS where coming out puts
+          // you, which is the same thing it does for the player.
+          npc.placeAt(townFolk.world, home.step[0], home.step[1]);
+          townFolk.admit(npc);
+          changed = true;
+        }
+      }
+    }
+
+    if (changed) this.stage.syncFolk(this.people);
+    return changed;
+  }
+
+  /**
    * The loose items of a place, created on first visit and KEPT -- for the same
    * reason the animals are, and with sharper consequences. A rebuilt Ground
    * would respawn every apple you had already pocketed and swallow everything
@@ -791,6 +968,7 @@ class Game {
   /** Open the worlds panel, with the save list as it stands right now. */
   openWorlds() {
     this.hud.toggleSettings(false);
+    this.wardrobe.close();
     this.worlds.show(listSaves());
   }
 
@@ -832,6 +1010,10 @@ class Game {
     this.grounds.clear();
     this.changes.clear();
     this.fittings.clear();
+    // Front doors belong to the world that was open, and the people behind them
+    // are gone with its Folk. Left standing, a new session would believe the
+    // last town's villagers lived in this one.
+    this.residents = new Residents();
     this.errands = new Errands(this.player.friends);
     this.placeUrls.clear();
     this.stack.length = 0;
@@ -853,6 +1035,7 @@ class Game {
     // Folk of the arrival room and a trespass check runs on the first frame --
     // both of which ask who the player is friends with.
     this.player.inventory.restore(restore?.inventory ?? { slots: [], selected: 0 });
+    this.player.outfit.restore(restore?.outfit);
     this.player.purse.restore(restore?.coins);
     // A save from before there was time has no clock in it, and the sensible
     // reading of that is the morning of the first day -- which is what
@@ -865,6 +1048,11 @@ class Game {
     // one from the time it is being read at. See Friends.restore.
     this.player.clock.restore(restore?.clock);
     this.player.friends.restore(restore?.friends ?? [], this.player.clock.stamp);
+    // A save from before there were hearts has none, and gets a full row -- the
+    // generous reading, and the only one that cannot load somebody into a
+    // world with a heart left and no memory of how they lost the others.
+    this.player.health.restoreFrom(restore?.health);
+    this.player.downed = 0;
     this.errands.restore(restore?.errands);
     this.syncGameSettings();
     // A new game starts with three tools in the bag. They are ordinary items
@@ -883,6 +1071,9 @@ class Game {
       this.player.inventory.add('tool.axe', 1);
       this.player.inventory.add('tool.shovel', 1);
       this.player.inventory.add('tool.rod', 1);
+      const starterSeed = climateOf(world) === 'arid' ? 'seed.pumpkin'
+        : climateOf(world) === 'marsh' ? 'seed.cress' : 'seed.turnip';
+      this.player.inventory.add(starterSeed, 4);
     }
 
     this.setPlace(world, world.spawn.tile, world.spawn.facing);
@@ -1022,10 +1213,12 @@ class Game {
       })),
       player: {
         inventory: p.inventory.snapshot(),
+        outfit: p.outfit.snapshot(),
         coins: p.purse.coins,
         friends: p.friends.snapshot(),
         errands: this.errands.snapshot(),
         clock: p.clock.snapshot(),
+        health: p.health.snapshot(),
         houseStories: this.houseStories,
       },
       places,
@@ -1055,8 +1248,8 @@ class Game {
    */
   stateStamp() {
     const p = this.player;
-    return `${this.world.meta.id}|${p.tileX},${p.tileZ}|${this.stack.length}`
-      + `|${p.inventory.version}|${p.purse.version}|${p.friends.version}`
+    return `${this.world.meta.id}|${p.tileX},${p.tileZ}|${this.stack.length}|health:${p.health.version}`
+      + `|${p.inventory.version}|${p.outfit.version}|${p.purse.version}|${p.friends.version}`
       + `|errands:${this.errands.version}`
       + `|house:${this.houseStories}`
       + `|${this.loose.version}|${this.edits.version}|${this.fixtures.version}`
@@ -1265,6 +1458,198 @@ class Game {
     return true;
   }
 
+  // ----------------------------------------------------------------- crime --
+  //
+  // Three verbs in this game take something that is not yours: the hand that
+  // picks an apple off a shop floor, the hammer that folds somebody's chair
+  // into your pocket, and the gun that takes their bookcase apart. All three
+  // end up in `pilfer`, which is the ONE place that decides what it costs --
+  // because "was anybody looking" is the only question that separates them, and
+  // three copies of that question would eventually give three answers.
+
+  /** Whose things these are, here, or null in a place that is nobody's. */
+  get owner() { return placeOwner(this.world); }
+
+  /**
+   * Say out loud that you have just taken or broken something of somebody's,
+   * and let them do something about it.
+   *
+   * TWO OUTCOMES, AND THE DIFFERENCE IS WHETHER THEY WERE IN THE ROOM:
+   *
+   *   out      they find out anyway. The grudge lands exactly as if you had
+   *            shot them -- their door closes, their shop closes, and it wears
+   *            off in a day (sim/Friends.js). There is no way to be caught
+   *            later and no stolen-goods check at the door: knowing is enough.
+   *   in       a shopkeeper walks over and asks you to pay for it, because she
+   *            would rather have the money than the argument (world/theft.js).
+   *            Anybody else -- in their own home, where you should not be --
+   *            goes straight for the gun.
+   *
+   * The asymmetry is the point. A shop is a place where things have prices, so
+   * being caught in one is a transaction you tried to skip; a house is not, so
+   * being caught in one is somebody finding a stranger in their kitchen holding
+   * their bed.
+   *
+   * @param {object} what  `{ label, typeId }` -- the flat-pack or item taken.
+   *   A `typeId` is what lets a keeper name a price, so damage (which leaves
+   *   nothing in your pockets) passes none and always goes to the gun.
+   * @returns {'noted'|'accused'|'caught'|null} null when nobody owns this place.
+   */
+  pilfer({ label = 'that', typeId = null } = {}) {
+    const ownerId = this.owner;
+    if (!ownerId) return null;
+
+    const seen = witness(this.world, this.people, ownerId, this.player.x, this.player.z);
+    const name = (seen ?? this.findNpc(ownerId))?.name ?? 'Somebody';
+
+    if (!seen) {
+      const fresh = this.player.friends.anger(ownerId, this.player.clock.stamp);
+      this.note(fresh
+        ? `${name} is going to notice ${label} is gone.`
+        : `${name} is going to notice that as well.`);
+      return 'noted';
+    }
+
+    if (seen.shop && typeId) {
+      seen.accuse(seen.shop.askFor(typeId), typeId, label);
+      sfx.click(false);
+      this.note(`${name} saw that.`);
+      return 'accused';
+    }
+
+    seen.enrage();
+    this.player.friends.anger(seen.id, this.player.clock.stamp);
+    this.note(`${name} saw you.`);
+    return 'caught';
+  }
+
+  /**
+   * Open the conversation a shopkeeper has walked across her floor to have.
+   *
+   * The Game opens it and not the player, which is the only thing in the game
+   * that works that way: every other conversation starts with E. That is what
+   * makes it a confrontation rather than a menu -- she came to you, and the
+   * three ways out of it are hers to offer. See world/theft.js.
+   */
+  confront(npc) {
+    if (!npc?.confront || this.chat.active) return null;
+    const { debt, typeId } = npc.confront;
+    this.owed = { npc, debt, typeId };
+    const ctx = this.tradeCtx();
+    npc.lookAt(this.player.x, this.player.z);
+    this.chat.open(new Dialogue(npc, ctx, theftFor(npc, debt, typeId)), ctx);
+    this.talking = npc;
+    return npc;
+  }
+
+  /**
+   * How the confrontation ended -- the one effect a theft script can have.
+   *
+   * The coins have already left the purse by the time this runs for `pay`: that
+   * half is an ordinary `coins` effect, because taking money is a thing the
+   * dialog machine can already do and re-implementing it here would be a second
+   * way to charge somebody. What is left is the part that touches the world:
+   * the goods going back, and the gun coming out.
+   */
+  settleTheft(npc, answer) {
+    const owed = this.owed;
+    this.owed = null;
+
+    if (answer === 'refuse') {
+      npc.enrage();
+      this.player.friends.anger(npc.id, this.player.clock.stamp);
+      return;
+    }
+
+    if (answer === 'return' && owed?.typeId) {
+      // Off the top of the bag rather than out of a slot the player chose:
+      // this is the shop taking its property back, not a sale.
+      const inv = this.player.inventory;
+      for (let i = 0; i < inv.size; i++) {
+        if (inv.slot(i)?.typeId !== owed.typeId) continue;
+        inv.removeFrom(i, 1);
+        this.spill(owed.typeId, [npc.tileX, npc.tileZ]);
+        break;
+      }
+    }
+
+    npc.calm();
+  }
+
+  /**
+   * Somebody in this room has fired at the player.
+   *
+   * Resolved here for the reason the player's own gun is: what a shot COSTS is
+   * a rule of the game, and an NPC that could spend the player's hearts itself
+   * would be a second copy of that rule living on the least suitable object in
+   * the codebase. sim/Npc.js decides only that a trigger was pulled.
+   *
+   * ONE HIT PER FALL. A hostile shopkeeper standing over you would otherwise
+   * empty the row while you were flat on your back and unable to answer, which
+   * is not a fight, it is a cutscene about dying.
+   */
+  shotAt(npc) {
+    const dx = this.player.x - npc.x, dz = this.player.z - npc.z;
+    this.stage.setShot(npc.x, npc.y, npc.z, Math.atan2(dx, dz), Math.hypot(dx, dz), this.time);
+    sfx.shot();
+    if (this.player.downed > 0) return;
+
+    if (this.player.hurt(1)) this.die(npc);
+    else this.note(`${npc.name} shot you.`);
+  }
+
+  /**
+   * Run out of hearts.
+   *
+   * You wake up at your own front door with a full row, and what is in your
+   * pockets is the player's own setting -- see DEATH_PENALTIES in
+   * settings/game.js. There is no failure state under this: the save is
+   * untouched, the day carries on, and the only thing you have certainly lost
+   * is the walk back.
+   *
+   * The pockets are emptied BEFORE the journey home, so `drop` drops them where
+   * you fell -- in the room you were shot in, at the feet of the person who
+   * shot you, which is exactly the errand it is meant to be.
+   */
+  die(killer = null) {
+    // Nobody keeps shooting a body. The grudge stands -- that is the part that
+    // is saved -- but the scene is over for everyone in the room.
+    for (const npc of this.people.npcs) npc.calm();
+    this.endChat();
+
+    const penalty = this.gameSettings.deathPenalty;
+    if (penalty !== 'keep') {
+      const inv = this.player.inventory;
+      for (let i = 0; i < inv.size; i++) {
+        const slot = inv.slot(i);
+        if (!slot) continue;
+        const { typeId, count } = slot;
+        inv.removeFrom(i, count);
+        if (penalty !== 'drop') continue;
+        for (let n = 0; n < count; n++) this.spill(typeId, [this.player.tileX, this.player.tileZ]);
+      }
+    }
+
+    this.player.health.restore();
+    this.player.downed = 0;
+
+    // Out of every doorway at once, which is the one place in this game that
+    // unwinds the stack rather than stepping back through it: waking up is not
+    // a journey, and walking the player out of three rooms in sequence would be
+    // three fades and a story about being carried.
+    const root = this.stack.length ? this.stack[0].world : this.world;
+    const back = this.stack.length ? this.stack[0] : null;
+    this.stack.length = 0;
+    this.beginTravel(Promise.resolve(root), (world) => {
+      const home = this.homeStep(world);
+      const tile = home?.tile ?? back?.tile ?? world.spawn.tile;
+      this.setPlace(world, tile, world.spawn.facing);
+      this.note(killer
+        ? `${killer.name} put you down. You come round at your own door.`
+        : 'You come round at your own door.');
+    });
+  }
+
   // ----------------------------------------------------------- interaction --
 
   /**
@@ -1304,6 +1689,9 @@ class Game {
     const item = this.reachable();
     if (item) return { kind: 'take', item };
 
+    const planting = this.plantingTarget(ax, az);
+    if (planting) return planting;
+
     // The `interactOf` test before `tradeCtx` is not micro-optimisation: this
     // method is polled ten times a second, and building a context object for
     // every wall and tree the player happens to be facing is garbage generated
@@ -1326,6 +1714,7 @@ class Game {
     const what = this.interaction();
     if (!what) return;
     if (what.kind === 'take') this.take();
+    else if (what.kind === 'plant') this.tendPlant(what);
     else if (what.kind === 'furniture') this.useFurniture(what);
     else if (what.kind === 'use') this.use(what.fixture);
     else this.talk(what.npc);
@@ -1416,15 +1805,87 @@ class Game {
       back += this.fauna.get(id)?.restock() ?? owed;
     }
 
+    for (const edits of this.changes.values()) this.growPlantings(edits);
+    this.stage.setWeather(weatherOn(this.world, this.player.clock.day));
+
     for (const folk of this.folk.values()) {
       newStock = folk.refreshShops(this.player.clock.day) || newStock;
     }
 
+    // A night mends what a shot took, and it is the only thing that does.
+    // There is no bandage, no food that heals and nothing to buy for it: the
+    // cost of being shot is the rest of your day, which is a real cost in a
+    // game whose whole loop is a day long, and no cost at all to a player who
+    // decides to go to bed. See sim/Health.js.
+    const mended = this.player.health.restore();
+
+    const sky = weatherOn(this.world, this.player.clock.day);
     const lines = [`Day ${this.player.clock.day}.`];
+    if (sky) lines.push(WEATHER_KINDS[sky].note);
+    if (mended) lines.push('You feel better for the sleep.');
     if (back) lines.push('Something is moving out there again.');
     if (newStock) lines.push('The furniture shop has new stock.');
     this.note(lines.join(' '));
     return days;
+  }
+
+  /** Update one place's cached plant stages from its complete weather history. */
+  growPlantings(edits) {
+    return edits?.grow(this.player.clock.day, (day) => weatherOn(edits.world, day));
+  }
+
+  /** What E does to the planted bed or open hole being faced. */
+  plantingTarget(x, z) {
+    const planting = this.edits?.plantingAt(x, z);
+    if (planting) {
+      const plant = plantType(planting.type);
+      const count = yieldOf(plant, makeRng(
+        `harvest:${this.world.meta.id}:${x}:${z}:${planting.plantedDay}`)());
+      return {
+        kind: 'plant', action: planting.stage >= 2 ? 'harvest' : 'wait',
+        planting, plant, tile: [x, z], count,
+        label: `${plant.label} · ${STAGE_NAMES[planting.stage]}`,
+        blocked: planting.stage < 2 ? 'Still growing.'
+          : this.player.inventory.room(plant.yields.type) < count ? 'Make room in your pockets first.' : null,
+      };
+    }
+
+    if (!this.edits?.holeAt(x, z)) return null;
+    const held = this.player.inventory.held;
+    const plantId = held ? itemType(held.typeId).seed : null;
+    if (!plantId) return null;
+    const plant = plantType(plantId);
+    const climate = climateOf(this.world);
+    return {
+      kind: 'plant', action: 'sow', plant, seedType: held.typeId, tile: [x, z],
+      label: plant.label,
+      blocked: !plant.climates.includes(climate)
+        ? `${plant.label} will not grow in ${CLIMATES[climate]?.label ?? 'this climate'}.` : null,
+    };
+  }
+
+  /** Sow, inspect, or harvest the bed selected by `plantingTarget`. */
+  tendPlant(what) {
+    if (what.blocked) { this.note(what.blocked); return null; }
+    if (what.action === 'sow') {
+      const planted = this.edits.sow(itemType(what.seedType).seed,
+        ...what.tile, this.player.clock.day);
+      if (!planted) return null;
+      this.player.inventory.removeFrom(this.player.inventory.selected, 1);
+      this.note(`${what.plant.label} sown.`);
+      return planted;
+    }
+    if (what.action !== 'harvest') return null;
+    const planting = this.edits.harvest(...what.tile);
+    if (!planting) return null;
+    this.player.inventory.add(what.plant.yields.type, what.count);
+    this.errands.record({
+      kind: 'gather', item: what.plant.yields.type,
+      token: `${this.world.meta.id}:harvest:${what.tile.join(',')}:${planting.plantedDay}`,
+    });
+    const label = itemType(what.plant.yields.type).label;
+    this.note(`${what.count} ${label}${what.count === 1 || label.endsWith('s') ? '' : 's'} harvested.`);
+    return planting;
   }
 
   /**
@@ -1450,6 +1911,11 @@ class Game {
    */
   talk(npc) {
     if (!npc || this.chat.active) return null;
+    // Somebody walking over about the thing in your pocket is having THAT
+    // conversation, whoever opens it. Speaking first is allowed and changes
+    // nothing -- it is still her question, and it is still the same three
+    // answers. See `confront`.
+    if (npc.confront) return this.confront(npc);
     npc.lookAt(this.player.x, this.player.z);
     if (!this.intruding()) this.player.friends.visit(npc.id, this.player.clock.day);
     const ctx = this.tradeCtx();
@@ -1482,6 +1948,11 @@ class Game {
       clock: this.player.clock,
       houseStories: () => this.houseStories,
       setHouseStories: (stories) => this.setHouseStories(stories),
+      // The other effect that reaches back out into the world, and it is here
+      // on the same terms: the script can only report which of three answers
+      // the player gave to somebody who caught them, and the Game decides what
+      // each of them means. See world/theft.js.
+      settleTheft: (npc, answer) => this.settleTheft(npc, answer),
     };
   }
 
@@ -1530,6 +2001,12 @@ class Game {
     this.loose.take(item);
     if (!item.dropped) {
       this.errands.record({ kind: 'gather', item: item.typeId, token: `${this.world.meta.id}:${item.id}` });
+      // Somebody's floor, and something they put there. `dropped` is the whole
+      // test: an apple you put down in a shop two minutes ago is yours to pick
+      // back up, and the one in the crate beside it never was. In a place
+      // nobody owns -- a meadow, your own kitchen -- `pilfer` finds no owner
+      // and this costs nothing, which is every apple in the game so far.
+      this.pilfer({ label: `that ${itemType(item.typeId).label.toLowerCase()}`, typeId: item.typeId });
     }
     return item;
   }
@@ -1559,13 +2036,32 @@ class Game {
     return this.loose.drop(gone.typeId, spot[0], spot[1]);
   }
 
-  /** Assemble the selected furniture flat-pack in front of the player. */
-  placeFurniture(typeId) {
-    const furniture = itemType(typeId).furniture;
+  /**
+   * Where the held flat-pack would land, and whether the place would take it.
+   *
+   *   { furniture, tile, shape, rotation, blocked }
+   *
+   * The same split sim/tools.js makes with `toolTarget`, for the same reason:
+   * the ghost preview asks this every frame and the Q key asks it once, and
+   * two callers deriving the anchor separately is how a preview ends up
+   * standing somewhere the key will refuse. It MUTATES NOTHING.
+   *
+   * Null when the thing is not furniture at all. In the wrong KIND of place
+   * -- a bed carried through town -- `tile` is null and `blocked` says why:
+   * there is no spot to show a ghost over, but the key press still deserves
+   * its answer. With a tile, `blocked` carries the reason this spot will not
+   * do, which is exactly what the ghost turns red over.
+   */
+  furnishTarget(typeId) {
+    const type = itemType(typeId);
+    const furniture = type.furniture;
     if (!furniture) return null;
-    if (this.world.meta.role !== 'player-home') {
-      this.note('Furniture can be assembled in your house.');
-      return null;
+    if (type.site === 'outdoors') {
+      if (this.world.kind !== 'exterior') {
+        return { furniture, tile: null, shape: null, rotation: 0, blocked: `${type.label}s go outside.` };
+      }
+    } else if (this.world.meta.role !== 'player-home') {
+      return { furniture, tile: null, shape: null, rotation: 0, blocked: 'Furniture can be assembled in your house.' };
     }
 
     const rotation = this.player.facing * 90;
@@ -1579,25 +2075,85 @@ class Game {
     ];
     const tile = anchors[this.player.facing];
 
-    for (let dz = 0; dz < shape.d; dz++) {
-      for (let dx = 0; dx < shape.w; dx++) {
-        if (this.loose.itemAt(tile[0] + dx, tile[1] + dz)) {
-          this.note('Move the item on the floor first.');
-          return null;
+    // The same walk `World.addObject` will make, made here first so the
+    // answer exists BEFORE anything is mutated -- plus the floor check, which
+    // the world does not know about because loose items are the sim's.
+    let blocked = null;
+    for (let dz = 0; dz < shape.d && !blocked; dz++) {
+      for (let dx = 0; dx < shape.w && !blocked; dx++) {
+        const cx = tile[0] + dx, cz = tile[1] + dz;
+        if (!this.world.inBounds(cx, cz) || this.world.isBlocked(cx, cz)) {
+          blocked = 'There is not enough clear floor here.';
+        } else if (this.loose.itemAt(cx, cz)) {
+          blocked = 'Move the item on the floor first.';
         }
       }
     }
 
-    const obj = this.edits.place(furniture, tile, rotation);
+    // A ladder is bought to get somewhere, and one standing on flat ground goes
+    // nowhere: all it can do is carry a step the terrain would otherwise refuse
+    // (World.canStep), so with no drop beside it there is nothing for it to do.
+    // Refusing here is cheaper than letting the player buy a prop and work out
+    // for themselves why it did not help.
+    const climb = objectType(furniture).climb ?? 0;
+    if (!blocked && climb && !this.ridgeBeside(tile, climb)) {
+      blocked = 'A ladder wants a ridge to lean against.';
+    }
+
+    return { furniture, tile, shape, rotation, blocked };
+  }
+
+  /**
+   * Assemble the selected flat-pack -- or set down the selected yard piece --
+   * in front of the player.
+   *
+   * ONE PLACEMENT PATH for both, and the only thing that differs is WHERE each
+   * is allowed to land, which the item registry states (`site`, see
+   * world/itemTypes.js). Everything after that check -- the anchor the
+   * footprint hangs off the tile ahead, the floor test, the rebuild, the record
+   * that lets a hammer fold it back up -- is identical for a bed and for a
+   * fence post, because a placed object is a placed object.
+   *
+   * The DECISION lives in `furnishTarget`, shared with the ghost preview, so
+   * the piece always lands exactly where the ghost stood.
+   */
+  placeFurniture(typeId) {
+    const target = this.furnishTarget(typeId);
+    if (!target) return null;
+    if (target.blocked) {
+      this.note(target.blocked);
+      return null;
+    }
+
+    const type = itemType(typeId);
+    const obj = this.edits.place(target.furniture, target.tile, target.rotation);
+    // The resolver already walked the footprint, so this only fails on a bug
+    // -- but a refusal with a reason still beats a key that does nothing.
     if (!obj) {
       this.note('There is not enough clear floor here.');
       return null;
     }
     this.player.inventory.removeFrom(this.player.inventory.selected, 1);
     this.stage.rebuildWorld(this.world);
-    this.note(`${objectType(furniture).label} placed.`);
-    this.errands.record({ kind: 'change', change: 'furnish', category: 'furniture', token: obj.id });
+    this.note(`${objectType(target.furniture).label} placed.`);
+    // A fence is not furnishing, and an errand asking for a furnished room
+    // should not be settled by a post in a field.
+    this.errands.record({
+      kind: 'change', change: 'furnish',
+      category: type.site === 'outdoors' ? 'yard' : 'furniture', token: obj.id,
+    });
     return obj;
+  }
+
+  /** Whether a tile has a walkable neighbour a ladder of this reach could serve. */
+  ridgeBeside([tx, tz], climb) {
+    const here = this.world.elevationAt(tx, tz);
+    return DIR_VEC.some(({ x, z }) => {
+      const nx = tx + x, nz = tz + z;
+      if (!this.world.inBounds(nx, nz) || this.world.isBlocked(nx, nz)) return false;
+      const rise = Math.abs(this.world.elevationAt(nx, nz) - here);
+      return rise > 0 && rise <= climb;
+    });
   }
 
   /** Use the small set of functions owned by player-placed furniture. */
@@ -1638,8 +2194,44 @@ class Game {
 
   /** Fold one empty player-placed piece back into its inventory item. */
   packFurniture(obj) {
+    const packed = this.liftFurniture(obj);
+    if (packed) this.note(`${objectType(obj.type).label} packed up.`);
+    return packed;
+  }
+
+  /**
+   * Fold up a piece of furniture that is not yours and walk off with it.
+   *
+   * Mechanically it IS `packFurniture` -- same hammer, same flat-pack, same
+   * slot in your bag -- and everything that makes it different happens after
+   * the object is gone, in `pilfer`. That split is deliberate: the taking is a
+   * tool doing its job, and the consequence is a person having an opinion about
+   * it, and folding the two together would mean a hammer that knows who lives
+   * where.
+   */
+  stealFurniture(obj) {
+    const label = objectType(obj.type).label;
+    const taken = this.liftFurniture(obj);
+    if (!taken) return null;
+    this.note(`${label} taken.`);
+    this.pilfer({ label: `that ${label.toLowerCase()}`, typeId: furnitureItemFor(obj.type) });
+    return taken;
+  }
+
+  /**
+   * Take one piece of furniture out of the room and put its flat-pack in the bag.
+   *
+   * TWO WAYS OUT OF THE WORLD, and which one is used depends on who put it
+   * there. Something you assembled is un-assembled (`Edits.pack`, which takes
+   * the added object back out of the World); something the file placed is
+   * FELLED, exactly as a tree is, because that is the record this codebase
+   * already has for "authored thing that is no longer there" -- it survives a
+   * save, it replays onto a place rebuilt from its file, and an id that no
+   * longer names anything is simply an edit with nothing left to apply.
+   */
+  liftFurniture(obj) {
     const itemId = obj && furnitureItemFor(obj.type);
-    if (!itemId || !this.edits.isPlaced(obj.id)) return null;
+    if (!itemId) return null;
     if (this.edits.storedIn(obj.id)) {
       this.note('Empty it before packing it up.');
       return null;
@@ -1648,12 +2240,22 @@ class Game {
       this.note('Make room in your pockets first.');
       return null;
     }
-    const packed = this.edits.pack(obj.id);
-    if (!packed) return null;
+
+    if (this.edits.isPlaced(obj.id)) {
+      const packed = this.edits.pack(obj.id);
+      if (!packed) return null;
+      this.player.inventory.add(itemId, 1);
+      // Only the player-placed path re-meshes: an added object is IN the merged
+      // geometry, so removing it needs the geometry built again. A felled one
+      // is hidden by the same reconcile that hides a chopped oak.
+      this.stage.rebuildWorld(this.world);
+      return packed;
+    }
+
+    if (!this.edits.fell(obj)) return null;
     this.player.inventory.add(itemId, 1);
-    this.stage.rebuildWorld(this.world);
-    this.note(`${objectType(obj.type).label} packed up.`);
-    return packed;
+    sfx.thud();
+    return obj;
   }
 
   // ----------------------------------------------------------------- tools --
@@ -1679,11 +2281,22 @@ class Game {
     const held = this.player.inventory.held;
     if (held?.typeId === 'tool.hammer') {
       const obj = this.world.objectAt(...this.player.aheadTile());
-      if (obj && this.edits?.isPlaced(obj.id)) {
+      // Two verbs, one swing of the same hammer, and which one you get is
+      // decided by WHOSE the furniture is rather than by anything you hold or
+      // press. Your own -- assembled by you, or standing in your own house --
+      // folds up into your pocket. Somebody else's does exactly the same thing
+      // and is called what it is. The HUD prints the verb, so the game has said
+      // "steal" out loud before the key is ever pressed.
+      if (obj && furnitureItemFor(obj.type)) {
+        const mine = this.edits?.isPlaced(obj.id) || !this.owner;
         return {
-          verb: 'pack', object: obj, tile: [...obj.tile],
+          verb: mine ? 'pack' : 'steal',
+          object: obj,
+          tile: [...obj.tile],
           label: objectType(obj.type).label,
-          blocked: this.edits.storedIn(obj.id) ? 'empty it first' : null,
+          blocked: this.edits?.storedIn(obj.id) ? 'empty it first'
+            : this.player.inventory.room(furnitureItemFor(obj.type)) < 1 ? 'no room in your pockets'
+              : null,
         };
       }
     }
@@ -1723,6 +2336,7 @@ class Game {
     const what = this.toolAction();
     if (!what || what.blocked) return null;
     const done = what.verb === 'pack' ? this.packFurniture(what.object)
+      : what.verb === 'steal' ? this.stealFurniture(what.object)
       : what.verb === 'chop' ? this.chop(what)
       : what.verb === 'mine' ? this.mine(what)
         : what.verb === 'dig' ? this.dig(what)
@@ -1737,7 +2351,10 @@ class Game {
                           : what.verb === 'hook' ? this.hook(what)
                             : what.verb === 'reel' ? this.reelIn(what)
                               : null;
-    if (done) this.stage.playerAction(what.verb, this.time);
+    // The swing animation is the hammer's either way: taking somebody else's
+    // chair apart is not a different motion from taking your own apart, and a
+    // verb the view has never heard of would simply play nothing.
+    if (done) this.stage.playerAction(what.verb === 'steal' ? 'pack' : what.verb, this.time);
     return done;
   }
 
@@ -1783,7 +2400,7 @@ class Game {
       this.mapScreen.panBy(px * rate, pz * rate);
     }
 
-    this.people.update(dt, this.player.clock);
+    this.tickFolk(dt);
     this.live.update(dt);
   }
 
@@ -1794,8 +2411,51 @@ class Game {
     if (k.pressed('ArrowLeft') || k.pressed('KeyA')) this.photos.step(1);
     if (k.pressed('ArrowRight') || k.pressed('KeyD')) this.photos.step(-1);
 
-    this.people.update(dt, this.player.clock);
+    this.tickFolk(dt);
     this.live.update(dt);
+  }
+
+  /** Drive the wardrobe while the world continues underneath it. */
+  updateWardrobe(dt) {
+    const k = this.keys;
+    if (k.pressed('Escape') || k.pressed('KeyG')) this.wardrobe.close();
+    else if (k.pressed('ArrowUp') || k.pressed('KeyW')) this.wardrobe.move(-1);
+    else if (k.pressed('ArrowDown') || k.pressed('KeyS')) this.wardrobe.move(1);
+    else if (k.pressed('KeyE') || k.pressed('Space') || k.pressed('Enter')) this.wardrobe.confirm();
+
+    this.tickFolk(dt);
+    this.live.update(dt);
+  }
+
+  /** Put on or remove the garment selected in the wardrobe. */
+  changeClothes(row) {
+    const { inventory, outfit } = this.player;
+    if (row.worn) {
+      if (inventory.room(row.typeId) < 1) {
+        this.note('Your bag is full. Make room before taking that off.');
+        return false;
+      }
+      const off = outfit.remove(row.slot);
+      if (off) inventory.add(off, 1);
+      return !!off;
+    }
+
+    if (outfit.get(row.slot) === row.typeId) {
+      this.note(`You're already wearing ${row.type.label}.`);
+      return false;
+    }
+
+    // Removing the chosen stack-one garment first guarantees a slot for the
+    // garment coming off, even when every bag slot was occupied.
+    const chosen = inventory.removeFrom(row.from, 1);
+    if (!chosen) return false;
+    if (chosen.typeId !== row.typeId) {
+      inventory.add(chosen.typeId, chosen.count);
+      return false;
+    }
+    const off = outfit.wear(chosen.typeId);
+    if (off) inventory.add(off, 1);
+    return true;
   }
 
   /**
@@ -1943,6 +2603,14 @@ class Game {
       this.player.yaw, what.range ?? tool.range ?? 8, this.time);
     sfx.shot();
 
+    // Something standing on a tile rather than something alive: a tree, a
+    // boulder, or the bookcase in a front room. It takes several shots and then
+    // it is gone, which is the same three-line shape `chop` and `mine` have --
+    // and it is deliberately the WORST way to do any of those jobs, because a
+    // box of shot costs more than the wood is worth and furniture pays nothing
+    // but splinters. See `smash`.
+    if (what.kind === 'object') return this.smash(what);
+
     if (what.kind === 'npc') {
       what.target.knockDown();
       // Shooting somebody is the exact inverse of saying hello, and it costs
@@ -1964,6 +2632,41 @@ class Game {
     if (!animal) return null;
     this.edits.cull(animal.id);
     for (const typeId of killDrops(animal)) this.spill(typeId, what.tile);
+    return what;
+  }
+
+  /**
+   * Put a shot into something that is not going anywhere.
+   *
+   * `chop` and `mine` written once, for whatever the ray found: the blow is
+   * recorded on the object, the prop shakes, and the last one takes it out of
+   * the world and spills what it was worth. It is one method and not three
+   * because -- unlike the axe and the pickaxe, which refuse each other's work
+   * on purpose -- a gun genuinely does not care what it is pointed at, and
+   * `shotsToBreak` is where the difference between a chair and a boulder is
+   * written down.
+   *
+   * INDOORS IS THE SAME RULE, which is the whole reason this exists: a place's
+   * edits are per place and a house is a place, so the bookcase you shot to
+   * pieces in somebody's front room is still in pieces when you come back --
+   * and somebody, sooner or later, is going to have an opinion about that. See
+   * `pilfer`, which is asked the moment it comes apart rather than on every
+   * shot, because being angry about a scratched chair and being angry about a
+   * destroyed one are not the same feeling.
+   */
+  smash(what) {
+    const obj = what.object;
+    if (this.edits.swing(obj) < shotsToBreak(obj)) {
+      this.stage.chopHit(obj.id, this.time);
+      return what;
+    }
+    // Straighten whatever is still shaking BEFORE it goes, on the rule `chop`
+    // states: a wobble that outlived its prop leans a span that is no longer
+    // there.
+    this.stage.chopHit(null);
+    if (!this.edits.fell(obj)) return null;
+    for (const typeId of breakDrops(obj)) this.spill(typeId, what.tile);
+    this.pilfer({ label: `that ${(what.label ?? 'thing').toLowerCase()}` });
     return what;
   }
 
@@ -2162,12 +2865,52 @@ class Game {
     this.chat.tick(dt);
 
     // The people keep breathing and the animals keep moving while you talk.
-    this.people.update(dt, this.player.clock);
+    this.tickFolk(dt);
     this.live.update(dt);
     this.talking?.lookAt(this.player.x, this.player.z);
 
     this.chat.draw();
     if (this.chat.dialogue?.done) this.endChat();
+  }
+
+  /**
+   * Tick the people of the live place, and settle anything they have done.
+   *
+   * The one call site for all four of the loops that keep the room alive -- the
+   * ordinary frame, a conversation, the map screen and the photo roll -- so
+   * that "somebody is coming for you" cannot quietly be true in three of them
+   * and false in the fourth.
+   *
+   * THE PLAYER IS PASSED IN, and only when there is something to pursue them
+   * for: an NPC who is neither angry nor owed money never reads it. It is
+   * withheld outright while a conversation is open, which is what stops a
+   * shopkeeper from walking over and shooting somebody who is standing inside a
+   * dialog box with the keyboard taken away from them. The refusal that made
+   * her angry is two lines further down the same script; she can start once the
+   * box is shut.
+   */
+  tickFolk(dt) {
+    this.people.update(dt, this.player.clock, this.chat.active ? null : this.player);
+    for (const npc of this.people.firing()) this.shotAt(npc);
+    this.watchRoused();
+  }
+
+  /**
+   * Let anybody who has walked over about something say their piece.
+   *
+   * The only conversation in the game that opens itself, and it opens at ARM'S
+   * LENGTH rather than the moment she sets off -- a question asked from across
+   * the shop would be a notification, and this is meant to be somebody standing
+   * in front of you.
+   */
+  watchRoused() {
+    if (this.chat.active || this.player.downed > 0) return;
+    for (const npc of this.people.npcs) {
+      if (!npc.confront || npc.downed > 0) continue;
+      if (Math.hypot(npc.x - this.player.x, npc.z - this.player.z) > CONFRONT_RANGE) continue;
+      this.confront(npc);
+      return;
+    }
   }
 
   // ---------------------------------------------------------------- update --
@@ -2228,6 +2971,30 @@ class Game {
     // being behind, is exactly the right consequence.
     if (this.watchTrespass(dt)) { this.keys.endFrame(); return; }
 
+    // Who is at home at this hour, and who has just walked out of their own
+    // front door. Throttled rather than run every frame: it is a reconcile over
+    // a handful of houses and nothing it decides can change inside a fifth of a
+    // second -- the clock it reads moves a game-hour in tens of real seconds.
+    this._residentT += dt;
+    if (this._residentT >= RESIDENT_TICK) {
+      this.syncResidents(this._residentT);
+      this._residentT = 0;
+    }
+
+    // Flat on your back. The room keeps living -- the people keep coming, the
+    // animals keep moving, the sun keeps going down -- and you do not take
+    // orders until you are up. It sits BELOW the trespass clock on purpose: a
+    // thief shot on somebody's rug is still on somebody's rug, and being
+    // carried out of the house while down is a better ending than lying there.
+    if (this.player.downed > 0) {
+      this.player.downed = Math.max(0, this.player.downed - dt);
+      this.player.speed = 0;
+      this.live.update(dt);
+      this.tickFolk(dt);
+      this.keys.endFrame();
+      return;
+    }
+
     // A conversation OWNS the keyboard while it is open. Movement does not
     // run, the portal check does not run, and the animals do -- the room keeps
     // living around a conversation, it just stops taking orders. Returning
@@ -2265,6 +3032,11 @@ class Game {
       this.keys.endFrame();
       return;
     }
+    if (this.wardrobe.open) {
+      this.updateWardrobe(dt);
+      this.keys.endFrame();
+      return;
+    }
 
     // The view toggle and the debug probes come AFTER the conversation check,
     // and that ordering is load-bearing: `pressed` CONSUMES a key, so a probe
@@ -2275,6 +3047,11 @@ class Game {
     if (this.keys.pressed('KeyN')) this.cycleMap();
 
     if (this.keys.pressed('KeyO')) { this.openWorlds(); this.keys.endFrame(); return; }
+    if (this.keys.pressed('KeyG')) {
+      this.wardrobe.show({ outfit: this.player.outfit, inventory: this.player.inventory });
+      this.keys.endFrame();
+      return;
+    }
 
     // Shadows are a SETTING, so the key goes through the setting rather than
     // straight at the Stage -- otherwise the drawer would still read "on" over
@@ -2343,13 +3120,14 @@ class Game {
     if (this.stage.torchOn && toolOf(this.player.inventory.held?.typeId)?.verb !== 'light') {
       this.stage.setTorch(false);
     }
-    if (this.keys.pressed('BracketLeft')) this.player.inventory.cycle(-1);
-    if (this.keys.pressed('BracketRight')) this.player.inventory.cycle(1);
+    if (this.keys.pressed('BracketLeft')) this.player.inventory.cycleTool(-1);
+    if (this.keys.pressed('BracketRight')) this.player.inventory.cycleTool(1);
+    if (this.keys.pressed('KeyB')) this.hud.toggleBag();
     // Only the live place's animals tick. A town whose chickens kept walking
     // while you were indoors would cost a frame budget that belongs to the room
     // you are standing in, to move things nobody can see.
     this.live.update(dt);
-    this.people.update(dt, this.player.clock);
+    this.tickFolk(dt);
     // AFTER the animals, so a fish that reached the float this frame is at the
     // float when the line is asked about it, rather than a frame behind -- the
     // bite window is one second, and a frame of it is worth having.
@@ -2360,7 +3138,33 @@ class Game {
     // including the routes cancelled by a key press or a bump, which never tell
     // anyone they stopped.
     this.stage.setMarker(this.input.destination ?? null);
+    // The ghost is a view of the held slot and the tile being faced, exactly
+    // as the marker is a view of the destination: re-derived every frame, so
+    // there is no copy of "what would placing do" to outlive either of them.
+    this.syncGhost();
     this.keys.endFrame();
+  }
+
+  /**
+   * Mirror the would-be placement of the held furniture, or clear it.
+   *
+   * Everything hard was already decided: `furnishTarget` is the decision and
+   * the Stage owns what a proposal looks like. This only carries the answer
+   * across, every frame, holding furniture or not -- one held-slot read on
+   * the frames where nothing is held, which is most of them.
+   */
+  syncGhost() {
+    const held = this.player.inventory.held;
+    const target = held && itemType(held.typeId).furniture
+      ? this.furnishTarget(held.typeId) : null;
+    this.stage.setGhost(target?.tile ? {
+      type: target.furniture,
+      tile: target.tile,
+      w: target.shape.w,
+      d: target.shape.d,
+      rotation: target.rotation,
+      ok: !target.blocked,
+    } : null);
   }
 
   /**
@@ -2397,7 +3201,7 @@ class Game {
   settleOnGrid() {
     const p = this.player;
     const tx = Math.round(p.x - 0.5), tz = Math.round(p.z - 0.5);
-    const ok = this.world.canOccupy(tx, tz, p.tileX, p.tileZ);
+    const ok = this.world.canOccupy(tx, tz, p.tileX, p.tileZ, p.climbs);
     this.grid.seek(ok ? tx : p.tileX, ok ? tz : p.tileZ);
   }
 

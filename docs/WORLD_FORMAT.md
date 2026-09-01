@@ -206,7 +206,8 @@ place that decides).
   "daily": 2,             // optional: offer this many randomly chosen rows per day
   "stock": [
     { "type": "item.apple", "count": null },            // unlimited shelf
-    { "type": "item.shell", "count": 1, "price": 70 }   // one, at a fixed price
+    { "type": "item.shell", "count": 1, "price": 70 },  // one, at a fixed price
+    { "type": "item.stick", "always": true }            // never rotates out
   ]
 }
 ```
@@ -223,6 +224,13 @@ is the catalog and exactly that many distinct rows are chosen from it each
 in-game day. The choice is seeded by NPC id and day, so reloading cannot reroll
 the shelf; counts and sold-out rows survive saves until the next dawn.
 
+A row marked `"always": true` sits **out of that rotation**: it is on the shelf
+every morning and spends none of the day's slots, so `daily` counts only the
+rows that rotate. That is what a shop needs for the lines somebody may come in
+for on purpose — Turnip & Timber shows ten of three hundred pieces a day and
+still sells a fence post to anybody who walks in wanting one. Without `daily` it
+means nothing, and writing it is not an error.
+
 A `type` may name an item that came out of a **kit file** as readily as one the
 game ships with — Turnip & Timber's book is three hundred `kititem.*` rows and
 ten of them on the floor at a time. The only rule is the ordering every kit
@@ -233,12 +241,14 @@ the validator rejects the stock row by name (see `docs/KIT_FORMAT.md`).
 
 `schedule` is a cyclic, clock-driven list. The most recent `at` row owns the
 NPC's post until the next row; the NPC walks to `tile`, faces `facing`, exposes
-`activity` in the HUD, and may become unavailable for conversation.
+`activity` in the HUD, and may become unavailable for conversation. A row with
+`"inside": true` moves a resident whose exterior house has `props.owner` into
+that house's interior until another schedule row takes over.
 
 ```jsonc
 "schedule": [
   { "at": 6, "tile": [18, 49], "facing": "south", "activity": "Tending beds" },
-  { "at": 20, "tile": [18, 49], "facing": "north", "activity": "Inside", "available": false }
+  { "at": 20, "tile": [18, 49], "facing": "north", "activity": "Inside", "available": false, "inside": true }
 ]
 ```
 

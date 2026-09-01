@@ -22,6 +22,11 @@
  * exactly the machinery that bars a chicken from the pond. Two sweeps would
  * have meant two chances to disagree about what a shoreline is.
  *
+ * `climbs` is the only other one, and it is the same kind of fact: whether this
+ * body can go up a ladder somebody has leaned against a ridge. The player can
+ * and nothing else does, which is what makes a fenced yard hold -- see
+ * World.canStep.
+ *
  * Deliberately a duck-typed shape rather than a base class: Player and Animal
  * have almost nothing else in common, and inheritance would drag one's spawn
  * rules and the other's behavior state into a shared parent that wants neither.
@@ -78,9 +83,13 @@ export function fits(world, body, px, pz) {
   // Which question this body's medium asks of a tile. Read once, outside the
   // loop, because it is a fact about the body and not about any tile.
   const open = body.swims ? world.canSwim : world.canOccupy;
+  // The second thing a body may differ in, alongside its medium: whether it can
+  // use a ladder. A walker that can climbs cliffs a ladder is leaning on; a
+  // swimmer is passed it and ignores it, because water has no ridges in it.
+  const climbing = body.climbs === true;
   for (let tz = z0; tz <= z1; tz++) {
     for (let tx = x0; tx <= x1; tx++) {
-      if (!open.call(world, tx, tz, fx, fz)) return false;
+      if (!open.call(world, tx, tz, fx, fz, climbing)) return false;
     }
   }
   return true;

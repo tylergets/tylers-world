@@ -286,6 +286,24 @@ const GLYPHS = {
     <path d="M8.5 5.2c1.4-2.2 4.5-2.7 6.6-1.2l2.6 1.9c1 .8 1.7 1.9 1.9 3.1-3.4.9-7.4-.2-10.1-2.6z"
           fill="${css(p.meatHi)}"/>
     <path d="M4.6 15.2 19.4 12.2" stroke="${css(p.fat)}" stroke-width="2" stroke-linecap="round" fill="none"/>`,
+
+  // ------------------------------------------------------------------ yard --
+  // Drawings of their own rather than the parcel below, because these two are
+  // not flat-packed: you carry a post as a post. Both are drawn as a piece of
+  // the RUN they belong to -- the post with its rails, the ladder full height
+  // -- since what the slot has to say is "this is fencing" and not "this is one
+  // stick of wood", which is what a lone post at 24 pixels would say.
+  'yarditem.fence-post': (p) => `
+    <path d="M2.4 8.2h19.2v2.5H2.4zM2.4 14h19.2v2.5H2.4z" fill="${css(p.rail)}"/>
+    <path d="M12 2.4 14.4 5v16.2H9.6V5z" fill="${css(p.post)}"/>
+    <path d="M12 2.4 14.4 5h-4.8z" fill="${css(p.cap)}"/>
+    <path d="M10.4 6.2h1.1v14.2h-1.1z" fill="${css(p.postHi)}" opacity="0.7"/>`,
+
+  'yarditem.ladder': (p) => `
+    <path d="M5.6 2.4h2.9v19.2H5.6z" fill="${css(p.stile)}"/>
+    <path d="M15.5 2.4h2.9v19.2h-2.9z" fill="${css(p.stileHi)}"/>
+    <path d="M8.5 5.4h7v2.1h-7zM8.5 10.1h7v2.1h-7zM8.5 14.8h7v2.1h-7z" fill="${css(p.rung)}"/>
+    <path d="M4.8 20.4h4.4v1.6H4.8zM14.8 20.4h4.4v1.6h-4.4z" fill="${css(p.foot)}"/>`,
 };
 
 /**
@@ -372,7 +390,7 @@ const CACHE = new Map();
 export function itemIcon(typeId) {
   if (CACHE.has(typeId)) return CACHE.get(typeId);
   const type = itemType(typeId);
-  const glyph = GLYPHS[typeId] ?? kitGlyph(type);
+  const glyph = GLYPHS[typeId] ?? wearGlyph(type) ?? kitGlyph(type);
   const svg = glyph
     ? `<svg class="icon" viewBox="0 0 24 24" aria-hidden="true">${glyph(type.palette)}</svg>`
     : null;
@@ -391,6 +409,64 @@ export function itemIcon(typeId) {
  * of its own has made no such claim, so it falls through to the colour chip
  * rather than being dressed as a parcel it is not.
  */
+/**
+ * The drawing for a garment: one per SLOT, shaped by the type's own numbers.
+ *
+ * Thirty hand-authored icons would be thirty drawings of a hat, and the bag
+ * would still be showing you the one fact that matters at 34 pixels -- shirt,
+ * hat or glasses, in this colour. So there are three, and they read the same
+ * `wear` block the model and the shop picture read: a wide brim is drawn wide
+ * and a tall crown is drawn tall, off the numbers rather than by eye, which is
+ * what stops an eleventh hat from needing an eleventh icon.
+ *
+ * A LERP AND NOT A SCALE. The brims in the registry run 0.27 to 0.46 and the
+ * crowns 0.12 to 0.34, and drawing those as a proportion of anything would put
+ * every hat within a hair of every other. Mapping each range across the whole
+ * width of the box is what makes a beret and a top hat two different icons.
+ */
+function wearGlyph(type) {
+  const slot = type.wear?.slot;
+  if (!slot) return null;
+  const span = (v, lo, hi, a, b) => a + (b - a) * Math.min(1, Math.max(0, (v - lo) / (hi - lo)));
+
+  if (slot === 'shirt') {
+    return (p) => `
+      <path d="M8.7 3.8 12 5.8l3.3-2 5.4 3-2.1 4.4-2.4-1.2v10.2H7.8V10L5.4 11.2 3.3 6.8z"
+            fill="${css(p.cloth)}"/>
+      <path d="M8.7 3.8 12 5.8l3.3-2-.8 2.4c-.8 1-1.6 1.5-2.5 1.5s-1.7-.5-2.5-1.5z"
+            fill="${css(p.clothDark)}"/>
+      <path d="M7.8 17.6h8.4v2.6H7.8z" fill="${css(p.clothDark)}" opacity="0.8"/>`;
+  }
+
+  if (slot === 'hat') {
+    const rx = span(type.wear.brim, 0.27, 0.46, 4.6, 10.4);
+    const ch = span(type.wear.crown, 0.12, 0.34, 3.2, 10.6);
+    const top = 17 - ch;
+    return (p) => `
+      <rect x="7.5" y="${top.toFixed(1)}" width="9" height="${(ch + 1).toFixed(1)}" rx="2"
+            fill="${css(p.cloth)}"/>
+      <rect x="8.6" y="${(top + 0.8).toFixed(1)}" width="2.4" height="${Math.max(1, ch * 0.45).toFixed(1)}"
+            rx="1.1" fill="${css(p.clothHi)}"/>
+      <ellipse cx="12" cy="17" rx="${rx.toFixed(1)}" ry="2.4" fill="${css(p.cloth)}"/>
+      <rect x="7.2" y="14.1" width="9.6" height="2.2" rx="0.6" fill="${css(p.band)}"/>`;
+  }
+
+  // Glasses. `round` picks a circle or a rounded slab, which is the same choice
+  // the model and the ground picture make from the same flag.
+  const r = span(type.wear.lens, 0.048, 0.056, 3.5, 4.3);
+  const lens = (cx) => (type.wear.round
+    ? `<circle cx="${cx}" cy="12" r="${r.toFixed(1)}"/>`
+    : `<rect x="${(cx - r).toFixed(1)}" y="${(12 - r * 0.82).toFixed(1)}"
+             width="${(r * 2).toFixed(1)}" height="${(r * 1.64).toFixed(1)}" rx="1.1"/>`);
+  return (p) => `
+    <g fill="${css(p.lens)}" stroke="${css(p.frame)}" stroke-width="1.5">
+      ${lens(6.6)}${lens(17.4)}
+    </g>
+    <path d="M10.2 12h3.6" stroke="${css(p.frame)}" stroke-width="1.6" stroke-linecap="round" fill="none"/>
+    <path d="M2.6 10.6h1.2M20.2 10.6h1.2" stroke="${css(p.frame)}" stroke-width="1.6"
+          stroke-linecap="round" fill="none"/>`;
+}
+
 function kitGlyph(type) {
   if (!type.fromKit || !type.furniture) return null;
   const badge = BADGES[type.badge] ?? BADGES.crate;

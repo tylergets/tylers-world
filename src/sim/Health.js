@@ -67,7 +67,12 @@ export class Health {
   snapshot() { return { hearts: this.hearts, max: this.max }; }
 
   restoreFrom(snap) {
-    if (!snap) return;
+    if (!snap) {
+      this.max = MAX_HEARTS;
+      this.hearts = MAX_HEARTS;
+      this.version++;
+      return;
+    }
     const max = Number.isInteger(snap.max) && snap.max > 0 ? snap.max : MAX_HEARTS;
     const hearts = Number.isInteger(snap.hearts) ? snap.hearts : max;
     this.max = max;

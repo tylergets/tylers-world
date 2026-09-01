@@ -8,74 +8,87 @@
     "role": "player-home",
     "note": "Interior of home.player in every starter world. Hand-authored: it is the same house wherever you start, which is the one thing about a new world that should not be new."
   },
-  "grid": {"width":12,"height":10,"tileSize":1},
+  "grid": {"width":17,"height":14,"tileSize":1},
+  "ambience": {"music":"home"},
   "layers": {
     "surface": {
         "palette": {"#":"wall","w":"floor.wood","t":"floor.tile","r":"rug"},
         "data": [
-          "############",
-          "#wwwwtttttt#",
-          "#wwwwtttttt#",
-          "#wwwwwwwwww#",
-          "#wwwwwwwwww#",
-          "#wrrrttwwww#",
-          "#wrrrttwwww#",
-          "#wwwwttwwww#",
-          "#wwwttttwww#",
-          "#####tt#####"
+          "#################",
+          "#wwwwwwwtttttttt#",
+          "#wwwwwwwtttttttt#",
+          "#wwwwwwwwwwwwwww#",
+          "#wwwwwwwwwwwwwww#",
+          "#wwwwwwwwwwwwwww#",
+          "#wwwwwwwwwwwwwww#",
+          "#wwwwrrrttwwwwww#",
+          "#wwwwrrrttwwwwww#",
+          "#wwwwwwwttwwwwww#",
+          "#wwwwwwwttwwwwww#",
+          "#wwwwwwwttwwwwww#",
+          "#wwwwwwttttttwww#",
+          "########tt#######"
         ]
       },
     "elevation": {
         "palette": {"0":"0","4":"4"},
         "data": [
-          "444444444444",
-          "400000000004",
-          "400000000004",
-          "400000000004",
-          "400000000004",
-          "400000000004",
-          "400000000004",
-          "400000000004",
-          "400000000004",
-          "444440044444"
+          "44444444444444444",
+          "40000000000000004",
+          "40000000000000004",
+          "40000000000000004",
+          "40000000000000004",
+          "40000000000000004",
+          "40000000000000004",
+          "40000000000000004",
+          "40000000000000004",
+          "40000000000000004",
+          "40000000000000004",
+          "40000000000000004",
+          "40000000000000004",
+          "44444444004444444"
         ]
       },
     "flags": {
         "palette": {".":"none"},
         "data": [
-          "............",
-          "............",
-          "............",
-          "............",
-          "............",
-          "............",
-          "............",
-          "............",
-          "............",
-          "............"
+          ".................",
+          ".................",
+          ".................",
+          ".................",
+          ".................",
+          ".................",
+          ".................",
+          ".................",
+          ".................",
+          ".................",
+          ".................",
+          ".................",
+          ".................",
+          "................."
         ]
       }
   },
   "objects": [
     {"id":"bed","type":"furn.bed","tile":[1,1]},
-    {"id":"shelf.books","type":"furn.shelf","tile":[3,1],"props":{"label":"Bookcase"}},
-    {"id":"counter.kitchen","type":"furn.counter","tile":[5,1],"props":{"label":"Kitchen Counter"}},
-    {"id":"stove","type":"furn.stove","tile":[9,1]},
-    {"id":"table","type":"furn.table","tile":[3,5]},
-    {"id":"chair.west","type":"furn.chair","tile":[2,5]},
-    {"id":"chair.east","type":"furn.chair","tile":[4,7],"rotation":180},
-    {"id":"crate","type":"furn.crate","tile":[1,8]},
-    {"id":"plant","type":"furn.plant","tile":[10,8]},
-    {"id":"stairs.up","type":"furn.stairs","tile":[5,3],"props":{"label":"Upstairs","interior":"worlds/interiors/home-upper-2.json","requiresHouseStories":2}}
+    {"id":"shelf.books","type":"furn.shelf","tile":[6,1],"props":{"label":"Bookcase"}},
+    {"id":"counter.kitchen","type":"furn.counter","tile":[8,1],"props":{"label":"Kitchen Counter"}},
+    {"id":"stove","type":"furn.stove","tile":[14,1]},
+    {"id":"table","type":"furn.table","tile":[6,7]},
+    {"id":"chair.west","type":"furn.chair","tile":[5,7]},
+    {"id":"chair.east","type":"furn.chair","tile":[7,9],"rotation":180},
+    {"id":"crate","type":"furn.crate","tile":[1,12]},
+    {"id":"plant","type":"furn.plant","tile":[15,12]},
+    {"id":"stairs.up","type":"furn.stairs","tile":[8,3],"props":{"label":"Upstairs","interior":"worlds/interiors/home-upper-2.json","requiresHouseStories":2}}
   ],
   "items": [
-    {"id":"apple.counter","type":"item.apple","tile":[7,2]},
-    {"id":"flower.jar","type":"item.flower","tile":[7,5]},
-    {"id":"stone.keepsake","type":"item.stone","tile":[2,7]}
+    {"id":"apple.counter","type":"item.apple","tile":[10,2]},
+    {"id":"flower.jar","type":"item.flower","tile":[10,7]},
+    {"id":"stone.keepsake","type":"item.stone","tile":[5,9]}
   ],
   "exits": [
-    {"tile":[5,9]},
-    {"tile":[6,9]}
+    {"tile":[8,13]},
+    {"tile":[9,13]}
   ],
-  "spawn": {"tile":[6,8],"facing":"north"}
+  "spawn": {"tile":[9,12],"facing":"north"}
 }

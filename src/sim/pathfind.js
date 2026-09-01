@@ -47,13 +47,18 @@ const DIAG = Math.SQRT2;
 /**
  * Route from one tile to another.
  *
+ * `climbs` is passed straight through to those predicates and is a fact about
+ * the WALKER, not about the map (see World.canStep): route somebody who cannot
+ * use a ladder over one and they walk to the foot of it and stop.
+ *
  * @param {World} world
  * @param {[number, number]} from  tile the walker is standing on
  * @param {[number, number]} to    tile that was clicked
+ * @param {boolean} climbs         whether this walker can use a ladder
  * @returns {Array<[number, number]>} tiles to step through, START EXCLUDED and
  *   destination last. Empty when there is nowhere better to stand than here.
  */
-export function findPath(world, [sx, sz], [gx, gz]) {
+export function findPath(world, [sx, sz], [gx, gz], climbs = false) {
   if (!world.inBounds(gx, gz) || !world.inBounds(sx, sz)) return [];
   if (sx === gx && sz === gz) return [];
 
@@ -95,8 +100,8 @@ export function findPath(world, [sx, sz], [gx, gz]) {
       // orthogonal tiles it squeezes between, so no route ever cuts through
       // the seam where two buildings touch.
       const ok = isDiagonal(k)
-        ? world.canOccupy(nx, nz, cx, cz)
-        : world.canStep(cx, cz, nx, nz);
+        ? world.canOccupy(nx, nz, cx, cz, climbs)
+        : world.canStep(cx, cz, nx, nz, climbs);
       if (!ok) continue;
       if (next !== goal && world.portalAt(nx, nz)) continue;   // see note 2
 

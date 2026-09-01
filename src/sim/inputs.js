@@ -262,7 +262,7 @@ export class GridInput {
     // 5. Step, if the world allows it.
     const v = STEP8[want];
     const tx = player.tileX + v.x, tz = player.tileZ + v.z;
-    if (!passable(world, player.tileX, player.tileZ, tx, tz)) {
+    if (!passable(world, player.tileX, player.tileZ, tx, tz, player.climbs)) {
       if (fromRoute) this.cancel();
       return { vx: 0, vz: 0 };   // bump: facing it, going nowhere
     }
@@ -301,9 +301,9 @@ export class GridInput {
  * `canStep`, a corner step is `canOccupy`, which additionally demands both of
  * the orthogonal tiles the corner squeezes between.
  */
-function passable(world, ax, az, bx, bz) {
+function passable(world, ax, az, bx, bz, climbs = false) {
   const dx = bx - ax, dz = bz - az;
   return dx !== 0 && dz !== 0
-    ? world.canOccupy(bx, bz, ax, az)
-    : world.canStep(ax, az, bx, bz);
+    ? world.canOccupy(bx, bz, ax, az, climbs)
+    : world.canStep(ax, az, bx, bz, climbs);
 }

@@ -13,6 +13,7 @@
     "tileSize": 1
   },
   "ambience": {
+    "music": "furniture",
     "sky": "#1d211c",
     "sun": 0.9,
     "hemi": 2.4,
@@ -26,7 +27,7 @@
   },
   "layers": {
     "surface": {
-      "palette": { "#": "wall", "w": "floor.wood", "r": "rug" },
+      "palette": { "#": "wall.panel", "w": "floor.parquet", "r": "rug" },
       "data": [
         "############",
         "#wwwwwwwwww#",
@@ -176,6 +177,8 @@
         "takes": [],
         "daily": 10,
         "stock": [
+          { "type": "yarditem.fence-post", "count": null, "always": true },
+          { "type": "yarditem.ladder", "count": null, "always": true },
           { "type": "furnitem.bed", "count": 1 },
           { "type": "furnitem.table", "count": 1 },
           { "type": "furnitem.chair", "count": 1 },

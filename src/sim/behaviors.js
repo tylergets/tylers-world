@@ -164,6 +164,13 @@ export class Stroll {
     this.want = 0;
   }
 
+  /** Forget a destination chosen in the room the person just left. */
+  reset() {
+    this.target = null;
+    this.pause = 0;
+    this.want = 0;
+  }
+
   update(dt, person, world) {
     const t = this.type;
 

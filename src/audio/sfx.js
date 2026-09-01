@@ -24,23 +24,18 @@
  *   others, and none of that is worth taking the game down for. Every entry
  *   point here swallows its own failure and the game carries on in silence.
  *
- * ONE HONEST SMELL: this makes a second AudioContext, since voice.js keeps its
- * own private one. Two is tolerable. If a third sound ever appears, the right
- * move is to pull a shared `audio/context.js` out and have both use it -- and
- * it is better to write that down here than to pretend one module with two
- * jobs was cheaper.
+ * Effects, voices, and place music share the lazily-created context in
+ * audio/context.js. Their buses and preferences remain separate; sharing the
+ * browser resource does not collapse "NPC speech" and "world sound" together.
  */
 
-let ctx = null;
+import { audioContext } from './context.js';
+
 /** One second of white noise, built once and re-pointed at by every shot. */
 let noise = null;
 
 function context() {
-  if (ctx) return ctx;
-  const Ctor = globalThis.AudioContext ?? globalThis.webkitAudioContext;
-  if (!Ctor) return null;
-  try { ctx = new Ctor(); } catch { return null; }
-  return ctx;
+  return audioContext();
 }
 
 function noiseBuffer(ac) {

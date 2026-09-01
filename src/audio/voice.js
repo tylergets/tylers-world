@@ -44,6 +44,8 @@
  * keypress that opened the conversation, which is exactly the gesture required.
  */
 
+import { audioContext } from './context.js';
+
 /** The modes, in the order the toggle cycles them. */
 export const VOICE_MODES = ['babble', 'spoken', 'off'];
 
@@ -89,9 +91,8 @@ class BabbleVoice {
   /** The audio context, built on first use -- i.e. inside a user gesture. */
   #audio() {
     if (this.ctx) return this.ctx;
-    const Ctx = globalThis.AudioContext ?? globalThis.webkitAudioContext;
-    if (!Ctx) return null;
-    this.ctx = new Ctx();
+    this.ctx = audioContext();
+    if (!this.ctx) return null;
     // One bus for everything, so a master volume (or a duck while music plays)
     // has somewhere to live later.
     this.bus = this.ctx.createGain();

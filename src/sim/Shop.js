@@ -49,11 +49,21 @@ export class Shop {
     // `count: null` is an unlimited shelf. Stated as null rather than
     // Infinity so it survives a round trip through JSON, and checked
     // everywhere as `=== null` rather than as a falsy count.
+    // `always` is what keeps a rotating shelf from being the whole shop. A
+    // catalogue of three hundred pieces showing ten a day is the right way to
+    // sell furniture and the wrong way to sell fence posts: somebody who needs
+    // a dozen posts cannot be told to come back on a luckier morning. So a row
+    // may state that it is stock rather than stock-of-the-day, and it sits out
+    // of the rotation entirely -- see `refresh`.
     this.catalog = (spec.stock ?? []).map((entry) => ({
       typeId: entry.type,
       type: itemType(entry.type),
       price: entry.price ?? price(itemType(entry.type).value, this.markup),
       count: entry.count ?? null,
+      always: entry.always === true,
+      // Which shelf a rotating row is drawn from. Null for a shop whose
+      // rotation is one pool -- see `daily` and `refresh`.
+      group: entry.group ?? null,
     }));
     this.daily = spec.daily ?? null;
     this.seed = seed;
@@ -67,19 +77,70 @@ export class Shop {
   /** What the shop is offering, sold-out rows included. */
   get offers() { return this.stock; }
 
-  /** Replace a rotating shelf once per in-game day. */
+  /**
+   * Replace a rotating shelf once per in-game day.
+   *
+   * The `always` rows are lifted out BEFORE the shuffle and put back on the
+   * front afterwards, rather than being shuffled in and hoped for: a row that
+   * is always there must not spend one of the day's slots, or a shop with ten
+   * permanent lines and a `daily` of ten would never show its catalogue again.
+   *
+   * Their counts are reset with everything else, which is what a daily shelf
+   * means -- restocked at dawn. A permanent row is normally an unlimited one
+   * anyway, and an unlimited shelf resets to unlimited.
+   *
+   * `daily` MAY BE A COUNT PER GROUP instead of one count. A furniture floor
+   * showing ten of three hundred pieces wants one pool and does not care what
+   * lands on it; a clothier that puts out three shirts, a hat and a pair of
+   * sunglasses every morning cares very much, and a single pool would sooner or
+   * later offer five hats and nothing to wear under them. So a stock row may
+   * name its `group` and `daily` may say how many to draw from each -- which is
+   * a rule about SHELVES and not about clothes, and is why neither this file nor
+   * the world format has ever heard of a hat.
+   *
+   * The groups draw in the order the file writes them, off one rng, so the
+   * shelf reads in that order too and the whole day is still one seed.
+   */
   refresh(day) {
     if (!this.daily || day === this.day) return false;
     const rng = makeRng(`${this.seed}:day:${day}`);
-    const pool = this.catalog.map((row) => ({ ...row }));
-    for (let i = pool.length - 1; i > 0; i--) {
-      const j = Math.floor(rng() * (i + 1));
-      [pool[i], pool[j]] = [pool[j], pool[i]];
-    }
-    this.stock = pool.slice(0, this.daily);
+    const draw = (rows, n) => {
+      const pool = rows.map((row) => ({ ...row }));
+      for (let i = pool.length - 1; i > 0; i--) {
+        const j = Math.floor(rng() * (i + 1));
+        [pool[i], pool[j]] = [pool[j], pool[i]];
+      }
+      return pool.slice(0, n);
+    };
+
+    const fixed = this.catalog.filter((row) => row.always).map((row) => ({ ...row }));
+    const rotates = this.catalog.filter((row) => !row.always);
+    const today = typeof this.daily === 'number'
+      ? draw(rotates, this.daily)
+      : Object.entries(this.daily).flatMap(
+        ([group, n]) => draw(rotates.filter((row) => row.group === group), n),
+      );
+
+    this.stock = fixed.concat(today);
     this.day = day;
     this.version++;
     return true;
+  }
+
+  /**
+   * What the shop WANTS for one of `typeId`, whether or not it stocks it.
+   *
+   * The shelf price when there is a shelf, and the ordinary markup on value
+   * when there is not -- because the thing being priced may be a chair that was
+   * standing in the corner rather than a row in the catalogue. It exists for
+   * exactly one caller: the moment a keeper catches you with something and has
+   * to name a number for it (see world/theft.js). Charging the buy rate there
+   * would make shoplifting the cheapest way to shop.
+   */
+  askFor(typeId) {
+    const row = this.stock.find((r) => r.typeId === typeId);
+    if (row) return row.price;
+    return price(itemType(typeId).value || 1, this.markup);
   }
 
   /** What the shop pays for one of `typeId`, or null if it will not take it. */

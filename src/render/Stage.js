@@ -41,13 +41,16 @@
 import * as THREE from 'three';
 import { CameraRig } from './CameraRig.js';
 import { buildTerrain, shorelineBlendUniform } from './Terrain.js';
-import { buildProps, hideProp, leanProp } from './props.js';
+import { buildProps, hideProp, leanProp, ghostProp } from './props.js';
+import { objectType } from '../world/objectTypes.js';
+import { STEP_HEIGHT } from '../core/constants.js';
 import { FixtureBatch } from './FixtureBatch.js';
 import { PlayerView } from './PlayerView.js';
 import { AnimalBatch } from './AnimalBatch.js';
 import { NpcView } from './NpcView.js';
 import { ItemBatch } from './ItemBatch.js';
 import { DigBatch } from './DigBatch.js';
+import { PlantBatch } from './PlantBatch.js';
 import { flatUniform, timeUniform, tintUniform, patchFlatten } from './flatten.js';
 import { GeoBuilder, trs } from './geo.js';
 import { daylightAt } from './daylight.js';
@@ -62,6 +65,32 @@ const _c1 = new THREE.Color();
 /** How long a struck tree sways for, and how far its top leans while it does. */
 const SWAY_TIME = 0.34;
 const SWAY_AMOUNT = 0.055;
+
+const WEATHER_LOOK = {
+  sun: { light: 1, fill: 1, fog: 1, tint: 0xffffff, mix: 0 },
+  cloud: { light: 0.72, fill: 0.9, fog: 0.88, tint: 0x9eacba, mix: 0.28 },
+  rain: { light: 0.58, fill: 0.78, fog: 0.72, tint: 0x74899d, mix: 0.42 },
+  mist: { light: 0.7, fill: 0.95, fog: 0.48, tint: 0xc3ccd0, mix: 0.5 },
+};
+
+function makeRain() {
+  const positions = new Float32Array(128 * 6);
+  for (let i = 0; i < 128; i++) {
+    const x = ((i * 47) % 101) / 10 - 5;
+    const y = ((i * 67) % 89) / 11;
+    const z = ((i * 31) % 97) / 10 - 5;
+    positions.set([x, y, z, x - 0.08, y - 0.42, z + 0.06], i * 6);
+  }
+  const geometry = new THREE.BufferGeometry();
+  geometry.setAttribute('position', new THREE.BufferAttribute(positions, 3));
+  const rain = new THREE.LineSegments(geometry, new THREE.LineBasicMaterial({
+    color: 0xb9d8e8, transparent: true, opacity: 0.55, depthWrite: false,
+  }));
+  rain.name = 'weather:rain';
+  rain.frustumCulled = false;
+  rain.visible = false;
+  return rain;
+}
 
 /**
  * The flashlight beam: how far it reaches and how wide it opens.
@@ -328,6 +357,9 @@ export class Stage {
     this.rig = new CameraRig(1);
     this.player = new PlayerView();
     this.scene.add(this.player.root);
+    this.rain = makeRain();
+    this.scene.add(this.rain);
+    this.weather = null;
 
     /**
      * The hour, as a fraction of a day. Written by the Game; read by
@@ -345,11 +377,13 @@ export class Stage {
     this.folkViews = new Map(); // place id -> { group, pairs } of npc views
     this.loose = new Map();     // place id -> { batch, version } of item instances
     this.digs = new Map();      // place id -> { batch, version } of hole instances
+    this.plants = new Map();    // place id -> { batch, version } of crop instances
     this.fixtures = new Map();  // place id -> FixtureBatch of animated kit parts
     this.live = null;           // the fauna entry currently in the scene
     this.liveFolk = null;       // the npc entry currently in the scene
     this.liveLoose = null;      // the item entry currently in the scene
     this.liveDigs = null;       // the hole entry currently in the scene
+    this.livePlants = null;     // the crop entry currently in the scene
     this.liveFixtures = null;   // the fixture batch currently in the scene
     this.ground = null;         // the Ground it is mirroring
     this.edits = null;          // the Edits it is mirroring
@@ -371,6 +405,17 @@ export class Stage {
     this._camRight = new THREE.Vector3();
     this.marker = makeMarker();
     this.scene.add(this.marker);
+    /**
+     * The placement ghost: where the held flat-pack would land, drawn see-
+     * through. One mesh, made lazily and kept for ever; showing a different
+     * piece swaps its geometry rather than making a new node. Its caches are
+     * keyed by TYPE, not by place, so they are bounded like ItemBatch's and
+     * survive `forgetPlaces` on purpose.
+     */
+    this.ghost = null;
+    this.ghostKey = null;       // object type id the ghost mesh currently shows
+    this.ghostGeo = new Map();  // object type id -> local-space geometry (or null)
+    this.ghostMats = new Map(); // squash -> transparent material
     this.tracer = makeTracer();
     this.scene.add(this.tracer);
     this._tracerUntil = -1;
@@ -521,6 +566,79 @@ export class Stage {
   }
 
   /**
+   * Show where the held furniture would land, or hide the preview with null.
+   *
+   *   spec: { type, tile, w, d, rotation, ok }
+   *
+   * `type` is the OBJECT type id (the piece, not the parcel), `tile` its
+   * anchor, `w`/`d` its rotated footprint, and `ok` whether the place would
+   * accept it -- false tints the ghost red instead of hiding it, because "you
+   * cannot put it there" is worth showing WHERE, not just refusing silently.
+   *
+   * Unlike the walk marker this is NOT overdrawn UI: it is a picture of a
+   * thing that would stand in the room, so it keeps its depth test (a wall in
+   * front of it should hide it), takes the lights, and squashes in the
+   * top-down view exactly as the real piece will -- its geometry carries
+   * aBaseY = 0 and the mesh's own transform lifts it, so the flatten shader
+   * collapses it onto its tile like every baked prop. What it does not do is
+   * cast a shadow or write depth: it is see-through by definition.
+   *
+   * Driven every frame by the Game, like the marker, so there is no second
+   * copy of "what am I holding" here to go stale.
+   */
+  setGhost(spec) {
+    if (!spec || !this.world) {
+      if (this.ghost) this.ghost.visible = false;
+      return;
+    }
+
+    if (!this.ghost) {
+      this.ghost = new THREE.Mesh();
+      this.ghost.name = 'placement-ghost';
+      this.scene.add(this.ghost);
+    }
+
+    if (this.ghostKey !== spec.type) {
+      let geo = this.ghostGeo.get(spec.type);
+      if (geo === undefined) {
+        geo = ghostProp(spec.type);
+        this.ghostGeo.set(spec.type, geo);
+      }
+      // A type nothing can draw gets no ghost rather than a broken one.
+      if (!geo) { this.ghost.visible = false; return; }
+      this.ghost.geometry = geo;
+      this.ghost.material = this.#ghostMaterial(objectType(spec.type).squash ?? 1);
+      this.ghostKey = spec.type;
+    }
+
+    // The same placement buildProps performs: the mesh sits at the centre of
+    // its rotated footprint, on the anchor tile's ground, turned clockwise.
+    const [ax, az] = spec.tile;
+    this.ghost.position.set(
+      ax + spec.w / 2, this.world.elevationAt(ax, az) * STEP_HEIGHT, az + spec.d / 2);
+    this.ghost.rotation.y = -spec.rotation * (Math.PI / 180);
+    this.ghost.material.color.set(spec.ok ? 0xffffff : 0xff6a5e);
+    this.ghost.visible = true;
+  }
+
+  /**
+   * The ghost's material for one squash class. Cached per squash, because the
+   * squash is baked into the compiled shader (see patchFlatten) -- and there
+   * is only ever one ghost showing, so writing the ok/blocked tint onto a
+   * shared material each call clobbers nobody.
+   */
+  #ghostMaterial(squash) {
+    let m = this.ghostMats.get(squash);
+    if (!m) {
+      m = patchFlatten(new THREE.MeshLambertMaterial({
+        vertexColors: true, transparent: true, opacity: 0.45, depthWrite: false,
+      }), squash);
+      this.ghostMats.set(squash, m);
+    }
+    return m;
+  }
+
+  /**
    * Render scale. The framebuffer shrinks; the CSS size does not, so the canvas
    * upscales and everything stays laid out where it was.
    */
@@ -659,6 +777,7 @@ export class Stage {
     // Holes are a view of the same kind as the items: one shared model, one
     // per-place instance buffer, and only the buffer is ours to free.
     for (const { group } of this.digs.values()) killShared(group);
+    for (const { group } of this.plants.values()) killShared(group);
 
     this.built.clear();
     this.fauna.clear();
@@ -666,10 +785,11 @@ export class Stage {
     this.loose.clear();
     this.fixtures.clear();
     this.digs.clear();
+    this.plants.clear();
     // Every one of these pointed into a cache that no longer has anything in
     // it. Left set, the next setWorld would try to remove a group that is not
     // in the scene, and `toggleGroup` would toggle the visibility of a corpse.
-    this.live = this.liveFolk = this.liveLoose = this.liveDigs = null;
+    this.live = this.liveFolk = this.liveLoose = this.liveDigs = this.livePlants = null;
     this.liveFixtures = null;
     this.ground = null;
     this.edits = null;
@@ -678,6 +798,10 @@ export class Stage {
     this.terrain = null;
     this.world = null;
     this.setMarker(null);
+    // The ghost's geometry cache is keyed by TYPE, not by place, so it stays:
+    // it is bounded like ItemBatch's model cache, and the next world's chairs
+    // are these chairs. Only the showing is cleared.
+    this.setGhost(null);
   }
 
   /**
@@ -720,6 +844,7 @@ export class Stage {
     this.terrain = group.userData.terrain;
     this.scene.add(group);
     this.setMarker(null);
+    this.setGhost(null);
 
     this.#setFixtures(world);
     this.#applyAmbience(world);
@@ -738,6 +863,7 @@ export class Stage {
     }
     this.setWorld(world);
     if (this.liveDigs) this.liveDigs.version = -1;
+    if (this.livePlants) this.livePlants.version = -1;
     this.#syncEdits();
   }
 
@@ -817,16 +943,56 @@ export class Stage {
     if (!entry) {
       const group = new THREE.Group();
       group.name = `folk:${id}`;
-      const pairs = folk.npcs.map((npc) => {
-        const view = new NpcView(npc.typeId);
-        group.add(view.root);
-        return { npc, view };
-      });
-      this.folkViews.set(id, (entry = { group, pairs }));
+      this.folkViews.set(id, (entry = { group, pairs: [], version: -1 }));
     }
 
     this.liveFolk = entry;
+    this.#reconcileFolk(folk);
     this.scene.add(entry.group);
+  }
+
+  /**
+   * Pick up a change of cast in the place already on screen.
+   *
+   * Called by the Game when somebody walks in or out of the live room, and free
+   * on every other frame: the version compare inside is the whole cost.
+   */
+  syncFolk(folk) {
+    const entry = folk && this.folkViews.get(folk.world.meta.id);
+    if (entry && entry === this.liveFolk && this.world?.meta?.id === folk.world.meta.id) {
+      this.#reconcileFolk(folk);
+    }
+  }
+
+  /**
+   * Match the views to WHO IS IN THE ROOM.
+   *
+   * Built once and kept, until the day somebody walked in through their own
+   * front door: a resident moves between his cottage's people and the town's
+   * (see sim/Residents.js), so the cast of a place is no longer a fact settled
+   * when it was first meshed. Gated on the Folk's version counter, exactly as
+   * the props are gated on the Edits', so the ordinary frame does nothing.
+   *
+   * Views are kept per NPC and reused, so somebody who goes out and comes back
+   * is the same model rather than a fresh one built at his doorstep.
+   */
+  #reconcileFolk(folk) {
+    const entry = this.liveFolk;
+    if (!entry || entry.version === folk.version) return;
+    entry.version = folk.version;
+
+    const kept = new Map(entry.pairs.map((pair) => [pair.npc, pair]));
+    entry.pairs = folk.npcs.map((npc) => {
+      const pair = kept.get(npc);
+      if (pair) { kept.delete(npc); return pair; }
+      const view = new NpcView(npc.typeId);
+      entry.group.add(view.root);
+      return { npc, view };
+    });
+    // Whoever is left in `kept` has left the room. The node comes out of the
+    // group; the view object is dropped, because a person who walks back in
+    // gets a new one and three.js is not holding anything else of ours.
+    for (const pair of kept.values()) entry.group.remove(pair.view.root);
   }
 
   /**
@@ -902,6 +1068,7 @@ export class Stage {
    */
   setEdits(edits) {
     if (this.liveDigs) this.scene.remove(this.liveDigs.group);
+    if (this.livePlants) this.scene.remove(this.livePlants.group);
 
     const id = edits.world.meta.id;
     let entry = this.digs.get(id);
@@ -911,19 +1078,30 @@ export class Stage {
       // -1 so a fresh entry always reconciles once, exactly as the items do.
       this.digs.set(id, (entry = { batch, group: batch.group, version: -1 }));
     }
+    let plants = this.plants.get(id);
+    if (!plants) {
+      const batch = new PlantBatch();
+      batch.group.name = `plants:${id}`;
+      this.plants.set(id, (plants = { batch, group: batch.group, version: -1 }));
+    }
 
     this.edits = edits;
     this.liveDigs = entry;
+    this.livePlants = plants;
     this.chopping = null;
     this.scene.add(entry.group);
+    this.scene.add(plants.group);
     this.#syncEdits();
   }
 
   #syncEdits() {
-    const entry = this.liveDigs, edits = this.edits;
-    if (!entry || !edits || entry.version === edits.version) return;
+    const entry = this.liveDigs, plants = this.livePlants, edits = this.edits;
+    if (!entry || !plants || !edits
+      || (entry.version === edits.version && plants.version === edits.version)) return;
     entry.version = edits.version;
+    plants.version = edits.version;
     entry.batch.reconcile(edits.holeList);
+    plants.batch.reconcile(edits.plantingList);
     for (const id of edits.felled) {
       hideProp(this.group, id);
       // Every tree was meshed with a stump waiting under its trunk. Felling
@@ -1017,16 +1195,18 @@ export class Stage {
     const base = this.base;
     if (!base) return;
     const key = daylightAt(this.dayT);
+    const weather = WEATHER_LOOK[this.weather] ?? WEATHER_LOOK.sun;
     const floor = base.nightFloor ?? 0;
     const lift = (mul) => mul + (1 - mul) * floor;
 
-    this.sun.intensity = base.sun * lift(key.sunMul);
+    this.sun.intensity = base.sun * lift(key.sunMul) * weather.light;
     this.sun.color.copy(this._baseSun).lerp(_c1.set(key.sun), key.sunTint * (1 - floor));
 
-    this.hemi.intensity = base.hemi * lift(key.hemiMul);
+    this.hemi.intensity = base.hemi * lift(key.hemiMul) * weather.fill;
     this.hemi.color.copy(this._baseHemi).lerp(_c1.set(key.hemiSky), key.hemiTint);
 
     this.sky3d.copy(this._baseSky).lerp(_c1.set(key.sky), key.skyTint);
+    this.sky3d.lerp(_c1.set(weather.tint), weather.mix);
     this.sky2d.copy(this._baseFlatSky).lerp(_c1.set(key.flatSky), key.flatSkyTint);
 
     // The one channel the top-down view has. See flatten.js.
@@ -1050,11 +1230,17 @@ export class Stage {
     waterUniforms.sunColor.value.copy(this.sun.color);
 
     this._keyShadow = key.shadow;
-    this._fogMul = key.fogMul;
+    this._fogMul = key.fogMul * weather.fog;
   }
 
   /** Which fraction of a day it is. Written by the Game each frame. */
   setTimeOfDay(t) { this.dayT = t; }
+
+  /** Set the deterministic daily sky; null keeps interiors weatherless. */
+  setWeather(kind) {
+    this.weather = kind;
+    this.rain.visible = kind === 'rain';
+  }
 
   resize(w, h) {
     this.renderer.setSize(w, h, false);
@@ -1108,6 +1294,9 @@ export class Stage {
     this._pivot.set(player.x, player.y + 0.6 * (1 - e), player.z);
     this.rig.yaw = yaw;
     this.rig.update(e, this._pivot);
+    if (this.rain.visible) {
+      this.rain.position.set(player.x, player.y - ((time * 5) % 0.42), player.z);
+    }
 
     // A still ring reads as scenery; a breathing one reads as a pending order.
     // The tracer fades out on its own clock and hides itself. Driven from the
@@ -1122,6 +1311,12 @@ export class Stage {
     if (this.marker.visible) {
       const pulse = 1 + 0.09 * Math.sin(time * 6);
       this.marker.scale.set(pulse, 1, pulse);
+    }
+
+    // The ghost breathes for the marker's reason: a steady half-tone mesh
+    // reads as a rendering bug, and a breathing one reads as a proposal.
+    if (this.ghost?.visible) {
+      this.ghost.material.opacity = 0.42 + 0.1 * Math.sin(time * 4);
     }
 
     // The counter-rotation that keeps a model presenting the same silhouette

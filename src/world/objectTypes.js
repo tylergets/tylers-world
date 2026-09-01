@@ -149,13 +149,24 @@ export const OBJECT_TYPES = {
     category: 'building', label: 'Store',
     footprint: withDoor(5, 4, 2), height: 3.7,
     squash: 0.3,
-    palette: { wall: 0xf7ecd6, roof: 0x4f93c9, roofDark: 0x3d7cad, trim: 0x7d6248, door: 0x6b4a30, window: 0x9fd4e8, awning: 0xe8b84b },
+    palette: { wall: 0xf7ecd6, roof: 0x4f93c9, roofDark: 0x3d7cad, trim: 0x7d6248, door: 0x6b4a30, window: 0x9fd4e8, awning: 0xe8b84b, sign: 0x315f84, signText: 0xfff2c9 },
   },
   'building.furniture': {
     category: 'building', label: 'Furniture Shop',
     footprint: withDoor(5, 4, 2), height: 3.7,
     squash: 0.3,
-    palette: { wall: 0xf2e6cb, roof: 0x6f9c74, roofDark: 0x577d5c, trim: 0x7d6248, door: 0x6b4a30, window: 0x9fd4e8, awning: 0xd98b63 },
+    palette: { wall: 0xf2e6cb, roof: 0x6f9c74, roofDark: 0x577d5c, trim: 0x7d6248, door: 0x6b4a30, window: 0x9fd4e8, awning: 0xd98b63, sign: 0x416c49, signText: 0xfff2c9 },
+  },
+  // The third shop, and the third paint job on the same shell. Same footprint
+  // and same height as the other two, because what makes a town read as a town
+  // is a row of buildings the same size with different colours on them -- and
+  // because a shop the player can pick out from the far side of the plaza by
+  // its awning is a shop they can find again.
+  'building.clothier': {
+    category: 'building', label: 'Clothes Shop',
+    footprint: withDoor(5, 4, 2), height: 3.7,
+    squash: 0.3,
+    palette: { wall: 0xf3e2ea, roof: 0x8a6ba8, roofDark: 0x6b5188, trim: 0x7d6248, door: 0x6b4a30, window: 0x9fd4e8, awning: 0xe79ab0, sign: 0x65477c, signText: 0xfff2c9 },
   },
   'building.gate': {
     category: 'building', label: 'Town Gate',

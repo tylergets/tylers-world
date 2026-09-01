@@ -21,7 +21,8 @@ import { World } from './World.js';
 
 /** Footprints, in tiles, of everything a recipe can place. */
 const FOOT = {
-  'building.home': [4, 3], 'building.store': [5, 4], 'building.furniture': [5, 4], 'building.gate': [5, 2],
+  'building.home': [4, 3], 'building.store': [5, 4], 'building.furniture': [5, 4],
+  'building.clothier': [5, 4], 'building.gate': [5, 2],
   'building.cottage': [3, 3], 'building.cabin': [4, 3], 'building.bungalow': [5, 3],
   'tree.oak': [1, 1], 'tree.pine': [1, 1], 'tree.palm': [1, 1],
   'rock.small': [1, 1], 'rock.large': [2, 2],

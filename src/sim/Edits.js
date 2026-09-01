@@ -36,6 +36,7 @@
  */
 
 import { objectType } from '../world/objectTypes.js';
+import { PLANT_TYPES, stageOf } from '../world/plantTypes.js';
 
 export class Edits {
   constructor(world) {
@@ -63,6 +64,8 @@ export class Edits {
     this.stumpTile = new Map();
     /** tile index -> { x, z, y } for every open hole. */
     this.holes = new Map();
+    /** tile index -> { type, plantedDay, stage, x, z, y, tile }. */
+    this.plantings = new Map();
     /** How many holes this place has ever had dug in it. Seeds what they turn up. */
     this.digs = 0;
     /** Furniture assembled by the player, in placement order. */
@@ -76,6 +79,7 @@ export class Edits {
   }
 
   get holeList() { return [...this.holes.values()]; }
+  get plantingList() { return [...this.plantings.values()]; }
 
   place(type, tile, rotation = 0, id = null) {
     let nextId = id;
@@ -215,6 +219,51 @@ export class Edits {
       : null;
   }
 
+  plantingAt(x, z) {
+    return this.world.inBounds(x, z)
+      ? this.plantings.get(this.world.idx(x, z)) ?? null
+      : null;
+  }
+
+  /** Put a known plant type into an open, empty hole. */
+  sow(type, x, z, plantedDay) {
+    if (!PLANT_TYPES[type] || !this.holeAt(x, z) || this.plantingAt(x, z)) return null;
+    const planting = {
+      type,
+      plantedDay: Math.max(1, plantedDay | 0),
+      stage: 0,
+      x: x + 0.5,
+      z: z + 0.5,
+      y: this.world.groundHeight(x + 0.5, z + 0.5),
+      tile: [x, z],
+    };
+    this.plantings.set(this.world.idx(x, z), planting);
+    this.version++;
+    return planting;
+  }
+
+  /** Reconcile cached stages against deterministic weather history. */
+  grow(today, weatherFor) {
+    let changed = false;
+    for (const planting of this.plantings.values()) {
+      const stage = stageOf(PLANT_TYPES[planting.type], planting.plantedDay, today, weatherFor);
+      if (stage === planting.stage) continue;
+      planting.stage = stage;
+      changed = true;
+    }
+    if (changed) this.version++;
+    return changed;
+  }
+
+  /** Remove a ready crop, leaving its dug bed ready to sow again. */
+  harvest(x, z) {
+    const planting = this.plantingAt(x, z);
+    if (!planting || planting.stage < 2) return null;
+    this.plantings.delete(this.world.idx(x, z));
+    this.version++;
+    return planting;
+  }
+
   /**
    * Open a hole on a tile.
    *
@@ -234,7 +283,7 @@ export class Edits {
 
   /** Fill one back in. Returns whether there was one. */
   fill(x, z) {
-    if (!this.holeAt(x, z)) return false;
+    if (!this.holeAt(x, z) || this.plantingAt(x, z)) return false;
     this.holes.delete(this.world.idx(x, z));
     this.world.setHole(x, z, false);
     this.version++;
@@ -257,6 +306,9 @@ export class Edits {
       // one recording the second thing that happened to it.
       cleared: [...this.felled].filter((id) => !this.hasStump(id)),
       holes: this.holeList.map((h) => [...h.tile]),
+      plantings: this.plantingList.map((p) => ({
+        type: p.type, plantedDay: p.plantedDay, stage: p.stage, tile: [...p.tile],
+      })),
       digs: this.digs,
       placed: this.placed.map((p) => ({ ...p, tile: [...p.tile] })),
       stored: Object.fromEntries([...this.stored].map(([id, stack]) => [id, { ...stack }])),
@@ -303,6 +355,11 @@ export class Edits {
       // been redrawn since. Dropping it is the same call Ground.restore makes
       // about an apple inside a rock.
       if (this.world.inBounds(x, z) && !this.world.isBlocked(x, z)) this.dig(x, z);
+    }
+    for (const p of snap.plantings ?? []) {
+      const [x, z] = p?.tile ?? [];
+      const planting = this.sow(p?.type, x, z, p?.plantedDay);
+      if (planting && Number.isInteger(p.stage)) planting.stage = Math.max(0, Math.min(2, p.stage));
     }
     // AFTER the replay, not before: `dig` counts every hole it opens, and the
     // saved counter is the one that seeds what the NEXT hole turns up.

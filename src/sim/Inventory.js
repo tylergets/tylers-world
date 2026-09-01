@@ -36,8 +36,21 @@
 
 import { itemType } from '../world/itemTypes.js';
 
-/** Slots in a fresh inventory. Eight fits one HUD row at a readable size. */
-export const SLOT_COUNT = 8;
+/**
+ * Slots in a fresh inventory. Thirty is a real bag: enough to come home from a
+ * whole afternoon of chopping and digging without a triage stop, small enough
+ * that filling it is still possible and still a decision.
+ */
+export const SLOT_COUNT = 30;
+
+/**
+ * How many of those slots the HUD keeps on screen as the always-visible row.
+ * Eight fits one row at a readable size; the other twenty-two live behind the
+ * bag button. A fact about the HUD's layout, but it lives here because the
+ * split between "pockets" and "bag" is a property of the inventory the HUD
+ * draws, not something two files should each decide for themselves.
+ */
+export const POCKET_COUNT = 8;
 
 export class Inventory {
   constructor(slotCount = SLOT_COUNT) {
@@ -152,6 +165,31 @@ export class Inventory {
     const n = this.slots.length;
     this.selected = ((this.selected + step) % n + n) % n;
     this.version++;
+  }
+
+  /**
+   * Move the selection by `step` through the slots that hold TOOLS, wrapping.
+   *
+   * What the bracket keys do now that the bag is thirty slots deep. Cycling
+   * every slot was fine at eight; at thirty it turns "get the axe back in my
+   * hand" into a tour of the turnips. Tools are the only items the selection
+   * exists FOR -- everything else is selected to drop or to sell, and both of
+   * those are pointing jobs the mouse already does better.
+   *
+   * From a non-tool slot, the step lands on the nearest tool in that direction
+   * rather than a fixed end of the list, so the keys feel like "next/previous
+   * from here" wherever the selection happens to be sitting. With no tools in
+   * the bag at all it falls back to plain cycling: two dead keys would read as
+   * a bug to exactly the player who has not found a tool yet.
+   */
+  cycleTool(step) {
+    const n = this.slots.length;
+    for (let d = 1; d <= n; d++) {
+      const i = ((this.selected + d * step) % n + n) % n;
+      const s = this.slots[i];
+      if (s && itemType(s.typeId).tool) { this.select(i); return; }
+    }
+    this.cycle(step);
   }
 
   select(i) {

@@ -548,6 +548,13 @@ export class Chat {
   }
 }
 
+/** What a garment is, in the words a shopper would use. */
+const WORN = {
+  shirt: 'Worn on the body',
+  hat: 'Worn on the head',
+  glasses: 'Worn on the face',
+};
+
 /** What a tool's verb is FOR, in the words a shopper would use. */
 const VERBS = {
   chop: 'fells trees',
@@ -576,10 +583,23 @@ function blurb(type) {
   if (type.furniture) {
     const piece = OBJECT_TYPES[type.furniture];
     if (!piece) return 'Furniture, flat-packed';
+    // Where a thing may be put down is the first fact about it worth knowing
+    // when the two answers are "your house" and "outside", and it is one the
+    // registries already hold (`site`, world/itemTypes.js). A fence post whose
+    // row said "flat-pack" would be sold as something to stand in a bedroom.
+    if (type.site === 'outdoors') {
+      const climb = piece.climb ? ` &middot; climbs ${piece.climb} step${piece.climb > 1 ? 's' : ''}`
+        : ' &middot; pens animals in';
+      return `Goes outdoors${climb}`;
+    }
     const use = piece.use === 'sleep' ? ' &middot; sleep in it'
       : piece.use === 'store' ? ' &middot; holds things' : '';
     return `Flat-pack &middot; ${piece.footprint.w}&times;${piece.footprint.d} tiles${use}`;
   }
   if (type.tool) return `Tool &middot; ${VERBS[type.tool.verb] ?? type.tool.verb}`;
+  // Derived from the registry like everything else here: the slot is the whole
+  // of what a garment does, and it is the fact a shopper wants -- a hat and a
+  // pair of sunglasses can be worn at once, and two hats cannot.
+  if (type.wear) return `${WORN[type.wear.slot] ?? 'Clothing'} &middot; press G to put it on`;
   return type.stack > 1 ? `Stacks to ${type.stack} a slot` : 'One to a slot';
 }

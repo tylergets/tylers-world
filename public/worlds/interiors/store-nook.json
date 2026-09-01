@@ -13,6 +13,7 @@
     "tileSize": 1
   },
   "ambience": {
+    "music": "shop",
     "sky": "#191d24",
     "sun": 0.95,
     "hemi": 2.3,
@@ -27,8 +28,8 @@
   "layers": {
     "surface": {
       "palette": {
-        "#": "wall",
-        "w": "floor.wood",
+        "#": "wall.stripe",
+        "w": "floor.checker",
         "t": "floor.tile",
         "r": "rug"
       },
@@ -279,6 +280,10 @@
             "count": 1,
             "price": 165
           },
+          { "type": "seed.turnip", "count": null },
+          { "type": "seed.flower", "count": null },
+          { "type": "seed.pumpkin", "count": null },
+          { "type": "seed.cress", "count": null },
           {
             "type": "tool.rod",
             "count": 1,

@@ -18,11 +18,12 @@
       "label": "behind the counter"
     }
   },
+  "ambience": { "music": "shop" },
   "layers": {
     "surface": {
       "palette": {
-        "#": "wall",
-        "w": "floor.wood",
+        "#": "wall.panel",
+        "w": "floor.wood.dark",
         "t": "floor.tile",
         "r": "rug"
       },
@@ -262,6 +263,8 @@
             "count": 1,
             "price": 165
           },
+          { "type": "seed.turnip", "count": null },
+          { "type": "seed.flower", "count": null },
           {
             "type": "tool.rod",
             "count": 1,

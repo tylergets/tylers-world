@@ -18,11 +18,12 @@
       "label": "behind the counter"
     }
   },
+  "ambience": { "music": "shop" },
   "layers": {
     "surface": {
       "palette": {
-        "#": "wall",
-        "w": "floor.wood",
+        "#": "wall.floral",
+        "w": "floor.terracotta",
         "t": "floor.tile",
         "r": "rug"
       },
@@ -257,6 +258,7 @@
             "count": 1,
             "price": 155
           },
+          { "type": "seed.pumpkin", "count": null },
           {
             "type": "tool.axe",
             "count": 1,
