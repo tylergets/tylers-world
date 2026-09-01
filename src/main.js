@@ -604,7 +604,7 @@ class Game {
   folkFor(world) {
     let folk = this.folk.get(world.meta.id);
     if (!folk) {
-      this.folk.set(world.meta.id, (folk = new Folk(world)));
+      this.folk.set(world.meta.id, (folk = new Folk(world, this.player.friends)));
       folk.restore(this.#claim(world, 'folk'));
     }
     folk.refreshShops(this.player.clock.day);
@@ -1330,7 +1330,9 @@ class Game {
     npc.lookAt(this.player.x, this.player.z);
     if (!this.intruding()) this.player.friends.add(npc.id);
     const ctx = this.tradeCtx();
-    const script = this.player.friends.hates(npc.id) ? grudgeFor(npc) : npc.dialog;
+    const script = this.player.friends.hates(npc.id)
+      ? grudgeFor(npc, this.player.friends.grudgeLevel(npc.id))
+      : npc.dialog;
     this.chat.open(new Dialogue(npc, ctx, script), ctx);
     this.talking = npc;
     return npc;
@@ -1647,7 +1649,7 @@ class Game {
       // friendship, and with it their front door. Recoverable, deliberately --
       // see Friends.js, and `shoot`, which makes the same call for the same
       // reason.
-      this.player.friends.anger(what.target.id);
+      this.player.friends.anger(what.target.id, this.player.clock.stamp);
       this.note(`${what.target.name} will remember that.`);
       return what;
     }
@@ -2446,17 +2448,20 @@ async function boot() {
 
   const direct = directGame(hold, params, resume);
   if (direct) {
-    // No menu to fail into, so a failure here is reported where the menu would
-    // have been -- which is the only text on the screen either way.
     title.say('Loading…');
     try {
       play(await direct());
       title.dismiss();
+      return;
     } catch (err) {
+      // A URL that names a world file which is not there is a typo, and the
+      // useful answer to a typo is the menu -- drawn first, so the message
+      // below lands on a screen that also offers a way forward.
       console.error(err);
-      title.fail(`Could not start: ${err.message}`);
+      menu();
+      title.fail(`Could not open that world: ${err.message}`);
+      return;
     }
-    return;
   }
 
   menu();

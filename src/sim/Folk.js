@@ -13,13 +13,20 @@
 import { Npc } from './Npc.js';
 
 export class Folk {
-  constructor(world) {
+  constructor(world, friends = null) {
     this.world = world;
+    this.friends = friends;
     this.npcs = (world.npcs ?? []).map((spec) => new Npc(world, spec));
+    this.#syncGrudges();
   }
 
   update(dt) {
+    this.#syncGrudges();
     for (const npc of this.npcs) npc.update(dt, this.world);
+  }
+
+  #syncGrudges() {
+    for (const npc of this.npcs) npc.grudge = this.friends?.grudgeLevel(npc.id) ?? 0;
   }
 
   refreshShops(day) {

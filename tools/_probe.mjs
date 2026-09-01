@@ -1,4 +1,5 @@
 import puppeteer from 'puppeteer-core';
+import { playUrl } from './_play.mjs';
 const browser = await puppeteer.launch({
   executablePath: '/run/current-system/sw/bin/google-chrome',
   headless: 'new',
@@ -8,7 +9,7 @@ const browser = await puppeteer.launch({
 const page = await browser.newPage();
 await page.setViewport({ width: 1440, height: 900 });
 page.on('pageerror', (e) => console.log('PAGEERROR:', e.stack || e.message));
-await page.goto('http://localhost:5188/', { waitUntil: 'networkidle0' });
+await page.goto(playUrl('http://localhost:5188/'), { waitUntil: 'networkidle0' });
 await page.waitForFunction('window.__ready === true', { timeout: 30000 });
 await new Promise((r) => setTimeout(r, 800));
 

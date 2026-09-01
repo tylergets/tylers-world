@@ -1,9 +1,10 @@
 /** Drive the real page and shoot the camera orbit at several yaws, in both views. */
 import puppeteer from 'puppeteer-core';
 import { mkdirSync } from 'node:fs';
+import { playUrl } from './_play.mjs';
 
 const OUT = process.argv[2];
-const URL = process.env.URL || 'http://localhost:5188/tylers-world/';
+const URL = playUrl(process.env.URL || 'http://localhost:5188/tylers-world/');
 mkdirSync(OUT, { recursive: true });
 
 const browser = await puppeteer.launch({

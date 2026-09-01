@@ -32,6 +32,18 @@ const CYL = new THREE.CylinderGeometry(1, 1, 1, 10);
 /** Type id -> { body, head, material, neckY } built once, shared by instances. */
 const MODELS = new Map();
 
+/** Furrowed brows and a downturned mouth, shared by every angry NPC view. */
+const ANGRY_FACE = (() => {
+  const face = new GeoBuilder();
+  face.addGeometry(BOX, trs(-0.09, 0.3, 0.213, 0, 0, -0.38, 0.1, 0.022, 0.018), 0x38251f);
+  face.addGeometry(BOX, trs(0.09, 0.3, 0.213, 0, 0, 0.38, 0.1, 0.022, 0.018), 0x38251f);
+  face.addGeometry(BOX, trs(-0.043, 0.115, 0.221, 0, 0, 0.38, 0.065, 0.016, 0.016), 0x38251f);
+  face.addGeometry(BOX, trs(0.043, 0.115, 0.221, 0, 0, -0.38, 0.065, 0.016, 0.016), 0x38251f);
+  return face.build();
+})();
+
+const ANGRY_MATERIAL = patchFlatten(new THREE.MeshLambertMaterial({ vertexColors: true }), 1);
+
 /**
  * A person, authored facing +z -- which is south, which is straight at the 3D
  * camera. Everything that has to be seen (face, apron) points that way.
@@ -127,9 +139,11 @@ export class NpcView {
 
     const bodyMesh = new THREE.Mesh(m.body, m.material);
     const headMesh = new THREE.Mesh(m.head, m.material);
-    bodyMesh.castShadow = headMesh.castShadow = true;
+    this.expression = new THREE.Mesh(ANGRY_FACE, ANGRY_MATERIAL);
+    bodyMesh.castShadow = headMesh.castShadow = this.expression.castShadow = true;
     this.bob.add(bodyMesh);
     this.neck.add(headMesh);
+    this.neck.add(this.expression);
     this.neck.position.y = m.neckY;
   }
 
@@ -140,6 +154,9 @@ export class NpcView {
    */
   update(npc, lieBack, time) {
     this.root.position.set(npc.x, npc.y, npc.z);
+    const grudge = npc.grudge ?? 0;
+    this.expression.visible = grudge > 0;
+    this.expression.scale.setScalar(1 + Math.max(0, grudge - 1) * 0.08);
 
     // How far over he is: quick down, a beat on the floor, slower back up.
     const recover = npc.type.recover ?? 4.5;

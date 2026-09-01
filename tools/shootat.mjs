@@ -1,6 +1,7 @@
 /** Screenshot from chosen player positions, for inspecting specific landmarks. */
 import puppeteer from 'puppeteer-core';
 import { mkdirSync } from 'node:fs';
+import { playUrl } from './_play.mjs';
 
 const OUT = process.argv[2];
 const SPOTS = JSON.parse(process.argv[3]);   // [{name,x,z,t}]
@@ -17,7 +18,7 @@ await page.setViewport({ width: 1440, height: 900 });
 const errs = [];
 page.on('pageerror', (e) => errs.push(e.message));
 page.on('console', (m) => { if (m.type() === 'error') errs.push(m.text()); });
-await page.goto(process.env.URL || 'http://localhost:5188/', { waitUntil: 'networkidle0' });
+await page.goto(playUrl(process.env.URL || 'http://localhost:5188/'), { waitUntil: 'networkidle0' });
 await page.waitForFunction('window.__ready === true', { timeout: 30000 });
 await new Promise((r) => setTimeout(r, 700));
 

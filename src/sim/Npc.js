@@ -121,6 +121,8 @@ export class Npc {
      * already declines to save his POSITION for the same class of reason.
      */
     this.downed = 0;
+    /** Current player-side grudge severity, mirrored by Folk for movement/view. */
+    this.grudge = 0;
 
     // Where a walker keeps to: his authored tile, exactly as an animal's home
     // is. He is not fenced to it -- see Stroll -- it is where he keeps ending up.

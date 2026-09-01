@@ -64,9 +64,21 @@ export class TitleScreen {
 
     this._onKey = (e) => {
       if (this.el.hidden || this.busy) return;
-      // Enter starts the highlighted thing, but only when the player has not
-      // put focus on a button of their own -- a browser that is already going
-      // to click something does not need help.
+
+      // A save row is a div and not a button, because it has a delete button
+      // inside it and a button inside a button is not something the parser
+      // will give you. So it gets by hand the keyboard activation that being a
+      // button would have granted it.
+      const row = e.target.closest?.('[data-load]');
+      if (row && (e.key === 'Enter' || e.key === ' ')) {
+        e.preventDefault();
+        row.click();
+        return;
+      }
+
+      // Enter otherwise means the obvious thing for the pane you are on -- but
+      // only when focus is not already on a control, since a browser that is
+      // about to click something does not need the help.
       if (e.key === 'Enter' && !e.target.closest?.('button, input')) {
         e.preventDefault();
         this.#primary();
@@ -149,7 +161,7 @@ export class TitleScreen {
     // would offer the same game twice with two different labels.
     const rest = this.saves.filter((s) => s.id !== r?.id);
     const list = rest.length ? rest.map((s) => `
-      <div class="pick" data-load="${esc(s.id)}" role="button" tabindex="0">
+      <div class="pick" data-load="${esc(s.id)}" tabindex="0">
         <span class="pick-body">
           <div class="pick-name">${esc(s.name)}</div>
           <div class="pick-note">${s.kind === 'seed' ? 'generated' : 'starter'}${
@@ -198,9 +210,13 @@ export class TitleScreen {
     const row = this.card.querySelector('#title-seed-row');
     if (row) row.hidden = !form;
     if (this.busy) return;
-    this.say(form
-      ? `Builds "${worldName(form, this.seed)}" -- the same seed always makes the same place.`
-      : '');
+    if (form) {
+      this.say(`Builds "${worldName(form, this.seed)}" -- the same seed always makes`
+        + ' the same place, so it is worth writing down.');
+      return;
+    }
+    const named = worldChoices().find((r) => r.id === this.choice);
+    this.say(`Starts ${named?.name ?? 'a world'} from the beginning.`);
   }
 
   // -------------------------------------------------------------- pressing --

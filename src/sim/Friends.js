@@ -38,8 +38,9 @@
  * A GRUDGE IS A DEADLINE, NOT A FLAG
  * ----------------------------------
  * So the enemies are a Map and not a Set: each one carries the Clock stamp its
- * feud runs out on (sim/Clock.js), and a day later the person simply stops
- * being angry. It is stored as an END and not as a START because that is the
+ * feud runs out on (sim/Clock.js) and its current severity. A day after the last
+ * attack the person simply stops being angry. Time is stored as an END and not
+ * as a START because that is the
  * question every reader actually asks -- "is this over yet" -- and a deadline
  * answers it with one comparison, rather than with a duration that every call
  * site has to remember to add.
@@ -72,6 +73,7 @@
  * locked out of a building for the rest of the save.
  */
 export const GRUDGE_DAYS = 1;
+export const MAX_GRUDGE = 3;
 
 /** Shared, so the ordinary frame allocates nothing. See `cool`. */
 const NOBODY = Object.freeze([]);
@@ -79,7 +81,7 @@ const NOBODY = Object.freeze([]);
 export class Friends {
   constructor() {
     this.ids = new Set();
-    /** NPC id -> the Clock stamp their grudge runs out on. */
+    /** NPC id -> { until: Clock stamp, severity: repeat attacks this feud }. */
     this.foes = new Map();
     /** Bumped on every change, so the HUD can skip a redraw. */
     this.version = 0;
@@ -93,7 +95,10 @@ export class Friends {
   hates(npcId) { return this.foes.has(npcId); }
 
   /** The Clock stamp this feud ends on, or null when there is no feud. */
-  angryUntil(npcId) { return this.foes.get(npcId) ?? null; }
+  angryUntil(npcId) { return this.foes.get(npcId)?.until ?? null; }
+
+  /** How angry this person currently is, from 0 (calm) to MAX_GRUDGE. */
+  grudgeLevel(npcId) { return this.foes.get(npcId)?.severity ?? 0; }
 
   /**
    * Become friends. Returns true if this was news.
@@ -119,17 +124,21 @@ export class Friends {
    * with teeth: their front door was open because you were friends, and the
    * trespass clock starts again the moment you are not.
    *
-   * Shooting somebody who is already angry restarts their day rather than
-   * being ignored, which is the only reading under which the second shot is
-   * not free. It still returns false: that is not news, it is worse.
+   * Shooting somebody who is already angry restarts their day and raises the
+   * feud's severity rather than being ignored. It still returns false: that is
+   * not news, it is worse.
    *
    * @param {number} now  the current Clock stamp -- see sim/Clock.js
    */
   anger(npcId, now) {
     if (!npcId) return false;
-    const fresh = !this.foes.has(npcId);
+    const previous = this.foes.get(npcId);
+    const fresh = !previous;
     this.ids.delete(npcId);
-    this.foes.set(npcId, now + GRUDGE_DAYS);
+    this.foes.set(npcId, {
+      until: now + GRUDGE_DAYS,
+      severity: Math.min(MAX_GRUDGE, (previous?.severity ?? 0) + 1),
+    });
     this.version++;
     return fresh;
   }
@@ -163,8 +172,8 @@ export class Friends {
   cool(now) {
     if (!this.foes.size) return NOBODY;
     let over = null;
-    for (const [id, until] of this.foes) {
-      if (now < until) continue;
+    for (const [id, grudge] of this.foes) {
+      if (now < grudge.until) continue;
       (over ??= []).push(id);
     }
     if (!over) return NOBODY;
@@ -194,9 +203,14 @@ export class Friends {
     const foes = Array.isArray(snap) ? [] : (snap?.foes ?? []);
     this.ids = new Set(Array.isArray(friends) ? friends : []);
     this.foes = new Map(Array.isArray(foes)
-      ? foes.map((id) => [id, now + GRUDGE_DAYS])
-      : Object.entries(foes ?? {})
-        .filter(([, until]) => Number.isFinite(until) && until > now));
+      ? foes.map((id) => [id, { until: now + GRUDGE_DAYS, severity: 1 }])
+      : Object.entries(foes ?? {}).flatMap(([id, saved]) => {
+        // Older saves stored only the deadline as a number.
+        const until = Number.isFinite(saved) ? saved : saved?.until;
+        if (!Number.isFinite(until) || until <= now) return [];
+        const severity = Math.max(1, Math.min(MAX_GRUDGE, saved?.severity | 0));
+        return [[id, { until, severity }]];
+      }));
     // A hand-edited save could name the same person in both. The feud wins: it
     // is the state with consequences, and getting it wrong the other way hands
     // somebody's front door to the person who shot them.

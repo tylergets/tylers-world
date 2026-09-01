@@ -333,4 +333,30 @@ export function itemType(typeId) {
   return t;
 }
 
+/**
+ * Add a type that came out of a kit file (see world/kit.js).
+ *
+ * The twin of `registerObjectType` in objectTypes.js, and it is here for the
+ * same reason and behind the same two locks. The registry above is code because
+ * it describes what the game ships with; a catalogue of three hundred chairs is
+ * a thing that TRAVELS, and it lands HERE rather than in a second parallel
+ * table -- so the shop validator, the bag, the price rule, the HUD chip and the
+ * save all handle a kit chair without ever knowing it came from a file.
+ *
+ * Re-registering the same id is how a kit reload works and is not an error;
+ * shadowing a built-in is refused, because a kit that could redefine
+ * `item.apple` could quietly reprice every orchard in the game. (world/kit.js
+ * also requires a `kititem.` prefix, so this is the second of the two locks.)
+ */
+export function registerItemType(typeId, type) {
+  if (BUILT_IN.has(typeId)) {
+    throw new Error(`"${typeId}" is a built-in item type and cannot be redefined`);
+  }
+  ITEM_TYPES[typeId] = type;
+  return type;
+}
+
+/** The types this build ships with, frozen before any kit can be loaded. */
+const BUILT_IN = new Set(Object.keys(ITEM_TYPES));
+
 export const ITEM_TYPE_IDS = Object.keys(ITEM_TYPES);

@@ -194,7 +194,9 @@ export class Stroll {
     // two is the turn, and scaling by it is what makes a person pivot and then
     // set off rather than slide sideways into the corner.
     const aligned = Math.max(0, Math.cos(angleDelta(person.yaw, yawFromVec(dx, dz))));
-    this.want = t.walkSpeed * world.surfaceAt(person.tileX, person.tileZ).speed * aligned;
+    // Anger puts urgency into an existing stroll without turning it into a run.
+    const urgency = 1 + (person.grudge ?? 0) * 0.1;
+    this.want = t.walkSpeed * urgency * world.surfaceAt(person.tileX, person.tileZ).speed * aligned;
     return { vx: Math.sin(person.yaw) * this.want, vz: Math.cos(person.yaw) * this.want };
   }
 

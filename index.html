@@ -17,7 +17,15 @@
   }
   * { box-sizing: border-box; }
   html, body { margin: 0; height: 100%; overflow: hidden; background: #0d1117; }
-  body { font-family: var(--font); color: var(--ink); -webkit-font-smoothing: antialiased; }
+  /* Nothing here is a document to read at your own pace -- it is all buttons
+     and lines you click through, and a click that leaves a blue smear of
+     highlighted text across a dialog choice reads as a bug. Selection is off
+     everywhere, and handed back only to the fields that exist to be typed in. */
+  body {
+    font-family: var(--font); color: var(--ink); -webkit-font-smoothing: antialiased;
+    -webkit-user-select: none; user-select: none;
+  }
+  input, textarea { -webkit-user-select: text; user-select: text; }
 
   #view { display: block; width: 100vw; height: 100vh; touch-action: none; }
 
@@ -574,7 +582,7 @@
   .tt-veil {
     position: absolute; inset: 0; pointer-events: none;
     background:
-      radial-gradient(ellipse 78% 62% at 50% 44%, rgba(5, 7, 10, 0) 0%, rgba(5, 7, 10, 0.62) 100%),
+      radial-gradient(ellipse 78% 62% at 50% 44%, rgba(5, 7, 10, 0) 0%, rgba(5, 7, 10, 0.5) 100%),
       linear-gradient(to bottom, rgba(5, 7, 10, 0.34), rgba(5, 7, 10, 0) 30%);
   }
 
@@ -588,6 +596,9 @@
   .tt-sun { transform: none; animation: tt-sunup 3s cubic-bezier(0.16, 0.7, 0.3, 1) both; }
   @keyframes tt-sunup { from { transform: translateY(255px); } to { transform: none; } }
 
+  /* Two animations at once: a drift that never ends and the same dawn fade the
+     sky uses. The group's `opacity` is the fade's to move, which is why the
+     clouds carry their paleness as `fill-opacity` on the shapes instead. */
   .tt-cloud { opacity: 1; animation: tt-drift linear infinite, tt-dawn 3s ease-out both; }
   .tt-cloud-a { animation-duration: 96s, 3s; animation-delay: -30s, 0.5s; }
   .tt-cloud-b { animation-duration: 148s, 3s; animation-delay: -104s, 0.7s; }
@@ -596,7 +607,10 @@
     to   { transform: translateX(1780px); }
   }
 
-  .tt-birds { animation: tt-cross 34s linear 3.4s infinite; }
+  /* `both` matters here: without a backwards fill the birds sit at their
+     authored position on the left of the sky for the three seconds of delay
+     and then jump offscreen to start their crossing. */
+  .tt-birds { animation: tt-cross 34s linear 3.4s infinite both; }
   @keyframes tt-cross {
     from { transform: translate(-260px, 40px); }
     to   { transform: translate(1760px, -70px); }
@@ -752,11 +766,11 @@
           <stop offset="100%" stop-color="#2a3a58"/>
         </linearGradient>
         <linearGradient id="tt-g-day" x1="0" y1="0" x2="0" y2="1">
-          <stop offset="0%" stop-color="#20486f"/>
-          <stop offset="34%" stop-color="#6fa3c6"/>
-          <stop offset="62%" stop-color="#f0c48c"/>
-          <stop offset="86%" stop-color="#e79a6d"/>
-          <stop offset="100%" stop-color="#c9705d"/>
+          <stop offset="0%" stop-color="#16406e"/>
+          <stop offset="26%" stop-color="#5f9dc8"/>
+          <stop offset="46%" stop-color="#f2cb93"/>
+          <stop offset="64%" stop-color="#eda06f"/>
+          <stop offset="100%" stop-color="#d0755b"/>
         </linearGradient>
         <radialGradient id="tt-g-glow">
           <stop offset="0%" stop-color="#ffe9bd" stop-opacity="0.9"/>
@@ -765,6 +779,9 @@
         </radialGradient>
       </defs>
 
+      <!-- Night, the stars, then day laid over the top and faded in. The stars
+           are BETWEEN the two gradients rather than fading on a timer of their
+           own, so they go out because the morning arrived. -->
       <rect width="1600" height="900" fill="url(#tt-g-night)"/>
       <g fill="#e8eefc">
         <circle cx="118" cy="96" r="2.4" opacity=".85"/><circle cx="243" cy="188" r="1.7" opacity=".6"/>
@@ -784,65 +801,77 @@
         <circle cx="1146" cy="452" r="62" fill="#fff3d2"/>
       </g>
 
-      <g class="tt-cloud tt-cloud-a" fill="#fff" opacity=".2">
+      <!-- fill-opacity on the shapes and never `opacity` on the group: the
+           group's opacity is what the dawn fade animates, and a CSS `opacity`
+           beats an SVG presentation attribute, so a cloud that carried its
+           paleness on the group would be painted flat white the moment the
+           stylesheet loaded. -->
+      <g class="tt-cloud tt-cloud-a" fill="#fff" fill-opacity=".2">
         <ellipse cx="120" cy="196" rx="104" ry="27"/>
         <ellipse cx="196" cy="180" rx="70" ry="22"/>
         <ellipse cx="58" cy="186" rx="52" ry="18"/>
       </g>
-      <g class="tt-cloud tt-cloud-b" fill="#fff" opacity=".13">
+      <g class="tt-cloud tt-cloud-b" fill="#fff" fill-opacity=".13">
         <ellipse cx="150" cy="320" rx="146" ry="24"/>
         <ellipse cx="252" cy="308" rx="86" ry="19"/>
       </g>
 
       <g class="tt-birds" fill="none" stroke="#2c3346" stroke-width="3.4" stroke-linecap="round">
-        <path class="tt-bird" d="M0 300 q11 -9 21 0 q10 -9 21 0"/>
-        <path class="tt-bird" d="M52 272 q9 -7 17 0 q8 -7 17 0"/>
-        <path class="tt-bird" d="M96 316 q8 -6 15 0 q7 -6 15 0"/>
+        <path class="tt-bird" d="M0 300q11-9 21 0 10-9 21 0"/>
+        <path class="tt-bird" d="M52 272q9-7 17 0 8-7 17 0"/>
+        <path class="tt-bird" d="M96 316q8-6 15 0 7-6 15 0"/>
       </g>
 
-      <!-- Far ridge. Cool and desaturated: distance is haze, and haze is what
-           keeps three flat green shapes from reading as one. -->
+      <!-- Far ridge. Cool and desaturated, because distance is haze and haze is
+           the only thing keeping three flat green shapes from reading as one. -->
       <g class="tt-ridge tt-far">
-        <path fill="#3c5a6b" d="M0 900V545c118-36 214 6 322-18 116-26 196 20 314-6 128-28 226 16 352-6 118-20 226 16 340-2 96-15 178 8 272-4v391z"/>
+        <path fill="#5b7f8d" d="M0 900V565c118-36 214 6 322-18 116-26 196 20 314-6 128-28 226 16 352-6 118-20 226 16 340-2 96-15 178 8 272-4v391z"/>
       </g>
 
       <g class="tt-ridge tt-mid">
-        <path fill="#3a6350" d="M0 900V648c142-40 262 12 402-18 138-30 240 26 388 6 148-20 268 32 410 6 128-24 264 18 400-8v266z"/>
-        <g fill="#2f5343">
-          <path d="M300 646l17 34h-34zM300 662l20 40h-40zM392 636l15 30h-30zM392 650l18 36h-36z"/>
-          <path d="M1246 636l16 32h-32zM1246 651l19 38h-38zM1330 648l14 28h-28zM1330 661l17 34h-34z"/>
+        <path fill="#4a7a5c" d="M0 900V648c142-40 262 12 402-18 138-30 240 26 388 6 148-20 268 32 410 6 128-24 264 18 400-8v266z"/>
+        <g fill="#3d6b50">
+          <path d="M290 646l11-28 11 28zM292 630l9-24 9 24z"/>
+          <path d="M382 636l10-26 10 26zM384 621l8-22 8 22z"/>
+          <path d="M1236 646l10-26 10 26zM1238 631l8-22 8 22z"/>
+          <path d="M1320 648l10-26 10 26zM1322 633l8-22 8 22z"/>
         </g>
       </g>
 
-      <!-- Near hill: the one with somebody on it. -->
+      <!-- Near hill: the one with somebody on it. Everything standing on this
+           layer is bedded to the curve above, which runs y=748..758 across the
+           whole width. A tree floating a hand's width off its own hill is the
+           single loudest thing a scene like this can get wrong. -->
       <g class="tt-ridge tt-near">
-        <path fill="#2b4a37" d="M0 900V772c186-46 348 2 536-24 190-26 350 32 566 12 176-16 330 14 498-10v150z"/>
+        <path fill="#2e5139" d="M0 900V772c186-46 348 2 536-24 190-26 350 32 566 12 176-16 330 14 498-10v150z"/>
 
         <g>
-          <rect x="622" y="700" width="12" height="34" fill="#a8503e"/>
+          <rect x="556" y="690" width="106" height="58" rx="3" fill="#e9e2d3"/>
+          <path fill="#d4614f" d="M544 694l65-44 65 44z"/>
+          <!-- After the roof, or the roof covers it: the chimney's foot is
+               meant to be buried in the tiles and its throat is not. -->
+          <rect x="622" y="636" width="13" height="32" fill="#a8503e"/>
           <g fill="#dfe6ee">
-            <circle class="tt-puff" cx="628" cy="698" r="9"/>
-            <circle class="tt-puff" cx="628" cy="698" r="9"/>
-            <circle class="tt-puff" cx="628" cy="698" r="9"/>
+            <circle class="tt-puff" cx="629" cy="634" r="9"/>
+            <circle class="tt-puff" cx="629" cy="634" r="9"/>
+            <circle class="tt-puff" cx="629" cy="634" r="9"/>
           </g>
-          <rect x="556" y="726" width="106" height="62" rx="3" fill="#e9e2d3"/>
-          <path fill="#d4614f" d="M544 730l65-46 65 46z"/>
-          <rect x="596" y="756" width="24" height="32" rx="2" fill="#7a5a44"/>
-          <rect class="tt-lamp" x="568" y="740" width="19" height="17" rx="2" fill="#f8d98d"/>
-          <rect x="631" y="740" width="19" height="17" rx="2" fill="#8fa2ac"/>
+          <rect x="596" y="716" width="24" height="32" rx="2" fill="#7a5a44"/>
+          <rect class="tt-lamp" x="568" y="702" width="19" height="17" rx="2" fill="#f8d98d"/>
+          <rect x="631" y="702" width="19" height="17" rx="2" fill="#8fa2ac"/>
         </g>
 
-        <g fill="#223d2e">
-          <path d="M760 788l26 -62 26 62zM760 762l26 -58 26 58z"/>
-          <rect x="782" y="782" width="8" height="16"/>
-          <path d="M846 792l21 -50 21 50zM846 771l21 -47 21 47z"/>
-          <rect x="863" y="786" width="7" height="14"/>
-          <circle cx="1180" cy="762" r="34"/><circle cx="1214" cy="774" r="25"/>
-          <rect x="1187" y="778" width="9" height="22"/>
-          <circle cx="1372" cy="778" r="27"/><circle cx="1342" cy="788" r="19"/>
-          <rect x="1368" y="792" width="8" height="18"/>
-          <circle cx="332" cy="800" r="30"/><circle cx="366" cy="812" r="21"/>
-          <rect x="339" y="816" width="9" height="20"/>
+        <g fill="#24402f">
+          <rect x="782" y="750" width="9" height="18"/>
+          <path d="M760 754l26-64 26 64zM762 722l24-56 24 56z"/>
+          <rect x="863" y="756" width="8" height="16"/>
+          <path d="M846 760l21-52 21 52zM848 734l19-46 19 46z"/>
+          <rect x="1187" y="740" width="9" height="24"/>
+          <circle cx="1180" cy="716" r="32"/><circle cx="1212" cy="728" r="23"/>
+          <rect x="1368" y="748" width="8" height="18"/>
+          <circle cx="1372" cy="730" r="26"/><circle cx="1344" cy="740" r="18"/>
+          <rect x="339" y="744" width="9" height="22"/>
+          <circle cx="332" cy="722" r="29"/><circle cx="364" cy="734" r="20"/>
         </g>
       </g>
     </svg>

@@ -46,6 +46,7 @@
  */
 
 import { ITEM_TYPES } from './itemTypes.js';
+import { OBJECT_TYPES } from './objectTypes.js';
 
 export const KIT_FORMAT = 'tw.kit';
 export const KIT_VERSION = 1;
@@ -328,23 +329,123 @@ function checkInteract(raw, path) {
   };
 }
 
-const KINDS = ['object'];
+/** A single "#rrggbb", as a number. The scalar half of `checkPalette`. */
+function hex(v, path, key) {
+  if (typeof v !== 'string' || !/^#[0-9a-fA-F]{6}$/.test(v)) {
+    throw new KitError(`"${key}" must be a "#rrggbb" string`, path);
+  }
+  return parseInt(v.slice(1), 16);
+}
+
+/**
+ * The two things a kit may define, and the id prefix each one claims.
+ *
+ * An OBJECT is a fact about a tile: it stamps collision, it owns an occupancy
+ * cell, it bakes into the merged geometry. An ITEM is a fact about the
+ * simulation: it stacks, it stamps nothing, and a second later it is in your
+ * pockets. That is the same split itemTypes.js opens with, and it is why these
+ * are two kinds and not one loosened set of required fields -- an object with a
+ * `stack` and an item with a `footprint` are both nonsense, and a validator
+ * that accepted either would be unable to say so.
+ *
+ * SEPARATE PREFIXES, not one shared `kit.` namespace. The two registries are
+ * separate tables and a type id is looked up in exactly one of them, so
+ * `kititem.oakfoot-stool` and `fixture.oakfoot-stool` are allowed to be the
+ * flat-pack and the stool it becomes -- which is precisely the relationship the
+ * catalogue is built on. Sharing a prefix would make that pair a collision.
+ */
+const KINDS = { object: 'fixture.', item: 'kititem.' };
 
 function checkType(id, raw, path) {
   if (!isObj(raw)) throw new KitError('a type must be an object', path);
 
   const kind = raw.kind ?? 'object';
-  if (!KINDS.includes(kind)) {
-    // Items are the obvious next kind and the format is shaped to take them --
-    // same parts, same palette, same script -- but an item stamps no collision
-    // and stacks, so it is a different set of required fields and it should
-    // arrive with its own validation rather than by loosening this one.
-    throw new KitError(`unknown kind "${kind}" (known: ${KINDS.join(', ')})`, path);
+  if (!KINDS[kind]) {
+    throw new KitError(`unknown kind "${kind}" (known: ${Object.keys(KINDS).join(', ')})`, path);
   }
   if (typeof raw.label !== 'string' || !raw.label.trim()) {
     throw new KitError('a type needs a "label"', path);
   }
+  return kind === 'item' ? checkItemType(id, raw, path) : checkObjectType(id, raw, path);
+}
 
+/**
+ * An item defined in a file.
+ *
+ * Mirrors an entry in itemTypes.js field for field -- `stack`, `value`,
+ * `height`, `swatch`, `palette`, `furniture` -- because that is the whole
+ * point: what comes out of here is handed to `registerItemType` and is
+ * thereafter indistinguishable from an apple to the bag, the shop, the HUD and
+ * the save. Nothing downstream is taught that kit items exist.
+ *
+ * A MODEL OR A LINK, and it must be one of them. `parts` is a model of its
+ * own, drawn by ItemBatch exactly as a kit fixture's parts are drawn by
+ * props.js. `furniture` names the object this item BECOMES when it is put
+ * down, and an item that has one is a flat-pack: it is drawn as the parcel
+ * every other flat-pack in the game is drawn as (see render/ItemBatch.js and
+ * ui/icons.js on why eight identical parcels is the right answer and not a
+ * lazy one). An item with neither would be a thing the renderer cannot draw,
+ * which is a blank slot in the bag rather than an error -- so it is an error.
+ *
+ * ANIMATION IS REFUSED on an item part, and the reason is structural rather
+ * than a limit worth lifting later. A fixture's moving parts are drawn by
+ * FixtureBatch, which is per PLACE and keyed on world objects; an item may be
+ * on the floor, in a pocket or in the player's hand, and only one of those
+ * three is a place. Accepting an `anim` here would mean writing it down and
+ * then silently not honouring it, which is worse than saying no.
+ */
+function checkItemType(id, raw, path) {
+  const palette = checkPalette(raw.palette, `${path}.palette`);
+
+  const stack = raw.stack ?? 1;
+  if (!Number.isInteger(stack) || stack < 1) {
+    throw new KitError('"stack" must be a positive integer', path);
+  }
+  const value = raw.value === undefined ? 0 : num(raw.value, path, 'value');
+  if (value < 0) throw new KitError('"value" cannot be negative', path);
+
+  const height = raw.height === undefined ? 0.18 : num(raw.height, path, 'height');
+  if (height <= 0) throw new KitError('"height" must be greater than zero', path);
+
+  let parts = null;
+  if (raw.parts !== undefined) {
+    if (!Array.isArray(raw.parts) || !raw.parts.length) {
+      throw new KitError('"parts" must be a non-empty array', path);
+    }
+    parts = raw.parts.map((part, i) => {
+      const checked = checkPart(part, `${path}.parts[${i}]`, palette);
+      if (checked.anim) {
+        throw new KitError('an item part cannot animate -- see world/kit.js', `${path}.parts[${i}]`);
+      }
+      return checked;
+    });
+  }
+
+  if (raw.furniture !== undefined && (typeof raw.furniture !== 'string' || !raw.furniture)) {
+    throw new KitError('"furniture" must name an object type', path);
+  }
+  const furniture = raw.furniture ?? null;
+  if (!furniture && !parts) {
+    throw new KitError('an item needs "parts" of its own or a "furniture" link', path);
+  }
+
+  return {
+    id,
+    kind: 'item',
+    /** Marks a type as coming from a file, for everything that must not assume. */
+    fromKit: true,
+    label: raw.label,
+    stack,
+    value,
+    height,
+    swatch: hex(raw.swatch, path, 'swatch'),
+    palette,
+    parts,
+    furniture,
+  };
+}
+
+function checkObjectType(id, raw, path) {
   const palette = checkPalette(raw.palette, `${path}.palette`);
   const rawParts = raw.parts;
   if (!Array.isArray(rawParts) || !rawParts.length) {
@@ -354,7 +455,7 @@ function checkType(id, raw, path) {
 
   return {
     id,
-    kind,
+    kind: 'object',
     /** Marks a type as coming from a file, for everything that must not assume. */
     fromKit: true,
     category: 'fixture',
@@ -385,7 +486,7 @@ function checkType(id, raw, path) {
  * the part that cannot be known, and it is confined to one file and one budget
  * for exactly that reason.
  *
- * @returns {{ meta: object, types: Record<string, object> }}
+ * @returns {{ meta: object, types: Record<string, object>, items: Record<string, object> }}
  */
 export function parseKit(raw, path = 'kit') {
   if (raw?.format !== KIT_FORMAT) {
@@ -402,19 +503,46 @@ export function parseKit(raw, path = 'kit') {
   }
 
   const types = {};
+  const items = {};
   for (const [id, rawType] of Object.entries(raw.types)) {
-    // A kit that could define `tree.oak` would be a kit that could repaint the
-    // world's own furniture by being loaded next to it. The prefix keeps the
-    // two namespaces from ever being able to collide.
-    if (!id.startsWith('fixture.')) {
-      throw new KitError(`a kit type id must start with "fixture.", got "${id}"`, `${path} types`);
-    }
     // Quoted, because a type id contains dots: `types.fixture.fountain.parts[6]`
     // reads as four levels of nesting when it is one key holding an array.
-    types[id] = checkType(id, rawType, `${path} types["${id}"]`);
+    const at = `${path} types["${id}"]`;
+    const type = checkType(id, rawType, at);
+    // A kit that could define `tree.oak` would be a kit that could repaint the
+    // world's own furniture by being loaded next to it, and one that could
+    // define `item.apple` could reprice every orchard in the game. The
+    // prefixes keep the two shipped namespaces out of a kit's reach.
+    //
+    // Checked AFTER the type is parsed rather than before, because the prefix a
+    // kit owes depends on its `kind` and the message should name the one it
+    // actually needed, not the one an object happens to use.
+    const want = KINDS[type.kind];
+    if (!id.startsWith(want)) {
+      throw new KitError(
+        `a kit ${type.kind} id must start with "${want}", got "${id}"`, `${path} types`);
+    }
+    (type.kind === 'item' ? items : types)[id] = type;
   }
 
-  return { meta: { id: raw.meta.id, name: raw.meta.name ?? raw.meta.id }, types };
+  // Links last, once every id in the file is known.
+  //
+  // A flat-pack may point at a fixture DEFINED IN THIS SAME KIT -- which is the
+  // normal case and the reason the check cannot happen inside `checkItemType`
+  // -- or at one of the game's own `furn.*` pieces, so a kit can sell a plain
+  // bed without shipping a second bed. Anything else is a flat-pack that
+  // assembles into nothing, and the place to find that out is here rather than
+  // in `placeFurniture` with the parcel already gone from the bag.
+  for (const item of Object.values(items)) {
+    if (!item.furniture) continue;
+    if (!types[item.furniture] && !OBJECT_TYPES[item.furniture]) {
+      throw new KitError(
+        `"furniture": no object type "${item.furniture}" in this kit or in the game`,
+        `${path} types["${item.id}"]`);
+    }
+  }
+
+  return { meta: { id: raw.meta.id, name: raw.meta.name ?? raw.meta.id }, types, items };
 }
 
 /**

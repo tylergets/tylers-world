@@ -43,6 +43,16 @@ its eight pieces on sale each morning. Conversations, prices, permanent stock
 and daily catalogs are all data in the world file - see
 [`docs/WORLD_FORMAT.md`](docs/WORLD_FORMAT.md).
 
+**The game opens on a title screen**: dawn coming up over a valley, and under
+it Continue — the game this tab was last in, named and timestamped — every
+other save you have, and a way into a new world. It is written into
+`index.html` rather than built by a module on purpose, so the sun is already
+rising on the browser's first paint, while the code that loads a world is still
+being fetched. `?world=<name>` walks straight past it into a world file by
+name, which is the escape hatch for a save that will not open; `?play` walks
+past it into whatever Continue would have opened, which is how the harnesses in
+`tools/` get a running game.
+
 **The eight worlds** — *Meadowbrook*, an island with a bluff over the town;
 *Sourwood Holler*, a valley with a creek in the bottom; *Tidewrack Atoll*, a
 ring of land around a lagoon you cannot cut across; *Thistledown Gap*, a pass
@@ -234,6 +244,9 @@ src/
     DigBatch.js     instanced holes, drawn on the ground rather than cut into it
     Stage.js        scene assembly, morph orchestration
   ui/
+    title.js        the opening menu: continue, load, or start somewhere new
+    worlds.js       the same choice from inside a game, behind the gear
+    picks.js        what those two agree on: the list of ways to start
     hud.js          the overlay: readouts, pockets, perf panel
     minimap.js      the corner map: a baked static layer, live dots on top
     mapscreen.js    the map tool's screen: the same picture, zoomed and panned

@@ -6,11 +6,12 @@
  */
 import puppeteer from 'puppeteer-core';
 import { mkdirSync } from 'node:fs';
+import { playUrl } from './_play.mjs';
 
 const OUT = process.argv[2] || '/tmp/shots';
 const STOPS = process.argv.slice(3).map(Number);
 const MORPHS = STOPS.length ? STOPS : [0, 0.5, 1];
-const URL = process.env.URL || 'http://localhost:5188/';
+const URL = playUrl(process.env.URL || 'http://localhost:5188/');
 
 mkdirSync(OUT, { recursive: true });
 
@@ -39,8 +40,8 @@ try {
 } catch {
   console.error('!! game never signalled ready');
   console.error(logs.join('\n'));
-  const html = await page.$eval('#status', (el) => el.innerText).catch(() => '(no #status)');
-  console.error('status element:', html);
+  const html = await page.$eval('#title-note', (el) => el.innerText).catch(() => '(no #title-note)');
+  console.error('title note:', html);
   await page.screenshot({ path: `${OUT}/FAILED.png` });
   await browser.close();
   process.exit(1);

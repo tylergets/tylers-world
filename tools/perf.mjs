@@ -17,11 +17,12 @@
  *   --bisect   add fps with loose items / fauna / the place hidden in turn
  */
 import puppeteer from 'puppeteer-core';
+import { playUrl } from './_play.mjs';
 
 const args = process.argv.slice(2);
 const WANT_PROFILE = args.includes('--profile');
 const WANT_BISECT = args.includes('--bisect');
-const URL = args.find((a) => !a.startsWith('--')) || process.env.URL || 'http://localhost:5173/';
+const URL = playUrl(args.find((a) => !a.startsWith('--')) || process.env.URL || 'http://localhost:5173/');
 const DEBUG_URL = process.env.CDP || 'http://127.0.0.1:9222';
 
 const browser = await puppeteer.connect({ browserURL: DEBUG_URL, defaultViewport: null });

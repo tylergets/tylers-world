@@ -5,7 +5,7 @@
  * over the network, several worlds may want the same one, and a double-trigger
  * must load it once. What is different is that a place is handed BACK to its
  * caller, and a kit is not -- loading a kit registers its types into
- * `objectTypes.js` and that is the whole of its effect. Nothing downstream ever
+ * `objectTypes.js` and `itemTypes.js` and that is the whole of its effect. Nothing downstream ever
  * holds a kit; it holds a type id, exactly as it does for an oak.
  *
  * ORDER IS THE WHOLE PROBLEM THIS FILE SOLVES
@@ -34,6 +34,7 @@
 
 import { parseKit, KitError } from './kit.js';
 import { registerObjectType } from './objectTypes.js';
+import { registerItemType } from './itemTypes.js';
 import { MAX_SOURCE, ready as sandboxReady } from '../script/Sandbox.js';
 
 /** Resolve `run` against the kit's own URL, keeping it in the same directory. */
@@ -124,7 +125,12 @@ export class Kits {
 
     if (scripted.length) await sandboxReady();
 
+    // Objects before items, so a flat-pack whose fixture is defined in this
+    // same kit can never be registered ahead of the thing it assembles into.
+    // `parseKit` has already proved the link resolves; this keeps the REGISTRY
+    // from ever holding, even for an instant, an item pointing at nothing.
     for (const [id, type] of Object.entries(kit.types)) registerObjectType(id, type);
+    for (const [id, type] of Object.entries(kit.items)) registerItemType(id, type);
     return kit;
   }
 
