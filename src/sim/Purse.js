@@ -38,4 +38,10 @@ export class Purse {
     this.coins += n;
     this.version++;
   }
+
+  /** Restore a saved balance. Negative or missing reads as a fresh purse. */
+  restore(coins) {
+    this.coins = Number.isFinite(coins) && coins >= 0 ? Math.floor(coins) : START_COINS;
+    this.version++;
+  }
 }

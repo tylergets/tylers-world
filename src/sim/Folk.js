@@ -45,4 +45,22 @@ export class Folk {
     }
     return best;
   }
+
+  /**
+   * Everyone's memory, keyed by id.
+   *
+   * By id and not by position in the list, so a world file that gains a
+   * villager does not shift everybody else's history onto the wrong person.
+   * An id in the save that nobody answers to is simply ignored -- that is a
+   * person who has been removed from the world since, and there is nothing
+   * sensible to do with what he remembered.
+   */
+  snapshot() {
+    return Object.fromEntries(this.npcs.map((n) => [n.id, n.snapshot()]));
+  }
+
+  restore(snap) {
+    if (!snap) return;
+    for (const npc of this.npcs) npc.restore(snap[npc.id]);
+  }
 }

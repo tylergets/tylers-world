@@ -9,9 +9,12 @@
  * requires a thing to stop being drawn. Re-meshing the town to take an apple
  * off the grass would cost more than every apple in the world put together.
  *
- * So an item gets its own node, exactly like an animal. The GEOMETRY is still
- * built once per type and shared by every instance, so a beach strewn with
- * shells is one geometry, one material, and a matrix each.
+ * Loose items are submitted as one InstancedMesh per TYPE. Sharing geometry and
+ * material between ordinary Mesh nodes does not batch them: Three still emits
+ * one WebGL draw for every item, then does it again for the shadow pass. That
+ * made a field of 73 pickups the dominant render-thread cost on drivers with
+ * expensive draw submission. Instancing keeps the independent transforms and
+ * exact models while reducing that field to at most six draws per pass.
  *
  * The counter-rotation is the same trick the player and the animals use: from
  * directly overhead an apple is a red dot and a flower is a yellow one. Lying
@@ -137,49 +140,92 @@ function modelFor(typeId) {
   return m;
 }
 
-export class ItemView {
-  constructor(item) {
-    const m = modelFor(item.typeId);
-
-    // Same node order as the player and the animals, and it matters for the
-    // same reason: tilt is a CAMERA-space rotation and has to sit outside the
-    // WORLD-space yaw, or an item keels over sideways depending on which way it
-    // happened to land.
-    this.root = new THREE.Group();
-    this.tilt = new THREE.Group();
-    this.yawG = new THREE.Group();
-    this.root.add(this.tilt);
-    this.tilt.add(this.yawG);
-
-    const mesh = new THREE.Mesh(m.geometry, m.material);
-    mesh.castShadow = true;
-    this.yawG.add(mesh);
-
-    // Resting angle seeded from the item's id, so a scattered beach looks
-    // scattered and reloading the world does not reshuffle it. Dropped items
-    // get an id too, so what you put down stays how you put it down.
-    const rng = makeRng(item.id);
-    this.yawG.rotation.y = range(rng, 0, Math.PI * 2);
-    this._phase = range(rng, 0, Math.PI * 2);
-
-    this.root.position.set(item.x, item.y, item.z);
+export class ItemBatch {
+  constructor() {
+    this.group = new THREE.Group();
+    this.batches = new Map();
+    this.rest = new Map();
+    this._position = new THREE.Vector3();
+    this._tilt = new THREE.Quaternion();
+    this._yaw = new THREE.Quaternion();
+    this._rotation = new THREE.Quaternion();
+    this._matrix = new THREE.Matrix4();
+    this._scale = new THREE.Vector3(1, 1, 1);
   }
 
-  /**
-   * @param {object} item     the live Ground record
-   * @param {number} t        eased morph amount
-   * @param {number} tiltRad  how far the camera has pitched from its 3D angle
-   * @param {number} time     seconds, for the hover
-   */
-  update(item, t, tiltRad, time) {
-    // Position is re-read every frame rather than set once, because a dropped
-    // item is created at a tile the ground height of which only the world knows,
-    // and re-reading is cheaper than inventing a way to be told about it.
-    this.root.position.set(
-      item.x,
-      item.y + HOVER * (0.6 + 0.4 * Math.sin(time * HOVER_RATE + this._phase)),
-      item.z,
-    );
-    this.tilt.rotation.x = tiltRad * t;
+  /** Repartition only when Ground.version changes, never on an ordinary frame. */
+  reconcile(items) {
+    const byType = new Map();
+    const live = new Set();
+    for (const item of items) {
+      live.add(item.id);
+      let list = byType.get(item.typeId);
+      if (!list) byType.set(item.typeId, (list = []));
+      list.push(item);
+      if (!this.rest.has(item.id)) {
+        const rng = makeRng(item.id);
+        this.rest.set(item.id, {
+          yaw: range(rng, 0, Math.PI * 2),
+          phase: range(rng, 0, Math.PI * 2),
+        });
+      }
+    }
+    for (const id of this.rest.keys()) if (!live.has(id)) this.rest.delete(id);
+
+    for (const [typeId, batch] of this.batches) {
+      const list = byType.get(typeId) ?? [];
+      this.#ensureCapacity(batch, list.length);
+      batch.items = list;
+      batch.mesh.count = list.length;
+      byType.delete(typeId);
+    }
+    for (const [typeId, list] of byType) {
+      const batch = { typeId, mesh: null, capacity: 0, items: list };
+      this.batches.set(typeId, batch);
+      this.#ensureCapacity(batch, list.length);
+      batch.mesh.count = list.length;
+    }
+  }
+
+  /** Upload all item transforms once, then submit each type in one draw. */
+  update(t, tiltRad, time) {
+    this._tilt.setFromAxisAngle(_X_AXIS, tiltRad * t);
+    for (const batch of this.batches.values()) {
+      for (let i = 0; i < batch.items.length; i++) {
+        const item = batch.items[i];
+        const rest = this.rest.get(item.id);
+        this._position.set(
+          item.x,
+          item.y + HOVER * (0.6 + 0.4 * Math.sin(time * HOVER_RATE + rest.phase)),
+          item.z,
+        );
+        this._yaw.setFromAxisAngle(THREE.Object3D.DEFAULT_UP, rest.yaw);
+        this._rotation.multiplyQuaternions(this._tilt, this._yaw);
+        this._matrix.compose(this._position, this._rotation, this._scale);
+        batch.mesh.setMatrixAt(i, this._matrix);
+      }
+      if (batch.items.length) batch.mesh.instanceMatrix.needsUpdate = true;
+    }
+  }
+
+  #ensureCapacity(batch, count) {
+    if (batch.mesh && batch.capacity >= count) return;
+    if (batch.mesh) {
+      this.group.remove(batch.mesh);
+      batch.mesh.dispose();
+    }
+    const model = modelFor(batch.typeId);
+    batch.capacity = Math.max(1, THREE.MathUtils.ceilPowerOfTwo(count));
+    batch.mesh = new THREE.InstancedMesh(model.geometry, model.material, batch.capacity);
+    batch.mesh.name = `items:${batch.typeId}`;
+    batch.mesh.castShadow = true;
+    // One field-wide bound would intersect both camera frusta almost always.
+    // Skip that redundant CPU test; six small model draws are cheaper than 73
+    // individually culled draw submissions, and measured GPU headroom is ample.
+    batch.mesh.frustumCulled = false;
+    batch.mesh.instanceMatrix.setUsage(THREE.DynamicDrawUsage);
+    this.group.add(batch.mesh);
   }
 }
+
+const _X_AXIS = new THREE.Vector3(1, 0, 0);

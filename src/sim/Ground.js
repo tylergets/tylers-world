@@ -115,4 +115,46 @@ export class Ground {
     if (!this.canDrop(x, z)) return null;
     return this.#put(this.#make(`${this.world.meta.id}.drop.${this._dropped++}`, typeId, [x, z]));
   }
+
+  /**
+   * What is on the floor, for a save file.
+   *
+   * The id travels with each item because a dropped one's id encodes the
+   * counter that made it, and `_dropped` travels too: reload without it and
+   * the next thing you put down takes the id of something already lying there,
+   * which the renderer keys its nodes by.
+   *
+   * `y` and `age` are not saved. Both are derived -- the ground height under
+   * the tile, and how long ago it landed -- and re-deriving them on load is
+   * what makes a save survive a world whose terrain has been edited under it.
+   */
+  snapshot() {
+    return {
+      dropped: this._dropped,
+      items: this.items.map((it) => ({ id: it.id, typeId: it.typeId, tile: [...it.tile] })),
+    };
+  }
+
+  /**
+   * Replace the floor wholesale.
+   *
+   * Wholesale rather than additive, because the authored items were laid out by
+   * the constructor and the save already accounts for which of them you picked
+   * up. Merging the two would put every apple in the world file back.
+   *
+   * Items whose tile no longer exists, or which now sit inside a wall, are
+   * dropped: that is a world file edited since the save, and an apple inside a
+   * rock is worse than a missing apple.
+   */
+  restore(snap) {
+    if (!snap) return;
+    this.byTile.clear();
+    this._dropped = snap.dropped | 0;
+    for (const it of snap.items ?? []) {
+      const [tx, tz] = it.tile ?? [];
+      if (!this.world.inBounds(tx, tz) || this.world.isBlocked(tx, tz)) continue;
+      this.#put(this.#make(it.id, it.typeId, [tx, tz]));
+    }
+    this.version++;
+  }
 }

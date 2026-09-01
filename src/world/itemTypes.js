@@ -19,7 +19,7 @@
  * nothing, you walk straight over it, and a second later it may be in your
  * pockets or on a different tile in a different place. So items get their own
  * array in the file (see WorldFile.js), their own live state (sim/Ground.js)
- * and their own nodes (render/ItemView.js) -- the same three-part treatment
+ * and their own instances (render/ItemBatch.js) -- the same three-part treatment
  * animals get, and for the same reason.
  *
  * STACK is the one rule that is genuinely per-type rather than per-inventory.

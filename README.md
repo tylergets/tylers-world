@@ -16,6 +16,9 @@ switch view. `E` picks things up and talks to people; in a conversation, `↑↓
 picks a line, `←→` switches between buying and selling, `Esc` walks away, and
 `M` cycles the NPC voice (babble / spoken / off).
 The slider at the bottom scrubs the morph by hand.
+The settings gear also switches shorelines between **Natural** (wet sand,
+shallows and animated foam) and the original **Blocky** tile edge. Graphics
+preferences are remembered across worlds and save slots.
 
 There is a shopkeeper in the general store, and three neighbours who walk around
 town during the day. Their conversations, the shop's prices and its stock are
@@ -129,12 +132,14 @@ src/
     Terrain.js      terrain mesh, cliff walls, corner AO, water
     props.js        one mesh builder per object type
     PlayerView.js   the character (and the counter-rotation trick)
-    AnimalView.js   one mesh builder per species, same trick
+    AnimalBatch.js  instanced animal models and animation
     NpcView.js      people, same trick again
     Stage.js        scene assembly, morph orchestration
   ui/
     hud.js          the overlay: readouts, pockets, perf panel
     dialogue.js     the conversation box, the buy/sell panel, the typewriter
+  settings/
+    graphics.js     validated, persistent player graphics preferences
 tools/
   genworld.mjs    regenerate the starter town   (npm run genworld)
   checkworld.mjs  validate + ASCII-preview a world, headless

@@ -40,4 +40,11 @@ export class Friends {
     this.version++;
     return true;
   }
+
+  snapshot() { return [...this.ids]; }
+
+  restore(ids) {
+    this.ids = new Set(Array.isArray(ids) ? ids : []);
+    this.version++;
+  }
 }

@@ -11,7 +11,8 @@
  * An object is a fact about a TILE: it stamps collision, it owns an occupancy
  * cell, it bakes into the merged static geometry, and none of that survives the
  * thing moving. An animal owns a position instead of a footprint, is simulated
- * every frame, and draws as its own mesh. Sharing one registry would mean every
+ * every frame, and draws as an instance in a species batch. Sharing one registry
+ * would mean every
  * consumer of `objects` -- collision, buckets, the prop mesher, the ASCII map --
  * having to ask "but does this one move?", which is exactly the branch the
  * codebase avoids everywhere else.

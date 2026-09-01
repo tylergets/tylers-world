@@ -18,9 +18,9 @@
  * `scene.add`, not a re-mesh of the room.
  *
  * Animals are one of two things that do NOT live in the cached place group:
- * they move, so their nodes are transformed every frame while the group around
- * them is static geometry that never is. Their views are still cached per
- * place, so re-entering a yard is an `add`, exactly like the geometry.
+ * they move, so their per-instance matrices are uploaded every frame while the
+ * group around them is static geometry that never is. Their batches are cached
+ * per place, so re-entering a yard is an `add`, exactly like the geometry.
  *
  * NPCs are with the animals rather than in the place group, and for the same
  * reason: they turn, they lean, they look up when you speak to them. Their
@@ -28,9 +28,9 @@
  *
  * Loose items are the other, for the opposite reason: they hold still but they
  * STOP EXISTING. Baking an apple into the merged geometry would mean re-meshing
- * a whole town to pick it up. Their nodes are reconciled against the live
- * Ground only when it reports a change, so lying there costs nothing per frame
- * beyond a transform each.
+ * a whole town to pick it up. Their type batches are reconciled against the live
+ * Ground only when it reports a change; the hover updates one instance matrix
+ * each, but render submission remains one draw per item type.
  *
  * AMBIENCE is per place and lives in its JSON, because "what does it feel like
  * to be here" is authoring, not code. A room lit by the same 1.9-intensity noon
@@ -40,12 +40,12 @@
 
 import * as THREE from 'three';
 import { CameraRig } from './CameraRig.js';
-import { buildTerrain } from './Terrain.js';
+import { buildTerrain, shorelineBlendUniform } from './Terrain.js';
 import { buildProps } from './props.js';
 import { PlayerView } from './PlayerView.js';
-import { AnimalView } from './AnimalView.js';
+import { AnimalBatch } from './AnimalBatch.js';
 import { NpcView } from './NpcView.js';
-import { ItemView } from './ItemView.js';
+import { ItemBatch } from './ItemBatch.js';
 import { flatUniform, timeUniform } from './flatten.js';
 
 /** Half-width of the shadow frustum, in tiles. Sized to the top-down view. */
@@ -136,6 +136,7 @@ export class Stage {
     this._activeQuery = null;
     this._pendingQueries = [];
     this._nextGpuSample = 0;
+    this._nextGpuPoll = 0;
     this.renderer.shadowMap.enabled = true;
     this.renderer.shadowMap.type = THREE.PCFShadowMap;
 
@@ -169,9 +170,9 @@ export class Stage {
     this.scene.add(this.player.root);
 
     this.built = new Map();     // place id -> built Group
-    this.fauna = new Map();     // place id -> { group, pairs } of animal views
+    this.fauna = new Map();     // place id -> AnimalBatch
     this.folkViews = new Map(); // place id -> { group, pairs } of npc views
-    this.loose = new Map();     // place id -> { group, views, version } of item views
+    this.loose = new Map();     // place id -> { batch, version } of item instances
     this.live = null;           // the fauna entry currently in the scene
     this.liveFolk = null;       // the npc entry currently in the scene
     this.liveLoose = null;      // the item entry currently in the scene
@@ -232,6 +233,11 @@ export class Stage {
     this.#applyPixelRatio();
   }
 
+  /** Blend amount for natural sand/water transitions; zero restores hard tiles. */
+  setShorelineBlend(amount) {
+    shorelineBlendUniform.value = Math.max(0, Math.min(1, amount));
+  }
+
   // 2.0 on a HiDPI display quadruples fragment cost for a barely visible gain,
   // so the cap comes first and the quality scale rides on top of it.
   #applyPixelRatio() {
@@ -272,11 +278,91 @@ export class Stage {
   }
 
   /**
+   * Throw away every meshed place.
+   *
+   * The caches below are built on the assumption that a session visits a
+   * BOUNDED set of places -- a town and the handful of rooms inside it -- which
+   * is what makes never disposing them the right trade. Starting a different
+   * world breaks that assumption: the old town's terrain and props are still on
+   * the GPU, keyed by a world id nothing will ask for again, and a player who
+   * rolls half a dozen islands looking for one they like has half a dozen towns
+   * resident in video memory.
+   *
+   * So the one operation that invalidates the assumption pays for it. Called
+   * from Game.beginSession, next to the matching `Places.reset`.
+   *
+   * Nothing is merely dropped on the floor: three keeps geometries, materials
+   * and instance buffers in GL objects the garbage collector cannot see, so
+   * releasing the last JS reference to a mesh frees nothing at all.
+   *
+   * WHAT MAY BE DISPOSED AND WHAT MAY NOT
+   * -------------------------------------
+   * The two halves below are not the same operation, and treating them as one
+   * is a bug that only shows up in the SECOND world you open.
+   *
+   * A meshed place OWNS its geometry and its materials. Terrain builds both per
+   * world, and buildProps merges its shared unit shapes into one fresh buffer
+   * per world rather than pointing meshes at them -- so a place's group can be
+   * disposed right down to the leaves.
+   *
+   * The animal, npc and item views own almost NOTHING. Each of them resolves
+   * its model through a module-level per-type cache (`MODELS` in AnimalBatch,
+   * NpcView and ItemBatch), so every chicken in every world you ever open is
+   * drawn from one geometry and one material. Disposing those along with a
+   * place would leave the next world's chickens pointing at freed buffers, and
+   * the type caches are bounded by the number of TYPES rather than the number
+   * of worlds, so there is nothing to reclaim anyway.
+   *
+   * What those views do own, per place, is their instance buffers -- and
+   * `InstancedMesh.dispose` frees exactly those and leaves geometry and
+   * material alone, which is why it is safe to call here and a traversal is
+   * not. A plain Mesh has no dispose at all, so the npc views need nothing.
+   */
+  forgetPlaces() {
+    // A place, disposed to the leaves: it owns everything under it.
+    const killOwned = (obj) => {
+      obj.traverse?.((o) => {
+        o.geometry?.dispose();
+        // A material may be one or an array; handling both here rather than
+        // making it a rule every builder has to remember.
+        for (const m of [o.material].flat()) m?.dispose?.();
+      });
+      obj.parent?.remove(obj);
+    };
+
+    // A view group: detach it, and free only the per-place instance buffers.
+    const killShared = (group) => {
+      group?.traverse?.((o) => o.dispose?.());
+      group?.parent?.remove(group);
+    };
+
+    for (const group of this.built.values()) killOwned(group);
+    for (const { group } of this.fauna.values()) killShared(group);
+    for (const { group } of this.folkViews.values()) killShared(group);
+    for (const { group } of this.loose.values()) killShared(group);
+
+    this.built.clear();
+    this.fauna.clear();
+    this.folkViews.clear();
+    this.loose.clear();
+    // Every one of these pointed into a cache that no longer has anything in
+    // it. Left set, the next setWorld would try to remove a group that is not
+    // in the scene, and `toggleGroup` would toggle the visibility of a corpse.
+    this.live = this.liveFolk = this.liveLoose = null;
+    this.ground = null;
+    this.group = null;
+    this.terrain = null;
+    this.world = null;
+    this.setMarker(null);
+  }
+
+  /**
    * Show `world`, meshing it on first visit.
    *
    * Geometry is cached rather than disposed on the way out. A town is a few MB
    * of buffers and a room is a rounding error next to it; paying that once buys
-   * a doorway you can walk through without a hitch.
+   * a doorway you can walk through without a hitch. The cache is only ever
+   * emptied wholesale, by `forgetPlaces`, when the world itself changes.
    */
   setWorld(world) {
     this.world = world;
@@ -294,6 +380,14 @@ export class Stage {
       group.add(terrain);
       group.userData.terrain = terrain;
       for (const m of buildProps(world)) group.add(m);
+      // Terrain and props are authored directly in world space and never move.
+      // Stop Three from recomposing their identity transforms on every main and
+      // shadow traversal; dynamic actors remain under separate live groups.
+      group.traverse((node) => {
+        node.updateMatrix();
+        node.matrixAutoUpdate = false;
+      });
+      group.updateMatrixWorld(true);
       this.built.set(world.meta.id, group);
     }
 
@@ -319,16 +413,9 @@ export class Stage {
     const id = fauna.world.meta.id;
     let entry = this.fauna.get(id);
     if (!entry) {
-      const group = new THREE.Group();
-      group.name = `fauna:${id}`;
-      // Paired by construction. An index-matched pair of arrays would drift the
-      // first time anything added an animal at runtime.
-      const pairs = fauna.animals.map((animal) => {
-        const view = new AnimalView(animal.typeId);
-        group.add(view.root);
-        return { animal, view };
-      });
-      this.fauna.set(id, (entry = { group, pairs }));
+      entry = new AnimalBatch(fauna.animals);
+      entry.group.name = `fauna:${id}`;
+      this.fauna.set(id, entry);
     }
 
     this.live = entry;
@@ -376,11 +463,11 @@ export class Stage {
     const id = ground.world.meta.id;
     let entry = this.loose.get(id);
     if (!entry) {
-      const group = new THREE.Group();
-      group.name = `items:${id}`;
+      const batch = new ItemBatch();
+      batch.group.name = `items:${id}`;
       // version -1 rather than 0, so a brand new entry always reconciles once
       // even for a place whose ground has not changed since it was built.
-      this.loose.set(id, (entry = { group, views: new Map(), version: -1 }));
+      this.loose.set(id, (entry = { batch, group: batch.group, version: -1 }));
     }
 
     this.ground = ground;
@@ -390,8 +477,7 @@ export class Stage {
   }
 
   /**
-   * Bring the item nodes in line with the Ground, adding what appeared and
-   * removing what was picked up.
+   * Repartition item instances by type after a Ground change.
    *
    * Guarded by the Ground's version counter, so the common case -- nothing
    * changed this frame -- is one integer compare. Diffing two Maps every frame
@@ -402,20 +488,7 @@ export class Stage {
     const entry = this.liveLoose, ground = this.ground;
     if (!entry || !ground || entry.version === ground.version) return;
     entry.version = ground.version;
-
-    const live = new Set();
-    for (const item of ground.items) {
-      live.add(item.id);
-      if (entry.views.has(item.id)) continue;
-      const view = new ItemView(item);
-      entry.views.set(item.id, view);
-      entry.group.add(view.root);
-    }
-    for (const [id, view] of entry.views) {
-      if (live.has(id)) continue;
-      entry.group.remove(view.root);
-      entry.views.delete(id);
-    }
+    entry.batch.reconcile(ground.items);
   }
 
   #applyAmbience(world) {
@@ -484,14 +557,10 @@ export class Stage {
 
     const tilt = this.rig.pitch2d - this.rig.pitch3d;
     this.player.update(player, e, tilt);
-    if (this.live) for (const { animal, view } of this.live.pairs) view.update(animal, e, tilt);
+    this.live?.update(e, tilt);
     if (this.liveFolk) for (const { npc, view } of this.liveFolk.pairs) view.update(npc, e, tilt, time);
     this.#syncGround();
-    if (this.ground) {
-      for (const item of this.ground.items) {
-        this.liveLoose.views.get(item.id)?.update(item, e, tilt, time);
-      }
-    }
+    this.liveLoose?.batch.update(e, tilt, time);
     // Everything above walks OUR nodes; everything below is three's. Splitting
     // the two is what separates "we are doing too much per frame" from "three
     // is doing too much with what we gave it" -- and with the GPU idle at a few
@@ -499,12 +568,16 @@ export class Stage {
     const mark1 = performance.now();
 
     this.#beginGpuTimer();
+    const submitStart = performance.now();
     this.renderer.render(this.scene, this.rig.camera);
+    const submitEnd = performance.now();
     this.#endGpuTimer();
     this.#pollGpuTimer();
 
     this.tViews = mark1 - mark0;
-    this.tSubmit = performance.now() - mark1;
+    // Timer-query begin/end/poll are diagnostics, not Three submission. Keep
+    // their driver cost out of the number used to diagnose render traversal.
+    this.tSubmit = submitEnd - submitStart;
   }
 
   // ------------------------------------------------------- GPU timer query --
@@ -522,6 +595,11 @@ export class Stage {
     gl.beginQuery(this.timerExt.TIME_ELAPSED_EXT, q);
     this._activeQuery = q;
     this._nextGpuSample = now + 250;
+    // Never ask whether a query is ready on the frame that created it. On Mesa
+    // that apparently harmless availability read can synchronize the command
+    // queue; waiting one sample period makes a completed result overwhelmingly
+    // likely and bounds polling itself to 4 Hz too.
+    this._nextGpuPoll = now + 250;
   }
 
   #endGpuTimer() {
@@ -534,6 +612,9 @@ export class Stage {
 
   #pollGpuTimer() {
     if (!this.timerExt || this._pendingQueries.length === 0) return;
+    const now = performance.now();
+    if (now < this._nextGpuPoll) return;
+    this._nextGpuPoll = now + 250;
     const gl = this.renderer.getContext();
     const q = this._pendingQueries[0];
     if (!gl.getQueryParameter(q, gl.QUERY_RESULT_AVAILABLE)) return;

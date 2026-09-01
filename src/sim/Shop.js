@@ -110,4 +110,32 @@ export class Shop {
     this.version++;
     return { ok: true, typeId: gone.typeId, coins: paid };
   }
+
+  /**
+   * What is left on the shelves, for a save file.
+   *
+   * Counts only, keyed by type. Prices, markup and what the shop will take are
+   * facts about the world file and are rebuilt from it on load -- writing them
+   * into the save would freeze a shop's prices at whatever they were the day
+   * you saved, and re-pricing the game would then quietly not apply to anyone
+   * who had already been shopping.
+   *
+   * An unlimited shelf saves as null and reloads as null, which is why the
+   * count is written even when nothing has been bought.
+   */
+  snapshot() {
+    return Object.fromEntries(this.stock.map((row) => [row.typeId, row.count]));
+  }
+
+  restore(counts) {
+    if (!counts) return;
+    for (const row of this.stock) {
+      const n = counts[row.typeId];
+      // `undefined` is a row the save had never heard of -- a new line of stock
+      // added since -- and it keeps whatever the world file says it holds.
+      if (n === undefined) continue;
+      row.count = n === null ? null : Math.max(0, n | 0);
+    }
+    this.version++;
+  }
 }

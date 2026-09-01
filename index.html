@@ -31,7 +31,6 @@
   .hud-tl { top: 16px; left: 16px; }
   .hud-tr { top: 16px; right: 16px; min-width: 186px; }
   .hud-bl { bottom: 16px; left: 16px; }
-  .hud-bc { bottom: 16px; left: 50%; transform: translateX(-50%); }
   .hud-tc { top: 16px; left: 50%; transform: translateX(-50%); }
   .hud-br { bottom: 16px; right: 16px; }
 
@@ -42,7 +41,40 @@
     font-size: 11px; font-weight: 600; color: var(--dim);
     letter-spacing: 0.06em; text-transform: uppercase; margin-top: 3px;
   }
-  #hud-place { margin-bottom: 9px; }
+  #hud-place { flex: 1; margin-bottom: 9px; }
+  .panel-head { display: flex; align-items: flex-start; gap: 12px; }
+
+  /* The settings gear.
+     Small and quiet, and the way in to every control that is worth having but
+     not worth looking at: the view blend, the voice, the performance panel,
+     the world you are in. Everything behind it also has a key, so the drawer
+     is how you FIND those controls rather than the only way to work them. */
+  .gear {
+    flex: none; width: 26px; height: 26px; padding: 0;
+    display: grid; place-items: center;
+    font: inherit; font-size: 14px; line-height: 1; color: var(--dim);
+    background: rgba(255, 255, 255, 0.07); border: 1px solid var(--edge);
+    border-radius: 7px; cursor: pointer;
+    transition: background 0.16s, color 0.16s, border-color 0.16s;
+  }
+  .gear:hover { background: rgba(255, 255, 255, 0.14); color: var(--ink); }
+  .gear.on {
+    color: var(--accent); border-color: var(--accent);
+    background: rgba(127, 212, 168, 0.16);
+  }
+
+  /* The drawer. A fixed width, so opening it cannot resize the panel around
+     the world name, and a rule above it so it reads as a second section of the
+     same card rather than a popover that happens to be touching. */
+  .settings {
+    width: 214px; margin-top: 9px; padding-top: 10px;
+    border-top: 1px solid var(--edge);
+  }
+  .set-title {
+    font-size: 10px; font-weight: 700; color: var(--dim);
+    letter-spacing: 0.08em; text-transform: uppercase; margin: 0 0 7px;
+  }
+  .set-title + .set-title, .view-toggle + .set-title { margin-top: 11px; }
   .view-toggle {
     display: flex; align-items: center; gap: 9px; width: 100%;
     font: inherit; font-size: 12.5px; font-weight: 600; color: var(--ink);
@@ -84,9 +116,9 @@
   .row .k { color: var(--dim); }
   .row .v { font-family: var(--mono); font-size: 11.5px; }
 
-  .morph { display: flex; align-items: center; gap: 11px; }
-  .morph-end { font-size: 11px; font-weight: 700; color: var(--dim); letter-spacing: 0.06em; }
-  #hud-scrub { width: 220px; accent-color: var(--accent); cursor: grab; }
+  .morph { display: flex; align-items: center; gap: 9px; }
+  .morph-end { font-size: 10px; font-weight: 700; color: var(--dim); letter-spacing: 0.06em; }
+  #hud-scrub { flex: 1; min-width: 0; accent-color: var(--accent); cursor: grab; }
 
   /* Inventory. Slot size is set here rather than derived from the chip, so a
      full slot and an empty one are exactly the same shape -- a bar that
@@ -118,8 +150,8 @@
   }
 
 
-  /* Conversation + trade. One column, bottom centre, sitting above the morph
-     slider: the box and the panel are one overlay in two modes because a shop
+  /* Conversation + trade. One column, bottom centre, riding above the pockets
+     panel: the box and the panel are one overlay in two modes because a shop
      is opened from a line of dialog and closes back into another one. */
   .chat {
     position: fixed; left: 50%; transform: translateX(-50%);
@@ -229,9 +261,117 @@
   /* Coins, in the pockets panel. */
   .bag-coins { font: 600 11.5px/1 var(--mono); color: #f3d489; }
 
-  .keys { display: flex; flex-direction: column; gap: 3px; font-size: 11.5px; color: var(--dim); }
-  .keys b { color: var(--ink); font-family: var(--mono); font-size: 10.5px; font-weight: 600; }
-  .keys .dim { opacity: 0.6; }
+  .hud-sep { height: 1px; background: var(--edge); margin: 9px 0; }
+  .gpu-name {
+    margin-top: 8px; max-width: 190px;
+    font: 500 10px/1.45 var(--mono); color: var(--dim); opacity: 0.75;
+    overflow-wrap: anywhere;
+  }
+
+  /* The key list. Two columns rather than a paragraph per line: the whole
+     value of a keymap is that you can find one key without reading the others,
+     and prose defeats that. Only keys that do something in the world are on
+     it -- the diagnostic keys live behind the gear, with the panel they drive. */
+  .keys {
+    display: grid; grid-template-columns: auto 1fr; gap: 4px 10px;
+    align-items: baseline; font-size: 11.5px; color: var(--dim);
+  }
+  .keys b {
+    justify-self: end; color: var(--ink);
+    font-family: var(--mono); font-size: 10.5px; font-weight: 600;
+    letter-spacing: -0.02em; white-space: nowrap;
+  }
+  .keys .dim { opacity: 0.62; }
+
+  /* --------------------------------------------------------------- worlds --
+     The worlds and saves panel: a real modal, and the only one in the game.
+     Everything else in the HUD is a corner you can ignore, but choosing a world
+     ends the one you are in -- so this takes the screen, dims what is behind
+     it, and closes on Esc, which is what tells the player it is a decision
+     rather than a readout. */
+  .modal {
+    position: fixed; inset: 0; z-index: 20;
+    display: grid; place-items: center;
+    background: rgba(5, 7, 10, 0.62);
+    pointer-events: auto;
+  }
+  .modal[hidden] { display: none; }
+  .modal-card {
+    width: min(430px, calc(100vw - 32px));
+    max-height: calc(100vh - 48px); overflow-y: auto; scrollbar-width: thin;
+    background: var(--panel); border: 1px solid var(--edge);
+    border-radius: 14px; padding: 15px 17px 16px;
+    box-shadow: 0 18px 52px rgba(0, 0, 0, 0.55);
+  }
+  .modal-head { display: flex; align-items: baseline; gap: 12px; margin-bottom: 13px; }
+  .modal-title { flex: 1; font-size: 16px; font-weight: 650; letter-spacing: -0.01em; }
+  .modal-esc { font: 600 10px/1 var(--mono); color: var(--dim); }
+  .modal-x {
+    font: inherit; font-size: 15px; line-height: 1; color: var(--dim);
+    background: none; border: 0; padding: 2px 4px; cursor: pointer;
+  }
+  .modal-x:hover { color: var(--ink); }
+
+  /* A choosable world, and a saved game. Same row shape on purpose: both are
+     "a place you could be playing in a moment", and making them look like two
+     different kinds of thing would be a lie about what the panel does. */
+  .pick {
+    display: flex; align-items: center; gap: 11px; width: 100%; text-align: left;
+    font: inherit; font-size: 13px; color: var(--ink);
+    background: rgba(255, 255, 255, 0.05); border: 1px solid transparent;
+    border-radius: 9px; padding: 9px 11px; cursor: pointer;
+    transition: background 0.13s, border-color 0.13s;
+  }
+  .pick + .pick { margin-top: 4px; }
+  .pick:hover { background: rgba(255, 255, 255, 0.11); }
+  .pick.on { background: rgba(127, 212, 168, 0.15); border-color: var(--accent); }
+  .pick-body { flex: 1; min-width: 0; }
+  .pick-name { font-weight: 620; }
+  .pick-note {
+    margin-top: 2px; font-size: 11px; color: var(--dim);
+    overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+  }
+  .pick-when { flex: none; font: 500 10.5px/1 var(--mono); color: var(--dim); }
+  .pick-kill {
+    flex: none; font: inherit; font-size: 13px; line-height: 1; color: var(--dim);
+    background: none; border: 0; padding: 3px 5px; border-radius: 5px; cursor: pointer;
+  }
+  .pick-kill:hover { color: #ffb4b4; background: rgba(255, 180, 180, 0.12); }
+
+  /* The seed row. Shown only when a generated world is the selection, because
+     a seed box next to "Meadowbrook" invites you to type a number that changes
+     nothing. */
+  .seed-row { display: flex; align-items: center; gap: 7px; margin-top: 8px; }
+  .seed-row[hidden] { display: none; }
+  .seed-label {
+    font-size: 10px; font-weight: 700; color: var(--dim);
+    letter-spacing: 0.08em; text-transform: uppercase;
+  }
+  #worlds-seed {
+    flex: 1; min-width: 0;
+    font: 600 12.5px/1 var(--mono); color: var(--ink);
+    background: rgba(0, 0, 0, 0.3); border: 1px solid var(--edge);
+    border-radius: 7px; padding: 7px 9px;
+  }
+  #worlds-seed:focus { outline: none; border-color: var(--accent); }
+
+  .modal-actions { display: flex; gap: 7px; margin-top: 11px; }
+  .btn {
+    flex: 1; font: inherit; font-size: 12.5px; font-weight: 650; color: var(--ink);
+    background: rgba(255, 255, 255, 0.07); border: 1px solid var(--edge);
+    border-radius: 8px; padding: 8px 10px; cursor: pointer;
+    transition: background 0.14s;
+  }
+  .btn:hover { background: rgba(255, 255, 255, 0.14); }
+  .btn.go { background: rgba(127, 212, 168, 0.18); border-color: var(--accent); }
+  .btn.go:hover { background: rgba(127, 212, 168, 0.3); }
+  .btn:disabled { opacity: 0.45; cursor: default; }
+  .btn:disabled:hover { background: rgba(255, 255, 255, 0.07); }
+
+  .modal-sep { height: 1px; background: var(--edge); margin: 14px 0 12px; }
+  .modal-note { margin-top: 9px; font-size: 11.5px; color: var(--dim); line-height: 1.5; }
+  .modal-note.bad { color: #ffb4b4; }
+  .modal-empty { padding: 10px 2px; font-size: 12.5px; color: var(--dim); }
 
   /* Covers the swap between places. Opacity is driven from the loop, and the
      element never takes pointer events, so a fade cannot eat a click. */

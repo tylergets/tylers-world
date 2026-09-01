@@ -129,4 +129,33 @@ export class Inventory {
     this.selected = i;
     this.version++;
   }
+
+  /**
+   * The bag as plain data, and back again.
+   *
+   * A slot is already `{ typeId, count }` or null, so the snapshot is a copy
+   * rather than a translation -- but it is a COPY, not the live array, because
+   * a save handed the real slots would keep changing after it was written.
+   *
+   * Restore rebuilds against the CURRENT slot count instead of trusting the
+   * file's, so a save written when the bag held eight still loads if the bag
+   * ever holds ten; anything that no longer fits is dropped rather than
+   * silently resizing the inventory to match an old build.
+   */
+  snapshot() {
+    return {
+      slots: this.slots.map((s) => (s ? { typeId: s.typeId, count: s.count } : null)),
+      selected: this.selected,
+    };
+  }
+
+  restore(snap) {
+    if (!snap) return;
+    this.slots = this.slots.map((_, i) => {
+      const s = snap.slots?.[i];
+      return s && s.typeId && s.count > 0 ? { typeId: s.typeId, count: s.count } : null;
+    });
+    this.selected = Math.min(Math.max(snap.selected | 0, 0), this.slots.length - 1);
+    this.version++;
+  }
 }

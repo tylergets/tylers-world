@@ -1,6 +1,17 @@
 /**
- * Overlay: view state, a live readout of the tile under the player, controls,
- * and a performance panel.
+ * Overlay: where you are, what a keypress would do next, your pockets, and --
+ * behind the gear -- the controls and the diagnostics.
+ *
+ * WHAT IS ON SCREEN BY DEFAULT is only what you need to play: the place name,
+ * the view you are in, the prompts for whatever is in front of you, your bag,
+ * and the keys. Everything else is a drawer or a toggle. That is a deliberate
+ * reversal -- the diagnostics used to be up permanently -- and the reason is
+ * that a panel of numbers nobody is reading is not free. It is the first thing
+ * a new player tries to decode, and it makes the game look like a debugger.
+ *
+ * The instrument has not gone anywhere. `P`, or the button in the drawer,
+ * brings back the whole performance block AND the coordinate readout, exactly
+ * as before; the bisect keys work whether or not it is showing.
  *
  * THE ROWS ARE BUILT ONCE. An earlier version rebuilt `readout.innerHTML` ten
  * times a second, which is an HTML parse plus a full layout for numbers that
@@ -32,19 +43,37 @@ import { PORTAL } from '../world/World.js';
 /** 0xrrggbb -> a CSS colour. */
 const css = (hex) => `#${hex.toString(16).padStart(6, '0')}`;
 
-/** Readout rows, in display order: [key, label]. */
+/**
+ * The rows worth having up while you are playing: what you are standing on,
+ * whose floor it is, and what E would do with the thing in front of you.
+ *
+ * Every one of them is about a decision the player is about to make, and every
+ * one hides itself when there is nothing to report -- which is what lets the
+ * whole panel disappear on an empty field instead of sitting there empty.
+ */
 const ROWS = [
+  ['here', 'here'],
+  ['zone', 'floor'],
+  ['item', 'take'],
+  ['npc', 'talk'],
+  ['portal', ''],
+];
+
+/**
+ * Coordinates and control state: useful when you are working ON the game, noise
+ * when you are playing it.
+ *
+ * They come up with the performance panel rather than on a switch of their own
+ * because they answer the same question it does -- "why did it just do that" --
+ * and one key for both is one fewer thing to remember.
+ */
+const DEBUG_ROWS = [
   ['tile', 'tile'],
   ['pos', 'pos'],
   ['ground', 'ground'],
   ['elev', 'elev'],
   ['facing', 'facing'],
   ['control', 'control'],
-  ['here', 'here'],
-  ['zone', 'floor'],
-  ['item', 'take'],
-  ['npc', 'talk'],
-  ['portal', ''],
 ];
 
 /** Perf rows, same shape, kept in their own block so they can be hidden as one. */
@@ -66,21 +95,50 @@ const PERF_ROWS = [
 ];
 
 export class Hud {
-  constructor(root, { onScrub, onToggle, onVoice }) {
+  constructor(root, { onScrub, onToggle, onVoice, onShoreline, onWorlds }) {
     root.innerHTML = `
       <div class="hud hud-tl">
-        <div id="hud-place">
-          <div class="world-name" id="hud-world"></div>
-          <div class="place-note" id="hud-note" hidden></div>
+        <div class="panel-head">
+          <div id="hud-place">
+            <div class="world-name" id="hud-world"></div>
+            <div class="place-note" id="hud-note" hidden></div>
+          </div>
+          <button class="gear" id="hud-gear" title="Settings"
+                  aria-label="Settings" aria-expanded="false">&#9881;</button>
         </div>
         <button class="view-toggle" id="hud-toggle">
           <span class="vt-label" id="hud-mode"></span>
           <span class="vt-key">Tab</span>
         </button>
-        <button class="view-toggle" id="hud-voice">
-          <span class="vt-label" id="hud-voice-label"></span>
-          <span class="vt-key">M</span>
-        </button>
+
+        <div class="settings" id="hud-settings" hidden>
+          <div class="set-title">View blend</div>
+          <div class="morph">
+            <span class="morph-end">3D</span>
+            <input type="range" id="hud-scrub" min="0" max="1000" value="0" step="1"
+                   aria-label="View morph">
+            <span class="morph-end">2D</span>
+          </div>
+
+          <div class="set-title">Options</div>
+          <button class="view-toggle" id="hud-shoreline"
+                  title="Blend sand into shallow water with wet sand and foam">
+            <span class="vt-label">Shoreline</span>
+            <span class="vt-key" id="hud-shoreline-label"></span>
+          </button>
+          <button class="view-toggle" id="hud-voice">
+            <span class="vt-label" id="hud-voice-label"></span>
+            <span class="vt-key">M</span>
+          </button>
+          <button class="view-toggle" id="hud-perf-btn">
+            <span class="vt-label" id="hud-perf-label"></span>
+            <span class="vt-key">P</span>
+          </button>
+          <button class="view-toggle" id="hud-worlds">
+            <span class="vt-label">Worlds &amp; saves</span>
+            <span class="vt-key">O</span>
+          </button>
+        </div>
       </div>
 
       <div class="hud hud-tc warn" id="hud-trespass" hidden>
@@ -89,19 +147,13 @@ export class Hud {
         <span class="warn-clock" id="hud-trespass-clock"></span>
       </div>
 
-      <div class="hud hud-tr">
+      <div class="hud hud-tr" id="hud-panel-tr">
+        <div id="hud-debug" hidden></div>
+        <div class="hud-sep" id="hud-sep-a" hidden></div>
         <div id="hud-readout"></div>
-        <div class="hud-sep"></div>
-        <div id="hud-perf"></div>
-        <div class="gpu-name" id="hud-device"></div>
-      </div>
-
-      <div class="hud hud-bc">
-        <div class="morph">
-          <span class="morph-end">3D</span>
-          <input type="range" id="hud-scrub" min="0" max="1000" value="0" step="1" aria-label="View morph">
-          <span class="morph-end">2D</span>
-        </div>
+        <div class="hud-sep" id="hud-sep-b" hidden></div>
+        <div id="hud-perf" hidden></div>
+        <div class="gpu-name" id="hud-device" hidden></div>
       </div>
 
       <div class="hud hud-br">
@@ -115,16 +167,14 @@ export class Hud {
 
       <div class="hud hud-bl">
         <div class="keys">
-          <span><b>WASD</b> / <b>&#8593;&#8595;&#8592;&#8594;</b> move <span class="dim">(hold two for diagonals)</span></span>
-          <span><b>Shift</b> run <span class="dim">(3D only)</span></span>
-          <span><b>Click</b> a tile to walk there <span class="dim">(2D only)</span></span>
-          <span><b>Tab</b> or <b>V</b> switch view</span>
-          <span>walk into a <b>door</b> to go inside</span>
-          <span><b>E</b> pick up &middot; <b>Q</b> drop &middot; <b>[</b> <b>]</b> pick a slot</span>
-          <span>say hello outside someone's house before you walk into it</span>
-          <span><b>E</b> talk to someone &middot; <b>&#8593;&#8595;</b> pick a line &middot; <b>Esc</b> walk away</span>
-          <span><b>M</b> voice <span class="dim">(babble / spoken / off)</span></span>
-          <span class="dim"><b>0</b> shadows &middot; <b>1</b>/<b>2</b>/<b>3</b> scale &middot; <b>4</b>/<b>5</b>/<b>6</b> hide items/fauna/place &middot; <b>P</b> perf</span>
+          <b>WASD</b><span>Move <span class="dim">or arrows</span></span>
+          <b>Shift</b><span>Run</span>
+          <b>Click</b><span>Walk there <span class="dim">2D</span></span>
+          <b>Tab</b><span>Switch view</span>
+          <b>E</b><span>Talk <span class="dim">&middot;</span> pick up <span class="dim">&middot;</span> enter</span>
+          <b>Q</b><span>Drop</span>
+          <b>[ ]</b><span>Change slot</span>
+          <b>Esc</b><span>Walk away</span>
         </div>
       </div>`;
 
@@ -137,7 +187,10 @@ export class Hud {
     this.worldName = root.querySelector('#hud-world');
     this.device = root.querySelector('#hud-device');
     this.perfBlock = root.querySelector('#hud-perf');
-    this.sep = root.querySelector('.hud-sep');
+    this.debugBlock = root.querySelector('#hud-debug');
+    this.panelTR = root.querySelector('#hud-panel-tr');
+    this.sepA = root.querySelector('#hud-sep-a');
+    this.sepB = root.querySelector('#hud-sep-b');
     this.bag = root.querySelector('#hud-bag');
     this.held = root.querySelector('#hud-held');
     this.coins = root.querySelector('#hud-coins');
@@ -148,18 +201,44 @@ export class Hud {
 
     // Build every row once; updates only ever touch textContent and `hidden`.
     this.rows = new Map();
+    this.#build(this.debugBlock, DEBUG_ROWS);
     this.#build(root.querySelector('#hud-readout'), ROWS);
     this.#build(this.perfBlock, PERF_ROWS);
 
-    this.showPerf = true;
+    // Off by default. See the note at the top of the file: the diagnostics are
+    // an instrument the player can reach for, not the frame they play inside.
+    this.showPerf = false;
+    this.#chrome(false);
 
     this.scrub.addEventListener('input', () => onScrub(this.scrub.value / 1000));
     root.querySelector('#hud-toggle').addEventListener('click', onToggle);
+
     this.voiceLabel = root.querySelector('#hud-voice-label');
+    this.shorelineLabel = root.querySelector('#hud-shoreline-label');
+    this.perfLabel = root.querySelector('#hud-perf-label');
+    root.querySelector('#hud-shoreline').addEventListener('click', onShoreline);
     root.querySelector('#hud-voice').addEventListener('click', onVoice);
+    root.querySelector('#hud-perf-btn').addEventListener('click', () => this.togglePerf());
+    root.querySelector('#hud-worlds').addEventListener('click', onWorlds);
+    this.#setPerfLabel();
+
+    // The drawer. Closed on load and remembered for the session only: which
+    // controls you had open is not a fact worth carrying across a reload.
+    this.settings = root.querySelector('#hud-settings');
+    this.gear = root.querySelector('#hud-gear');
+    this.gear.addEventListener('click', () => this.toggleSettings());
+
     // Keep focus on the canvas so movement keys keep working after a click.
     root.querySelectorAll('button, input').forEach((el) =>
       el.addEventListener('mouseup', () => el.blur()));
+  }
+
+  /** Open or close the settings drawer. Returns whether it is now open. */
+  toggleSettings(open = this.settings.hidden) {
+    this.settings.hidden = !open;
+    this.gear.classList.toggle('on', open);
+    this.gear.setAttribute('aria-expanded', String(open));
+    return open;
   }
 
   #build(parent, defs) {
@@ -189,10 +268,39 @@ export class Hud {
 
   togglePerf() {
     this.showPerf = !this.showPerf;
-    this.perfBlock.hidden = !this.showPerf;
-    this.sep.hidden = !this.showPerf;
-    this.device.hidden = !this.showPerf;
+    this.#chrome();
+    this.#setPerfLabel();
     return this.showPerf;
+  }
+
+  #setPerfLabel() {
+    this.perfLabel.textContent = `Readouts  ${this.showPerf ? 'on' : 'off'}`;
+  }
+
+  /**
+   * Show or hide everything in the top-right column that is not a live prompt,
+   * and decide whether the column is worth drawing at all.
+   *
+   * The panel hides itself when it would otherwise be an empty bordered box in
+   * the corner -- which, with the diagnostics off, is most of the time you are
+   * walking across a field. `anyRow` is passed in by the caller because it is
+   * only knowable after the prompt rows have been updated; on the way through
+   * the constructor there is nothing in them yet, hence the default.
+   *
+   * The two separators are not symmetrical. The first divides the coordinates
+   * from whatever is under them and is needed whenever the diagnostics are up;
+   * the second divides the prompts from the perf block and is pointless when
+   * there are no prompts, which would leave two rules stacked with nothing in
+   * between.
+   */
+  #chrome(anyRow = false) {
+    const show = this.showPerf;
+    this.debugBlock.hidden = !show;
+    this.perfBlock.hidden = !show;
+    this.device.hidden = !show;
+    this.sepA.hidden = !show;
+    this.sepB.hidden = !show || !anyRow;
+    this.panelTR.hidden = !show && !anyRow;
   }
 
   /**
@@ -205,6 +313,10 @@ export class Hud {
    */
   setVoice(mode) {
     this.voiceLabel.textContent = `Voice  ${mode}`;
+  }
+
+  setShoreline(style) {
+    this.shorelineLabel.textContent = style === 'natural' ? 'Natural' : 'Blocky';
   }
 
   setWorld(world, indoors = false) {
@@ -236,6 +348,9 @@ export class Hud {
     this.#portalRow(world, player);
     this.#bag(player.inventory);
     this.#purse(player.purse);
+    // After the prompt rows, because whether the panel is worth drawing is
+    // exactly the question of whether any of them had something to say.
+    this.#chrome(ROWS.some(([key]) => !this.rows.get(key).row.hidden));
 
     if (!this.showPerf) return;
 

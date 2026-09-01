@@ -1,7 +1,7 @@
 /**
  * NPC models.
  *
- * The same counter-rotation as PlayerView and AnimalView, for the same reason:
+ * The same counter-rotation as PlayerView and AnimalBatch, for the same reason:
  * from directly overhead a standing person is a hat and two shoes, so the model
  * lies back toward the camera by exactly the angle the camera pitches down,
  * hinged at the feet. One mesh, both views. (PlayerView.js carries the full

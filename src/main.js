@@ -47,8 +47,17 @@ import { FreeInput, GridInput } from './sim/inputs.js';
 import { findPath } from './sim/pathfind.js';
 import { Keyboard } from './sim/Keyboard.js';
 import { Hud } from './ui/hud.js';
+import { WorldsPanel } from './ui/worlds.js';
 import { Chat } from './ui/dialogue.js';
 import { VOICE_MODES } from './audio/voice.js';
+import { generate, worldId } from './world/generate.js';
+import {
+  SHORELINE_STYLES, readGraphicsSettings, writeGraphicsSettings,
+} from './settings/graphics.js';
+import {
+  SAVE_VERSION, listSaves, readSave, writeSave, deleteSave,
+  sessionSaveId, setSessionSaveId, newSaveId, STARTERS,
+} from './sim/Save.js';
 
 /**
  * Render-scale rungs, coarse on purpose: a scale change reallocates the
@@ -81,6 +90,20 @@ const TALK_RANGE = 2.2;
 const TRESPASS_GRACE = 7;
 
 /**
+ * How often the game writes itself down, in seconds.
+ *
+ * A compromise between two failures. Save on every change and a walk across
+ * town is a hundred writes to localStorage, which is synchronous and on the
+ * main thread. Save only when asked and a closed tab costs you the afternoon.
+ * Fifteen seconds is short enough that what you lose to a crash is the last
+ * thing you did, and long enough that the write is invisible.
+ *
+ * It is a CEILING and not a metronome: the loop only writes when something has
+ * actually changed since the last one. See `Game.autosave`.
+ */
+const AUTOSAVE_EVERY = 15;
+
+/**
  * Where the chosen NPC voice is remembered.
  *
  * A preference and not game state, so it lives in localStorage rather than in
@@ -88,14 +111,6 @@ const TRESPASS_GRACE = 7;
  * not about the world, and it should survive opening a different town.
  */
 const VOICE_KEY = 'tw.voice';
-
-/**
- * The world file this session starts in. Every exterior is an island or a
- * holler and looks it from the first frame, so ?world=sourwood is worth the
- * one line it costs to be able to open the other one.
- */
-export const START_PLACE = `worlds/${
-  new URLSearchParams(location.search).get('world') ?? 'meadowbrook'}.json`;
 
 class Game {
   constructor(places, world, canvas, hudRoot, fadeEl) {
@@ -109,7 +124,9 @@ class Game {
     this.trespass = null;  // { zone, t } while standing somewhere unwelcome
     this.legalTile = null; // the last tile in THIS place we were welcome on
 
+    this.graphics = readGraphicsSettings();
     this.stage = new Stage(canvas);
+    this.stage.setShorelineBlend(this.graphics.shoreline === 'natural' ? 1 : 0);
     this.player = new Player(world);
     this.keys = new Keyboard();
     canvas.addEventListener('pointerdown', (e) => this.pointAt(e));
@@ -123,10 +140,38 @@ class Game {
     this.viewTarget = 0;   // where it is heading
     this.scrubbing = false;
 
+    // Which world this is and which save slot it writes to. Both are set
+    // properly by `beginSession`, which every route into a world goes through
+    // -- a fresh start, a generated one, and a save being loaded.
+    this.source = null;
+    this.saveId = null;
+    this.saveName = 'World';
+    /**
+     * Place state from a save that has not been applied yet, keyed by world id.
+     *
+     * A save can carry the floor of a house you have not walked back into. This
+     * holds those until the moment that place is actually built, which is where
+     * its Ground and its Folk are created anyway -- see `groundFor`/`folkFor`.
+     */
+    this.pending = null;
+    /** world id -> the URL it was loaded from, so a save can name its places. */
+    this.placeUrls = new Map();
+    this._sinceSave = 0;
+    this._savedStamp = null;
+
     this.hud = new Hud(hudRoot, {
       onScrub: (v) => { this.scrubbing = true; this.viewT = this.viewTarget = v; this.syncControl(); },
       onToggle: () => this.toggleView(),
       onVoice: () => this.cycleVoice(),
+      onShoreline: () => this.cycleShoreline(),
+      onWorlds: () => this.openWorlds(),
+    });
+
+    this.worlds = new WorldsPanel(hudRoot, {
+      onStart: (choice) => this.startWorld(choice),
+      onLoad: (id) => this.loadSave(id),
+      onDelete: (id) => { deleteSave(id); this.worlds.show(listSaves()); },
+      onSave: () => this.saveNow(),
     });
 
     // The conversation overlay. Built once and hidden, like every other panel:
@@ -139,6 +184,7 @@ class Game {
     // hands the keyboard to a conversation nobody can see.
     this.chat = new Chat(hudRoot, { mode: readVoiceMode() });
     this.hud.setVoice(this.chat.mode);
+    this.hud.setShoreline(this.graphics.shoreline);
 
     this.setPlace(world, world.spawn.tile, world.spawn.facing);
 
@@ -181,6 +227,15 @@ class Game {
     const mode = this.chat.setMode(this.chat.nextMode());
     this.hud.setVoice(mode);
     try { localStorage.setItem(VOICE_KEY, mode); } catch { /* private mode; not worth a crash */ }
+  }
+
+  /** Switch shoreline presentation without rebuilding any cached terrain. */
+  cycleShoreline() {
+    const current = SHORELINE_STYLES.indexOf(this.graphics.shoreline);
+    this.graphics.shoreline = SHORELINE_STYLES[(current + 1) % SHORELINE_STYLES.length];
+    this.stage.setShorelineBlend(this.graphics.shoreline === 'natural' ? 1 : 0);
+    this.hud.setShoreline(this.graphics.shoreline);
+    writeGraphicsSettings(this.graphics);
   }
 
   /** Queue the input filter that matches the target view. */
@@ -226,6 +281,11 @@ class Game {
    */
   setPlace(world, tile, facing) {
     this.world = world;
+    // A save records places by world id, because that is what the caches are
+    // keyed by; getting back into one needs its URL. Recorded here rather than
+    // read off the World, so a generated place -- which has no URL a fetch
+    // could ever satisfy -- is still findable by the same route as any other.
+    this.placeUrls.set(world.meta.id, world.url);
     this.stage.setWorld(world);
     this.live = this.faunaFor(world);
     this.stage.setFauna(this.live);
@@ -279,7 +339,10 @@ class Game {
    */
   folkFor(world) {
     let folk = this.folk.get(world.meta.id);
-    if (!folk) this.folk.set(world.meta.id, (folk = new Folk(world)));
+    if (!folk) {
+      this.folk.set(world.meta.id, (folk = new Folk(world)));
+      folk.restore(this.#claim(world, 'folk'));
+    }
     return folk;
   }
 
@@ -292,11 +355,280 @@ class Game {
    */
   groundFor(world) {
     let ground = this.grounds.get(world.meta.id);
-    if (!ground) this.grounds.set(world.meta.id, (ground = new Ground(world)));
+    if (!ground) {
+      this.grounds.set(world.meta.id, (ground = new Ground(world)));
+      ground.restore(this.#claim(world, 'ground'));
+    }
     return ground;
   }
 
+  /**
+   * Take one part of a place's saved state, if a save left one.
+   *
+   * Called exactly once per place per part, at the moment that part is built.
+   * Nothing is deleted as it is claimed: the snapshot has to be able to write
+   * the state of a place you loaded and never opened, and the only copy of that
+   * is still sitting here. See `snapshot`.
+   */
+  #claim(world, part) {
+    return this.pending?.[world.meta.id]?.[part] ?? null;
+  }
+
   tileKey() { return `${this.player.tileX},${this.player.tileZ}`; }
+
+  // --------------------------------------------------------- saved games --
+
+  /** Open the worlds panel, with the save list as it stands right now. */
+  openWorlds() {
+    this.hud.toggleSettings(false);
+    this.worlds.show(listSaves());
+  }
+
+  /**
+   * A world's URL: where it came from, or a key that says it never came from
+   * anywhere. Generated worlds live under `gen:<id>`, which is deliberately
+   * unfetchable -- a bug that tried to load one over the network fails loudly
+   * rather than quietly rendering a 404 page as a world file.
+   */
+  static genUrl(id) { return `gen:${id}`; }
+
+  /**
+   * Put a world on screen and start a session in it.
+   *
+   * The single funnel for "we are playing somewhere else now", the way setPlace
+   * is the funnel for "we are standing somewhere else now". Everything that
+   * belongs to the old game is dropped here -- the place caches, the doorway
+   * stack, the pockets -- because every one of them is keyed by a world id, and
+   * two worlds whose interiors are both `worlds/interiors/home-tyler.json`
+   * would otherwise share a front room.
+   */
+  beginSession(world, { source, saveId, name, pending = null, restore = null }) {
+    this.places.reset(world);
+    // The renderer caches a meshed group per world id and never disposes one,
+    // which is right for a session that visits a town and its rooms and wrong
+    // the moment a session can visit a different town. Dropping the Worlds
+    // without dropping their geometry would leak a whole map per new world.
+    this.stage.forgetPlaces();
+
+    this.fauna.clear();
+    this.folk.clear();
+    this.grounds.clear();
+    this.placeUrls.clear();
+    this.stack.length = 0;
+    this.travel = null;
+    this.fadeEl.style.opacity = 0;
+
+    this.source = source;
+    this.saveId = saveId;
+    this.saveName = name;
+    this.pending = pending;
+
+    // Pockets and friendships before the place, because `setPlace` builds the
+    // Folk of the arrival room and a trespass check runs on the first frame --
+    // both of which ask who the player is friends with.
+    this.player.inventory.restore(restore?.inventory ?? { slots: [], selected: 0 });
+    this.player.purse.restore(restore?.coins);
+    this.player.friends.restore(restore?.friends ?? []);
+
+    this.setPlace(world, world.spawn.tile, world.spawn.facing);
+    this._savedStamp = null;   // force the next autosave to write
+    this._sinceSave = 0;
+  }
+
+  /**
+   * Start one of the four things the picker offers.
+   *
+   * @param {object} choice  `{ kind: 'file', starter }` or `{ kind: 'seed', form, seed }`
+   */
+  async startWorld(choice) {
+    let world, source, name;
+
+    if (choice.kind === 'seed') {
+      // Two frames of breathing room before a second of solid arithmetic. The
+      // generator blocks the main thread, so without this the panel's
+      // "Building..." is painted after the world it was announcing is finished.
+      await new Promise((done) => requestAnimationFrame(() => requestAnimationFrame(done)));
+      const built = generate({ form: choice.form, seed: choice.seed });
+      source = { kind: 'seed', form: built.form, seed: built.seed, name: built.name };
+      name = built.name;
+      world = this.places.put(Game.genUrl(built.id), built.data);
+    } else {
+      const starter = STARTERS.find((st) => st.id === choice.starter) ?? STARTERS[0];
+      source = { kind: 'file', url: starter.url };
+      name = starter.name;
+      world = await this.places.get(starter.url);
+    }
+
+    this.beginSession(world, { source, saveId: newSaveId(), name });
+    setSessionSaveId(this.saveId);
+    this.saveNow();
+  }
+
+  /** Reopen a saved game. */
+  async loadSave(id) {
+    const snap = readSave(id);
+    if (!snap) throw new Error('that save could not be read');
+
+    const world = await this.worldForSource(snap.source);
+    this.beginSession(world, {
+      source: snap.source,
+      saveId: snap.id,
+      name: snap.name,
+      pending: snap.places ?? {},
+      restore: snap.player,
+    });
+    setSessionSaveId(snap.id);
+    await this.restorePosition(snap);
+  }
+
+  /**
+   * The World a save's `source` names, fetched or rebuilt as appropriate.
+   *
+   * The cache is checked BEFORE the generator runs, which is the whole reason
+   * `worldId` exists separately from `generate`: resuming the save that this
+   * tab opened with would otherwise build the same island a second time, for a
+   * wall-clock second, to arrive at a world already sitting in memory.
+   *
+   * Nothing is cleared here. Dropping the old session's places is
+   * `beginSession`'s job, and doing it in both means whichever runs second
+   * throws away what the first just built.
+   */
+  worldForSource(source) {
+    if (source?.kind === 'seed') {
+      const url = Game.genUrl(worldId(source.form, source.seed));
+      const cached = this.places.cached(url);
+      if (cached) return Promise.resolve(cached);
+      const built = generate({ form: source.form, seed: source.seed, name: source.name });
+      return Promise.resolve(this.places.put(url, built.data));
+    }
+    return this.places.get(source?.url ?? STARTERS[0].url);
+  }
+
+  /**
+   * Walk the player back to where the save left them, doorways and all.
+   *
+   * The stack is rebuilt by loading each place in it in order, because a return
+   * address holds a live World and not a URL -- stepping out of a house has to
+   * put you back in the town you came from, and "the town" is an object. A
+   * stack entry whose file has gone is where the rebuild stops: you keep every
+   * doorway below it, which leaves you somewhere real with a way out, and that
+   * is a better answer than refusing to load the save.
+   */
+  async restorePosition(snap) {
+    for (const back of snap.stack ?? []) {
+      try {
+        this.stack.push({
+          world: await this.places.get(back.url),
+          tile: back.tile,
+          facing: back.facing,
+          label: back.label,
+        });
+      } catch (err) {
+        console.warn('a doorway in that save no longer leads anywhere:', back.url, err);
+        break;
+      }
+    }
+
+    const at = snap.at;
+    if (!at) return;
+    try {
+      const world = await this.places.get(at.url);
+      this.setPlace(world, at.tile, at.facing ?? world.spawn.facing);
+      this.hud.setWorld(world, this.stack.length > 0);
+    } catch (err) {
+      // The place itself is gone. The stack above is still good, so we are
+      // standing in the world's spawn rather than nowhere.
+      console.warn('that save\'s last place could not be opened:', at.url, err);
+    }
+  }
+
+  /**
+   * The whole game as plain data. See sim/Save.js for what is deliberately not
+   * in here.
+   */
+  snapshot() {
+    // Places a save carried but the session never opened keep their state: it
+    // is still the newest thing known about them, and dropping it would mean
+    // that loading a save and saving it again quietly emptied every room you
+    // did not happen to walk through.
+    const places = {};
+    for (const [id, part] of Object.entries(this.pending ?? {})) places[id] = { ...part };
+    for (const [id, ground] of this.grounds) (places[id] ??= {}).ground = ground.snapshot();
+    for (const [id, folk] of this.folk) (places[id] ??= {}).folk = folk.snapshot();
+    for (const [id, part] of Object.entries(places)) {
+      part.url = this.placeUrls.get(id) ?? part.url ?? null;
+    }
+
+    const p = this.player;
+    return {
+      v: SAVE_VERSION,
+      id: this.saveId,
+      name: this.saveName,
+      source: this.source,
+      savedAt: Date.now(),
+      at: {
+        url: this.world.url,
+        tile: [p.tileX, p.tileZ],
+        facing: p.facing,
+        label: this.world.meta.name ?? null,
+      },
+      stack: this.stack.map((b) => ({
+        url: b.world.url, tile: b.tile, facing: b.facing, label: b.label,
+      })),
+      player: {
+        inventory: p.inventory.snapshot(),
+        coins: p.purse.coins,
+        friends: p.friends.snapshot(),
+      },
+      places,
+    };
+  }
+
+  /** Write the save now. Returns whether storage took it. */
+  saveNow() {
+    if (!this.saveId) return false;
+    const snap = this.snapshot();
+    const ok = writeSave(snap);
+    if (ok) {
+      this._savedStamp = this.stateStamp();
+      this._sinceSave = 0;
+    }
+    return ok;
+  }
+
+  /**
+   * A cheap string that changes when anything worth saving has changed.
+   *
+   * Version counters and a tile, rather than a hash of the snapshot: building
+   * the snapshot is the expensive half, and the whole point is to decide
+   * whether to build one. `_talked` is in it because an NPC's memory has no
+   * version counter of its own -- a conversation is an event, and this is the
+   * one place that sees every one of them end.
+   */
+  stateStamp() {
+    const p = this.player;
+    return `${this.world.meta.id}|${p.tileX},${p.tileZ}|${this.stack.length}`
+      + `|${p.inventory.version}|${p.purse.version}|${p.friends.version}`
+      + `|${this.loose.version}|${this._talked ?? 0}`;
+  }
+
+  /**
+   * Write the game down, at most once every AUTOSAVE_EVERY seconds and only if
+   * something has actually changed.
+   *
+   * Never mid-doorway: the stack has been pushed but the place has not been
+   * swapped, so a snapshot taken there records a player standing in a room they
+   * have not arrived in. Waiting for the fade to finish costs a quarter of a
+   * second and removes the whole class of problem.
+   */
+  autosave(dt) {
+    if (!this.saveId) return;
+    this._sinceSave += dt;
+    if (this._sinceSave < AUTOSAVE_EVERY || this.travel) return;
+    this._sinceSave = 0;
+    if (this.stateStamp() === this._savedStamp) return;
+    this.saveNow();
+  }
 
   /**
    * Fire the portal under the player, if they have just arrived on one.
@@ -560,6 +892,10 @@ class Game {
     this.talking?.lookAt(null);
     this.talking = null;
     this.chat.close();
+    // Flags set and stock sold live on the NPC, which has no version counter --
+    // so a conversation ending is counted here instead, and the autosave has
+    // something to notice. See `stateStamp`.
+    this._talked = (this._talked ?? 0) + 1;
   }
 
   /**
@@ -679,6 +1015,13 @@ class Game {
       return;
     }
 
+    // The worlds panel stops the world, and it is the only thing that does. A
+    // conversation merely takes the keyboard; this is a modal about ENDING the
+    // session, so leaving the chickens walking around underneath it -- and,
+    // worse, the trespass clock running -- would mean coming back from a
+    // decision you had not made yet to consequences you had not chosen.
+    if (this.worlds.open) { this.keys.endFrame(); return; }
+
     // Whether the floor under the player is someone's, and what happens when
     // it has been for too long. Before the conversation branch and not after
     // it, so the clock keeps running while you are talking -- being walked out
@@ -708,6 +1051,8 @@ class Game {
     // polled first would eat the number keys a dialog uses to pick a line and
     // change the render scale instead of answering the shopkeeper.
     if (this.keys.pressed('Tab') || this.keys.pressed('KeyV')) this.toggleView();
+
+    if (this.keys.pressed('KeyO')) { this.openWorlds(); this.keys.endFrame(); return; }
 
     // Perf probes. Setting one by hand pins it, so auto-scaling stops fighting.
     if (this.keys.pressed('Digit0')) this.stage.toggleShadows();
@@ -909,6 +1254,8 @@ class Game {
     this._hudT += dt;
     if (this._hudT >= 0.1) { this._hudT = 0; this.hud.update(this); }
 
+    this.autosave(dt);
+
     requestAnimationFrame((t) => this.frame(t));
   }
 
@@ -924,6 +1271,70 @@ function readVoiceMode() {
   return VOICE_MODES[0];
 }
 
+/**
+ * Which game this tab should open.
+ *
+ * The session's own save comes first, so closing the tab and coming back is
+ * indistinguishable from never having left -- which is the whole reason the
+ * autosave exists.
+ *
+ * `?world=` OUTRANKS IT, and deliberately: it is the escape hatch. A save that
+ * somehow will not open, or a generated world you want out of, has to be
+ * answerable with a URL you can type, or the only fix for a bad save is
+ * clearing site data.
+ *
+ * A save that fails to resume is reported and stepped over rather than thrown.
+ * The player gets Meadowbrook and a console line, which is a game; the
+ * alternative is a start screen that says something went wrong, which is not.
+ */
+async function openingGame(places, canvas, hudRoot, fadeEl, status) {
+  const asked = new URLSearchParams(location.search).get('world');
+  const saved = asked ? null : readSave(sessionSaveId());
+
+  if (saved) {
+    try {
+      status.textContent = `Loading ${saved.name}\u2026`;
+      // Built from the save's own world, so the Game is never briefly standing
+      // in a Meadowbrook it is about to throw away -- `new Game` spawns the
+      // player, builds the Folk of wherever it lands, and runs a trespass check.
+      const game = new Game(places, await gameWorld(places, saved.source), canvas, hudRoot, fadeEl);
+      await game.loadSave(saved.id);
+      return game;
+    } catch (err) {
+      console.error('could not resume the last save; starting fresh:', err);
+      places.clear();
+    }
+  }
+
+  status.textContent = 'Loading Meadowbrook\u2026';
+  const url = asked ? `worlds/${asked}.json` : STARTERS[0].url;
+  const world = await places.get(url);
+  const game = new Game(places, world, canvas, hudRoot, fadeEl);
+  game.beginSession(world, {
+    source: { kind: 'file', url },
+    saveId: newSaveId(),
+    name: world.meta.name ?? 'World',
+  });
+  setSessionSaveId(game.saveId);
+  game.saveNow();
+  return game;
+}
+
+/**
+ * The World a save's source names, before there is a Game to ask.
+ *
+ * Deliberately leaves what it builds in the cache: `Game.loadSave` asks the
+ * same question a moment later, finds this answer, and does not rebuild it.
+ */
+function gameWorld(places, source) {
+  if (source?.kind === 'seed') {
+    const url = `gen:${worldId(source.form, source.seed)}`;
+    const built = generate({ form: source.form, seed: source.seed, name: source.name });
+    return Promise.resolve(places.put(url, built.data));
+  }
+  return places.get(source?.url ?? STARTERS[0].url);
+}
+
 async function boot() {
   const canvas = document.getElementById('view');
   const hudRoot = document.getElementById('hud');
@@ -932,9 +1343,17 @@ async function boot() {
 
   try {
     const places = new Places();
-    const world = await places.get(START_PLACE);
-    const game = new Game(places, world, canvas, hudRoot, fadeEl);
+    const game = await openingGame(places, canvas, hudRoot, fadeEl, status);
     game.start();
+
+    // The last write, and the one that matters most: everything since the last
+    // autosave is in here. `pagehide` rather than `beforeunload` because a
+    // phone backgrounding the tab never fires the latter, and `visibilitychange`
+    // covers the case where the tab is never closed at all, just left.
+    addEventListener('pagehide', () => game.saveNow());
+    addEventListener('visibilitychange', () => {
+      if (document.visibilityState === 'hidden') game.saveNow();
+    });
 
     status.remove();
     // Handles for the screenshot harness and for poking at things in devtools.

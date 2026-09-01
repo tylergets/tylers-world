@@ -19,7 +19,7 @@ const _v = new THREE.Vector3();
 export class GeoBuilder {
   constructor() {
     this.pos = []; this.norm = []; this.col = [];
-    this.local = []; this.baseY = []; this.water = [];
+    this.local = []; this.baseY = []; this.water = []; this.shore = [];
     this.index = [];
   }
 
@@ -43,6 +43,7 @@ export class GeoBuilder {
       this.local.push(0.5, 0.5);   // 0.5 == "far from a tile edge", so no grid line
       this.baseY.push(baseY);
       this.water.push(0);
+      this.shore.push(0);
     }
     for (let i = 0; i < p.count; i++) this.index.push(start + i);
     if (g !== geometry) g.dispose();
@@ -52,9 +53,10 @@ export class GeoBuilder {
   /**
    * Append a quad from four corners, wound a->b->c->d.
    * `locals` are per-corner tile UVs, used by the terrain grid-line shader;
-   * `shades` are per-corner colour multipliers, used for corner AO.
+   * `shades` are per-corner colour multipliers, used for corner AO. `shore`
+   * carries per-corner proximity to a sand/water boundary for terrain only.
    */
-  addQuad(a, b, c, d, color, { locals, baseY = 0, water = 0, normal, shades } = {}) {
+  addQuad(a, b, c, d, color, { locals, baseY = 0, water = 0, shore, normal, shades } = {}) {
     const nrm = normal ?? computeNormal(a, b, c);
     const col = new THREE.Color(color);
     const start = this.vertexCount;
@@ -67,12 +69,13 @@ export class GeoBuilder {
       this.local.push(uv[i][0], uv[i][1]);
       this.baseY.push(baseY);
       this.water.push(water);
+      this.shore.push(shore?.[i] ?? 0);
     }
     this.index.push(start, start + 1, start + 2, start, start + 2, start + 3);
     return this;
   }
 
-  build() {
+  build({ shore = false } = {}) {
     const g = new THREE.BufferGeometry();
     g.setAttribute('position', new THREE.Float32BufferAttribute(this.pos, 3));
     g.setAttribute('normal', new THREE.Float32BufferAttribute(this.norm, 3));
@@ -80,6 +83,9 @@ export class GeoBuilder {
     g.setAttribute('aLocal', new THREE.Float32BufferAttribute(this.local, 2));
     g.setAttribute('aBaseY', new THREE.Float32BufferAttribute(this.baseY, 1));
     g.setAttribute('aWater', new THREE.Float32BufferAttribute(this.water, 1));
+    // Only Terrain's material consumes this. Keeping it off prop geometries
+    // avoids paying a permanent GPU attribute for a temporary builder feature.
+    if (shore) g.setAttribute('aShore', new THREE.Float32BufferAttribute(this.shore, 1));
     g.setIndex(this.index);
     g.computeBoundingSphere();
     return g;

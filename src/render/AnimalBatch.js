@@ -10,11 +10,11 @@
  *
  * WHY THE MESH IS NOT BAKED INTO props.js
  * ---------------------------------------
- * Every static prop in a place merges into a handful of world-space geometries,
- * which is what makes a town a few draw calls. That trick works precisely
- * because the vertices never move. An animal does, so it needs its own node --
- * but the GEOMETRY is still built once per species and shared by every instance,
- * so a yard of chickens is one geometry, one material, and a matrix each.
+ * Every static prop in a place merges into a handful of world-space geometries.
+ * Animals cannot be baked because they move, but sharing geometry between Mesh
+ * nodes was not enough: it still submitted body + head once per animal and once
+ * again to the shadow pass. Each species now has two InstancedMeshes, preserving
+ * articulation while submitting the whole flock in two draws per pass.
  *
  * The head is a separate node rather than part of the body, because the head is
  * the whole performance: a chicken's walk is a head thrust, and its idle is a
@@ -102,59 +102,83 @@ function modelFor(typeId) {
   return m;
 }
 
-export class AnimalView {
-  constructor(typeId) {
-    const m = modelFor(typeId);
+export class AnimalBatch {
+  constructor(animals) {
+    this.group = new THREE.Group();
+    this.batches = [];
 
-    // Same node order as the player, and it matters for the same reason: tilt
-    // is a CAMERA-space rotation and must sit outside the WORLD-space facing,
-    // or the animal keels over sideways when it runs east.
-    this.root = new THREE.Group();
-    this.tilt = new THREE.Group();
-    this.yawG = new THREE.Group();
-    this.bob = new THREE.Group();
-    this.neck = new THREE.Group();
-    this.root.add(this.tilt);
-    this.tilt.add(this.yawG);
-    this.yawG.add(this.bob);
-    this.bob.add(this.neck);
+    const byType = new Map();
+    for (const animal of animals) {
+      let members = byType.get(animal.typeId);
+      if (!members) byType.set(animal.typeId, (members = []));
+      members.push(animal);
+    }
+    for (const [typeId, members] of byType) {
+      const model = modelFor(typeId);
+      const body = this.#mesh(model.body, model.material, members.length, `${typeId}:body`);
+      const head = this.#mesh(model.head, model.material, members.length, `${typeId}:head`);
+      this.group.add(body, head);
+      this.batches.push({ members, model, body, head });
+    }
 
-    const bodyMesh = new THREE.Mesh(m.body, m.material);
-    const headMesh = new THREE.Mesh(m.head, m.material);
-    bodyMesh.castShadow = headMesh.castShadow = true;
-    this.bob.add(bodyMesh);
-    this.neck.add(headMesh);
-    this.neck.position.set(0, m.neckY, m.neckZ);
-    this._rest = this.neck.position.clone();
+    this._position = new THREE.Vector3();
+    this._scale = new THREE.Vector3(1, 1, 1);
+    this._rotation = new THREE.Quaternion();
+    this._euler = new THREE.Euler();
+    this._root = new THREE.Matrix4();
+    this._tilt = new THREE.Matrix4();
+    this._yaw = new THREE.Matrix4();
+    this._bob = new THREE.Matrix4();
+    this._body = new THREE.Matrix4();
+    this._neck = new THREE.Matrix4();
+    this._head = new THREE.Matrix4();
   }
 
-  /**
-   * @param {Animal} animal
-   * @param {number} t         eased morph amount
-   * @param {number} tiltRad   how far the camera has pitched from its 3D angle
-   */
-  update(animal, t, tiltRad) {
-    this.root.position.set(animal.x, animal.y, animal.z);
-    this.yawG.rotation.y = animal.yaw;
-    this.tilt.rotation.x = tiltRad * t;
+  update(t, tiltRad) {
+    this._tilt.makeRotationX(tiltRad * t);
+    for (const { members, model, body, head } of this.batches) {
+      for (let i = 0; i < members.length; i++) {
+        const animal = members[i];
+        const running = animal.speed > 0.2;
+        const stride = Math.sin(animal.walkPhase);
+        const peck = animal.peck;
 
-    const running = animal.speed > 0.2;
-    const stride = Math.sin(animal.walkPhase);
+        this._root.makeTranslation(animal.x, animal.y, animal.z);
+        this._yaw.makeRotationY(animal.yaw);
+        this._position.set(0, running ? Math.abs(stride) * 0.035 : 0, 0);
+        this._euler.set(running ? 0.16 : 0, 0, running ? stride * 0.09 : 0);
+        this._rotation.setFromEuler(this._euler);
+        this._bob.compose(this._position, this._rotation, this._scale);
 
-    this.bob.position.y = running ? Math.abs(stride) * 0.035 : 0;
-    this.bob.rotation.z = running ? stride * 0.09 : 0;
-    // Nose-down while sprinting: a running chicken leans into it.
-    this.bob.rotation.x = running ? 0.16 : 0;
+        // root * camera-space tilt * world yaw * gait, matching the former
+        // Object3D hierarchy exactly without retaining five nodes per animal.
+        this._body.copy(this._root).multiply(this._tilt).multiply(this._yaw).multiply(this._bob);
+        body.setMatrixAt(i, this._body);
 
-    // The head thrusts fore and aft against the stride while running, and dips
-    // to the ground when the behavior says it is pecking. Both drive the same
-    // node, so the two can never fight over the head.
-    const peck = animal.peck;
-    // Nearly all of the peck is ROTATION about the neck joint, with only a
-    // little drop. Translating the head down to the ground instead tears it off
-    // the body: the neck is short, and the gap is the first thing you see.
-    this.neck.position.z = this._rest.z + (running ? stride * 0.035 : 0) + peck * 0.02;
-    this.neck.position.y = this._rest.y - peck * 0.05;
-    this.neck.rotation.x = peck * 1.45 - (running ? 0.12 : 0);
+        this._position.set(
+          0,
+          model.neckY - peck * 0.05,
+          model.neckZ + (running ? stride * 0.035 : 0) + peck * 0.02,
+        );
+        this._rotation.setFromAxisAngle(_X_AXIS, peck * 1.45 - (running ? 0.12 : 0));
+        this._neck.compose(this._position, this._rotation, this._scale);
+        this._head.copy(this._body).multiply(this._neck);
+        head.setMatrixAt(i, this._head);
+      }
+      body.instanceMatrix.needsUpdate = true;
+      head.instanceMatrix.needsUpdate = true;
+    }
+  }
+
+  #mesh(geometry, material, count, name) {
+    const mesh = new THREE.InstancedMesh(geometry, material, Math.max(1, count));
+    mesh.count = count;
+    mesh.name = `fauna:${name}`;
+    mesh.castShadow = true;
+    mesh.frustumCulled = false;
+    mesh.instanceMatrix.setUsage(THREE.DynamicDrawUsage);
+    return mesh;
   }
 }
+
+const _X_AXIS = new THREE.Vector3(1, 0, 0);

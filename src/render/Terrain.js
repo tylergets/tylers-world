@@ -36,6 +36,9 @@ const SKIRT_Y = { exterior: -6, interior: -0.7 };
 /** How dark a fully-occluded terrain corner gets. */
 const AO_STRENGTH = 0.55;
 
+/** Shared by every cached terrain material, so changing the preference is free. */
+export const shorelineBlendUniform = { value: 1 };
+
 /** Elevation (in steps) of one corner of a tile. Ramps lift two of their four. */
 function cornerElev(world, x, z, cx, cz) {
   const e = world.elevationAt(x, z);
@@ -95,6 +98,29 @@ function tileColor(surface, x, z, elevation) {
   return _c.getHex();
 }
 
+/**
+ * Per-corner proximity to a sand/water edge, in NW, SW, SE, NE vertex order.
+ *
+ * Interpolation turns these four samples into a one-tile transition on each
+ * side of the boundary. Only sand and water participate: a pond touching grass
+ * remains a bank rather than pretending every wet edge is a beach.
+ */
+function shorelineCorners(world, x, z, surface) {
+  if (surface.name !== 'sand' && !surface.water) return [0, 0, 0, 0];
+
+  const opposite = (nx, nz) => {
+    if (!world.inBounds(nx, nz)) return false;
+    const neighbor = world.surfaceAt(nx, nz);
+    return surface.water ? neighbor.name === 'sand' : neighbor.water;
+  };
+  const north = opposite(x, z - 1) ? 1 : 0;
+  const south = opposite(x, z + 1) ? 1 : 0;
+  const west = opposite(x - 1, z) ? 1 : 0;
+  const east = opposite(x + 1, z) ? 1 : 0;
+  return [Math.max(north, west), Math.max(south, west),
+    Math.max(south, east), Math.max(north, east)];
+}
+
 export function buildTerrain(world) {
   const b = new GeoBuilder();
   const { width, height } = world;
@@ -120,6 +146,7 @@ export function buildTerrain(world) {
           1 - cornerAO(world, x, z, 1, 0) * AO_STRENGTH,
         ],
         water,
+        shore: shorelineCorners(world, x, z, surf),
       });
     }
   }
@@ -177,7 +204,7 @@ export function buildTerrain(world) {
     }
   }
 
-  const geometry = b.build();
+  const geometry = b.build({ shore: true });
   const material = terrainMaterial();
   const mesh = new THREE.Mesh(geometry, material);
   mesh.receiveShadow = true;
@@ -197,25 +224,31 @@ function terrainMaterial() {
   m.onBeforeCompile = (shader) => {
     shader.uniforms.uFlat = flatUniform;
     shader.uniforms.uTime = timeUniform;
+    shader.uniforms.uShorelineBlend = shorelineBlendUniform;
 
     shader.vertexShader = shader.vertexShader
       .replace('#include <common>', `#include <common>
         attribute vec2 aLocal;
         attribute float aWater;
+        attribute float aShore;
         varying vec2 vLocal;
         varying float vWater;
+        varying float vShore;
         varying vec2 vWorldXZ;`)
       .replace('#include <begin_vertex>', `#include <begin_vertex>
         vLocal = aLocal;
         vWater = aWater;
+        vShore = aShore;
         vWorldXZ = (modelMatrix * vec4(transformed, 1.0)).xz;`);
 
     shader.fragmentShader = shader.fragmentShader
       .replace('#include <common>', `#include <common>
         uniform float uFlat;
         uniform float uTime;
+        uniform float uShorelineBlend;
         varying vec2 vLocal;
         varying float vWater;
+        varying float vShore;
         varying vec2 vWorldXZ;`)
       .replace('#include <opaque_fragment>', `
         // Crossed travelling waves; cheap, and enough to keep water alive.
@@ -225,6 +258,26 @@ function terrainMaterial() {
 
         outgoingLight = mix(outgoingLight, diffuseColor.rgb * 1.04, uFlat);
 
+        // Natural shoreline. The interpolated proximity removes the hard
+        // one-colour boundary; world-space waves break up its tile-straight
+        // silhouette without textures or another draw call. Sand darkens as it
+        // gets wet, shallow water warms toward turquoise, and a thin animated
+        // foam line ties the two sides together. Applied after the flat-shading
+        // morph so it remains visible (but quieter) on the top-down map.
+        float shoreNoise = sin(vWorldXZ.x * 8.3 + vWorldXZ.y * 5.7)
+          * sin(vWorldXZ.x * 3.1 - vWorldXZ.y * 7.9) * 0.055;
+        float shore = smoothstep(0.08 + shoreNoise, 0.94 + shoreNoise, vShore);
+        float shorelineDetail = uShorelineBlend * (1.0 - uFlat * 0.62);
+        float wetSand = shore * (1.0 - vWater);
+        float shallows = shore * vWater;
+        outgoingLight = mix(outgoingLight, outgoingLight * vec3(0.66, 0.73, 0.70),
+          wetSand * 0.52 * shorelineDetail);
+        outgoingLight = mix(outgoingLight, vec3(0.33, 0.68, 0.72),
+          shallows * 0.34 * shorelineDetail);
+        float foamPulse = 0.72 + 0.28 * sin(uTime * 1.8 + vWorldXZ.x * 5.2 + vWorldXZ.y * 3.7);
+        float foam = smoothstep(0.76 + shoreNoise, 0.98, vShore) * vWater * foamPulse;
+        outgoingLight += vec3(0.30, 0.29, 0.24) * foam * shorelineDetail;
+
         // Tile grid: invisible in 3D, crisp in top-down. vLocal is 0.5 on wall
         // quads, which is far from any edge, so walls never get lines.
         float gEdge = min(min(vLocal.x, 1.0 - vLocal.x), min(vLocal.y, 1.0 - vLocal.y));
@@ -233,6 +286,6 @@ function terrainMaterial() {
 
         #include <opaque_fragment>`);
   };
-  m.customProgramCacheKey = () => 'terrain';
+  m.customProgramCacheKey = () => 'terrain-shoreline-v1';
   return m;
 }

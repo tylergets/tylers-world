@@ -119,6 +119,31 @@ export class Npc {
     this.behavior = this.props.roam ? makeBehavior('stroll', this) : null;
   }
 
+  /**
+   * What this person remembers, for a save file.
+   *
+   * His memory and his till, and nothing about where he is standing. That is
+   * deliberate: a roamer's position is somewhere he happens to have wandered
+   * to, not a fact worth writing down, and restoring one would drop him at a
+   * spot his Stroll had not planned a route out of. He starts back at his post
+   * on load and walks off again within a second, which is indistinguishable
+   * from never having stopped.
+   */
+  snapshot() {
+    return {
+      flags: [...this.memory.flags],
+      visits: this.memory.visits,
+      ...(this.shop ? { shop: this.shop.snapshot() } : {}),
+    };
+  }
+
+  restore(snap) {
+    if (!snap) return;
+    this.memory.flags = new Set(Array.isArray(snap.flags) ? snap.flags : []);
+    this.memory.visits = snap.visits | 0;
+    this.shop?.restore(snap.shop);
+  }
+
   get tileX() { return Math.floor(this.x); }
   get tileZ() { return Math.floor(this.z); }
 
