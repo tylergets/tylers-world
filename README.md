@@ -18,7 +18,9 @@ how you tell one world from another.
 switch view. `E` picks things up and talks to people; in a conversation, `↑↓`
 picks a line, `←→` switches between buying and selling, `Esc` walks away, and
 `M` cycles the NPC voice (babble / spoken / off). `Q` puts down what you are
-holding, `[` and `]` change which slot that is, and `F` uses it if it is a tool.
+holding; a furniture flat-pack is assembled on clear ground in front of you,
+facing the same direction. `[` and `]` change the held slot, and `F` uses it if
+it is a tool.
 `N` sizes the corner minimap — wide, close, the whole place, off — and clicking
 the map itself steps through the sizes without ever turning it off. It fades
 away on the way into the 2D view, where the whole screen is already that picture.
@@ -35,9 +37,11 @@ glint, whitecaps, depth, glitter and shallow-water caustics). Both are shader
 uniforms, so switching is instant and rebuilds nothing. Graphics preferences are
 remembered across worlds and save slots.
 
-Every world has a shopkeeper and two or three neighbours who walk around during
-the day. Their conversations, the shop's prices and its stock are all data in
-the world file — see [`docs/WORLD_FORMAT.md`](docs/WORLD_FORMAT.md).
+Every world has a general store, the Turnip & Timber furniture shop, and two or
+three neighbours who walk around during the day. Turnip & Timber puts four of
+its eight pieces on sale each morning. Conversations, prices, permanent stock
+and daily catalogs are all data in the world file - see
+[`docs/WORLD_FORMAT.md`](docs/WORLD_FORMAT.md).
 
 **The eight worlds** — *Meadowbrook*, an island with a bluff over the town;
 *Sourwood Holler*, a valley with a creek in the bottom; *Tidewrack Atoll*, a

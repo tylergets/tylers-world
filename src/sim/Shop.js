@@ -59,10 +59,9 @@ export class Shop {
     this.seed = seed;
     this.day = null;
     this.stock = this.daily ? [] : this.catalog.map((row) => ({ ...row }));
-    if (this.daily) this.refresh(1);
-
     /** Bumped on every trade, so the UI can redraw only when something moved. */
     this.version = 0;
+    if (this.daily) this.refresh(1);
   }
 
   /** What the shop is offering, sold-out rows included. */

@@ -59,6 +59,7 @@ import { Keyboard } from './sim/Keyboard.js';
 import { yawFromVec } from './core/constants.js';
 import { Hud } from './ui/hud.js';
 import { WorldsPanel } from './ui/worlds.js';
+import { TitleScreen } from './ui/title.js';
 import { Chat } from './ui/dialogue.js';
 import { MapScreen } from './ui/mapscreen.js';
 import { PhotoView } from './ui/photo.js';
@@ -779,29 +780,17 @@ class Game {
   }
 
   /**
-   * Start one of the four things the picker offers.
+   * Start one of the things a picker offers.
+   *
+   * The world itself is built by `buildChoice`, which the title screen also
+   * calls -- the two pickers have to agree about what "random island, seed
+   * 4821" means down to the last tree, or the same row in two menus would give
+   * you two different places.
    *
    * @param {object} choice  `{ kind: 'file', starter }` or `{ kind: 'seed', form, seed }`
    */
   async startWorld(choice) {
-    let world, source, name;
-
-    if (choice.kind === 'seed') {
-      // Two frames of breathing room before a second of solid arithmetic. The
-      // generator blocks the main thread, so without this the panel's
-      // "Building..." is painted after the world it was announcing is finished.
-      await new Promise((done) => requestAnimationFrame(() => requestAnimationFrame(done)));
-      const built = generate({ form: choice.form, seed: choice.seed });
-      source = { kind: 'seed', form: built.form, seed: built.seed, name: built.name };
-      name = built.name;
-      world = this.places.put(Game.genUrl(built.id), built.data);
-    } else {
-      const starter = STARTERS.find((st) => st.id === choice.starter) ?? STARTERS[0];
-      source = { kind: 'file', url: starter.url };
-      name = starter.name;
-      world = await this.places.get(starter.url);
-    }
-
+    const { world, source, name } = await buildChoice(this.places, choice);
     this.beginSession(world, { source, saveId: newSaveId(), name });
     setSessionSaveId(this.saveId);
     this.saveNow();
@@ -2269,54 +2258,42 @@ function readVoiceMode() {
   } catch { /* private mode */ }
   return VOICE_MODES[0];
 }
+/**
+ * Two frames of breathing room.
+ *
+ * Generating an island is a second of solid arithmetic on the main thread, so
+ * a picker that says "Building..." and then starts work in the same task
+ * paints the label after the world it was announcing is finished. Yielding
+ * twice guarantees the words are on the glass first.
+ */
+const twoFrames = () =>
+  new Promise((done) => requestAnimationFrame(() => requestAnimationFrame(done)));
 
 /**
- * Which game this tab should open.
+ * The world a picker choice names, and how a save should describe it.
  *
- * The session's own save comes first, so closing the tab and coming back is
- * indistinguishable from never having left -- which is the whole reason the
- * autosave exists.
+ * Shared by `Game.startWorld` and by the title screen, because the two pickers
+ * offer the same rows: "random island, seed 4821" has to mean the same island
+ * down to the last tree whichever menu you clicked it in.
  *
- * `?world=` OUTRANKS IT, and deliberately: it is the escape hatch. A save that
- * somehow will not open, or a generated world you want out of, has to be
- * answerable with a URL you can type, or the only fix for a bad save is
- * clearing site data.
- *
- * A save that fails to resume is reported and stepped over rather than thrown.
- * The player gets Meadowbrook and a console line, which is a game; the
- * alternative is a start screen that says something went wrong, which is not.
+ * @param {object} choice  `{ kind: 'file', starter }` or `{ kind: 'seed', form, seed }`
  */
-async function openingGame(places, canvas, hudRoot, fadeEl, status) {
-  const asked = new URLSearchParams(location.search).get('world');
-  const saved = asked ? null : readSave(sessionSaveId());
-
-  if (saved) {
-    try {
-      status.textContent = `Loading ${saved.name}\u2026`;
-      // Built from the save's own world, so the Game is never briefly standing
-      // in a Meadowbrook it is about to throw away -- `new Game` spawns the
-      // player, builds the Folk of wherever it lands, and runs a trespass check.
-      const game = new Game(places, await gameWorld(places, saved.source), canvas, hudRoot, fadeEl);
-      await game.loadSave(saved.id);
-      return game;
-    } catch (err) {
-      console.error('could not resume the last save; starting fresh:', err);
-      places.clear();
-    }
+async function buildChoice(places, choice) {
+  if (choice.kind === 'seed') {
+    await twoFrames();
+    const built = generate({ form: choice.form, seed: choice.seed });
+    return {
+      world: places.put(Game.genUrl(built.id), built.data),
+      source: { kind: 'seed', form: built.form, seed: built.seed, name: built.name },
+      name: built.name,
+    };
   }
-
-  status.textContent = 'Loading Meadowbrook\u2026';
-  const url = asked ? `worlds/${asked}.json` : STARTERS[0].url;
-  const world = await places.get(url);
-  const game = new Game(places, world, canvas, hudRoot, fadeEl);
-  game.beginSession(world, {
-    source: { kind: 'file', url },
-    saveId: newSaveId(),
-    name: world.meta.name ?? 'World',
-  });
-  setSessionSaveId(game.saveId);
-  game.saveNow();
-  return game;
+  const starter = STARTERS.find((st) => st.id === choice.starter) ?? STARTERS[0];
+  return {
+    world: await places.get(starter.url),
+    source: { kind: 'file', url: starter.url },
+    name: starter.name,
+  };
 }
 
 /**
@@ -2334,17 +2311,96 @@ function gameWorld(places, source) {
   return places.get(source?.url ?? STARTERS[0].url);
 }
 
+/**
+ * The three ways a Game comes into existence.
+ *
+ * All of them end with `beginSession` or `loadSave`, which is what makes them
+ * three ways rather than three games: every route into a world goes through
+ * one of those two, so nothing downstream has to know which door was used.
+ */
+
+/** A world nobody has played yet, with a save slot opened for it. */
+async function newGame(hold, choice) {
+  const { world, source, name } = await buildChoice(hold.places, choice);
+  const game = new Game(hold.places, world, hold.canvas, hold.hudRoot, hold.fadeEl);
+  game.beginSession(world, { source, saveId: newSaveId(), name });
+  setSessionSaveId(game.saveId);
+  game.saveNow();
+  return game;
+}
+
+/** A game picked back up from a snapshot. */
+async function resumedGame(hold, snap) {
+  // Built from the save's own world, so the Game is never briefly standing in
+  // a Meadowbrook it is about to throw away -- `new Game` spawns the player,
+  // builds the Folk of wherever it lands, and runs a trespass check.
+  const world = await gameWorld(hold.places, snap.source);
+  const game = new Game(hold.places, world, hold.canvas, hold.hudRoot, hold.fadeEl);
+  await game.loadSave(snap.id);
+  return game;
+}
+
+/**
+ * A world named in the URL, loaded by file name rather than by starter id.
+ *
+ * Deliberately not restricted to the shipped eight: this is how you open a
+ * world file you dropped in `public/worlds/` without editing a list first.
+ */
+async function askedGame(hold, name) {
+  const url = `worlds/${name}.json`;
+  const world = await hold.places.get(url);
+  const game = new Game(hold.places, world, hold.canvas, hold.hudRoot, hold.fadeEl);
+  game.beginSession(world, {
+    source: { kind: 'file', url },
+    saveId: newSaveId(),
+    name: world.meta.name ?? 'World',
+  });
+  setSessionSaveId(game.saveId);
+  game.saveNow();
+  return game;
+}
+
+/**
+ * Whether the URL says to walk straight past the title screen, and into what.
+ *
+ * TWO DOORS, both of which existed for a reason before the menu did.
+ *
+ * `?world=` is the ESCAPE HATCH. A save that somehow will not open, or a
+ * generated world you want out of, has to be answerable with a URL you can
+ * type -- otherwise the only fix for a bad save is clearing site data. It
+ * outranks everything, including the session's own save.
+ *
+ * `?play` is the same door for the harnesses in `tools/`, which want a running
+ * game rather than a menu and cannot click a button. It opens whatever the
+ * title screen would have offered first: the session's save, or Meadowbrook.
+ *
+ * Returns null when the URL asks for nothing, which is the ordinary case and
+ * the one that gets a title screen.
+ */
+function directGame(hold, params, resume) {
+  const asked = params.get('world');
+  if (asked) return () => askedGame(hold, asked);
+  if (!params.has('play')) return null;
+  return () => (resume
+    ? resumedGame(hold, resume)
+    : newGame(hold, { kind: 'file', starter: STARTERS[0].id }));
+}
+
 async function boot() {
-  const canvas = document.getElementById('view');
-  const hudRoot = document.getElementById('hud');
-  const status = document.getElementById('status');
-  const fadeEl = document.getElementById('fade');
+  // Everything a Game needs that is not a world. Held together because all
+  // three constructors below want the same four things, and threading them
+  // one at a time through five call sites is how a canvas ends up in the
+  // wrong argument slot.
+  const hold = {
+    places: new Places(),
+    canvas: document.getElementById('view'),
+    hudRoot: document.getElementById('hud'),
+    fadeEl: document.getElementById('fade'),
+  };
 
-  try {
-    const places = new Places();
-    const game = await openingGame(places, canvas, hudRoot, fadeEl, status);
+  /** Hand a freshly built game the loop, the tab's lifecycle, and the window. */
+  const play = (game) => {
     game.start();
-
     // The last write, and the one that matters most: everything since the last
     // autosave is in here. `pagehide` rather than `beforeunload` because a
     // phone backgrounding the tab never fires the latter, and `visibilitychange`
@@ -2353,15 +2409,69 @@ async function boot() {
     addEventListener('visibilitychange', () => {
       if (document.visibilityState === 'hidden') game.saveNow();
     });
-
-    status.remove();
     // Handles for the screenshot harness and for poking at things in devtools.
     window.__game = game;
     window.__ready = true;
-  } catch (err) {
-    status.innerHTML = `<div class="err"><b>Could not start</b><pre>${err.message}</pre></div>`;
-    console.error(err);
+    return game;
+  };
+
+  const params = new URLSearchParams(location.search);
+  /** The save this tab would carry on from, re-read whenever the list changes. */
+  let resume = readSave(sessionSaveId());
+
+  const title = new TitleScreen(document.getElementById('title'), {
+    onContinue: async () => play(await resumedGame(hold, resume)),
+    onLoad: async (id) => {
+      const snap = readSave(id);
+      if (!snap) throw new Error('that save could not be read');
+      return play(await resumedGame(hold, snap));
+    },
+    onStart: async (choice) => play(await newGame(hold, choice)),
+    onDelete: (id) => { deleteSave(id); menu(); },
+  });
+
+  /** Redraw the menu from storage. The only thing that reads it for the title. */
+  function menu() {
+    resume = readSave(sessionSaveId());
+    title.present({
+      resume: resume && {
+        id: resume.id,
+        name: resume.name,
+        place: resume.at?.label ?? null,
+        savedAt: resume.savedAt,
+      },
+      saves: listSaves(),
+    });
   }
+
+  const direct = directGame(hold, params, resume);
+  if (direct) {
+    // No menu to fail into, so a failure here is reported where the menu would
+    // have been -- which is the only text on the screen either way.
+    title.say('Loading…');
+    try {
+      play(await direct());
+      title.dismiss();
+    } catch (err) {
+      console.error(err);
+      title.fail(`Could not start: ${err.message}`);
+    }
+    return;
+  }
+
+  menu();
+
+  // Warm the world behind Continue while the dawn is still coming up, so the
+  // most likely button is the fastest one.
+  //
+  // FILES ONLY, and that restriction is the whole care in this line: rebuilding
+  // a generated island blocks the main thread for about a second, and spending
+  // that speculatively would freeze the one animation that exists to make
+  // waiting bearable. A generated save pays its second when it is actually
+  // chosen, behind a menu that has already said what it is doing.
+  const warm = resume?.source?.kind === 'file' ? resume.source.url
+    : resume ? null : STARTERS[0].url;
+  if (warm) hold.places.get(warm).catch(() => { /* the menu will report it */ });
 }
 
 boot();

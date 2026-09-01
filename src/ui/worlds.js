@@ -24,20 +24,8 @@
  * reason.
  */
 
-import { FORMS, randomSeed, worldName } from '../world/generate.js';
-import { STARTERS } from '../sim/Save.js';
-
-/** "2 min ago", and so on. Precision nobody needs is precision nobody reads. */
-function ago(then) {
-  const s = Math.max(0, (Date.now() - then) / 1000);
-  if (s < 90) return 'just now';
-  const m = s / 60;
-  if (m < 60) return `${Math.round(m)} min ago`;
-  const h = m / 60;
-  if (h < 24) return `${Math.round(h)}h ago`;
-  const d = h / 24;
-  return d < 7 ? `${Math.round(d)}d ago` : new Date(then).toLocaleDateString();
-}
+import { randomSeed, worldName } from '../world/generate.js';
+import { worldChoices, formOf, choiceSource, ago } from './picks.js';
 
 export class WorldsPanel {
   /**
@@ -48,7 +36,7 @@ export class WorldsPanel {
   constructor(root, { onStart, onLoad, onDelete, onSave }) {
     this.hooks = { onStart, onLoad, onDelete, onSave };
     /** The selected new-world choice: a starter id, or `gen:<form>`. */
-    this.choice = STARTERS[0].id;
+    this.choice = worldChoices()[0].id;
     this.seed = randomSeed();
     this.busy = false;
 
@@ -151,10 +139,7 @@ export class WorldsPanel {
    * reflow under the pointer mid-click.
    */
   #buildChoices() {
-    const rows = [
-      ...STARTERS.map((s) => ({ id: s.id, name: s.name, note: s.note })),
-      ...FORMS.map((f) => ({ id: `gen:${f.id}`, name: `Random ${f.label.toLowerCase()}`, note: f.note })),
-    ];
+    const rows = worldChoices();
     this.choices.innerHTML = rows.map((r) => `
       <button class="pick${r.id === this.choice ? ' on' : ''}" data-choice="${r.id}">
         <span class="pick-body">
@@ -202,9 +187,7 @@ export class WorldsPanel {
   }
 
   /** The generated form currently selected, or null for a shipped starter. */
-  #form() {
-    return this.choice.startsWith('gen:') ? this.choice.slice(4) : null;
-  }
+  #form() { return formOf(this.choice); }
 
   /** Say what Start would produce, and show the seed box only if it matters. */
   #describe() {
@@ -212,7 +195,7 @@ export class WorldsPanel {
     this.seedRow.hidden = !form;
     this.note.classList.remove('bad');
     if (!form) {
-      const starter = STARTERS.find((s) => s.id === this.choice);
+      const starter = worldChoices().find((c) => c.id === this.choice);
       this.note.textContent = `Starts ${starter?.name ?? 'a world'} from the beginning.`;
       return;
     }
@@ -253,8 +236,7 @@ export class WorldsPanel {
       this.note.classList.remove('bad');
       this.note.textContent = `Building "${worldName(form, this.seed)}"...`;
     }
-    this.#run(() => this.hooks.onStart(
-      form ? { kind: 'seed', form, seed: this.seed } : { kind: 'file', starter: this.choice }));
+    this.#run(() => this.hooks.onStart(choiceSource(this.choice, this.seed)));
   }
 
   async #save() {

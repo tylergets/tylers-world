@@ -202,6 +202,7 @@ place that decides).
   "markup": 1.5,          // what she charges, x the item's value
   "buyRate": 0.5,         // what she pays, x the item's value
   "takes": ["item.stick"],// what she will buy at all; omit for "anything"
+  "daily": 2,             // optional: offer this many randomly chosen rows per day
   "stock": [
     { "type": "item.apple", "count": null },            // unlimited shelf
     { "type": "item.shell", "count": 1, "price": 70 }   // one, at a fixed price
@@ -213,9 +214,10 @@ Prices are **rates against the item's `value`** (`src/world/itemTypes.js`),
 never a table. So adding a pear to the game cannot leave a shopkeeper with no
 opinion about pears, and a per-entry `price` is only for the thing in the
 corner that is dearer than it looks. Stock is *live state* from the moment the
-place opens: sell out of shells and they stay sold out until the session ends,
-because the game caches a place's people exactly as it caches its animals and
-its floor items.
+place opens. Without `daily`, sold-out rows stay sold out. With `daily`, `stock`
+is the catalog and exactly that many distinct rows are chosen from it each
+in-game day. The choice is seeded by NPC id and day, so reloading cannot reroll
+the shelf; counts and sold-out rows survive saves until the next dawn.
 
 ### `npcs[].dialog`
 
