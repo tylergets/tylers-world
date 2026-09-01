@@ -115,6 +115,16 @@ function flower(p) {
   return g;
 }
 
+/** Flat-packed furniture: tied paper with a colour mark naming what is inside. */
+function furniture(p) {
+  const g = new GeoBuilder();
+  g.addGeometry(BOX, trs(0, 0.065, 0, 0, 0.25, 0, 0.25, 0.1, 0.19), p.wrap);
+  g.addGeometry(BOX, trs(-0.035, 0.12, 0.015, 0, 0.25, 0, 0.15, 0.015, 0.1), p.wrapHi);
+  g.addGeometry(BOX, trs(0, 0.122, 0, 0, 0.25, 0, 0.035, 0.018, 0.2), p.strap);
+  g.addGeometry(BOX, trs(0.07, 0.132, 0.025, 0, 0.25, 0, 0.055, 0.012, 0.055), p.mark);
+  return g;
+}
+
 /**
  * The tools, which are the only items authored to be READ as tools rather than
  * as produce: a haft along one axis and a head across it, so the silhouette
@@ -162,12 +172,186 @@ function gun(p) {
   return g;
 }
 
+/**
+ * A pickaxe: the axe's silhouette turned through ninety degrees.
+ *
+ * The head runs ALONG the haft rather than across it, which is the one shape
+ * difference that survives the overhead read -- an axe is a T from above and a
+ * pick is a cross with a long bar, and at one pixel per tile that is the whole
+ * of how you tell them apart in the bag.
+ */
+function pickaxe(p) {
+  const g = new GeoBuilder();
+  g.addGeometry(CYL, trs(-0.02, 0.035, 0, 0, 0.35, Math.PI / 2, 0.021, 0.34, 0.021), p.haft);
+  g.addGeometry(CYL, trs(-0.12, 0.045, -0.036, 0, 0.35, Math.PI / 2, 0.016, 0.08, 0.016), p.haftHi);
+  // The bar, across the haft's far end and long in the direction the haft runs.
+  g.addGeometry(BOX, trs(0.13, 0.06, 0.05, 0, 0.35, 0, 0.145, 0.028, 0.036), p.head);
+  g.addGeometry(BOX, trs(0.235, 0.06, 0.088, 0, 0.35, 0, 0.05, 0.02, 0.026), p.edge);
+  g.addGeometry(BOX, trs(0.025, 0.06, 0.012, 0, 0.35, 0, 0.05, 0.02, 0.026), p.edge);
+  g.addGeometry(BOX, trs(0.115, 0.055, 0.043, 0, 0.35, 0, 0.036, 0.05, 0.05), p.band);
+  return g;
+}
+
+/** A hammer: a short haft and a blunt block of a head. */
+function hammer(p) {
+  const g = new GeoBuilder();
+  g.addGeometry(CYL, trs(-0.04, 0.035, 0, 0, 0.3, Math.PI / 2, 0.021, 0.28, 0.021), p.haft);
+  g.addGeometry(CYL, trs(-0.14, 0.043, -0.03, 0, 0.3, Math.PI / 2, 0.026, 0.07, 0.026), p.haftHi);
+  g.addGeometry(BOX, trs(0.12, 0.055, 0.038, 0, 0.3, 0, 0.06, 0.055, 0.11), p.head);
+  g.addGeometry(BOX, trs(0.16, 0.055, 0.05, 0, 0.3, 0, 0.025, 0.045, 0.09), p.headHi);
+  g.addGeometry(BOX, trs(0.07, 0.05, 0.022, 0, 0.3, 0, 0.028, 0.048, 0.055), p.band);
+  return g;
+}
+
+/**
+ * A sword: one long pale blade, a bar across it, a short dark grip.
+ *
+ * The guard is doing all the work from overhead. Without it a sword and a stick
+ * are the same line; the crossbar is the one pixel that says which end you hold.
+ */
+function sword(p) {
+  const g = new GeoBuilder();
+  g.addGeometry(BOX, trs(0.08, 0.028, 0.03, 0, 0.32, 0, 0.24, 0.018, 0.032), p.blade);
+  g.addGeometry(BOX, trs(0.1, 0.04, 0.034, 0, 0.32, 0, 0.2, 0.012, 0.016), p.edge);
+  g.addGeometry(BOX, trs(-0.17, 0.03, -0.055, 0, 0.32, 0, 0.02, 0.02, 0.095), p.guard);
+  g.addGeometry(CYL, trs(-0.235, 0.03, -0.077, 0, 0.32, Math.PI / 2, 0.019, 0.1, 0.019), p.grip);
+  g.addGeometry(ROUND, trs(-0.29, 0.03, -0.095, 0, 0, 0, 0.028, 0.026, 0.028), p.pommel);
+  return g;
+}
+
+/** A machine gun: the gun's shape again, longer, darker, with a magazine under it. */
+function machinegun(p) {
+  const g = new GeoBuilder();
+  g.addGeometry(BOX, trs(-0.13, 0.038, 0, 0, 0.2, 0, 0.15, 0.05, 0.05), p.stock);
+  g.addGeometry(BOX, trs(-0.19, 0.055, 0.012, 0, 0.2, 0, 0.06, 0.03, 0.036), p.stockHi);
+  g.addGeometry(CYL, trs(0.12, 0.045, 0, 0, 0.2, Math.PI / 2, 0.021, 0.36, 0.021), p.barrel);
+  g.addGeometry(CYL, trs(0.12, 0.06, 0.016, 0, 0.2, Math.PI / 2, 0.011, 0.34, 0.011), p.barrelHi);
+  g.addGeometry(BOX, trs(-0.03, 0.045, 0, 0, 0.2, 0, 0.04, 0.052, 0.05), p.band);
+  // The magazine, hanging below the receiver: the one part no other long thing
+  // in the bag has, and therefore the part that names it from any angle.
+  g.addGeometry(BOX, trs(-0.05, 0.022, -0.012, 0, 0.2, 0.22, 0.03, 0.05, 0.045), p.band);
+  return g;
+}
+
+/**
+ * A folded map: a pale sheet with ink on it and a rolled edge.
+ *
+ * Lying flat, unlike every other tool here, and that IS the read: from overhead
+ * it is the only pale rectangle in the bag, and from the 3D camera the roll
+ * along one side is what stops it looking like a dropped card.
+ */
+function mapsheet(p) {
+  const g = new GeoBuilder();
+  g.addGeometry(BOX, trs(0, 0.018, 0, 0, 0.24, 0, 0.15, 0.016, 0.115), p.paper);
+  g.addGeometry(BOX, trs(0.02, 0.03, 0.015, 0, 0.24, 0, 0.1, 0.008, 0.075), p.paperHi);
+  // A coastline and a cross on it. Two boxes, and enough at this size.
+  g.addGeometry(BOX, trs(-0.02, 0.037, -0.01, 0, 0.6, 0, 0.085, 0.006, 0.012), p.ink);
+  g.addGeometry(BOX, trs(0.05, 0.037, 0.035, 0, -0.3, 0, 0.028, 0.006, 0.01), p.mark);
+  g.addGeometry(CYL, trs(-0.005, 0.028, -0.085, 0, 0.24, Math.PI / 2, 0.026, 0.14, 0.026), p.roll);
+  return g;
+}
+
+/** A camera: a dark box with a bright lens on the front and a red shutter button. */
+function camera(p) {
+  const g = new GeoBuilder();
+  g.addGeometry(BOX, trs(0, 0.06, 0, 0, 0.18, 0, 0.15, 0.09, 0.09), p.body);
+  g.addGeometry(BOX, trs(0, 0.108, 0.005, 0, 0.18, 0, 0.1, 0.02, 0.06), p.bodyHi);
+  g.addGeometry(CYL, trs(0, 0.058, 0.055, Math.PI / 2, 0, 0, 0.045, 0.05, 0.045), p.lens);
+  g.addGeometry(CYL, trs(0, 0.058, 0.08, Math.PI / 2, 0, 0, 0.03, 0.02, 0.03), p.glass);
+  g.addGeometry(CYL, trs(-0.045, 0.12, -0.01, 0, 0, 0, 0.016, 0.02, 0.016), p.shutter);
+  return g;
+}
+
+/**
+ * A flashlight: a dark barrel with a pale lens at one end.
+ *
+ * Lying down like the other long tools. The lens is the brightest thing on it
+ * on purpose -- it is the end that matters, and it is what tells you which way
+ * the thing is pointing when it is on the grass in the dark.
+ */
+function torch(p) {
+  const g = new GeoBuilder();
+  g.addGeometry(CYL, trs(-0.03, 0.04, 0, 0, 0.28, Math.PI / 2, 0.04, 0.24, 0.04), p.body);
+  g.addGeometry(CYL, trs(-0.06, 0.055, -0.02, 0, 0.28, Math.PI / 2, 0.026, 0.1, 0.026), p.bodyHi);
+  g.addGeometry(CYL, trs(0.12, 0.045, 0.035, 0, 0.28, Math.PI / 2, 0.055, 0.06, 0.055), p.ring);
+  g.addGeometry(CYL, trs(0.15, 0.045, 0.044, 0, 0.28, Math.PI / 2, 0.042, 0.02, 0.042), p.lens);
+  g.addGeometry(CYL, trs(-0.16, 0.04, -0.05, 0, 0.28, Math.PI / 2, 0.03, 0.03, 0.03), p.cap);
+  return g;
+}
+
 /** A box of shot: brass cases stood together, with one red wad on top. */
 function shot(p) {
   const g = new GeoBuilder();
   g.addGeometry(BOX, trs(0, 0.045, 0, 0, 0.3, 0, 0.1, 0.045, 0.075), p.brass);
   g.addGeometry(BOX, trs(0.012, 0.072, 0.01, 0, 0.3, 0, 0.07, 0.02, 0.05), p.brassHi);
   g.addGeometry(CYL, trs(-0.03, 0.095, -0.012, 0, 0.3, 0, 0.018, 0.04, 0.018), p.wad);
+  return g;
+}
+
+/**
+ * A rod: a long taper lying down, with the butt end thick and the tip thin.
+ *
+ * Lying like the other long tools, and the hardest of them to tell apart from
+ * overhead, where a rod and a stick are both a line. Three things separate
+ * them: it is half again as long as anything else in the bag, the reel is a
+ * disc standing off the side of it a third of the way up -- a shape nothing
+ * else here makes -- and the line runs from that disc to the tip, which reads
+ * as a bright hairline the eye follows all the way out.
+ */
+function rod(p) {
+  const g = new GeoBuilder();
+  // The pole, in two lengths: a butt section and a thinner tip, because one
+  // even cylinder reads as a broom handle.
+  g.addGeometry(CYL, trs(-0.11, 0.035, -0.02, 0, 0.22, Math.PI / 2, 0.019, 0.24, 0.019), p.pole);
+  g.addGeometry(CYL, trs(0.13, 0.035, 0.035, 0, 0.22, Math.PI / 2, 0.011, 0.28, 0.011), p.poleHi);
+  // Cork grip and butt cap.
+  g.addGeometry(CYL, trs(-0.21, 0.036, -0.045, 0, 0.22, Math.PI / 2, 0.028, 0.11, 0.028), p.grip);
+  g.addGeometry(CYL, trs(-0.27, 0.036, -0.058, 0, 0.22, Math.PI / 2, 0.031, 0.02, 0.031), p.band);
+  // The reel: a disc on a short stem, standing proud of the shaft.
+  g.addGeometry(CYL, trs(-0.15, 0.058, -0.005, Math.PI / 2, 0, 0.3, 0.05, 0.03, 0.05), p.reel);
+  g.addGeometry(CYL, trs(-0.15, 0.075, 0.0, Math.PI / 2, 0, 0.3, 0.022, 0.04, 0.022), p.band);
+  // The line, run out along the last third of the pole and past the tip.
+  g.addGeometry(CYL, trs(0.17, 0.062, 0.045, 0, 0.22, Math.PI / 2, 0.004, 0.3, 0.004), p.line);
+  return g;
+}
+
+/**
+ * A trout on the bank: the same fish the water holds, lying on its side.
+ *
+ * Authored SIDEWAYS -- rolled a quarter turn, so the flank faces up -- which is
+ * the whole difference between a fish that has been caught and a fish that is
+ * swimming. Standing it upright would read as a fish balanced on its belly on
+ * the grass, and lying it flat is also what puts the largest area of it under
+ * the overhead camera, where the spots and the pale belly are the read.
+ */
+function trout(p) {
+  const g = new GeoBuilder();
+  g.addGeometry(BLOB, trs(0, 0.055, -0.01, 0, 0.35, Math.PI / 2, 0.055, 0.055, 0.155), p.body);
+  g.addGeometry(BLOB, trs(-0.035, 0.075, 0.015, 0, 0.35, Math.PI / 2, 0.04, 0.03, 0.1), p.belly);
+  g.addGeometry(BLOB, trs(0.05, 0.055, -0.055, 0, 0.35, Math.PI / 2, 0.036, 0.04, 0.05), p.back);
+  // The tail, flat on the ground and forked away from the body.
+  g.addGeometry(CONE, trs(-0.16, 0.05, 0.055, Math.PI / 2, 1.92, 0, 0.07, 0.09, 0.008), p.fin);
+  // Dorsal, laid over rather than standing up: it has fallen sideways too.
+  g.addGeometry(BOX, trs(0.02, 0.052, -0.055, 0, 0.35, 0, 0.05, 0.01, 0.06), p.fin);
+  for (const [dx, dz] of [[0.06, 0.02], [0.0, -0.02], [-0.06, -0.045]]) {
+    g.addGeometry(BLOB, trs(dx, 0.105, dz, 0, 0, 0, 0.014, 0.007, 0.014), p.spot);
+  }
+  g.addGeometry(BLOB, trs(0.115, 0.075, -0.045, 0, 0, 0, 0.012, 0.012, 0.012), p.eye);
+  return g;
+}
+
+/** A carp on the bank: the trout's pose, twice the depth, and gold with it. */
+function carp(p) {
+  const g = new GeoBuilder();
+  g.addGeometry(BLOB, trs(0, 0.07, -0.01, 0, 0.35, Math.PI / 2, 0.075, 0.062, 0.175), p.body);
+  g.addGeometry(BLOB, trs(-0.04, 0.1, 0.02, 0, 0.35, Math.PI / 2, 0.05, 0.032, 0.115), p.belly);
+  g.addGeometry(BLOB, trs(0.06, 0.07, -0.065, 0, 0.35, Math.PI / 2, 0.05, 0.045, 0.055), p.back);
+  g.addGeometry(CONE, trs(-0.185, 0.06, 0.06, Math.PI / 2, 1.92, 0, 0.085, 0.1, 0.01), p.fin);
+  g.addGeometry(BOX, trs(0.0, 0.065, -0.075, 0, 0.35, 0, 0.11, 0.012, 0.045), p.fin);
+  for (const [dx, dz] of [[0.07, 0.025], [0.0, -0.01], [-0.07, -0.045]]) {
+    g.addGeometry(BLOB, trs(dx, 0.13, dz, 0, 0, 0, 0.022, 0.008, 0.024), p.scale);
+  }
+  g.addGeometry(BLOB, trs(0.135, 0.1, -0.055, 0, 0, 0, 0.014, 0.014, 0.014), p.eye);
   return g;
 }
 
@@ -187,11 +371,29 @@ const BUILDERS = {
   'item.stone': stone,
   'item.shell': shell,
   'item.flower': flower,
+  'furnitem.bed': furniture,
+  'furnitem.table': furniture,
+  'furnitem.chair': furniture,
+  'furnitem.shelf': furniture,
+  'furnitem.counter': furniture,
+  'furnitem.stove': furniture,
+  'furnitem.plant': furniture,
+  'furnitem.crate': furniture,
   'tool.axe': axe,
   'tool.shovel': shovel,
   'tool.gun': gun,
+  'tool.pickaxe': pickaxe,
+  'tool.hammer': hammer,
+  'tool.sword': sword,
+  'tool.machinegun': machinegun,
+  'tool.map': mapsheet,
+  'tool.camera': camera,
+  'tool.torch': torch,
+  'tool.rod': rod,
   'item.shot': shot,
   'item.game': game,
+  'item.trout': trout,
+  'item.carp': carp,
 };
 
 /**
@@ -307,4 +509,3 @@ export class ItemBatch {
     this.group.add(batch.mesh);
   }
 }
-

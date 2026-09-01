@@ -22,6 +22,10 @@ holding, `[` and `]` change which slot that is, and `F` uses it if it is a tool.
 `N` sizes the corner minimap — wide, close, the whole place, off — and clicking
 the map itself steps through the sizes without ever turning it off. It fades
 away on the way into the 2D view, where the whole screen is already that picture.
+Two tools open a screen of their own: with the **map** in hand, `F` unfolds it —
+scroll or `+`/`-` to zoom, drag or `WASD` to pan, `F` again to find yourself and
+once more to put it away — and with the **camera**, `F` takes the picture and
+`←→` flips through the roll behind it. `Esc` closes either.
 The slider at the bottom scrubs the morph by hand.
 The settings gear also switches shorelines between **Natural** (wet sand,
 shallows and animated foam) and the original **Blocky** tile edge, and sets how
@@ -60,6 +64,22 @@ turns up whatever was buried there, and fills the hole back in. A hole is solid
 ground gone missing — you cannot walk through one, and neither can a chicken —
 so it is a wall you can dig and un-dig. Both tools are ordinary items: sell them,
 drop them, or buy another over any shop counter.
+
+**Every other tool is bought.** A shop's rack is where the rest of the verbs
+come from, and each one is an ordinary item that takes a slot: a **pickaxe**
+breaks rocks the way the axe fells trees, four blows for a boulder and two for a
+stone; a **hammer** and a **sword** both hit whatever is in front of you, the
+hammer slowly and at arm's length, the sword quickly and further out; a **gun**
+shoots down a line and spends a box of shot doing it, and a **machine gun** is the
+same gun that keeps firing for as long as you hold `F`. Knocking somebody down
+costs you their friendship and their front door until you go back and say hello.
+
+Three of them act on nothing in the world at all. A **map** unfolds the whole
+place at once — the corner minimap, full screen, with a wheel to zoom and a
+drag to pan. A **camera** photographs exactly what is on screen, in either
+view or halfway through the morph, and keeps a roll you can flip through and
+save to disk. A **flashlight** throws a beam where you are facing, which is
+worth carrying after dark and worth nothing at noon.
 
 What you chop and dig is remembered per place and saved with the game, and it
 is remembered as a LIST OF EDITS rather than as a world — the file stays the
@@ -134,6 +154,15 @@ arrangement where a room can belong to somebody who is not in it — and he is
 not in it, because he is outside walking around, which is where you were
 supposed to say hello.
 
+**And shooting him is the inverse of saying hello.** It costs what the hello
+bought — the friendship, and with it the door — and it leaves him angry for a
+day, during which he is not running his own dialog at all but a *grudge script*
+(`world/grudge.js`) that has no shop in it, no gossip, and one way out: hand
+him whatever is in your hand. Or wait the day out. Either way you end up
+strangers rather than friends, and the door opens again the way it did the
+first time. A consequence you cannot undo is a punishment; one you can is a
+loop.
+
 **A chopped tree does not re-mesh the town.** Every static prop merges into a
 handful of world-space buffers, which is the whole reason a town is four draw
 calls — and the price of that merge has always been that nothing in it can be
@@ -203,6 +232,9 @@ src/
   ui/
     hud.js          the overlay: readouts, pockets, perf panel
     minimap.js      the corner map: a baked static layer, live dots on top
+    mapscreen.js    the map tool's screen: the same picture, zoomed and panned
+    icons.js        one drawn glyph per item, for the pockets
+    photo.js        the camera's roll, and the Save button
     dialogue.js     the conversation box, the buy/sell panel, the typewriter
   settings/
     graphics.js     validated, persistent player graphics preferences

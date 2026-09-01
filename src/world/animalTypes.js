@@ -23,7 +23,7 @@
  * wants; they all share one movement simulation (body.js). A chicken wanders;
  * a dog will follow; a bee will orbit its hive -- three behaviors, one physics.
  *
- * ALL SEVEN SPECIES BELOW RUN `wander`, and they are still unmistakable from
+ * THE SEVEN LAND SPECIES BELOW ALL RUN `wander`, and they are still unmistakable from
  * each other, which is the point of putting the numbers here rather than in the
  * strategy. A rabbit is a chicken whose dashes are twice as fast, four times as
  * rare and hinged into a hop; a sheep is one whose dashes barely happen and
@@ -43,6 +43,13 @@
  *   roll   radians the body rocks side to side per stride -- a duck's waddle
  *          lives here, and it is most of what makes a duck read as a duck.
  *   bend   radians the neck hinges down at full peck. A crow jabs; a cat dips.
+ *   sweep  radians the hinged part swings SIDEWAYS per stride. Zero on every
+ *          land animal, because a head that slews left and right as it walks
+ *          is a broken toy -- it exists for the fish, whose hinged part is a
+ *          tail, and whose tail is the entire performance.
+ *   thrust world units the hinged part drives FORWARD per stride. Defaults to
+ *          0.035, which is the pigeon-walk head thrust every land species here
+ *          wants, so only the fish -- which want none of it -- say so.
  */
 
 export const ANIMAL_TYPES = {
@@ -269,6 +276,103 @@ export const ANIMAL_TYPES = {
     palette: {
       body: 0x22242c, bodyShade: 0x171920, sheen: 0x384560, tail: 0x1b1d24,
       beak: 0x2c2e33, leg: 0x33353a, eye: 0xc8bda6,
+    },
+  },
+
+  // ------------------------------------------------------------------ fish --
+  // The first animals in the game that do not walk. Everything above lives on
+  // the collision grid the player lives on; a fish lives in the tiles that grid
+  // refuses, which is the whole of what `swims` means -- see sim/body.js, where
+  // it picks which question is asked of every tile a body's circle covers.
+  //
+  // WHY THEY ARE NOT IN ANY WORLD FILE
+  // ----------------------------------
+  // Every other animal is PLACED: a file says there are four chickens and where
+  // they start. Fish are DERIVED from the water itself (world/shoals.js),
+  // because a pond with no fish in it is a pond somebody forgot rather than a
+  // pond somebody meant -- and because a generated world has no author to
+  // remember. Stocking follows the water, so every pond in every place, made or
+  // authored, has something in it.
+  //
+  // SPOILS is what one of them is worth carrying away, and it is here for the
+  // reason `value` is in the item registry: what a trout is worth is a fact
+  // about trout. It is read by sim/tools.js, which does not otherwise know that
+  // fish exist.
+  //
+  // DIVE is the one field no land animal has: how far below the surface it
+  // holds, in world units. It matters because the water plane is opaque -- a
+  // fish drawn under it is a fish you cannot see -- so this is the difference
+  // between a shape cruising the shallows and a shadow that surfaces once and
+  // is gone. A lure pulls it to 0 (see sim/behaviors.js), which is what makes
+  // a bite something you WATCH coming rather than a timer expiring.
+  trout: {
+    label: 'Trout',
+    behavior: 'swim',
+    /** Lives in water and only in water. Read by body.js, and by nothing else. */
+    swims: true,
+    spoils: 'item.trout',
+
+    radius: 0.14,
+    height: 0.16,
+
+    /**
+     * A fish never stops. `cruise` is the glide it holds all day and `dart` is
+     * the flick it crosses a pool with -- the pair that replaces the land
+     * animals' rest/burst, because a trout that stood still between moves the
+     * way a chicken does would read as dead in the water.
+     */
+    cruise: 1.15,
+    dart: 3.4,
+    /** Low: a fish banks through a turn, and a pivot on the spot is a bird. */
+    turnRate: 3.6,
+
+    /** Seconds of cruising between darts, and how long one dart lasts. */
+    glide: [1.6, 4.5],
+    burst: [0.25, 0.6],
+
+    range: 6.5,
+    /** World units below the surface it holds: shallow, and always half in view. */
+    dive: [0.01, 0.10],
+    phaseRate: 5.5,
+
+    gait: { bob: 0.008, lean: 0, roll: 0.05, bend: 0, sweep: 0.55, thrust: 0 },
+
+    palette: {
+      body: 0x6f7d63, back: 0x3f4a3a, belly: 0xe6ddc6,
+      fin: 0x54614b, spot: 0xc2694a, eye: 0x1b1712,
+    },
+  },
+
+  carp: {
+    label: 'Carp',
+    behavior: 'swim',
+    swims: true,
+    spoils: 'item.carp',
+
+    radius: 0.22,
+    height: 0.22,
+
+    /**
+     * Everything a trout is not. Half the cruise, a third of the turn rate and
+     * darts that come once in five seconds, so a carp reads as weight moving
+     * through water -- and it sits deep enough that most of the time all you
+     * get is the back of it, which is what makes finding one worth the walk.
+     */
+    cruise: 0.62,
+    dart: 2.0,
+    turnRate: 2.2,
+    glide: [3.0, 7.0],
+    burst: [0.4, 1.1],
+
+    range: 5.0,
+    dive: [0.04, 0.24],
+    phaseRate: 3.6,
+
+    gait: { bob: 0.006, lean: 0, roll: 0.035, bend: 0, sweep: 0.38, thrust: 0 },
+
+    palette: {
+      body: 0xb98a45, back: 0x6d4f28, belly: 0xe8cf9c,
+      fin: 0x8a6532, scale: 0xd8ab63, barbel: 0xc9a878, eye: 0x1d1710,
     },
   },
 };

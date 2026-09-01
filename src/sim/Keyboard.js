@@ -35,21 +35,35 @@ export class Keyboard {
       turnLeft: false, turnRight: false,
     };
     this._press = new Set();
+    /**
+     * Every code physically down right now.
+     *
+     * A SECOND record beside `_press`, and the two answer different questions.
+     * `pressed` is an EDGE and is consumed by whoever reads it, which is what
+     * makes one keystroke do one thing; this is a LEVEL, and nothing consumes
+     * it. An automatic weapon is the only thing in the game that wants the
+     * level -- see itemTypes.js on `auto` -- and giving it the edge instead
+     * would make a machine gun a gun you have to press eleven times a second.
+     */
+    this._down = new Set();
 
     target.addEventListener('keydown', (e) => {
       if (typing(e)) return;
       const a = MAP[e.code];
       if (a) { this.state[a] = true; e.preventDefault(); }
       this._press.add(e.code);
+      this._down.add(e.code);
     });
     target.addEventListener('keyup', (e) => {
       if (typing(e)) return;
       const a = MAP[e.code];
       if (a) { this.state[a] = false; e.preventDefault(); }
+      this._down.delete(e.code);
     });
     // Held keys would otherwise stick down across a tab switch.
     window.addEventListener('blur', () => {
       for (const k of Object.keys(this.state)) this.state[k] = false;
+      this._down.clear();
     });
   }
 
@@ -59,6 +73,9 @@ export class Keyboard {
     this._press.delete(code);
     return true;
   }
+
+  /** True for as long as the key is physically down. Consumes nothing. */
+  held(code) { return this._down.has(code); }
 
   endFrame() { this._press.clear(); }
 }

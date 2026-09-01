@@ -22,7 +22,11 @@ import { Animal } from './Animal.js';
 export class Fauna {
   constructor(world) {
     this.world = world;
-    this.animals = world.animals.map((spec) => new Animal(world, spec));
+    // `spawns()` and not `animals`, so the fish its water stocks arrive by the
+    // same route the file's chickens do. See world/shoals.js: fish are derived
+    // from the water rather than placed, and this is the only line that had to
+    // know it.
+    this.animals = world.spawns().map((spec) => new Animal(world, spec));
     /**
      * Bumped when the FLOCK changes -- one fewer animal, or a night's worth
      * back again -- and never when one merely moves. Movement is what this
@@ -58,6 +62,27 @@ export class Fauna {
   }
 
   /**
+   * Take one out of the flock at once, whole: a fish on the bank.
+   *
+   * The counterpart of `kill`, and the difference between them is the only
+   * thing worth saying about either. A shot animal STAYS in the flock while it
+   * topples, because the toppling is the point and the batch has to go on
+   * drawing it; a landed fish is not in the water any more, and holding it
+   * there for four tenths of a second so it could fall over would be four
+   * tenths of a second of a fish lying on the surface of a pond.
+   *
+   * Returns the animal, for the reason `kill` does: the caller has to be able
+   * to ask what it was, and asking after it is spliced out is impossible.
+   */
+  take(id) {
+    const i = this.animals.findIndex((a) => a.id === id);
+    if (i < 0) return null;
+    const [gone] = this.animals.splice(i, 1);
+    this.version++;
+    return gone;
+  }
+
+  /**
    * Put back everything that is missing: a night's worth of the place
    * recovering from you.
    *
@@ -72,7 +97,7 @@ export class Fauna {
   restock() {
     const here = new Set(this.animals.map((a) => a.id));
     let back = 0;
-    for (const spec of this.world.animals) {
+    for (const spec of this.world.spawns()) {
       if (here.has(spec.id)) continue;
       this.animals.push(new Animal(this.world, spec));
       back++;

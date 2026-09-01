@@ -204,6 +204,9 @@ function parseShop(raw, path) {
   }
   const stock = raw.stock ?? [];
   if (!Array.isArray(stock)) throw new WorldFileError('"stock" must be an array', `${path}.stock`);
+  if (raw.daily !== undefined && (!Number.isInteger(raw.daily) || raw.daily < 1 || raw.daily > stock.length)) {
+    throw new WorldFileError('"daily" must be a whole number between 1 and the stock count', path);
+  }
   stock.forEach((entry, i) => {
     const p = `${path}.stock[${i}]`;
     if (entry === null || typeof entry !== 'object') throw new WorldFileError('a stock entry must be an object', p);

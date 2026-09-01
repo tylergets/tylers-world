@@ -110,6 +110,18 @@ export class Clock {
 
   get phase() { return phaseAt(this.t); }
 
+  /**
+   * The day and the time of it as one increasing number: 3.5 is midday on the
+   * third day.
+   *
+   * For anything that has to say "a day from now" and mean a DAY rather than
+   * the next midnight. A grudge started at dusk (see sim/Friends.js) should run
+   * out at dusk tomorrow, not four minutes later because the sun happened to be
+   * going down when it started -- and the only way to say that is a stamp you
+   * can add one to.
+   */
+  get stamp() { return this.day + this.t; }
+
   get isNight() { return this.phase === 'night'; }
 
   /** Hours and minutes, for anything that wants to print the time. */

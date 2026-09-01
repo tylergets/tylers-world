@@ -29,22 +29,58 @@
  * and an enemy is not merely a non-friend -- a stranger has simply not met you,
  * and can be met. An enemy has met you and would rather not again.
  *
- * The two sets are kept apart rather than folded into one signed number,
- * because "we have never spoken" and "we have spoken and it went badly" are
- * genuinely different states and the middle of a number is a bad place to
- * store the difference. Making an enemy CLEARS the friendship, so nobody is
- * ever in both -- which is what shuts a door you had been welcome through.
+ * The two are kept apart rather than folded into one signed number, because
+ * "we have never spoken" and "we have spoken and it went badly" are genuinely
+ * different states and the middle of a number is a bad place to store the
+ * difference. Making an enemy CLEARS the friendship, so nobody is ever in both
+ * -- which is what shuts a door you had been welcome through.
  *
- * It is recoverable, on purpose. Say hello again where they live and you are
- * back to being friends, which is the same act that made you friends in the
- * first place. A consequence you cannot undo is a punishment; one you can is a
- * loop, and this game is made of loops.
+ * A GRUDGE IS A DEADLINE, NOT A FLAG
+ * ----------------------------------
+ * So the enemies are a Map and not a Set: each one carries the Clock stamp its
+ * feud runs out on (sim/Clock.js), and a day later the person simply stops
+ * being angry. It is stored as an END and not as a START because that is the
+ * question every reader actually asks -- "is this over yet" -- and a deadline
+ * answers it with one comparison, rather than with a duration that every call
+ * site has to remember to add.
+ *
+ * A day, and not a midnight, which is the whole reason Clock has a `stamp`:
+ * shot at dusk, forgiven at dusk. A grudge that ran until the next midnight
+ * would last four minutes if you shot somebody at 23:50 and a full day if you
+ * shot them at 00:10, for no reason the player could ever see.
+ *
+ * TWO WAYS BACK, AND NEITHER OF THEM IS TALKING
+ * ---------------------------------------------
+ * Wait a day, or hand them something -- `forgive`, which is what the `peace`
+ * effect of a grudge script calls (see world/grudge.js). Saying hello is
+ * deliberately no longer one of them. It used to be, and it meant an apology
+ * cost one keypress, which is not a cost. A gift leaves the bag, and waiting
+ * spends the only thing in this game that cannot be farmed.
+ *
+ * Both routes land on NEUTRAL rather than on friendship: the feud is over, the
+ * door is still shut, and you get back through it the way you did the first
+ * time, by going and saying hello where they live. A consequence you cannot
+ * undo is a punishment; one you can is a loop, and this game is made of loops.
  */
+
+/**
+ * How long somebody stays angry about being shot, in days.
+ *
+ * One, and it is doing real work rather than being a knob: long enough that you
+ * cannot shoot a shopkeeper and shrug it off before the shop matters again,
+ * short enough that a player who did it once to see what would happen is not
+ * locked out of a building for the rest of the save.
+ */
+export const GRUDGE_DAYS = 1;
+
+/** Shared, so the ordinary frame allocates nothing. See `cool`. */
+const NOBODY = Object.freeze([]);
 
 export class Friends {
   constructor() {
     this.ids = new Set();
-    this.foes = new Set();
+    /** NPC id -> the Clock stamp their grudge runs out on. */
+    this.foes = new Map();
     /** Bumped on every change, so the HUD can skip a redraw. */
     this.version = 0;
   }
@@ -53,56 +89,118 @@ export class Friends {
 
   has(npcId) { return this.ids.has(npcId); }
 
-  /** Whether this person has been shot and has not forgiven it yet. */
+  /** Whether this person has been shot and is still angry about it. */
   hates(npcId) { return this.foes.has(npcId); }
 
+  /** The Clock stamp this feud ends on, or null when there is no feud. */
+  angryUntil(npcId) { return this.foes.get(npcId) ?? null; }
+
   /**
-   * Returns true if this was news.
+   * Become friends. Returns true if this was news.
    *
-   * Making a friend also ENDS a feud, which is the whole of how you apologise:
-   * there is no separate act, you simply go and say hello again somewhere you
-   * are welcome, exactly as you did the first time.
+   * REFUSES SOMEBODY WHO IS STILL ANGRY, and that refusal is the invariant as
+   * much as it is the rule: the two collections must never both hold one id,
+   * and this is the only method that could put one in both. Turning up and
+   * saying hello makes a friend of a STRANGER; it does nothing at all for
+   * somebody you shot yesterday, who has to be squared with first.
    */
   add(npcId) {
-    if (!npcId) return false;
-    const forgiven = this.foes.delete(npcId);
-    if (this.ids.has(npcId)) {
-      if (forgiven) this.version++;
-      return forgiven;
-    }
+    if (!npcId || this.foes.has(npcId) || this.ids.has(npcId)) return false;
     this.ids.add(npcId);
     this.version++;
     return true;
   }
 
   /**
-   * Make an enemy. Returns true if this was news.
+   * Make an enemy, or renew one. Returns true if this feud is NEW.
    *
-   * Drops the friendship in the same breath, because the two sets must never
-   * both hold one id -- and because losing the friendship is the part with
-   * teeth: their front door was open because you were friends, and the
+   * Drops the friendship in the same breath, because the two collections must
+   * never both hold one id -- and because losing the friendship is the part
+   * with teeth: their front door was open because you were friends, and the
    * trespass clock starts again the moment you are not.
+   *
+   * Shooting somebody who is already angry restarts their day rather than
+   * being ignored, which is the only reading under which the second shot is
+   * not free. It still returns false: that is not news, it is worse.
+   *
+   * @param {number} now  the current Clock stamp -- see sim/Clock.js
    */
-  anger(npcId) {
-    if (!npcId || this.foes.has(npcId)) return false;
+  anger(npcId, now) {
+    if (!npcId) return false;
+    const fresh = !this.foes.has(npcId);
     this.ids.delete(npcId);
-    this.foes.add(npcId);
+    this.foes.set(npcId, now + GRUDGE_DAYS);
+    this.version++;
+    return fresh;
+  }
+
+  /**
+   * End a feud early, leaving the two of you strangers. Returns true if there
+   * was one to end.
+   *
+   * The gift route: a grudge script hands this to the `peace` effect, and the
+   * item has already left the bag by the time it runs. It deliberately does
+   * NOT give back the friendship it cost -- squaring up with somebody and
+   * being welcome in their house are different facts, and the second one is
+   * still earned by turning up where they live.
+   */
+  forgive(npcId) {
+    if (!this.foes.delete(npcId)) return false;
     this.version++;
     return true;
   }
 
-  snapshot() { return { friends: [...this.ids], foes: [...this.foes] }; }
+  /**
+   * Let time do the forgiving. Returns the ids whose grudges have just run out.
+   *
+   * Polled rather than scheduled, because there is no timer anywhere in sim/
+   * and adding one would need a clock this class has deliberately not got. The
+   * ordinary case is an empty map and a shared empty array, so the frame that
+   * calls this sixty times a second allocates nothing.
+   *
+   * @param {number} now  the current Clock stamp
+   */
+  cool(now) {
+    if (!this.foes.size) return NOBODY;
+    let over = null;
+    for (const [id, until] of this.foes) {
+      if (now < until) continue;
+      (over ??= []).push(id);
+    }
+    if (!over) return NOBODY;
+    for (const id of over) this.foes.delete(id);
+    this.version++;
+    return over;
+  }
+
+  snapshot() {
+    return { friends: [...this.ids], foes: Object.fromEntries(this.foes) };
+  }
 
   /**
-   * Tolerant of the older shape, which was a bare array of friend ids and no
-   * enemies at all. A save written before anybody could be shot is a save in
-   * which nobody has been.
+   * Take the friendships back off a save.
+   *
+   * Tolerant of two older shapes, because both of them were once written: a
+   * bare array of friend ids, from before anybody could be shot, and
+   * `{ friends, foes }` with foes as an array, from before a grudge had an
+   * end. A feud with no recorded deadline gets a fresh one measured from
+   * `now` -- the generous reading, and the only one that cannot leave somebody
+   * angry forever.
+   *
+   * @param {number} now  the current Clock stamp. Restore the clock first.
    */
-  restore(snap) {
+  restore(snap, now = 1) {
     const friends = Array.isArray(snap) ? snap : (snap?.friends ?? []);
     const foes = Array.isArray(snap) ? [] : (snap?.foes ?? []);
     this.ids = new Set(Array.isArray(friends) ? friends : []);
-    this.foes = new Set(Array.isArray(foes) ? foes : []);
+    this.foes = new Map(Array.isArray(foes)
+      ? foes.map((id) => [id, now + GRUDGE_DAYS])
+      : Object.entries(foes ?? {})
+        .filter(([, until]) => Number.isFinite(until) && until > now));
+    // A hand-edited save could name the same person in both. The feud wins: it
+    // is the state with consequences, and getting it wrong the other way hands
+    // somebody's front door to the person who shot them.
+    for (const id of this.foes.keys()) this.ids.delete(id);
     this.version++;
   }
 }

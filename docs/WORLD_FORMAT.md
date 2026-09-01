@@ -257,13 +257,16 @@ at load, and it is written up in full at the top of
 }
 ```
 
-**Conditions** (`when`): `flag`, `visits`, `coins`, `has`, `room`, and
-`not` / `all` / `any`. Several keys in one object mean AND. A choice whose
-`when` fails is not shown at all — an option you cannot take should not be on
-screen advertising that you cannot take it.
+**Conditions** (`when`): `flag`, `friend`, `holding`, `visits`, `coins`,
+`has`, `room`, and `not` / `all` / `any`. Several keys in one object mean AND.
+A choice whose `when` fails is not shown at all — an option you cannot take
+should not be on screen advertising that you cannot take it. `holding` asks
+whether there is *anything* in the player's hand, which is the one question
+`has` cannot ask.
 
-**Effects** (`do`): `set`, `clear`, `give`, `take`, `coins`, `shop`. One
-key per object; a list is an order.
+**Effects** (`do`): `set`, `clear`, `give`, `take`, `coins`, `shop`, `gift`,
+`peace`. One key per object; a list is an order. `gift` hands over one of
+whatever is held; `peace` ends a feud (below).
 
 Flags and the visit count live on the **NPC**, not on the conversation, so they
 outlive it — and the NPC outlives you leaving the room.
@@ -320,6 +323,30 @@ somewhere you are allowed to be**, which is why the villagers wander around
 outside their houses (`props.roam`, above): meeting them out there is the
 mechanic, not scenery. A dialog script can *ask* with the `friend` condition;
 no effect can grant it.
+
+### Shooting somebody, and getting over it
+
+The inverse act, and it costs exactly what saying hello bought: the friendship,
+and with it the front door. It also makes that person **angry for one day** — a
+day of game time measured from the shot, not "until the next midnight", so
+somebody shot at dusk forgives you at dusk.
+
+While they are angry they are **not running the script in this file at all.**
+They fall back to a grudge script (`src/world/grudge.js`), which lives in code
+rather than in a world file because every person in every town can be shot,
+including one in a world generated a second ago that no author has ever seen.
+That single swap is what closes their shop, their errands and their gossip in
+one move, and it closes them for people nobody has authored anything for yet.
+
+There are two ways back to neutral and **neither of them is talking**: hand
+them something — the grudge script's one choice, `gift` then `peace` — or wait
+the day out. Both leave you *strangers* rather than friends: the feud is over,
+the door is still shut, and you get back through it the way you did the first
+time. Saying hello does nothing until then, which is why `Friends.add` refuses
+somebody who is still angry.
+
+There is deliberately no condition for *"is this person angry"*, because a
+script never has to ask: an angry person is not running that script.
 
 ### Footprint masks
 

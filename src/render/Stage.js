@@ -48,7 +48,8 @@ import { AnimalBatch } from './AnimalBatch.js';
 import { NpcView } from './NpcView.js';
 import { ItemBatch } from './ItemBatch.js';
 import { DigBatch } from './DigBatch.js';
-import { flatUniform, timeUniform, tintUniform } from './flatten.js';
+import { flatUniform, timeUniform, tintUniform, patchFlatten } from './flatten.js';
+import { GeoBuilder, trs } from './geo.js';
 import { daylightAt } from './daylight.js';
 import { waterUniforms, WATER_LEVELS } from './water.js';
 
@@ -61,6 +62,26 @@ const _c1 = new THREE.Color();
 /** How long a struck tree sways for, and how far its top leans while it does. */
 const SWAY_TIME = 0.34;
 const SWAY_AMOUNT = 0.055;
+
+/**
+ * The flashlight beam: how far it reaches and how wide it opens.
+ *
+ * Wide, and deliberately wider than a real torch. A narrow cone is a searchlight
+ * you have to aim, and this game turns the player with a key rather than a
+ * mouse -- so a tight beam would mean sweeping the room in four-way steps to
+ * find anything. A third of a radian puts roughly the tile in front of you and
+ * its neighbours in the light, which is what "I can see where I am going" needs.
+ *
+ * The intensity is what the beam is worth against a night sky, and it is set
+ * against the sun's own numbers (see AMBIENCE): brighter than the moon by a
+ * good margin, dimmer than noon by a long way, so a torch is obviously worth
+ * carrying after dark and obviously pointless at midday.
+ */
+const TORCH_RANGE = 11;
+const TORCH_ANGLE = 0.62;
+const TORCH_POWER = 9.5;
+/** Where the beam leaves the body: shoulder height, a little in front. */
+const TORCH_HEIGHT = 0.62;
 
 /**
  * Ambience defaults, per place kind. A world file's `ambience` block overrides
@@ -142,6 +163,62 @@ function makeTracer() {
 
 /** How long a tracer hangs about. Long enough to see, short enough not to sit there. */
 const TRACER_TIME = 0.11;
+
+/**
+ * The float, and the line running out to it.
+ *
+ * Two objects with two different opinions about what they are, which is worth
+ * saying out loud:
+ *
+ * The FLOAT is a thing in the world. It is lit, it takes the flatten morph like
+ * every other model here, and it sits on the water where it landed -- so it
+ * casts a shadow, dims at dusk and reads as an object on a pond rather than as
+ * a cursor. It is authored around the waterline exactly as the fish are (see
+ * AnimalBatch): the red top shows, the weighted bottom is behind the water
+ * plane, and the dip when something takes is the whole thing sliding down
+ * through that plane.
+ *
+ * The LINE is not. Monofilament is thinner than a pixel at any sane camera
+ * distance, so drawing it honestly draws nothing at all -- and from directly
+ * overhead an honest line is a single-pixel thread crossing a whole pond. It is
+ * therefore UI that happens to live in the scene, on the doctrine the walk
+ * marker and the shot tracer are already built on: unlit, unfogged, drawn over
+ * everything, and the same width in both views. What it has to communicate is
+ * "your line is out, and that float over there is yours", and it does that at
+ * any angle.
+ */
+function makeFloat() {
+  const g = new GeoBuilder();
+  // Above the waterline: the bright top half, which is all the player ever
+  // needs to find.
+  g.addGeometry(new THREE.IcosahedronGeometry(1, 2), trs(0, 0.012, 0, 0, 0, 0, 0.05, 0.05, 0.05), 0xd6453f);
+  g.addGeometry(new THREE.CylinderGeometry(1, 1, 1, 10),
+    trs(0, 0.052, 0, 0, 0, 0, 0.012, 0.075, 0.012), 0xf1ece1);
+  // Below it: the weighted half, hidden by the pond until the float is pulled
+  // under -- which is exactly when it should start showing.
+  g.addGeometry(new THREE.IcosahedronGeometry(1, 2), trs(0, -0.03, 0, 0, 0, 0, 0.042, 0.05, 0.042), 0xf1ece1);
+  const mesh = new THREE.Mesh(g.build(), patchFlatten(new THREE.MeshLambertMaterial({ vertexColors: true }), 1));
+  mesh.name = 'float';
+  mesh.castShadow = true;
+  mesh.visible = false;
+  return mesh;
+}
+
+function makeLine() {
+  const geometry = new THREE.BoxGeometry(0.012, 0.012, 1);
+  geometry.translate(0, 0, 0.5);
+  const mesh = new THREE.Mesh(geometry, new THREE.MeshBasicMaterial({
+    color: 0xf3f0e6, transparent: true, opacity: 0.7,
+    depthTest: false, depthWrite: false, fog: false,
+  }));
+  mesh.name = 'fishing-line';
+  mesh.renderOrder = 9;
+  mesh.visible = false;
+  return mesh;
+}
+
+/** How high the float arcs on its way out, at the top of the cast. */
+const CAST_ARC = 0.85;
 
 function makeMarker() {
   const geometry = new THREE.RingGeometry(0.3, 0.44, 28);
@@ -226,6 +303,28 @@ export class Stage {
     s.near = 1; s.far = 96;
     s.updateProjectionMatrix();
 
+    /**
+     * The flashlight.
+     *
+     * Built here and kept in the scene FOR EVER, switched with `intensity`
+     * rather than by adding and removing it. Three recompiles every material in
+     * the scene when the light count changes, and a tool whose whole job is to
+     * be turned on and off in the dark must not cost a full shader rebuild each
+     * time -- that is a visible hitch, at the exact moment the player is looking
+     * for something.
+     *
+     * It casts NO SHADOW, and that is a decision rather than an oversight: a
+     * second shadow-casting light doubles the shadow pass for the whole scene,
+     * and the beam is a wash of light on the ground rather than a spotlight
+     * picking objects out of a void. A torch that halved the frame rate is a
+     * torch nobody would leave on.
+     */
+    this.torch = new THREE.SpotLight(0xfff0c8, 0, TORCH_RANGE, TORCH_ANGLE, 0.55, 1.1);
+    this.torch.visible = false;
+    this.scene.add(this.torch, this.torch.target);
+    this.torchOn = false;
+    this.torchRange = TORCH_RANGE;
+
     this.rig = new CameraRig(1);
     this.player = new PlayerView();
     this.scene.add(this.player.root);
@@ -275,25 +374,39 @@ export class Stage {
     this.tracer = makeTracer();
     this.scene.add(this.tracer);
     this._tracerUntil = -1;
+    this.float = makeFloat();
+    this.scene.add(this.float);
+    this.line = makeLine();
+    this.scene.add(this.line);
+    /** The line the game has out, or null. Read every frame; never written to. */
+    this.angle = null;
+    this._tip = new THREE.Vector3();
+    this._spot = new THREE.Vector3();
+    /** A pending `requestPhoto` callback, read and cleared by `render`. */
+    this._photo = null;
   }
 
   /**
-   * The tile under a point on screen, or null if the ray misses the ground.
+   * The ground point under a point on screen, or null if the ray misses.
    *
    * Works at every morph amount because the ray comes from CameraRig.ray, which
    * unprojects rather than branching on the camera type -- see the note there.
-   * The hit is taken against the terrain alone and floored, so "what did I
-   * click" has exactly one answer even where a house stands on the tile.
    */
-  pickTile(clientX, clientY) {
+  pickPoint(clientX, clientY) {
     if (!this.terrain) return null;
     const r = this.renderer.domElement.getBoundingClientRect();
     if (!r.width || !r.height) return null;
     const ndcX = ((clientX - r.left) / r.width) * 2 - 1;
     const ndcY = -((clientY - r.top) / r.height) * 2 + 1;
     const hit = this.rig.ray(ndcX, ndcY, this._ray).intersectObject(this.terrain, false)[0];
-    if (!hit) return null;
-    const tx = Math.floor(hit.point.x), tz = Math.floor(hit.point.z);
+    return hit?.point ?? null;
+  }
+
+  /** The tile containing a picked ground point. */
+  pickTile(clientX, clientY) {
+    const point = this.pickPoint(clientX, clientY);
+    if (!point) return null;
+    const tx = Math.floor(point.x), tz = Math.floor(point.z);
     return this.world.inBounds(tx, tz) ? [tx, tz] : null;
   }
 
@@ -315,6 +428,75 @@ export class Stage {
     this.tracer.scale.set(1, 1, Math.max(0.5, dist));
     this.tracer.visible = true;
     this._tracerUntil = time + TRACER_TIME;
+  }
+
+  /**
+   * Switch the flashlight, and say whether it is now on.
+   *
+   * The Stage owns whether the beam is LIT; the Game owns whether the player
+   * still has the torch in their hand -- see Game.useTool, which switches it off
+   * the moment the tool leaves the held slot. Splitting it that way is what
+   * stops a beam outliving the thing making it, which is the one bug a light
+   * attached to a carried object reliably produces.
+   */
+  setTorch(on) {
+    this.torchOn = !!on;
+    this.torch.visible = this.torchOn;
+    this.torch.intensity = this.torchOn ? TORCH_POWER : 0;
+    return this.torchOn;
+  }
+
+  /**
+   * Aim the beam from the player, along the way they are facing.
+   *
+   * Called every frame while it is lit, and from `render` rather than from the
+   * simulation: where a light SITS is a fact about the picture, and the player's
+   * position is already being pushed in for the model. The target is a tile-ish
+   * distance out and a little below the eye, so the pool of light lands on the
+   * ground in front rather than on the horizon.
+   */
+  #aimTorch(player) {
+    if (!this.torchOn) return;
+    const fx = Math.sin(player.yaw), fz = Math.cos(player.yaw);
+    this.torch.position.set(
+      player.x + fx * 0.18, player.y + TORCH_HEIGHT, player.z + fz * 0.18);
+    this.torch.target.position.set(
+      player.x + fx * this.torchRange,
+      player.y + TORCH_HEIGHT - this.torchRange * 0.42,
+      player.z + fz * this.torchRange);
+    this.torch.target.updateMatrixWorld();
+  }
+
+  /**
+   * Take a picture of the next frame.
+   *
+   * The callback fires DURING `render`, on the frame after this is called, with
+   * a PNG data URL of whatever was drawn -- and the timing is the whole point.
+   * The context is built without `preserveDrawingBuffer`, because that flag
+   * costs every frame in the game to serve a button nobody presses most of the
+   * time. Without it the buffer is only guaranteed readable until the browser
+   * composites, which means the readback has to happen on the same turn of the
+   * event loop as the draw that filled it. Here.
+   *
+   * One outstanding request at a time. Two shutters in one frame are one
+   * photograph, which is also what a real camera would say about it.
+   */
+  requestPhoto(onShot) {
+    this._photo = onShot;
+  }
+
+  /**
+   * Mirror a line in the water, or clear it with null.
+   *
+   * Takes the Fishing itself rather than a position, for the reason `setFauna`
+   * takes the Fauna: what the float is doing changes every frame -- it flies,
+   * it lands, it bobs, it goes under -- and a Stage handed a snapshot would
+   * need telling again on each of those, which is four chances to be told
+   * about three of them. It READS the object and never writes to it.
+   */
+  setAngle(fishing) {
+    this.angle = fishing?.out ? fishing : null;
+    if (!this.angle) this.float.visible = this.line.visible = false;
   }
 
   /**
@@ -541,6 +723,22 @@ export class Stage {
 
     this.#setFixtures(world);
     this.#applyAmbience(world);
+  }
+
+  /** Re-mesh the live place after a player adds permanent furniture to it. */
+  rebuildWorld(world) {
+    const group = this.built.get(world.meta.id);
+    if (group) {
+      group.traverse((o) => {
+        o.geometry?.dispose();
+        for (const m of [o.material].flat()) m?.dispose?.();
+      });
+      group.parent?.remove(group);
+      this.built.delete(world.meta.id);
+    }
+    this.setWorld(world);
+    if (this.liveDigs) this.liveDigs.version = -1;
+    this.#syncEdits();
   }
 
   /**
@@ -941,6 +1139,13 @@ export class Stage {
     this._lieBack.setFromAxisAngle(this._camRight, tilt);
 
     this.player.update(player, this._lieBack, time);
+    // After the player's model and before three walks the scene, for the reason
+    // the torch beam is: the line hangs off the rod tip, and the rod tip is a
+    // pose that was decided one line ago.
+    this.#drawLine(time);
+    // Before three walks the scene, and after the player's own model has been
+    // placed: the beam comes off the body and must not be a frame behind it.
+    this.#aimTorch(player);
     this.live?.update(this._lieBack);
     if (this.liveFolk) for (const { npc, view } of this.liveFolk.pairs) view.update(npc, this._lieBack, time);
     this.#syncGround();
@@ -966,10 +1171,63 @@ export class Stage {
     this.#endGpuTimer();
     this.#pollGpuTimer();
 
+    // The readback, and it has to be HERE -- see `requestPhoto`. Same turn of
+    // the event loop as the draw, or the buffer is already gone. Cleared before
+    // the callback runs, so a handler that asks for another picture is asking
+    // for the NEXT frame rather than re-entering this one.
+    if (this._photo) {
+      const shot = this._photo;
+      this._photo = null;
+      shot(this.renderer.domElement.toDataURL('image/png'));
+    }
+
     this.tViews = mark1 - mark0;
     // Timer-query begin/end/poll are diagnostics, not Three submission. Keep
     // their driver cost out of the number used to diagnose render traversal.
     this.tSubmit = submitEnd - submitStart;
+  }
+
+  /**
+   * Put the float where the line says it is, and run the line out to it.
+   *
+   * All three states are one interpolation and a sine. In flight the float
+   * travels from the rod tip to the spot along an arc; on the water it rides a
+   * slow bob; on a bite it is pulled DOWN through the water plane, which needs
+   * no separate animation because the plane is opaque -- the float going under
+   * is the float being occluded, and that is what a bite looks like from a bank.
+   */
+  #drawLine(time) {
+    const a = this.angle;
+    if (!a?.out || !this.player.tip(this._tip)) {
+      this.float.visible = this.line.visible = false;
+      return;
+    }
+
+    const water = this.world.groundHeight(a.spot.x, a.spot.z);
+    this._spot.set(a.spot.x, water, a.spot.z);
+
+    const f = a.flight;
+    if (f < 1) {
+      // Out and over: a straight lerp plus a half sine, which is a parabola
+      // close enough that nobody has ever measured one thrown by a person.
+      this._spot.lerpVectors(this._tip, this._spot, f);
+      this._spot.y += Math.sin(f * Math.PI) * CAST_ARC;
+    } else if (a.biting) {
+      // Under, and not smoothly: a fish worrying a bait pulls it down in
+      // knocks. The dip is deeper than the float is tall, so it goes right
+      // through the surface and out of sight between them.
+      this._spot.y -= 0.055 + 0.045 * Math.sin(time * 22);
+    } else {
+      this._spot.y += Math.sin(time * 2.6) * 0.012;
+    }
+
+    this.float.position.copy(this._spot);
+    this.float.visible = true;
+
+    this.line.position.copy(this._tip);
+    this.line.lookAt(this._spot);
+    this.line.scale.set(1, 1, Math.max(0.05, this._tip.distanceTo(this._spot)));
+    this.line.visible = true;
   }
 
   // ------------------------------------------------------- GPU timer query --

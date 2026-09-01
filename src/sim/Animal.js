@@ -49,7 +49,14 @@ export class Animal {
     // of the world file's meaning beyond where they start.
     this.rng = makeRng(`animal:${spec.id}`);
 
-    const [tx, tz] = world.nearestWalkable(...spec.tile);
+    // Which medium this one lives in, asked once. Everything downstream of it
+    // -- where it may start, which tiles its sweep will accept -- follows from
+    // this one flag, and body.js is where it is actually spent.
+    this.swims = this.type.swims === true;
+
+    const [tx, tz] = this.swims
+      ? world.nearestWater(...spec.tile)
+      : world.nearestWalkable(...spec.tile);
     this.home = { x: tx + 0.5, z: tz + 0.5 };
     this.x = this.home.x;
     this.z = this.home.z;
@@ -61,6 +68,25 @@ export class Animal {
     this.speed = 0;
     this.walkPhase = range(this.rng, 0, 10);   // so a flock's legs are not in step
     this.peck = 0;                             // 0..1 head-down, set by the behavior
+    /**
+     * World units this one is holding BELOW its own y, set by the behavior.
+     *
+     * Zero for everything that walks, and the whole of what depth means for
+     * everything that does not: the water plane is opaque, so a fish drawn
+     * under it is a fish nobody can see. A trout cruising the shallows, a carp
+     * that shows its back once and is gone, and a fish rising to a lure are all
+     * this one number moving. Presentation, like `peck` -- the renderer reads
+     * it and the simulation does not.
+     */
+    this.sink = 0;
+    /**
+     * Somewhere this animal has been given a reason to go, as `{ x, z }`, or
+     * null. Written from outside -- by sim/Fishing.js, which is the only thing
+     * in the game that can give an animal an errand -- and read by the
+     * behavior, which decides what to do about it. The behavior still owns the
+     * steering, so a lure is a SUGGESTION and never a teleport.
+     */
+    this.lure = null;
     /**
      * 0..1 through toppling over, or null for an animal that is alive.
      *
@@ -86,6 +112,7 @@ export class Animal {
       this.dying = Math.min(1, this.dying + dt / DEATH_TIME);
       this.speed = 0;
       this.peck = 0;
+      this.lure = null;
       return;
     }
     const { vx, vz } = this.behavior.update(dt, this, world);

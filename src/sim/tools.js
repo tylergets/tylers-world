@@ -19,6 +19,12 @@
  * deriving reach separately is how a prompt ends up advertising something the
  * key does not do. It MUTATES NOTHING, because the HUD asks ten times a second.
  *
+ * ONE VERB HERE IS NOT INSTANTANEOUS. A cast puts a float on the water and
+ * leaves it there, so the rod's resolver is the only one that reads a piece of
+ * running state (the line, sim/Fishing.js) as well as the world. It still
+ * decides nothing about how fishing WORKS -- it only answers what the key would
+ * do next -- which is the same division the rest of this file keeps.
+ *
  * A target can come back BLOCKED rather than absent. "You cannot dig here
  * because a chicken is standing on it" is worth saying out loud; silence would
  * read as a broken key.
@@ -57,7 +63,7 @@ export function toolOf(typeId) {
  */
 export function toolTarget({
   world, edits, ground, people, fauna, player, typeId,
-  inventory = null, now = 0, readyAt = 0,
+  inventory = null, now = 0, readyAt = 0, fishing = null,
 }) {
   const tool = toolOf(typeId);
   if (!tool) return null;
@@ -68,15 +74,110 @@ export function toolTarget({
   if (tool.verb === 'shoot') {
     return shootTarget({ world, people, fauna, player, tool, inventory, now, readyAt });
   }
+  // The same argument, one tile shorter. A body standing in front of you is at
+  // a float position with a radius, exactly like the thing a shot finds, so
+  // melee shares the shot's projection and not the axe's tile lookup -- see
+  // `reachTarget` on why rounding the heading to a cardinal will not do.
+  if (tool.verb === 'hit') {
+    return reachTarget({ world, people, fauna, player, tool, now, readyAt });
+  }
+  // Three verbs that act on nothing at all. They change what the PLAYER can
+  // see, so there is no tile to resolve, nothing that can block them, and
+  // nothing an empty `edits` could stop -- which is why they are answered here,
+  // above the guard, rather than as a branch that quietly needs a place to be
+  // loaded before a map will open.
+  if (tool.verb === 'map') {
+    return { verb: 'map', tile: null, label: world?.meta?.name ?? 'this place', blocked: null };
+  }
+  if (tool.verb === 'photo') {
+    if (now < readyAt) return { verb: 'photo', tile: null, label: null, blocked: 'winding on' };
+    return { verb: 'photo', tile: null, label: 'this view', blocked: null };
+  }
+  if (tool.verb === 'light') {
+    return { verb: 'light', tile: null, label: 'flashlight', blocked: null };
+  }
+  // Also above the guard, and for a further reason: with a line already in the
+  // water the answer does not depend on the world at all. What the key does
+  // next is a fact about the line, and the line outlives the tile the player
+  // happens to be facing while it is out.
+  if (tool.verb === 'fish') {
+    return fishTarget({ world, player, tool, fishing });
+  }
   if (!edits) return null;
 
   const [x, z] = player.aheadTile();
   if (!world.inBounds(x, z)) return null;
 
   if (tool.verb === 'chop') return chopTarget(world, edits, tool, x, z);
+  if (tool.verb === 'mine') return mineTarget(world, edits, tool, x, z);
   if (tool.verb === 'dig') return digTarget({ world, edits, ground, people, fauna, x, z });
   return null;
 }
+
+/**
+ * What a swing would land on, or why it would land on nothing.
+ *
+ * The gun's resolver with the range turned down and the ammunition taken out,
+ * and it is deliberately the SAME shape of question rather than a second
+ * `aheadTile` lookup. A person is not on the grid: they stand at a float
+ * position and carry a radius, so "is he in front of me" is a projection onto
+ * the heading and never a tile compare. Rounding the heading to a cardinal --
+ * which is what `aheadTile` does -- puts a swing up to 45 degrees off what the
+ * player is plainly aiming at, and at arm's length that is the difference
+ * between hitting somebody and hitting the air beside them.
+ *
+ * A WALL STILL STOPS IT, on the same DDA the shot uses. Reaching through the
+ * shopkeeper's counter to knock him down would be the first thing anybody tried.
+ *
+ * MUTATES NOTHING and allocates only its result, like every resolver here: the
+ * HUD asks ten times a second.
+ */
+function reachTarget({ world, people, fauna, player, tool, now, readyAt }) {
+  if (now < readyAt) {
+    return { verb: 'hit', tile: null, label: null, blocked: 'still swinging' };
+  }
+
+  const px = player.x, pz = player.z;
+  const ox = Math.sin(player.yaw), oz = Math.cos(player.yaw);
+  const reach = tool.reach ?? 1.4;
+  const stop = ddaBlock(world, px, pz, ox, oz, reach);
+
+  // The swing is WIDE where a shot is narrow: an arm sweeps a arc and a pellet
+  // does not, so a body half a tile off the line is still in the way of it.
+  let bestT = stop, best = null, kind = null;
+
+  for (const n of (people?.npcs ?? [])) {
+    if (n.downed > 0) continue;
+    const dx = n.x - px, dz = n.z - pz;
+    const t = dx * ox + dz * oz;
+    if (t <= 0 || t >= bestT) continue;
+    if (Math.abs(dx * oz - dz * ox) > n.radius + SWEEP) continue;
+    bestT = t; best = n; kind = 'npc';
+  }
+
+  for (const a of (fauna?.animals ?? [])) {
+    if (a.dying !== null && a.dying !== undefined) continue;
+    const dx = a.x - px, dz = a.z - pz;
+    const t = dx * ox + dz * oz;
+    if (t <= 0 || t >= bestT) continue;
+    if (Math.abs(dx * oz - dz * ox) > a.radius + SWEEP) continue;
+    bestT = t; best = a; kind = 'animal';
+  }
+
+  if (!best) return { verb: 'hit', tile: null, label: null, blocked: 'nothing within reach' };
+  return {
+    verb: 'hit',
+    tile: [Math.floor(best.x), Math.floor(best.z)],
+    label: kind === 'npc' ? best.name : best.type.label,
+    blocked: null,
+    kind,
+    target: best,
+    range: bestT,
+  };
+}
+
+/** How far to either side of the heading a swing still connects. An arm is not a pellet. */
+const SWEEP = 0.42;
 
 /**
  * What the gun is pointing at, or why it is pointing at nothing.
@@ -197,6 +298,90 @@ function ddaBlock(world, px, pz, ox, oz, reach) {
   return reach;
 }
 
+/**
+ * What the rod would do, which is one of three things.
+ *
+ * The first verb in this file whose answer depends on something that is already
+ * HAPPENING. Every other resolver here reads the world and the tool; this one
+ * reads the line as well, because a rod with a float on the water is a
+ * different tool from a rod without one -- and the key that casts it is the key
+ * that hooks a fish and the key that winds it back in.
+ *
+ * Three verbs and not one with a mode, so the HUD says "cast", "hook" or "reel"
+ * without having to know how fishing works, and so main.js dispatches them the
+ * way it dispatches everything else: one branch each. See sim/Fishing.js, which
+ * owns the line itself. This function still MUTATES NOTHING -- it is asked ten
+ * times a second, like the rest.
+ */
+function fishTarget({ world, player, tool, fishing }) {
+  // A fish on the line is the only thing worth saying while it is on, and it is
+  // asked first because it is the one moment in this game with a deadline.
+  if (fishing?.biting) {
+    return {
+      verb: 'hook',
+      tile: fishing.tile,
+      label: fishing.fish?.type.label ?? 'Something',
+      blocked: null,
+    };
+  }
+  if (fishing?.out) {
+    return { verb: 'reel', tile: fishing.tile, label: 'Line', blocked: null };
+  }
+
+  const spot = castSpot(world, player.x, player.z, Math.sin(player.yaw), Math.cos(player.yaw),
+    tool.range ?? 6);
+  if (!spot) {
+    return { verb: 'cast', tile: null, label: null, blocked: 'no water in reach' };
+  }
+  return {
+    verb: 'cast',
+    tile: [Math.floor(spot.x), Math.floor(spot.z)],
+    label: 'Water',
+    blocked: null,
+    spot,
+  };
+}
+
+/**
+ * Where a cast down this heading would land, or null for dry ground.
+ *
+ * The gun's walk with a different question asked of each cell. A shot wants the
+ * first thing that STOPS it; a cast wants the last open water it can still
+ * reach, so the line goes out over the pond rather than plopping in at the
+ * player's feet -- and stops at the far bank rather than sailing over it into
+ * the field beyond.
+ *
+ * Returns a POINT and not a tile. Where a float lands is a fact about the line
+ * that was aimed, and snapping it to a tile centre would make every cast into
+ * the same pond land on one of half a dozen spots. The point is the centre of
+ * the last water cell nudged back along the heading, which keeps a float that
+ * landed against the far bank visibly on the water rather than in the reeds.
+ *
+ * Scalars only, at most 2*reach steps, allocates its result and nothing else.
+ */
+export function castSpot(world, px, pz, ox, oz, reach) {
+  let x = Math.floor(px), z = Math.floor(pz);
+  const stepX = ox > 0 ? 1 : -1, stepZ = oz > 0 ? 1 : -1;
+  const invX = ox === 0 ? Infinity : 1 / Math.abs(ox);
+  const invZ = oz === 0 ? Infinity : 1 / Math.abs(oz);
+  let tMaxX = ox === 0 ? Infinity : ((ox > 0 ? x + 1 - px : px - x) * invX);
+  let tMaxZ = oz === 0 ? Infinity : ((oz > 0 ? z + 1 - pz : pz - z) * invZ);
+
+  let best = null;
+  for (let i = 0; i < 64; i++) {
+    const t = Math.min(tMaxX, tMaxZ);
+    if (t > reach) break;
+    if (tMaxX < tMaxZ) { x += stepX; tMaxX += invX; } else { z += stepZ; tMaxZ += invZ; }
+    if (!world.inBounds(x, z)) break;
+    if (world.isOpenWater(x, z)) { best = [x, z]; continue; }
+    // Dry land, a wall or a post. Before the water it is something the line has
+    // to clear; past it, it is the far bank and the cast is over.
+    if (best || world.isBlocked(x, z)) break;
+  }
+  if (!best) return null;
+  return { x: best[0] + 0.5 - ox * 0.18, z: best[1] + 0.5 - oz * 0.18 };
+}
+
 function chopTarget(world, edits, tool, x, z) {
   const obj = world.objectAt(x, z);
   if (!obj) return null;
@@ -209,6 +394,37 @@ function chopTarget(world, edits, tool, x, z) {
     label: obj.props?.label ?? type.label,
     hits: edits.hitsOn(obj.id),
     swings: tool.swings,
+    blocked: null,
+  };
+}
+
+/**
+ * What a pickaxe would break, or null.
+ *
+ * `chopTarget` with one word changed, and they stay two functions on purpose:
+ * the category test is the ONLY thing either of them does, so folding them into
+ * one resolver with the category passed in would produce a tool whose verb is
+ * "break the thing in front of me" -- which is a game where owning the axe and
+ * owning the pick are the same fact.
+ *
+ * A boulder is 2x2 and `objectAt` answers for every cell of a footprint, so the
+ * corner you happen to be standing at makes no difference to what you hit.
+ */
+function mineTarget(world, edits, tool, x, z) {
+  const obj = world.objectAt(x, z);
+  if (!obj) return null;
+  const type = objectType(obj.type);
+  if (type.category !== 'rock') return null;
+  return {
+    verb: 'mine',
+    tile: [x, z],
+    object: obj,
+    label: obj.props?.label ?? type.label,
+    hits: edits.hitsOn(obj.id),
+    // A boulder is twice a rock in every dimension, so it is worth two more
+    // blows -- read off the footprint rather than off a second field in the
+    // registry, because "how big is it" is already written down there once.
+    swings: tool.swings + (obj.shape.w * obj.shape.d > 1 ? 2 : 0),
     blocked: null,
   };
 }
@@ -267,6 +483,25 @@ export function chopDrops(obj) {
   return out;
 }
 
+/**
+ * What a broken rock leaves on the ground.
+ *
+ * Seeded by the rock's own id, exactly like the wood a given oak pays: what a
+ * stone is worth is a fact about that stone, not about the afternoon you got
+ * round to breaking it. A boulder pays more because it is bigger, which is read
+ * off its footprint for the reason `mineTarget` reads its swings off it.
+ */
+export function mineDrops(obj) {
+  const rng = makeRng(`mine:${obj.id}`);
+  const big = obj.shape.w * obj.shape.d > 1;
+  const out = ['item.stone', 'item.stone'];
+  if (big) out.push('item.stone', 'item.stone');
+  if (rng() < (big ? 0.7 : 0.4)) out.push('item.stone');
+  // The one thing worth digging a rock out for beyond the rubble.
+  if (rng() < (big ? 0.35 : 0.15)) out.push('item.shell');
+  return out;
+}
+
 /** What is left of a stump once it is out of the ground. */
 export function stumpDrops(id) {
   const rng = makeRng(`stump:${id}`);
@@ -293,6 +528,11 @@ const BIG_GAME = new Set(['sheep', 'goat']);
  * not about the moment you happened to catch it.
  */
 export function killDrops(animal) {
+  // A species that says what it is worth carrying away gets the last word, and
+  // exactly one of them: a fish is a fish whether it came off a line or out of
+  // the water some other way. Every land animal says nothing and is meat.
+  if (animal.type.spoils) return [animal.type.spoils];
+
   const rng = makeRng(`kill:${animal.id}`);
   const out = ['item.game'];
   if (BIG_GAME.has(animal.typeId) && rng() < 0.8) out.push('item.game');

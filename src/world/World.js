@@ -20,7 +20,8 @@
 import { STEP_HEIGHT, WATER_DROP, DIR, DIR_VEC } from '../core/constants.js';
 import { surfaceById } from './surfaces.js';
 import { formByName } from './forms.js';
-import { objectType, maskCells, CELL } from './objectTypes.js';
+import { shoal } from './shoals.js';
+import { objectType, rotateMask, maskCells, CELL } from './objectTypes.js';
 import { FLAG, RAMP_DIR } from './WorldFile.js';
 
 /** Collision bitflags. */
@@ -63,6 +64,7 @@ export class World {
     this.zoneGrid = data.zoneGrid;
     this.zones = data.zones ?? [null];
     this.objects = data.objects;
+    this.authoredObjectCount = this.objects.length;
     // Where this place's animals START. The live ones belong to sim/Fauna.js:
     // World holds facts derived from the file, and nothing in it is ever ticked.
     this.animals = data.animals ?? [];
@@ -99,6 +101,28 @@ export class World {
     this.dug = new Set();
 
     this.#derive();
+
+    /**
+     * The fish this place's water holds, as animal specs (world/shoals.js).
+     *
+     * Derived ONCE, here, and not in `#derive`: it is a fact about where the
+     * water is, and no edit the player can make moves water. `revert` re-derives
+     * everything an axe and a shovel can touch, and deliberately not this.
+     */
+    this.shoal = shoal(this);
+  }
+
+  /**
+   * Every animal this place opens with: the ones its file placed, plus the ones
+   * its water stocks.
+   *
+   * The one read that answers "what lives here" rather than "what does the file
+   * say lives here", and it exists so that sim/Fauna.js can build a trout by
+   * exactly the route it builds a chicken -- see world/shoals.js on why fish
+   * are derived at all.
+   */
+  spawns() {
+    return this.shoal.length ? this.animals.concat(this.shoal) : this.animals;
   }
 
   /** Build every index this class derives from the file. */
@@ -155,6 +179,22 @@ export class World {
     return true;
   }
 
+  /** Add one player-placed object and rebuild the indices it contributes to. */
+  addObject({ id, type, tile, rotation = 0, props = {} }) {
+    if (!id || this.byId.has(id) || !objectType(type)) return null;
+    const shape = rotateMask(objectType(type).footprint, rotation / 90);
+    const [ax, az] = tile;
+    for (let dz = 0; dz < shape.d; dz++) {
+      for (let dx = 0; dx < shape.w; dx++) {
+        if (!this.inBounds(ax + dx, az + dz) || this.isBlocked(ax + dx, az + dz)) return null;
+      }
+    }
+    const obj = { id, type, tile: [ax, az], rotation, props, shape };
+    this.objects.push(obj);
+    this.#derive();
+    return obj;
+  }
+
   /** Open or fill a hole on a tile. Returns false if the tile is out of bounds. */
   setHole(x, z, open) {
     if (!this.inBounds(x, z)) return false;
@@ -173,6 +213,7 @@ export class World {
    * town with somebody else's tree stumps in it.
    */
   revert() {
+    this.objects.length = this.authoredObjectCount;
     this.felled.clear();
     this.dug.clear();
     this.#derive();
@@ -226,9 +267,12 @@ export class World {
     }
 
     // Then objects: stamp each footprint cell, blocking only where the mask says '#'.
+    for (const i of this.dug) this.collision[i] |= BLOCK.DUG;
+
     this.objects.forEach((obj, index) => {
       this.byId.set(obj.id, index);
       obj.index = index;
+      if (this.felled.has(obj.id)) return;
       const [ax, az] = obj.tile;
       const { w, d, mask } = obj.shape;
       for (let dz = 0; dz < d; dz++) {
@@ -252,6 +296,7 @@ export class World {
    */
   #buildPortals() {
     for (const obj of this.objects) {
+      if (this.felled.has(obj.id)) continue;
       const dest = obj.props?.interior;
       if (!dest) continue;
       const [ax, az] = obj.tile;
@@ -319,6 +364,39 @@ export class World {
 
   isWater(x, z) {
     return this.inBounds(x, z) && surfaceById(this.surface[this.idx(x, z)]).water;
+  }
+
+  /**
+   * Water with nothing standing in it: the tiles a fish, a float or a line can
+   * actually be in.
+   *
+   * Water and SOLID are separate bits for a reason (see `#buildCollision`), and
+   * this is where that separation pays: a jetty post is a solid object standing
+   * on a water tile, so the tile is still water -- it is just water a fish
+   * cannot be inside of.
+   */
+  isOpenWater(x, z) {
+    if (!this.isWater(x, z)) return false;
+    return (this.collision[this.idx(x, z)] & BLOCK.SOLID) === 0;
+  }
+
+  /**
+   * Can a SWIMMING body overlap tile (tx, tz) while it sits on (fx, fz)?
+   *
+   * The mirror of `canOccupy`, and the whole of what it means to be a fish: the
+   * two questions are asked by the same sweep in sim/body.js, of the same tiles,
+   * and every difference between a chicken and a trout falls out of which one
+   * gets asked. Neither can enter the other's tiles, so a fish cannot beach
+   * itself and a chicken cannot swim, and nothing had to be written twice.
+   *
+   * The elevation test is the counterpart of `canStep`'s edge test: two ponds at
+   * different heights that happen to touch are two ponds, not a fish ladder.
+   */
+  canSwim(tx, tz, fromX, fromZ) {
+    if (!this.isOpenWater(tx, tz)) return false;
+    if (!this.inBounds(fromX, fromZ)) return false;
+    if (tx === fromX && tz === fromZ) return true;
+    return this.elevation[this.idx(tx, tz)] === this.elevation[this.idx(fromX, fromZ)];
   }
 
   /**
@@ -465,6 +543,28 @@ export class World {
     }
     if (Math.abs(dx) + Math.abs(dz) === 1) return this.canStep(fromX, fromZ, tx, tz);
     return !this.isBlocked(tx, tz);
+  }
+
+  /**
+   * Nearest open-water tile to a target, spiralling outward.
+   *
+   * `nearestWalkable` for the things that drown on land. Both exist for the same
+   * reason -- a spawn point derived from a rule may land one tile inside the
+   * wrong medium -- and both give up and return the target rather than searching
+   * the whole map, because a fish asked for at the top of a mountain is a bug in
+   * the caller and not something to hunt for.
+   */
+  nearestWater(x, z, maxRadius = 12) {
+    if (this.isOpenWater(x, z)) return [x, z];
+    for (let r = 1; r <= maxRadius; r++) {
+      for (let dz = -r; dz <= r; dz++) {
+        for (let dx = -r; dx <= r; dx++) {
+          if (Math.max(Math.abs(dx), Math.abs(dz)) !== r) continue;
+          if (this.isOpenWater(x + dx, z + dz)) return [x + dx, z + dz];
+        }
+      }
+    }
+    return [x, z];
   }
 
   /** Nearest walkable tile to a target, spiralling outward. Used for safe spawns. */

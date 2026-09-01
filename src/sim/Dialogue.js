@@ -11,14 +11,21 @@
  * THE CONTEXT IS THE ONLY WAY IT TOUCHES THE WORLD
  * ------------------------------------------------
  * Effects need to give you a flower and take your coins, so the machine is
- * handed `{ inventory, purse, friends }` and reaches nothing else. `friends` is
- * READ-ONLY here on purpose: a script may ask whether you are welcome (see the
- * `friend` condition) and there is no effect that grants it, because being
- * welcome is something you earn by turning up, not something a line of dialog
- * can vote itself. It cannot move the
- * player, cannot open a door, and cannot mutate the place -- so "what can a
- * line of dialog in a world file do to my game" has an answer you can read in
- * one screen, which matters rather a lot for a format meant to be hand-edited.
+ * handed `{ inventory, purse, friends }` and reaches nothing else. It cannot
+ * move the player, cannot open a door, and cannot mutate the place -- so "what
+ * can a line of dialog in a world file do to my game" has an answer you can
+ * read in one screen, which matters rather a lot for a format meant to be
+ * hand-edited.
+ *
+ * `friends` is ALMOST read-only, and the exception is worth stating because it
+ * is the only one. A script may ask whether you are welcome (the `friend`
+ * condition) and no effect grants it: being welcome is earned by turning up
+ * where somebody lives, not voted for by a line of their own dialog. But
+ * `peace` does write, because ending a feud is not the same act -- it is paid
+ * for in the same breath by `gift`, with a real item leaving the bag, and the
+ * thing it buys is being strangers again rather than being friends. An effect
+ * that can only ever cost you something is not a script awarding itself a
+ * prize. See sim/Friends.js and world/grudge.js.
  *
  * WHY THE SHOP SUSPENDS THE CONVERSATION
  * --------------------------------------
@@ -39,13 +46,18 @@ const MAX_HOPS = 32;
 
 export class Dialogue {
   /**
-   * @param {Npc} npc  the person talking; supplies the script, memory and shop
+   * @param {Npc} npc  the person talking; supplies the memory and the shop
    * @param {{inventory: Inventory, purse: Purse, friends?: Friends}} ctx
+   * @param {object} [script]  what he says, defaulting to his own dialog. The
+   *   one caller that passes something else is the one talking to somebody who
+   *   is angry, who gets a grudge script instead -- see world/grudge.js. It is
+   *   a parameter and not a field on the Npc because WHICH script is running is
+   *   a fact about this conversation, and the next one may be a different one.
    */
-  constructor(npc, ctx) {
+  constructor(npc, ctx, script = npc.dialog) {
     this.npc = npc;
     this.ctx = ctx;
-    this.script = npc.dialog;
+    this.script = script;
     this.node = null;
     this.page = 0;
     this.done = false;
@@ -172,9 +184,29 @@ export class Dialogue {
         // becoming a debt the game has no way to express.
         case 'coins': v >= 0 ? this.ctx.purse.earn(v) : this.ctx.purse.pay(Math.min(-v, this.ctx.purse.coins)); break;
         case 'shop': if (v) this.shop = this.npc.shop; break;
+        case 'gift': if (v) this.#gift(); break;
+        // Absent friends is a caller who is not asking -- checkworld drives
+        // these scripts with no player in the world -- and the sensible thing
+        // to do with a feud nobody is keeping track of is nothing.
+        case 'peace': if (v) this.ctx.friends?.forgive(this.npc.id); break;
       }
     }
     this.version++;
+  }
+
+  /**
+   * Hand over one of whatever is in the player's hand.
+   *
+   * The held slot rather than a search, because "what you are holding" is a
+   * thing the player can see and change: the item is on the hotbar with the
+   * highlight on it, and giving away something out of a slot they were not
+   * looking at would be a theft. An empty hand gives nothing and is not an
+   * error -- the `holding` condition is how a script avoids offering the line
+   * at all, and this is the belt to that pair of braces.
+   */
+  #gift() {
+    const inv = this.ctx.inventory;
+    if (inv.held) inv.removeFrom(inv.selected, 1);
   }
 
   /** Remove `count` of a type from wherever it is in the bag. */
@@ -203,6 +235,7 @@ export class Dialogue {
         // you have not, in a run with no player in it. Treating absent as false
         // would quietly hide half of every script from the only check we have.
         case 'friend': if (this.ctx.friends && this.ctx.friends.has(this.npc.id) !== v) return false; break;
+        case 'holding': if (!!inventory.held !== v) return false; break;
         case 'visits': if (mem.visits < v) return false; break;
         case 'coins': if (purse.coins < v) return false; break;
         case 'has': if (inventory.count(v.type) < v.count) return false; break;

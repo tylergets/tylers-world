@@ -187,6 +187,140 @@ const HOLD = {
       },
     },
   },
+  // The pickaxe borrows the axe's carry and its swing, because they are the
+  // same motion: a two-handed tool brought round the body and down into
+  // something at knee height. What differs is where it ENDS -- a rock is
+  // half the height of a tree's foot, so the follow-through is a touch lower --
+  // and that is one key, not a second animation.
+  'tool.pickaxe': {
+    lying: true, yaw: 0.35, roll: Math.PI / 2, grip: [-0.16, 0.035, 0.052], scale: 1.3,
+    rest: { p: [0.12, 0.11, 0.09], d: [-0.40, 0.78, 0.48], l: 0.15, lean: 0.03 },
+    acts: {
+      mine: {
+        dur: 0.5,
+        keys: [
+          // Low first, for the reason the axe goes low first: a straight lerp
+          // from "up and left" to "up and right" routes the haft through the
+          // crown of the head, and this body's head is a quarter of a tile wide.
+          { t: 0.10, p: [0.16, 0.10, 0.14], d: [0.25, -0.28, 0.93], lp: [-0.21, 0.12, 0.08], lean: -0.06 },
+          { t: 0.30, p: [0.18, 0.21, -0.08], d: [0.40, 0.70, -0.59], lp: [-0.22, 0.14, 0.02], lean: -0.20, look: -0.10 },
+          // Through, into the stone: the point ends lower than the axe's blade
+          // does, because what it is aimed at is knee-high and not waist-high.
+          { t: 0.52, p: [0.00, 0.11, 0.15], d: [-0.10, -0.72, 0.69], lp: [-0.20, 0.09, 0.10], lean: 0.36, look: 0.16 },
+          { t: 0.76, p: [0.05, 0.15, 0.16], d: [-0.18, -0.05, 0.98], lp: [-0.19, 0.10, 0.08], lean: 0.14, look: 0.04 },
+        ],
+      },
+    },
+  },
+  // Both melee tools are ONE-handed, which is what visually separates them from
+  // the axe: the left hand never comes near the haft, so the pose reads as a
+  // weapon held out rather than a tool being worked with. The swing is
+  // horizontal, across the body, because a body somebody is standing in front
+  // of is at chest height and not at the ground.
+  'tool.hammer': {
+    lying: true, yaw: 0.30, roll: Math.PI / 2, grip: [-0.13, 0.035, 0], scale: 1.35,
+    rest: { p: [0.19, 0.13, 0.05], d: [-0.10, 0.92, 0.38], lp: [-0.20, 0.08, 0.06], lean: 0.02 },
+    acts: {
+      hit: {
+        dur: 0.5,
+        keys: [
+          // Wind up over the shoulder, well clear of the head on the right.
+          { t: 0.16, p: [0.23, 0.17, -0.06], d: [0.30, 0.86, -0.41], lp: [-0.22, 0.11, 0.02], lean: -0.16, look: -0.08 },
+          // Down and forward: the head ends at chest height, half a tile out.
+          { t: 0.44, p: [0.09, 0.17, 0.15], d: [-0.16, -0.16, 0.97], lp: [-0.19, 0.07, 0.09], lean: 0.32, look: 0.14 },
+          { t: 0.72, p: [0.15, 0.15, 0.11], d: [-0.12, 0.45, 0.88], lp: [-0.20, 0.08, 0.07], lean: 0.12, look: 0.04 },
+        ],
+      },
+    },
+  },
+  'tool.sword': {
+    lying: true, yaw: 0.32, roll: 0, grip: [-0.235, 0.03, -0.077], scale: 1.3,
+    // Point up and slightly forward, the way you carry a drawn blade you are
+    // not currently using. Well off the vertical, or the tip disappears behind
+    // the head from the 3D camera.
+    rest: { p: [0.18, 0.14, 0.08], d: [0.16, 0.90, 0.40], lp: [-0.20, 0.08, 0.06], lean: 0.02 },
+    acts: {
+      hit: {
+        dur: 0.38,
+        keys: [
+          // Drawn back to the right, blade level: a cut, not a chop.
+          { t: 0.14, p: [0.22, 0.17, -0.05], d: [0.72, 0.34, -0.60], lp: [-0.22, 0.11, 0.02], lean: -0.14, look: -0.10 },
+          // Swept across the body to the left, still level. The tip travels
+          // through everything standing in front of the player, which is the
+          // whole of what the verb claims.
+          { t: 0.34, p: [0.06, 0.18, 0.16], d: [-0.72, 0.06, 0.69], lp: [-0.18, 0.09, 0.10], lean: 0.26, look: 0.16 },
+          { t: 0.66, p: [0.12, 0.16, 0.12], d: [-0.30, 0.62, 0.72], lp: [-0.20, 0.08, 0.07], lean: 0.08, look: 0.04 },
+        ],
+      },
+    },
+  },
+  // The machine gun holds like the gun and kicks like it, but LESS: a burst
+  // that threw the whole torso back eleven times a second would read as a
+  // seizure. Same pose, a third of the travel, and a duration short enough that
+  // the next shot can start before this one has finished settling.
+  'tool.machinegun': {
+    lying: true, yaw: 0.20, roll: -Math.PI / 2, grip: [-0.03, 0.045, 0], scale: 1.25,
+    rest: { p: [0.09, 0.19, 0.06], d: [-0.14, -0.02, 0.99], l: 0.20, lean: 0.02 },
+    acts: {
+      shoot: {
+        dur: 0.16,
+        keys: [
+          { t: 0.25, p: [0.075, 0.198, 0.03], d: [-0.13, 0.07, 0.99], l: 0.195, lean: -0.04, look: -0.02 },
+        ],
+      },
+    },
+  },
+  // A map is READ, not swung: held up in both hands at chest height, which is
+  // also the pose the act returns to, because opening it takes no motion the
+  // body can show beyond looking down at it.
+  'tool.map': {
+    lying: false, yaw: 0.24, roll: 0, grip: [0, 0.02, 0], scale: 1.5,
+    rest: { p: [0.10, 0.17, 0.15], d: [0, 0.55, 0.84], l: 0.05, lean: 0.04, look: 0.10 },
+    acts: {
+      map: {
+        dur: 0.45,
+        keys: [
+          { t: 0.35, p: [0.04, 0.19, 0.19], d: [0, 0.42, 0.91], l: 0.05, lean: 0.10, look: 0.22 },
+          { t: 0.70, p: [0.06, 0.18, 0.18], d: [0, 0.48, 0.88], l: 0.05, lean: 0.07, look: 0.16 },
+        ],
+      },
+    },
+  },
+  // Held out in front, lens forward -- which is the pose that makes the verb
+  // legible, because a camera pointed anywhere but where the player is looking
+  // would be a lie about what the picture is going to contain.
+  'tool.camera': {
+    lying: false, yaw: 0.18, roll: 0, grip: [0, 0.06, -0.02], scale: 1.25,
+    rest: { p: [0.10, 0.20, 0.14], d: [0, 0.12, 0.99], l: 0.04, lean: 0.02, look: 0.04 },
+    acts: {
+      photo: {
+        dur: 0.4,
+        keys: [
+          // Up to the eye, and a small jolt as the shutter goes.
+          { t: 0.30, p: [0.06, 0.24, 0.13], d: [0, 0.05, 1.0], l: 0.04, lean: 0.05, look: 0.02 },
+          { t: 0.45, p: [0.06, 0.235, 0.11], d: [0, 0.10, 0.99], l: 0.04, lean: -0.02, look: -0.03 },
+          { t: 0.72, p: [0.08, 0.22, 0.13], d: [0, 0.08, 1.0], l: 0.04, lean: 0.02, look: 0.0 },
+        ],
+      },
+    },
+  },
+  // Carried low and forward in one hand, lens end out. The pose has to agree
+  // with where the beam actually goes (Stage.setTorch aims it along the
+  // player's yaw), or the light and the thing making it are two different lies.
+  'tool.torch': {
+    lying: true, yaw: 0.28, roll: -Math.PI / 2, grip: [-0.03, 0.04, 0], scale: 1.3,
+    rest: { p: [0.15, 0.16, 0.10], d: [-0.08, -0.12, 0.99], lp: [-0.20, 0.07, 0.06], lean: 0.02 },
+    acts: {
+      light: {
+        dur: 0.3,
+        keys: [
+          // A flick of the wrist, which is all switching one on ever looks like.
+          { t: 0.35, p: [0.15, 0.18, 0.11], d: [-0.06, 0.22, 0.97], lp: [-0.20, 0.08, 0.06], lean: -0.04, look: -0.03 },
+          { t: 0.70, p: [0.15, 0.17, 0.11], d: [-0.07, 0.0, 0.99], lp: [-0.20, 0.07, 0.06], lean: 0.02 },
+        ],
+      },
+    },
+  },
   'tool.gun': {
     lying: true, yaw: 0.20, roll: -Math.PI / 2, grip: [-0.02, 0.045, 0], scale: 1.3,
     // Held ready across the body rather than shouldered: these arms cannot
@@ -200,6 +334,58 @@ const HOLD = {
           // Kick: back and up, and the head goes with it.
           { t: 0.10, p: [0.055, 0.20, 0.02], d: [-0.12, 0.16, 0.98], l: 0.17, lean: -0.10, look: -0.05 },
           { t: 0.45, p: [0.075, 0.20, 0.05], d: [-0.13, 0.04, 0.99], l: 0.175, lean: 0.0, look: 0.0 },
+        ],
+      },
+    },
+  },
+  /**
+   * The rod is held UP, which no other tool here is.
+   *
+   * Every other pose in this file points the working end at the ground in front
+   * of the player, because that is where an axe, a spade and a gun are aimed. A
+   * rod's working end is the tip, the tip is where the line leaves it, and the
+   * line has to be visibly attached to something the player can see -- so the
+   * tip is carried high and forward, clear of the head and clear of the body,
+   * and the whole pose is arranged around keeping it there.
+   *
+   * `tip` is how far up the shaft that end is, in hold-space units and already
+   * scaled. It is what render/Stage.js hangs the line from, and it is stated
+   * here rather than measured off the mesh because the pose is what decides
+   * where the tip actually IS -- the mesh only knows how long it is.
+   */
+  'tool.rod': {
+    lying: true, yaw: 0.22, roll: Math.PI / 2, grip: [-0.21, 0.036, -0.045], scale: 1.3,
+    tip: 0.66,
+    // Two-handed, tip high and out over the water. The left hand is well up the
+    // shaft: that is where the reel is, and a rod held at the butt alone folds
+    // the wrist backwards at this length.
+    rest: { p: [0.10, 0.15, 0.11], d: [-0.24, 0.73, 0.64], l: 0.15, lean: 0.03 },
+    acts: {
+      // The cast goes BACK and then forward, which is the only way a cast
+      // reads: it is a loading move and a release, and taking the windup out
+      // leaves the rod waving. It stays on the same side of the head throughout
+      // -- back over the right shoulder, not over the crown -- for the reason
+      // the axe swings round rather than over.
+      cast: {
+        dur: 0.55,
+        keys: [
+          { t: 0.20, p: [0.11, 0.19, -0.01], d: [0.18, 0.68, -0.71], l: 0.15, lean: -0.17, look: -0.07 },
+          // Through: the tip whips forward and drops, which is what throws the
+          // float. The lean carries the shoulders with it.
+          { t: 0.42, p: [0.06, 0.19, 0.14], d: [-0.22, 0.34, 0.91], l: 0.14, lean: 0.24, look: 0.12 },
+          { t: 0.68, p: [0.06, 0.16, 0.15], d: [-0.24, 0.16, 0.96], l: 0.14, lean: 0.10, look: 0.04 },
+        ],
+      },
+      // Setting the hook and winding in are one motion played for both: a sharp
+      // lift, then the rod brought back down and in. A separate strike
+      // animation would differ from this one by about a tenth of a radian, and
+      // the difference nobody can see is the animation nobody should maintain.
+      reel: {
+        dur: 0.5,
+        keys: [
+          { t: 0.14, p: [0.10, 0.20, 0.06], d: [-0.26, 0.91, 0.32], l: 0.15, lean: -0.14, look: -0.08 },
+          { t: 0.40, p: [0.09, 0.16, 0.10], d: [-0.30, 0.60, 0.74], l: 0.13, lean: 0.12, look: 0.06 },
+          { t: 0.72, p: [0.10, 0.16, 0.10], d: [-0.26, 0.70, 0.66], l: 0.15, lean: 0.02 },
         ],
       },
     },
@@ -263,7 +449,13 @@ for (const hold of Object.values(HOLD)) prepare(hold);
 prepare(CARRY);
 
 /** Verbs that are not their own animation: filling and grubbing are digging. */
-const VERB_TRACK = { chop: 'chop', dig: 'dig', fill: 'dig', clear: 'dig', shoot: 'shoot' };
+const VERB_TRACK = {
+  chop: 'chop', dig: 'dig', fill: 'dig', clear: 'dig', shoot: 'shoot',
+  // Hooking a fish and winding the line back in are the same motion played for
+  // two different reasons, which is the same claim `fill` and `clear` make
+  // about the spade.
+  cast: 'cast', hook: 'reel', reel: 'reel',
+};
 
 // ---------------------------------------------------------------- scratch --
 // Every vector below is reused every frame by the pose maths. None of them
@@ -415,6 +607,29 @@ export class PlayerView {
       rh: new THREE.Vector3(), lh: new THREE.Vector3(),
       roll: 0, lean: 0, look: 0,
     };
+  }
+
+  /**
+   * Where the working end of the held tool is, in WORLD space, or null.
+   *
+   * One caller: the fishing line, which has to hang from the rod tip and not
+   * from a guess at where a hand might be. It reads the pose the same frame the
+   * pose was set, which is why this is a method on the view rather than a
+   * number the Stage keeps -- the tip moves with the cast animation, the lean,
+   * the walk bounce and the lie-back, and every one of those lives here.
+   *
+   * The world matrices are refreshed rather than trusted: this is called
+   * between `update` and the render, when three has not yet walked the graph,
+   * and a line hanging off last frame's tip would visibly lag the rod during
+   * the one animation anybody looks at.
+   *
+   * Writes into a caller-owned vector, like every other hot path here.
+   */
+  tip(out) {
+    const reach = this.holdData?.tip;
+    if (!reach) return null;
+    this.hold.updateWorldMatrix(true, false);
+    return this.hold.localToWorld(out.set(0, reach, 0));
   }
 
   /**

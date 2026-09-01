@@ -45,16 +45,57 @@ export class FreeInput {
   constructor({ walk = 3.6, run = 5.8 } = {}) {
     this.walk = walk; this.run = run;
     this.name = 'free';
+    this.route = [];
+    this.destination = null;
+    this.stuckT = 0;
   }
 
   atRest() { return true; }   // free movement can be interrupted at any moment
 
-  reset() {}                  // and it carries no state to clear
+  reset() { this.cancel(); }
+
+  cancel() {
+    this.route.length = 0;
+    this.destination = null;
+    this.stuckT = 0;
+  }
+
+  follow(route) {
+    this.cancel();
+    if (!route.length) return;
+    this.route = route.slice();
+    this.destination = route[route.length - 1];
+  }
 
   update(dt, player, keys, world, camYaw = 0) {
     const kx = (keys.right ? 1 : 0) - (keys.left ? 1 : 0);
     const kz = (keys.down ? 1 : 0) - (keys.up ? 1 : 0);
-    if (kx === 0 && kz === 0) return { vx: 0, vz: 0 };
+    if (kx !== 0 || kz !== 0) this.cancel();
+
+    if (kx === 0 && kz === 0) {
+      while (this.route.length) {
+        const [tx, tz] = this.route[0];
+        const dx = tx + 0.5 - player.x, dz = tz + 0.5 - player.z;
+        const dist = Math.hypot(dx, dz);
+        const speed = this.walk * player.surfaceSpeed();
+
+        if (dist < speed * dt + 1e-4) {
+          this.route.shift();
+          this.stuckT = 0;
+          if (!this.route.length) this.destination = null;
+          return { vx: dx / dt, vz: dz / dt };
+        }
+
+        this.stuckT = player.speed < 0.05 ? this.stuckT + dt : 0;
+        if (this.stuckT > 0.3) {
+          this.cancel();
+          return { vx: 0, vz: 0 };
+        }
+
+        return { vx: (dx / dist) * speed, vz: (dz / dist) * speed };
+      }
+      return { vx: 0, vz: 0 };
+    }
 
     // Camera-relative, at the camera's exact angle: this filter owns the 3D
     // view, where the orbit is continuous, so there is nothing to snap to and

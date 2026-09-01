@@ -43,6 +43,12 @@
  *                                         someone is a thing you do by talking
  *                                         to them where they live, not a line a
  *                                         script can award itself.
+ *   { "holding": true }                   there is something in the player's
+ *                                         hand -- ANY something, which is the
+ *                                         point: it is what a line that offers
+ *                                         to hand over whatever you are
+ *                                         carrying has to ask, and `has` can
+ *                                         only ask about a named type
  *   { "visits": 2 }                       talked to at least twice (this one counts)
  *   { "has": { "type": "item.apple", "count": 3 } }
  *   { "room": { "type": "item.apple" } }  the bag could take one
@@ -56,6 +62,22 @@
  *   { "take": { "type": "item.apple", "count": 3 } }
  *   { "coins": -25 }                      spend (negative) or earn (positive)
  *   { "shop": true }                      open the trade interface
+ *   { "gift": true }                      hand over one of whatever is in your
+ *                                         hand, whatever it happens to be
+ *   { "peace": true }                     this NPC stops being angry about
+ *                                         having been shot. NOT the same as
+ *                                         becoming friends: it ends the feud
+ *                                         and leaves you strangers, and their
+ *                                         door stays shut until you go and say
+ *                                         hello where they live.
+ *
+ * The last two are the vocabulary the GRUDGE scripts are written in (see
+ * world/grudge.js), which is why they are a pair and why neither of them names
+ * an item type: what an apology is worth is whatever you were carrying when you
+ * decided to make one. There is deliberately no condition for "is this person
+ * angry" to go with them, because a script never has to ask -- an angry person
+ * is not running his own script at all, he is running a grudge script instead,
+ * and that is what being angry MEANS here.
  *
  * WHY NOT AN EXPRESSION STRING
  * ---------------------------
@@ -76,6 +98,7 @@ export const END = 'end';
 const CONDITIONS = {
   flag: 'string',
   friend: 'boolean',
+  holding: 'boolean',
   visits: 'number',
   coins: 'number',
   has: 'itemcount',
@@ -93,6 +116,8 @@ const EFFECTS = {
   take: 'itemcount',
   coins: 'number',
   shop: 'boolean',
+  gift: 'boolean',
+  peace: 'boolean',
 };
 
 export class DialogError extends Error {

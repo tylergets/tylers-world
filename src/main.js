@@ -36,7 +36,10 @@
  */
 
 import { PORTAL } from './world/World.js';
+import { itemType } from './world/itemTypes.js';
+import { objectType, rotateMask } from './world/objectTypes.js';
 import { Places } from './world/places.js';
+import { grudgeFor } from './world/grudge.js';
 import { Stage } from './render/Stage.js';
 import { Orbit } from './render/orbit.js';
 import { Player } from './sim/Player.js';
@@ -46,13 +49,19 @@ import { Dialogue } from './sim/Dialogue.js';
 import { Ground } from './sim/Ground.js';
 import { Edits } from './sim/Edits.js';
 import { Fixtures, interactOf } from './sim/Fixtures.js';
-import { toolTarget, toolOf, chopDrops, stumpDrops, digFind, AMMO, killDrops } from './sim/tools.js';
+import {
+  toolTarget, toolOf, chopDrops, stumpDrops, digFind, AMMO, killDrops, mineDrops,
+} from './sim/tools.js';
+import { Fishing } from './sim/Fishing.js';
 import { FreeInput, GridInput } from './sim/inputs.js';
 import { findPath } from './sim/pathfind.js';
 import { Keyboard } from './sim/Keyboard.js';
+import { yawFromVec } from './core/constants.js';
 import { Hud } from './ui/hud.js';
 import { WorldsPanel } from './ui/worlds.js';
 import { Chat } from './ui/dialogue.js';
+import { MapScreen } from './ui/mapscreen.js';
+import { PhotoView } from './ui/photo.js';
 import { VOICE_MODES } from './audio/voice.js';
 import * as sfx from './audio/sfx.js';
 import { generate, worldId } from './world/generate.js';
@@ -143,6 +152,12 @@ class Game {
     this.gameSettings = readGameSettings();
     /** When the gun is next ready. Game state, so the resolver stays pure. */
     this._readyAt = 0;
+    /**
+     * The line, if one is out. One per GAME and not one per place: a float is
+     * not a fact about a pond, it is a thing the player is doing, and carrying
+     * it through a doorway is exactly what `setPlace` refuses to let happen.
+     */
+    this.angling = new Fishing();
     // Antialiasing is a context property, so it is passed in at construction
     // and cannot be changed after. Everything else below is a live switch.
     this.stage = new Stage(canvas, { antialias: this.graphics.antialias === 'on' });
@@ -152,6 +167,11 @@ class Game {
     this.stage.setQuality(SCALE_VALUES[this.graphics.resolution]);
     this.player = new Player(world);
     this.keys = new Keyboard();
+    this.pointer = null;
+    canvas.addEventListener('pointermove', (e) => {
+      this.pointer = { x: e.clientX, y: e.clientY };
+    });
+    canvas.addEventListener('pointerleave', () => { this.pointer = null; });
     canvas.addEventListener('pointerdown', (e) => this.pointAt(e));
 
     this.free = new FreeInput();
@@ -217,6 +237,14 @@ class Game {
     // detached overlay fails in the worst possible way, because the game still
     // hands the keyboard to a conversation nobody can see.
     this.chat = new Chat(hudRoot, { mode: readVoiceMode() });
+
+    // The two screens the carried tools open. Built here for the reason the
+    // chat box is -- after the Hud, so its innerHTML cannot detach them -- and
+    // both are inert until a tool asks for them: owning neither a map nor a
+    // camera means neither of these is ever seen.
+    this.mapScreen = new MapScreen(hudRoot);
+    this.photos = new PhotoView(hudRoot);
+
     this.hud.setVoice(this.chat.mode);
     this.hud.setMap(this.graphics.map);
     this.syncGraphics();
@@ -442,16 +470,12 @@ class Game {
     // watching the player finish walking it while the camera tilts down behind
     // them is the sort of ghost input that feels like a stuck key.
     if (this.pendingInput === this.free) this.grid.cancel();
+    else this.free.cancel();
   }
 
   /**
-   * Click-to-walk: route the player to the tile under the pointer.
-   *
-   * Top-down only, and that is a design decision rather than a technical limit
-   * -- the pick works at any morph amount. In the 3D view the camera sits behind
-   * the player and you are steering a body; in the map view you are reading a
-   * map, and pointing at a spot on a map means "go there". Mixing the two would
-   * make a stray click in the middle of a run yank control away.
+   * In 3D, use the selected tool or walk to the clicked tile. In top-down, keep
+   * the map's existing click-to-walk behaviour.
    *
    * The route is computed from the tile the player STANDS on, so it starts where
    * the walker will be by the time it takes its first step, not where it was
@@ -459,11 +483,38 @@ class Game {
    */
   pointAt(event) {
     if (event.button !== 0 || this.travel || this.chat.active) return;
-    if (this.input !== this.grid || this.pendingInput === this.free) return;
+    const point = this.stage.pickPoint(event.clientX, event.clientY);
+    if (!point) return;
+    const tile = [Math.floor(point.x), Math.floor(point.z)];
+    if (!this.world.inBounds(...tile)) return;
 
-    const tile = this.stage.pickTile(event.clientX, event.clientY);
-    if (!tile) return;
-    this.grid.follow(findPath(this.world, [this.player.tileX, this.player.tileZ], tile));
+    if (this.input === this.free && this.pendingInput !== this.grid) {
+      this.pointer = { x: event.clientX, y: event.clientY };
+      this.facePoint(point);
+      if (toolOf(this.player.inventory.held?.typeId)) {
+        this.free.cancel();
+        this.useTool();
+      } else {
+        this.free.follow(findPath(this.world, [this.player.tileX, this.player.tileZ], tile));
+      }
+      return;
+    }
+
+    if (this.input === this.grid && this.pendingInput !== this.free) {
+      this.grid.follow(findPath(this.world, [this.player.tileX, this.player.tileZ], tile));
+    }
+  }
+
+  /** Keep the 3D player's heading under the mouse as the camera follows them. */
+  facePointer() {
+    if (!this.pointer || this.input !== this.free || this.pendingInput === this.grid) return;
+    const point = this.stage.pickPoint(this.pointer.x, this.pointer.y);
+    if (point) this.facePoint(point);
+  }
+
+  facePoint(point) {
+    const dx = point.x - this.player.x, dz = point.z - this.player.z;
+    if (Math.hypot(dx, dz) > 0.05) this.player.yaw = yawFromVec(dx, dz);
   }
 
   // --------------------------------------------------------------- places --
@@ -482,7 +533,6 @@ class Game {
     // read off the World, so a generated place -- which has no URL a fetch
     // could ever satisfy -- is still findable by the same route as any other.
     this.placeUrls.set(world.meta.id, world.url);
-    this.stage.setWorld(world);
     // EDITS BEFORE FAUNA, and the order is load-bearing. A place's edits are
     // where "this animal is not here any more" is written down, and a place is
     // rebuilt from its file every time it is dropped from the cache -- so
@@ -490,6 +540,7 @@ class Game {
     // on its authored tile, for one frame on a re-entry and permanently on a
     // save that is restored straight into this room.
     this.edits = this.editsFor(world);
+    this.stage.setWorld(world);
     this.stage.setEdits(this.edits);
     this.live = this.faunaFor(world);
     this.live.sync(this.edits.culled);
@@ -516,6 +567,12 @@ class Game {
     // the room you are actually in.
     this.trespass = null;
     this.legalTile = null;
+    // And so is the line. A float belongs to a pond in a place you are no
+    // longer in, and the fish it had been sent for belongs to that place's
+    // Fauna -- which is cached and still ticking nothing, holding an errand
+    // from a rod two rooms away.
+    this.angling.reset();
+    this.stage.setAngle(null);
     this.hud.setWorld(world, this.stack.length > 0);
   }
 
@@ -549,6 +606,7 @@ class Game {
       this.folk.set(world.meta.id, (folk = new Folk(world)));
       folk.restore(this.#claim(world, 'folk'));
     }
+    folk.refreshShops(this.player.clock.day);
     return folk;
   }
 
@@ -685,21 +743,34 @@ class Game {
     // both of which ask who the player is friends with.
     this.player.inventory.restore(restore?.inventory ?? { slots: [], selected: 0 });
     this.player.purse.restore(restore?.coins);
-    this.player.friends.restore(restore?.friends ?? []);
     // A save from before there was time has no clock in it, and the sensible
     // reading of that is the morning of the first day -- which is what
     // Clock.restore does with an absent block. See Save.js on why the save
     // version is NOT bumped for an additive field.
+    //
+    // BEFORE the friendships, which is the one ordering here that is load
+    // bearing rather than tidy: a grudge is a deadline measured against this
+    // clock, and a save written before grudges had deadlines has to be given
+    // one from the time it is being read at. See Friends.restore.
     this.player.clock.restore(restore?.clock);
+    this.player.friends.restore(restore?.friends ?? [], this.player.clock.stamp);
     this.syncGameSettings();
-    // A new game starts with the two tools in the bag. They are ordinary items
+    // A new game starts with three tools in the bag. They are ordinary items
     // -- sellable, droppable, and buyable again over a counter -- so this is a
     // starting KIT and not a permanent ability. What it buys is that every
-    // world can be chopped and dug from the first minute, including a generated
-    // one, which has trees and beaches but no shop to sell you a spade.
+    // world can be chopped, dug and fished from the first minute, including a
+    // generated one, which has trees, beaches and ponds but no shop to sell you
+    // a spade.
+    //
+    // The rod is in here and the gun is not, and the line between them is what
+    // the tool COSTS to use. An axe, a spade and a rod cost time; a gun costs
+    // ammunition, which is the one recurring reason to have coins, and handing
+    // one out at the start would spend that decision before the player had
+    // made it.
     if (!restore) {
       this.player.inventory.add('tool.axe', 1);
       this.player.inventory.add('tool.shovel', 1);
+      this.player.inventory.add('tool.rod', 1);
     }
 
     this.setPlace(world, world.spawn.tile, world.spawn.facing);
@@ -1178,6 +1249,27 @@ class Game {
   }
 
   /**
+   * Let the day's distance do what a gift would have done.
+   *
+   * Every frame rather than every dawn, because a grudge is a DAY and not a
+   * midnight (sim/Friends.js): somebody shot at dusk stops being angry at dusk,
+   * which is not a moment anything else in the game is watching for. It costs a
+   * map lookup on a map that is almost always empty.
+   *
+   * Says so out loud when the person is standing in the room with you, on the
+   * same argument `dawn` makes about the morning line: a consequence that ends
+   * silently is indistinguishable from one that was never running. When they
+   * are three towns away it stays quiet -- a notice about somebody you cannot
+   * see reads as the game talking to itself.
+   */
+  cool() {
+    for (const id of this.player.friends.cool(this.player.clock.stamp)) {
+      const npc = this.people?.npcs.find((n) => n.id === id);
+      if (npc) this.note(`${npc.name} seems to have got over it.`);
+    }
+  }
+
+  /**
    * A new day.
    *
    * Everything the world does on its own happens here, which is the point of
@@ -1195,6 +1287,7 @@ class Game {
    */
   dawn(days) {
     let back = 0;
+    let newStock = false;
 
     // EVERY place this session knows about, not merely the one underfoot. A
     // dawn that only reached the room you were standing in would leave the
@@ -1211,9 +1304,14 @@ class Game {
       back += this.fauna.get(id)?.restock() ?? owed;
     }
 
-    this.note(back
-      ? `Day ${this.player.clock.day}. Something is moving out there again.`
-      : `Day ${this.player.clock.day}.`);
+    for (const folk of this.folk.values()) {
+      newStock = folk.refreshShops(this.player.clock.day) || newStock;
+    }
+
+    const lines = [`Day ${this.player.clock.day}.`];
+    if (back) lines.push('Something is moving out there again.');
+    if (newStock) lines.push('The furniture shop has new stock.');
+    this.note(lines.join(' '));
     return days;
   }
 
@@ -1229,13 +1327,22 @@ class Game {
    * Asked fresh rather than read off `this.trespass`, because that field is a
    * frame behind by the time a key is polled, and a step behind the counter
    * followed by a fast hello would otherwise buy you a friendship.
+   *
+   * SOMEBODY YOU SHOT IS HAVING A DIFFERENT CONVERSATION. He gets a grudge
+   * script instead of his own (world/grudge.js), and that single swap is the
+   * whole of what being angry costs him: no greeting, no gossip, no errands,
+   * and no shop, because the line that opens the shop is in a node this script
+   * has not got. `Friends.add` refuses him too, so a hello on his own doorstep
+   * cannot quietly buy back the door -- see Friends.js on why an apology that
+   * costs one keypress is not an apology.
    */
   talk(npc) {
     if (!npc || this.chat.active) return null;
     npc.lookAt(this.player.x, this.player.z);
     if (!this.intruding()) this.player.friends.add(npc.id);
     const ctx = this.tradeCtx();
-    this.chat.open(new Dialogue(npc, ctx), ctx);
+    const script = this.player.friends.hates(npc.id) ? grudgeFor(npc) : npc.dialog;
+    this.chat.open(new Dialogue(npc, ctx, script), ctx);
     this.talking = npc;
     return npc;
   }
@@ -1252,9 +1359,10 @@ class Game {
     return {
       inventory: this.player.inventory,
       purse: this.player.purse,
-      // Read-only from in there: a script may ask whether you two have met (the
-      // `friend` condition) and there is no effect that grants it. See
-      // sim/Dialogue.js.
+      // Nearly read-only from in there: a script may ask whether you two have
+      // met (the `friend` condition) and no effect grants it. The one effect
+      // that does write is `peace`, which ENDS a feud and is paid for by the
+      // item `gift` has just taken out of the bag. See sim/Dialogue.js.
       friends: this.player.friends,
     };
   }
@@ -1318,6 +1426,7 @@ class Game {
     const inv = this.player.inventory;
     const held = inv.held;
     if (!held) return null;
+    if (itemType(held.typeId).furniture) return this.placeFurniture(held.typeId);
 
     const spots = [this.player.aheadTile(), [this.player.tileX, this.player.tileZ]];
     const spot = spots.find(([x, z]) => this.loose.canDrop(x, z));
@@ -1327,6 +1436,42 @@ class Game {
     // said yes, so the only way `drop` can fail now is a bug worth crashing on.
     const gone = inv.removeFrom(inv.selected, 1);
     return this.loose.drop(gone.typeId, spot[0], spot[1]);
+  }
+
+  /** Assemble the selected furniture flat-pack in front of the player. */
+  placeFurniture(typeId) {
+    const furniture = itemType(typeId).furniture;
+    if (!furniture) return null;
+
+    const rotation = this.player.facing * 90;
+    const shape = rotateMask(objectType(furniture).footprint, this.player.facing);
+    const [x, z] = this.player.aheadTile();
+    const anchors = [
+      [x - Math.floor(shape.w / 2), z],
+      [x - shape.w + 1, z - Math.floor(shape.d / 2)],
+      [x - Math.floor(shape.w / 2), z - shape.d + 1],
+      [x, z - Math.floor(shape.d / 2)],
+    ];
+    const tile = anchors[this.player.facing];
+
+    for (let dz = 0; dz < shape.d; dz++) {
+      for (let dx = 0; dx < shape.w; dx++) {
+        if (this.loose.itemAt(tile[0] + dx, tile[1] + dz)) {
+          this.note('Move the item on the floor first.');
+          return null;
+        }
+      }
+    }
+
+    const obj = this.edits.place(furniture, tile, rotation);
+    if (!obj) {
+      this.note('There is not enough clear floor here.');
+      return null;
+    }
+    this.player.inventory.removeFrom(this.player.inventory.selected, 1);
+    this.stage.rebuildWorld(this.world);
+    this.note(`${objectType(furniture).label} placed.`);
+    return obj;
   }
 
   // ----------------------------------------------------------------- tools --
@@ -1365,6 +1510,10 @@ class Game {
       inventory: this.player.inventory,
       now: this.time,
       readyAt: this._readyAt ?? 0,
+      // Read for the same reason and under the same rule: the rod's answer
+      // depends on what the line is already doing, and the HUD asking what the
+      // key would do must never be able to change it.
+      fishing: this.angling,
     });
   }
 
@@ -1382,13 +1531,192 @@ class Game {
     const what = this.toolAction();
     if (!what || what.blocked) return null;
     const done = what.verb === 'chop' ? this.chop(what)
-      : what.verb === 'dig' ? this.dig(what)
-        : what.verb === 'fill' ? (this.edits.fill(...what.tile) ? what : null)
-          : what.verb === 'clear' ? this.grub(what)
-            : what.verb === 'shoot' ? this.shoot(what)
-              : null;
+      : what.verb === 'mine' ? this.mine(what)
+        : what.verb === 'dig' ? this.dig(what)
+          : what.verb === 'fill' ? (this.edits.fill(...what.tile) ? what : null)
+            : what.verb === 'clear' ? this.grub(what)
+              : what.verb === 'shoot' ? this.shoot(what)
+                : what.verb === 'hit' ? this.strike(what)
+                  : what.verb === 'map' ? this.openMap(what)
+                    : what.verb === 'photo' ? this.takePhoto(what)
+                      : what.verb === 'light' ? this.toggleTorch(what)
+                        : what.verb === 'cast' ? this.castLine(what)
+                          : what.verb === 'hook' ? this.hook(what)
+                            : what.verb === 'reel' ? this.reelIn(what)
+                              : null;
     if (done) this.stage.playerAction(what.verb, this.time);
     return done;
+  }
+
+  /** Whether the held tool keeps firing while the key is down. */
+  get autoFire() {
+    return toolOf(this.player.inventory.held?.typeId)?.auto === true;
+  }
+
+  /**
+   * Drive the map screen from the keyboard.
+   *
+   * Keys are POLLED here rather than listened for by the panel, which is the
+   * rule ui/dialogue.js already runs on: there is one place that decides what a
+   * key means, and it is this loop. A panel with its own `keydown` handler
+   * would be a second opinion about Escape.
+   *
+   * The world keeps moving underneath -- so the dots on the map are where the
+   * animals actually are, which is most of the reason to draw them live at all.
+   */
+  updateMapScreen(dt) {
+    const k = this.keys;
+    if (k.pressed('Escape') || k.pressed('KeyM') || k.pressed('Tab')) this.mapScreen.close();
+    // F closes it too, and it is the same key that opened it -- but only after
+    // re-centring, so the first press of the key you are already holding does
+    // the useful thing and the second puts the map away.
+    else if (k.pressed('KeyF')) {
+      if (this.mapScreen.centred(this.player)) this.mapScreen.close();
+      else this.mapScreen.follow(this.player);
+    }
+    if (k.pressed('Equal') || k.pressed('NumpadAdd')) this.mapScreen.zoomBy(1.25);
+    if (k.pressed('Minus') || k.pressed('NumpadSubtract')) this.mapScreen.zoomBy(1 / 1.25);
+    if (k.pressed('Digit0')) this.mapScreen.fit(this.player);
+
+    // Panning reads the movement keys as a LEVEL, not an edge: this is a scroll
+    // and not a step, and the arrow keys already mean "that way" everywhere
+    // else in the game. Rate in tiles per second, scaled by the zoom, so the
+    // map slides at about the same speed on screen however far in it is.
+    const s = this.keys.state;
+    const px = (s.right ? 1 : 0) - (s.left ? 1 : 0);
+    const pz = (s.down ? 1 : 0) - (s.up ? 1 : 0);
+    if (px || pz) {
+      const rate = (s.run ? 900 : 420) * dt / this.mapScreen.zoom;
+      this.mapScreen.panBy(px * rate, pz * rate);
+    }
+
+    this.people.update(dt);
+    this.live.update(dt);
+  }
+
+  /** Flip through the roll, and put the camera down. */
+  updatePhotos(dt) {
+    const k = this.keys;
+    if (k.pressed('Escape') || k.pressed('KeyF') || k.pressed('KeyE')) this.photos.close();
+    if (k.pressed('ArrowLeft') || k.pressed('KeyA')) this.photos.step(1);
+    if (k.pressed('ArrowRight') || k.pressed('KeyD')) this.photos.step(-1);
+
+    this.people.update(dt);
+    this.live.update(dt);
+  }
+
+  /**
+   * Break a rock, one blow at a time.
+   *
+   * `chop` with a different noun, and they stay two methods for the reason
+   * their two resolvers do -- what falls out is different, and a tree leaves a
+   * stump where a rock leaves a clear tile. `Edits.fell` handles both without
+   * being told which: it only records a stump for something in the `tree`
+   * category, so a broken boulder simply stops being there.
+   */
+  mine(what) {
+    const obj = what.object;
+    if (this.edits.swing(obj) < what.swings) {
+      this.stage.chopHit(obj.id, this.time);
+      sfx.pick();
+      return what;
+    }
+    // Straighten whatever is still shaking BEFORE the rock goes, on the rule
+    // `chop` states: a wobble that outlived its prop leans a span that is no
+    // longer there.
+    this.stage.chopHit(null);
+    this.edits.fell(obj);
+    sfx.pick();
+    for (const typeId of mineDrops(obj)) this.spill(typeId, what.tile);
+    return what;
+  }
+
+  /**
+   * Hit whatever is within reach.
+   *
+   * The gun's consequences without the gun's ammunition, and the asymmetry is
+   * the same one `shoot` documents at length: a person is KNOCKED DOWN, gets up
+   * four seconds later, and remembers it; an animal is killed, and that is
+   * written into the place's edits so it survives a reload -- but it comes back
+   * at dawn, because a world you can permanently strip is a world with nothing
+   * to do in it by the second day.
+   *
+   * The cooldown is the same clock the gun uses. One tool is in your hand at a
+   * time, so one "when is it ready" is all there is to know, and a second timer
+   * would only be a way for the two to disagree about a bag you have just
+   * swapped tools in.
+   */
+  strike(what) {
+    const tool = toolOf(this.player.inventory.held?.typeId);
+    if (!tool) return null;
+    this._readyAt = this.time + (tool.cooldown ?? 0.6);
+    sfx.thud();
+
+    if (what.kind === 'npc') {
+      what.target.knockDown();
+      // Swinging at somebody costs exactly what saying hello bought: the
+      // friendship, and with it their front door. Recoverable, deliberately --
+      // see Friends.js, and `shoot`, which makes the same call for the same
+      // reason.
+      this.player.friends.anger(what.target.id);
+      this.note(`${what.target.name} will remember that.`);
+      return what;
+    }
+
+    const animal = this.live.kill(what.target.id);
+    if (!animal) return null;
+    this.edits.cull(animal.id);
+    for (const typeId of killDrops(animal)) this.spill(typeId, what.tile);
+    return what;
+  }
+
+  /**
+   * Unfold the map.
+   *
+   * The screen is handed the world and the player and owns everything after
+   * that -- see ui/mapscreen.js. Nothing is spent, nothing is timed, and
+   * nothing about the place changes, which is why this returns the target
+   * unconditionally: the only way to fail to look at a map is not to have one,
+   * and the resolver has already settled that.
+   */
+  openMap(what) {
+    this.mapScreen.show(this.world, this.player);
+    return what;
+  }
+
+  /**
+   * Take a picture of the next frame.
+   *
+   * The shutter fires HERE and the picture arrives later, during the render --
+   * see Stage.requestPhoto for why the readback cannot happen anywhere else.
+   * The caption is stamped now rather than in the callback, because by the time
+   * the frame is drawn the player may have walked through a door and the place
+   * a photograph was taken in is not a thing that should be able to change
+   * between pressing the button and getting the picture.
+   */
+  takePhoto(what) {
+    const tool = toolOf(this.player.inventory.held?.typeId);
+    this._readyAt = this.time + (tool?.cooldown ?? 0.6);
+    const caption = `${this.world.meta.name ?? 'Somewhere'} · ${this.player.clock.label}`;
+    this.stage.requestPhoto((url) => this.photos.add(url, caption));
+    sfx.shutter();
+    return what;
+  }
+
+  /**
+   * Switch the flashlight.
+   *
+   * State lives on the Stage, because what it is is a light in the scene; what
+   * lives here is the RULE that it goes out when the torch leaves your hand --
+   * enforced in `update`, every frame, rather than at every point a slot could
+   * change. There are half a dozen ways to stop holding something (the slot
+   * keys, dropping it, selling it over a counter, a save being loaded) and
+   * exactly one of them needs to be missed for a beam to be left hanging in the
+   * air over a town with no torch in it.
+   */
+  toggleTorch(what) {
+    sfx.click(this.stage.setTorch(!this.stage.torchOn));
+    return what;
   }
 
   /**
@@ -1401,11 +1729,15 @@ class Game {
    * than an ordinary state -- which is why it returns instead of carrying on.
    *
    * An NPC is knocked down and an animal is killed, and the asymmetry is the
-   * design rather than a shortcut. A person gets up: it is four seconds and a
-   * grudge, and it is not saved, on the precedent Edits.js sets about axe
-   * swings. An animal does not: it is written into the place's edits and it
-   * survives a reload -- but it comes back at dawn, because a world you can
-   * permanently strip is a world with nothing to do in it by the second day.
+   * design rather than a shortcut. A person gets up: it is four seconds on the
+   * floor, and the four seconds are not saved, on the precedent Edits.js sets
+   * about axe swings. An animal does not: it is written into the place's edits
+   * and it survives a reload -- but it comes back at dawn, because a world you
+   * can permanently strip is a world with nothing to do in it by the second day.
+   *
+   * THE GRUDGE IS SAVED, and it is the part with a length to it. A day, from
+   * the moment of the shot, and shooting somebody who is already angry starts
+   * the day again rather than being free. See sim/Friends.js.
    */
   shoot(what) {
     const tool = toolOf(this.player.inventory.held?.typeId);
@@ -1423,10 +1755,15 @@ class Game {
       // Shooting somebody is the exact inverse of saying hello, and it costs
       // exactly what saying hello bought: the friendship, and with it their
       // front door -- the trespass clock starts again the moment you are no
-      // longer welcome. Recoverable by going back and saying hello, which is
-      // deliberate. See Friends.js.
-      this.player.friends.anger(what.target.id);
-      this.note(`${what.target.name} will remember that.`);
+      // longer welcome. See Friends.js.
+      const fresh = this.player.friends.anger(what.target.id, this.player.clock.stamp);
+      // Two lines, because the second shot is a different event and a readout
+      // that could not tell them apart would make it look like nothing
+      // happened. The first one says a day has started; the second says it has
+      // started again.
+      this.note(fresh
+        ? `${what.target.name} will remember that.`
+        : `${what.target.name} had almost stopped remembering the last one.`);
       return what;
     }
 
@@ -1435,6 +1772,90 @@ class Game {
     this.edits.cull(animal.id);
     for (const typeId of killDrops(animal)) this.spill(typeId, what.tile);
     return what;
+  }
+
+  /**
+   * Put a float on the water.
+   *
+   * The cheapest of the three fishing keys and the only one that starts
+   * anything: where the line goes was worked out by the resolver (`castSpot` in
+   * sim/tools.js), which means the HUD was already showing that this cast was
+   * possible before the key was pressed.
+   */
+  castLine(what) {
+    if (!what.spot) return null;
+    this.angling.cast(what.spot);
+    this.stage.setAngle(this.angling);
+    sfx.splash(0.16);
+    return what;
+  }
+
+  /**
+   * Set the hook, and put a fish on the bank.
+   *
+   * The counterpart of `shoot`, and deliberately built out of the same three
+   * moves: take it out of the flock, write it into the place's edits, and spill
+   * what it was worth where the player can pick it up. A fished-out pond
+   * therefore recovers exactly as a shot-out field does -- at dawn, from the
+   * same `forgetCulled` -- and no part of fishing had to invent its own idea of
+   * what "gone until tomorrow" means.
+   *
+   * It is `take` and not `kill`: a landed fish does not topple over on the
+   * surface of the water for four tenths of a second. See sim/Fauna.js.
+   */
+  hook(what) {
+    const fish = this.angling.strike();
+    if (!fish) return null;
+    this.stage.setAngle(null);
+    if (!this.live.take(fish.id)) return null;
+    this.edits.cull(fish.id);
+    sfx.splash(0.3);
+    // Spilled at the PLAYER's feet and not at the float, which is the one place
+    // in this game where those differ: the float is in water, and water is the
+    // one surface nothing can be dropped on -- `spill` would spiral outward
+    // looking for dry land and find the far bank as readily as this one.
+    for (const typeId of killDrops(fish)) {
+      this.spill(typeId, [this.player.tileX, this.player.tileZ]);
+    }
+    this.note(`A ${fish.type.label.toLowerCase()}.`);
+    return what;
+  }
+
+  /** Wind in, with nothing on the end of it. */
+  reelIn(what) {
+    this.angling.reelIn();
+    this.stage.setAngle(null);
+    return what;
+  }
+
+  /**
+   * Advance the line, and say out loud whatever it decided.
+   *
+   * The line is the only verb in this game that keeps running after the key is
+   * released, so it is the only one with a tick -- and everything it can report
+   * is worth a word, because all three outcomes are invisible otherwise: a bite
+   * happens under the water, a miss happens in under a second, and a lost line
+   * happens because the player walked away without noticing they had one out.
+   *
+   * The rod must still be in your hand. Putting it away is a way of stopping,
+   * and a float left on a pond by a player now holding an axe would be a thing
+   * the game was drawing for no reason anybody could act on.
+   */
+  tickLine(dt) {
+    if (!this.angling.out) return;
+    if (toolOf(this.player.inventory.held?.typeId)?.verb !== 'fish') {
+      this.angling.reelIn();
+      this.stage.setAngle(null);
+      return;
+    }
+
+    const event = this.angling.update(dt, {
+      world: this.world, fauna: this.live, player: this.player,
+    });
+    if (event === 'bite') { sfx.bite(); this.note('Something is at it.'); }
+    else if (event === 'miss') { sfx.splash(0.14); this.note('It got away.'); }
+    else if (event === 'lost') this.note('Your line went slack.');
+    this.stage.setAngle(this.angling);
   }
 
   /**
@@ -1595,6 +2016,11 @@ class Game {
     this.stage.setTimeOfDay(this.player.clock.t);
     const dawned = this.player.clock.advance(dt);
     if (dawned) this.dawn(dawned);
+    // Straight after the clock moves, and BEFORE the conversation branch: the
+    // grudge that runs out has to be gone before `talk` decides which script
+    // this hello gets, or the first sentence of a reconciliation would be an
+    // angry one.
+    this.cool();
 
     // Whether the floor under the player is someone's, and what happens when
     // it has been for too long. Before the conversation branch and not after
@@ -1616,6 +2042,27 @@ class Game {
 
     if (this.chat.active) {
       this.updateChat(dt);
+      this.keys.endFrame();
+      return;
+    }
+
+    // The two screens a carried tool opens take the keyboard on exactly the
+    // terms a conversation does, and for the same reason: they are things you
+    // are holding up in front of your face, not decisions about the session.
+    // The world keeps living underneath -- the chickens walk, the sun moves,
+    // and the trespass clock above has already run, because standing behind
+    // the counter reading a map is still standing behind the counter.
+    //
+    // The photo comes first: taking one is the last thing that happened, so it
+    // is the thing on top, and a map left open behind it is still open when it
+    // is put away.
+    if (this.photos.open) {
+      this.updatePhotos(dt);
+      this.keys.endFrame();
+      return;
+    }
+    if (this.mapScreen.open) {
+      this.updateMapScreen(dt);
       this.keys.endFrame();
       return;
     }
@@ -1671,6 +2118,7 @@ class Game {
     // filter steers by is a fact about that filter.
     const camYaw = this.input === this.grid ? this.orbit.stepYaw : this.orbit.yaw;
     const { vx, vz } = this.input.update(dt, this.player, this.keys.state, this.world, camYaw);
+    this.facePointer();
     this.player.move(dt, vx, vz);
 
     // Interaction reads the position the player is standing in NOW, so it runs
@@ -1679,7 +2127,23 @@ class Game {
     // the apple, and it belongs to the place you took it in.
     if (this.keys.pressed('KeyE') || this.keys.pressed('Space')) this.interact();
     if (this.keys.pressed('KeyQ')) this.drop();
-    if (this.keys.pressed('KeyF')) this.useTool();
+    // The tool key is read as an EDGE, and -- for an automatic weapon only --
+    // also as a LEVEL. `pressed` is evaluated first and always, so it is
+    // consumed either way and the first shot of a burst is the ordinary one;
+    // every shot after it comes from the key still being down. Nothing else
+    // needed teaching: the rate is the tool's own cooldown, which the resolver
+    // was already enforcing before there was anything automatic to enforce it
+    // for. See itemTypes.js on `auto`, and Keyboard.held.
+    if (this.keys.pressed('KeyF')
+      || (this.autoFire && this.keys.held('KeyF'))) this.useTool();
+    // The beam goes out when the torch leaves your hand, whichever of the half
+    // dozen ways that happened -- a slot key, a drop, a sale over a counter, a
+    // save being loaded. Checked here, once, every frame, rather than at each
+    // of those points: one of them only has to be missed for a light to be left
+    // hanging in the air over a town with no torch in it.
+    if (this.stage.torchOn && toolOf(this.player.inventory.held?.typeId)?.verb !== 'light') {
+      this.stage.setTorch(false);
+    }
     if (this.keys.pressed('BracketLeft')) this.player.inventory.cycle(-1);
     if (this.keys.pressed('BracketRight')) this.player.inventory.cycle(1);
     // Only the live place's animals tick. A town whose chickens kept walking
@@ -1687,12 +2151,16 @@ class Game {
     // you are standing in, to move things nobody can see.
     this.live.update(dt);
     this.people.update(dt);
+    // AFTER the animals, so a fish that reached the float this frame is at the
+    // float when the line is asked about it, rather than a frame behind -- the
+    // bite window is one second, and a frame of it is worth having.
+    this.tickLine(dt);
     this.checkPortals();
-    // The marker is a view of GridInput.destination and nothing else, so there
+    // The marker is a view of the active input's destination and nothing else, so there
     // is no second copy of "where am I walking" that can outlive the route --
     // including the routes cancelled by a key press or a bump, which never tell
     // anyone they stopped.
-    this.stage.setMarker(this.input === this.grid ? this.grid.destination : null);
+    this.stage.setMarker(this.input.destination ?? null);
     this.keys.endFrame();
   }
 
@@ -1755,6 +2223,11 @@ class Game {
     // the claim that this is affordable is a number on the panel (`cpu map`)
     // rather than a promise in a comment.
     this.hud.drawMap(this);
+    // The map screen redraws on the same cadence and inside the same
+    // measurement, because it is the same picture at a different size -- and
+    // because a full-screen map is exactly where a per-frame cost would show
+    // up if there were one. It returns immediately when it is not up.
+    this.mapScreen.draw(this);
     const t3 = performance.now();
     this._updAccum += t1 - t0;
     this._rndAccum += t2 - t1;

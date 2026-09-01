@@ -65,6 +65,8 @@ export class Edits {
     this.holes = new Map();
     /** How many holes this place has ever had dug in it. Seeds what they turn up. */
     this.digs = 0;
+    /** Furniture assembled by the player, in placement order. */
+    this.placed = [];
     /** Bumped on every change, so the renderer can skip a reconcile. */
     this.version = 0;
     /** object id -> swings landed so far. Transient: see the note above. */
@@ -72,6 +74,20 @@ export class Edits {
   }
 
   get holeList() { return [...this.holes.values()]; }
+
+  place(type, tile, rotation = 0, id = null) {
+    const placed = {
+      id: id ?? `placed.${this.world.meta.id}.${this.placed.length + 1}`,
+      type,
+      tile: [...tile],
+      rotation,
+    };
+    const obj = this.world.addObject(placed);
+    if (!obj) return null;
+    this.placed.push(placed);
+    this.version++;
+    return obj;
+  }
 
   hitsOn(id) { return this.hits.get(id) ?? 0; }
 
@@ -208,6 +224,7 @@ export class Edits {
       cleared: [...this.felled].filter((id) => !this.hasStump(id)),
       holes: this.holeList.map((h) => [...h.tile]),
       digs: this.digs,
+      placed: this.placed.map((p) => ({ ...p, tile: [...p.tile] })),
     };
   }
 
@@ -220,6 +237,12 @@ export class Edits {
    */
   restore(snap) {
     if (!snap) return;
+    for (const p of snap.placed ?? []) {
+      if (p && typeof p.id === 'string' && typeof p.type === 'string'
+        && Array.isArray(p.tile) && [0, 90, 180, 270].includes(p.rotation ?? 0)) {
+        this.place(p.type, p.tile, p.rotation ?? 0, p.id);
+      }
+    }
     // Through `fell` and not straight into the World, so replaying a save takes
     // exactly the path an axe takes -- including the stump it leaves, which a
     // shortcut into `removeObject` would silently skip.

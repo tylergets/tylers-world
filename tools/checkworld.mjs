@@ -44,6 +44,8 @@ import { Folk } from '../src/sim/Folk.js';
 import { Dialogue } from '../src/sim/Dialogue.js';
 import { Inventory } from '../src/sim/Inventory.js';
 import { Purse } from '../src/sim/Purse.js';
+import { Friends } from '../src/sim/Friends.js';
+import { grudgeFor } from '../src/world/grudge.js';
 import { unreachableNodes, END } from '../src/world/dialog.js';
 import { kits } from '../src/world/kits.js';
 import { Fixtures, interactOf } from '../src/sim/Fixtures.js';
@@ -294,6 +296,66 @@ function nearReachable(world, seen, x, z, range = 2.2) {
  * appear when you are carrying something are covered too -- which is precisely
  * the half of a script that no amount of playing tests reliably.
  */
+/**
+ * Drive one script to exhaustion and say what was found.
+ *
+ * Split out of `checkFolk` because there are now two scripts per person: the
+ * one in the world file, and the one he falls back to while he is angry about
+ * being shot (src/world/grudge.js). They are the same format and they run on
+ * the same machine, so they get the same walk -- and the grudge script has to
+ * have it MORE than his own does, because it is the conversation nobody was
+ * playtesting when they wrote the town.
+ *
+ * @param {object} opts.bag      how to build the player's inventory for a lap
+ * @param {Friends} [opts.friends]  the friendships the script may ask about.
+ *   Left out for an ordinary script, deliberately: with no `friends` in the
+ *   context BOTH sides of a `friend` condition stay walkable, which is what
+ *   covers the lines written for people you have met and the ones written for
+ *   people you have not, in a run with no player in it. See sim/Dialogue.js.
+ */
+function walkScript(npc, script, { bag, friends }) {
+  // A STATE is where the conversation is plus what it has done to the NPC's
+  // memory -- because "what do I say next" depends on both, and a menu you
+  // have already asked about offers a different line than one you have not.
+  // Keying on that (rather than on the path taken to get there) is what makes
+  // a shopkeeper's menu loop terminate: the second lap through it is the same
+  // state and is not walked twice.
+  const seen = new Set();
+  const queue = [[]];
+  let ends = 0, shops = 0, truncated = false;
+
+  while (queue.length) {
+    if (seen.size >= STATE_CAP) { truncated = true; break; }
+    const path = queue.shift();
+    const ctx = { inventory: bag(), purse: new Purse(9999), ...(friends ? { friends: friends() } : {}) };
+    // Memory is per NPC and outlives a conversation, so every replay starts
+    // from a blank one: a line that only appears because an earlier walk set
+    // a flag is not a line a first-time player can reach.
+    npc.memory = { flags: new Set(), visits: 0 };
+    const d = new Dialogue(npc, ctx, script);
+    for (const step of path) {
+      if (d.trading) d.closeShop();
+      else if (d.choices.length) d.choose(d.choices[step].index);
+      else d.advance();
+    }
+    if (d.done) { ends++; continue; }
+
+    const key = `${d.node?.id}#${d.page}${d.trading ? '/shop' : ''}`
+      + `[${[...npc.memory.flags].sort().join(',')}]`;
+    if (seen.has(key)) continue;
+    seen.add(key);
+
+    if (d.trading) { shops++; queue.push([...path, 0]); continue; }
+    // No choices means the page advances by itself, which is one successor.
+    // `advance` always pages on, follows `then`, or ends, so a text node can
+    // never be a state with nowhere to go -- the dead ends this is looking
+    // for are the ones `parseDialog` cannot see: a menu whose every line is
+    // conditional in a way the world can never satisfy.
+    for (let i = 0; i < (d.choices.length || 1); i++) queue.push([...path, i]);
+  }
+  return { states: seen.size, ends, shops, truncated };
+}
+
 function checkFolk(world) {
   const folk = new Folk(world);
   for (const npc of folk.npcs) {
@@ -302,56 +364,59 @@ function checkFolk(world) {
     const orphans = unreachableNodes(npc.dialog);
     if (orphans.length) fail(`${npc.id}: dialog nodes never reachable from start: ${orphans.join(', ')}`);
 
-    // A STATE is where the conversation is plus what it has done to the NPC's
-    // memory -- because "what do I say next" depends on both, and a menu you
-    // have already asked about offers a different line than one you have not.
-    // Keying on that (rather than on the path taken to get there) is what makes
-    // a shopkeeper's menu loop terminate: the second lap through it is the same
-    // state and is not walked twice.
-    const seen = new Set();
-    const queue = [[]];
-    let ends = 0, shops = 0, truncated = false;
-
-    while (queue.length) {
-      if (seen.size >= STATE_CAP) { truncated = true; break; }
-      const path = queue.shift();
-      const ctx = { inventory: stockedBag(), purse: new Purse(9999) };
-      // Memory is per NPC and outlives a conversation, so every replay starts
-      // from a blank one: a line that only appears because an earlier walk set
-      // a flag is not a line a first-time player can reach.
-      npc.memory = { flags: new Set(), visits: 0 };
-      const d = new Dialogue(npc, ctx);
-      for (const step of path) {
-        if (d.trading) d.closeShop();
-        else if (d.choices.length) d.choose(d.choices[step].index);
-        else d.advance();
-      }
-      if (d.done) { ends++; continue; }
-
-      const key = `${d.node?.id}#${d.page}${d.trading ? '/shop' : ''}`
-        + `[${[...npc.memory.flags].sort().join(',')}]`;
-      if (seen.has(key)) continue;
-      seen.add(key);
-
-      if (d.trading) { shops++; queue.push([...path, 0]); continue; }
-      // No choices means the page advances by itself, which is one successor.
-      // `advance` always pages on, follows `then`, or ends, so a text node can
-      // never be a state with nowhere to go -- the dead ends this is looking
-      // for are the ones `parseDialog` cannot see: a menu whose every line is
-      // conditional in a way the world can never satisfy.
-      for (let i = 0; i < (d.choices.length || 1); i++) queue.push([...path, i]);
-    }
+    const own = walkScript(npc, npc.dialog, { bag: stockedBag });
 
     console.log(`  ${npc.id.padEnd(14)} ${npc.name}: `
-      + `${Object.keys(npc.dialog.nodes).length} nodes, ${seen.size} states, ${ends} endings`
-      + `${npc.shop ? `, ${shops} ways into the shop` : ''}${truncated ? ' (walk capped)' : ''}`);
-    if (!ends) fail(`${npc.id}: no path through this dialog ever ends -- the player cannot leave`);
-    if (npc.shop && !shops) fail(`${npc.id} has a shop no line of dialog opens`);
+      + `${Object.keys(npc.dialog.nodes).length} nodes, ${own.states} states, ${own.ends} endings`
+      + `${npc.shop ? `, ${own.shops} ways into the shop` : ''}${own.truncated ? ' (walk capped)' : ''}`);
+    if (!own.ends) fail(`${npc.id}: no path through this dialog ever ends -- the player cannot leave`);
+    if (npc.shop && !own.shops) fail(`${npc.id} has a shop no line of dialog opens`);
     // Not a failure: a big script legitimately has more states than we walk.
     // Silence would be worse than the note, because a capped walk has NOT
     // proved the thing the uncapped one proves.
-    if (truncated) console.log(`     (only the first ${STATE_CAP} states were walked)`);
+    if (own.truncated) console.log(`     (only the first ${STATE_CAP} states were walked)`);
+
+    checkGrudge(npc);
   }
+}
+
+/**
+ * Walk the conversation this person has after you shoot him.
+ *
+ * TWICE, with a full bag and an empty one, because the whole script turns on
+ * `holding` and one lap can only ever see one side of it: with something in
+ * hand there is a way to make peace, and with nothing in hand there had better
+ * still be a way out of the conversation. A grudge you could not walk away from
+ * empty-handed would be a soft lock reachable by one keypress.
+ *
+ * The friendships are real and the feud is set, so `peace` is actually
+ * exercised rather than skipped the way an absent context would skip it -- and
+ * the check below is that it FIRED: a script that takes the item and leaves the
+ * man angry is the one bug in here that reads, on screen, as nothing happening.
+ */
+function checkGrudge(npc) {
+  const script = grudgeFor(npc);
+  const feud = () => { const f = new Friends(); f.anger(npc.id, 1); return f; };
+
+  for (const [what, bag] of [['carrying', stockedBag], ['empty-handed', emptyBag]]) {
+    const walk = walkScript(npc, script, { bag, friends: feud });
+    if (!walk.ends) fail(`${npc.id}: the grudge script never ends when ${what} -- shooting him is a soft lock`);
+    if (walk.shops) fail(`${npc.id}: an angry man is opening his shop`);
+  }
+
+  // The apology itself, driven straight rather than by search: take the first
+  // choice on offer while carrying something, and the feud must be over and
+  // the item must be gone.
+  const friends = feud();
+  const inv = stockedBag();
+  const before = inv.count('item.apple');
+  const d = new Dialogue(npc, { inventory: inv, purse: new Purse(0), friends }, script);
+  while (!d.done && !d.choices.length) d.advance();
+  if (!d.choices.length) fail(`${npc.id}: the grudge script offers no way to apologise`);
+  else d.choose(d.choices[0].index);
+  if (friends.hates(npc.id)) fail(`${npc.id}: giving him something did not end the feud`);
+  if (inv.count('item.apple') !== before - 1) fail(`${npc.id}: the apology cost nothing out of the bag`);
+  console.log(`     grudge: ${Object.keys(script.nodes).length} nodes, walked with and without a gift`);
 }
 
 /** A bag with a few of everything, so conditional lines can be walked. */
@@ -360,6 +425,9 @@ function stockedBag() {
   for (const type of ['item.apple', 'item.stick', 'item.shell']) inv.add(type, 3);
   return inv;
 }
+
+/** And nothing at all, which is the other half of every `holding` condition. */
+function emptyBag() { return new Inventory(); }
 
 /** Validate one place, and return the interior URLs its doorways point at. */
 /**

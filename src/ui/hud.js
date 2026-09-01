@@ -46,6 +46,7 @@
 import { DIR_NAME, DIR_VEC } from '../core/constants.js';
 import { objectType } from '../world/objectTypes.js';
 import { itemType } from '../world/itemTypes.js';
+import { itemIcon } from './icons.js';
 import { PORTAL } from '../world/World.js';
 import { Minimap } from './minimap.js';
 
@@ -249,7 +250,7 @@ export class Hud {
           <b>, .</b><span>Turn camera <span class="dim">snaps in 2D</span></span>
           <b>E</b><span>Talk <span class="dim">&middot;</span> pick up <span class="dim">&middot;</span> enter</span>
           <b>Q</b><span>Drop</span>
-          <b>F</b><span>Use tool <span class="dim">&middot;</span> chop <span class="dim">&middot;</span> dig <span class="dim">&middot;</span> shoot</span>
+          <b>F</b><span>Use tool <span class="dim">&middot;</span> the row above says what</span>
           <b>[ ]</b><span>Change slot</span>
           <b>Esc</b><span>Walk away</span>
         </div>
@@ -298,7 +299,6 @@ export class Hud {
     this.mapModeLabel = root.querySelector('#hud-map-mode');
     this.mapLabel = root.querySelector('#hud-map-label');
     this.minimap = new Minimap(root.querySelector('#hud-map-canvas'));
-    this._mapSpare = false;
     root.querySelector('#hud-map-btn').addEventListener('click', () => onMap());
     // Clicking the map zooms it -- and ONLY zooms it. A control on the face of
     // the panel is the one a player finds without opening a drawer first, which
@@ -513,17 +513,11 @@ export class Hud {
    */
   drawMap(game) {
     if (this.mapCard.hidden) return;
-    // Faded out on the way into the top-down view, because there the whole
-    // screen IS this picture, at a size you can read -- a second copy of it in
-    // the corner is a panel covering the thing it duplicates. Held as a state
-    // compare rather than a class written every frame: toggling a class is a
-    // style recalculation, and this runs at frame rate.
-    const spare = game.viewT > 0.75;
-    if (spare !== this._mapSpare) {
-      this._mapSpare = spare;
-      this.mapCard.classList.toggle('spare', spare);
-    }
-    if (spare) return;
+    // Drawn in the top-down view as well. The corner map does duplicate what
+    // that whole screen already shows, but it is where the player has learned
+    // to look, and it carries the mode label and the click-to-zoom -- both of
+    // which stop being reachable the moment the card fades out. `Map off` is
+    // how you get rid of it, and that is the player's call, not the view's.
     this.minimap.draw(game);
   }
 
@@ -609,7 +603,11 @@ export class Hud {
       if (!slot) return `<button class="slot empty${on}" data-slot="${i}"></button>`;
       const type = itemType(slot.typeId);
       return `<button class="slot${on}" data-slot="${i}" title="${type.label}">`
-        + `<span class="chip" style="background:${css(type.swatch)}"></span>`
+        // The drawn glyph if the item has one, and the colour chip it used
+        // to get if it does not -- see ui/icons.js on why a missing icon is
+        // a plainer slot rather than a broken one.
+        + (itemIcon(slot.typeId)
+          ?? `<span class="chip" style="background:${css(type.swatch)}"></span>`)
         + `<span class="tally">${slot.count}</span></button>`;
     }).join('');
 
@@ -663,9 +661,17 @@ export class Hud {
     // A friend is marked on the prompt itself: it is the same fact as the
     // `floor` row two lines up, and seeing them together is what tells you
     // that saying hello out here is what opens the door over there.
-    const friend = npc && game.player.friends.has(npc.id);
-    this.#set('npc', npc ? `${npc.name}${friend ? ' · friend' : ''}` : null,
-      npc?.shop ? 'trade' : 'talk');
+    //
+    // And so is a feud, for a sharper version of the reason: a shopkeeper you
+    // shot yesterday still prompts, still talks, and will not sell you
+    // anything, and a player who walked up expecting the shop deserves to know
+    // which conversation this key opens BEFORE they press it. The verb changes
+    // too -- an angry man has no stock as far as you are concerned.
+    const friends = game.player.friends;
+    const angry = npc && friends.hates(npc.id);
+    const mood = !npc ? '' : angry ? ' · angry' : friends.has(npc.id) ? ' · friend' : '';
+    this.#set('npc', npc ? `${npc.name}${mood}` : null,
+      npc?.shop && !angry ? 'trade' : 'talk');
     this.#toolRow(game);
   }
 
@@ -686,9 +692,11 @@ export class Hud {
     const what = game.toolAction?.() ?? null;
     if (!what) { this.#set('tool', null); return; }
     // The swing count is only worth showing once it is under way: "Oak" before
-    // the first blow, "Oak · 2 of 3" while you are in the middle of it.
-    const progress = what.verb === 'chop' && what.hits
-      ? ` · ${what.hits} of ${what.swings}` : '';
+    // the first blow, "Oak · 2 of 3" while you are in the middle of it. Read off
+    // whether the target HAS a swing count rather than off a list of verbs that
+    // do, so the next tool that works by wearing something down gets the
+    // counter without this row being edited again.
+    const progress = what.hits ? ` · ${what.hits} of ${what.swings}` : '';
     this.#set('tool', what.blocked ?? `${what.label}${progress}`, what.verb);
   }
 

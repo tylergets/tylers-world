@@ -150,6 +150,12 @@ export const OBJECT_TYPES = {
     squash: 0.3,
     palette: { wall: 0xf7ecd6, roof: 0x4f93c9, roofDark: 0x3d7cad, trim: 0x7d6248, door: 0x6b4a30, window: 0x9fd4e8, awning: 0xe8b84b },
   },
+  'building.furniture': {
+    category: 'building', label: 'Furniture Shop',
+    footprint: withDoor(5, 4, 2), height: 3.7,
+    squash: 0.3,
+    palette: { wall: 0xf2e6cb, roof: 0x6f9c74, roofDark: 0x577d5c, trim: 0x7d6248, door: 0x6b4a30, window: 0x9fd4e8, awning: 0xd98b63 },
+  },
   'building.gate': {
     category: 'building', label: 'Town Gate',
     // Two solid posts with a walk-through gap: the mask is doing real work here.

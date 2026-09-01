@@ -1,0 +1,155 @@
+{
+  "format": "tw.world",
+  "version": 1,
+  "kind": "interior",
+  "meta": {
+    "id": "store.furniture.interior",
+    "name": "Turnip & Timber",
+    "note": "A furniture shop with a rotating daily floor selection."
+  },
+  "grid": { "width": 12, "height": 10, "tileSize": 1 },
+  "ambience": {
+    "sky": "#1d211c",
+    "sun": 0.9,
+    "hemi": 2.4,
+    "hemiSky": "#fff0d2"
+  },
+  "zones": {
+    "back": { "owner": "keep.alder", "label": "behind the counter" }
+  },
+  "layers": {
+    "surface": {
+      "palette": { "#": "wall", "w": "floor.wood", "r": "rug" },
+      "data": [
+        "############",
+        "#wwwwwwwwww#",
+        "#wwwwwwwwww#",
+        "#wwwwwwwwww#",
+        "#wwwwwwwwww#",
+        "#wwrrrrrrww#",
+        "#wwrrrrrrww#",
+        "#wwwwwwwwww#",
+        "#wwwwwwwwww#",
+        "#####ww#####"
+      ]
+    },
+    "elevation": {
+      "palette": { "0": "0", "4": "4" },
+      "data": [
+        "444444444444",
+        "400000000004",
+        "400000000004",
+        "400000000004",
+        "400000000004",
+        "400000000004",
+        "400000000004",
+        "400000000004",
+        "400000000004",
+        "444440044444"
+      ]
+    },
+    "flags": {
+      "palette": { ".": "none" },
+      "data": [
+        "............",
+        "............",
+        "............",
+        "............",
+        "............",
+        "............",
+        "............",
+        "............",
+        "............",
+        "............"
+      ]
+    },
+    "zones": {
+      "palette": { ".": "none", "b": "back" },
+      "data": [
+        "............",
+        ".bbbbbbbbbb.",
+        ".bbbbbbbbbb.",
+        "............",
+        "............",
+        "............",
+        "............",
+        "............",
+        "............",
+        "............"
+      ]
+    }
+  },
+  "objects": [
+    { "id": "counter", "type": "furn.counter", "tile": [4, 3], "props": { "label": "Order Counter" } },
+    { "id": "chair.back", "type": "furn.chair", "tile": [8, 2], "rotation": 180 },
+    { "id": "bed.display", "type": "furn.bed", "tile": [1, 5], "rotation": 0 },
+    { "id": "table.display", "type": "furn.table", "tile": [5, 5] },
+    { "id": "chair.display", "type": "furn.chair", "tile": [7, 6], "rotation": 270 },
+    { "id": "shelf.display", "type": "furn.shelf", "tile": [9, 4], "rotation": 90 },
+    { "id": "stove.display", "type": "furn.stove", "tile": [8, 8] },
+    { "id": "plant.display", "type": "furn.plant", "tile": [1, 8] },
+    { "id": "crate.stock", "type": "furn.crate", "tile": [1, 1] }
+  ],
+  "npcs": [
+    {
+      "id": "keep.alder",
+      "type": "folk.shopkeep",
+      "tile": [5, 2],
+      "facing": "south",
+      "props": { "name": "Alder", "title": "Deals in rooms" },
+      "shop": {
+        "name": "Today's Floor",
+        "markup": 1.15,
+        "buyRate": 0.4,
+        "takes": [],
+        "daily": 4,
+        "stock": [
+          { "type": "furnitem.bed", "count": 1 },
+          { "type": "furnitem.table", "count": 1 },
+          { "type": "furnitem.chair", "count": 1 },
+          { "type": "furnitem.shelf", "count": 1 },
+          { "type": "furnitem.counter", "count": 1 },
+          { "type": "furnitem.stove", "count": 1 },
+          { "type": "furnitem.plant", "count": 1 },
+          { "type": "furnitem.crate", "count": 1 }
+        ]
+      },
+      "dialog": {
+        "start": "open",
+        "nodes": {
+          "open": {
+            "branch": [
+              { "when": { "not": { "flag": "met" } }, "to": "hello" },
+              { "to": "again" }
+            ]
+          },
+          "hello": {
+            "text": [
+              "Alder. Tables, chairs, and the occasional thing nobody ordered.",
+              "I put a few pieces out each morning. Tomorrow's floor will be different."
+            ],
+            "do": { "set": "met" },
+            "then": "menu"
+          },
+          "again": { "text": "Today's pieces are still today's pieces.", "then": "menu" },
+          "menu": {
+            "text": "See anything your rooms are missing?",
+            "choices": [
+              { "text": "Show me today's floor.", "do": { "shop": true }, "to": "after" },
+              { "text": "How do I set it up?", "to": "placing" },
+              { "text": "I'll look again tomorrow.", "to": "bye" }
+            ]
+          },
+          "placing": {
+            "text": "Select the flat-pack in your bag, face a clear patch of floor, and press Q. It will build facing the same way you are.",
+            "then": "menu"
+          },
+          "after": { "text": "Once it leaves the floor, that piece is yours.", "then": "menu" },
+          "bye": { "text": "Rooms take time. No sense rushing one." }
+        }
+      }
+    }
+  ],
+  "exits": [ { "tile": [5, 9] }, { "tile": [6, 9] } ],
+  "spawn": { "tile": [6, 8], "facing": "north" }
+}

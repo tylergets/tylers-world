@@ -367,6 +367,7 @@ const BUILDERS = {
   'building.cabin': home,
   'building.bungalow': home,
   'building.store': store,
+  'building.furniture': store,
   'building.gate': gate,
   'furn.bed': bed,
   'furn.table': table,

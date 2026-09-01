@@ -29,6 +29,7 @@
  */
 
 import { itemType } from '../world/itemTypes.js';
+import { makeRng } from '../core/rng.js';
 
 /** Fraction of an item's value a shop pays for it, unless it says otherwise. */
 const DEFAULT_BUY_RATE = 0.5;
@@ -39,7 +40,7 @@ const price = (value, rate) => Math.max(1, Math.round(value * rate));
 
 export class Shop {
   /** @param {object} spec  the validated `props.shop` block from the world file */
-  constructor(spec) {
+  constructor(spec, seed = 'shop') {
     this.name = spec.name ?? 'Goods';
     this.markup = spec.markup ?? DEFAULT_MARKUP;
     this.buyRate = spec.buyRate ?? DEFAULT_BUY_RATE;
@@ -48,12 +49,17 @@ export class Shop {
     // `count: null` is an unlimited shelf. Stated as null rather than
     // Infinity so it survives a round trip through JSON, and checked
     // everywhere as `=== null` rather than as a falsy count.
-    this.stock = (spec.stock ?? []).map((entry) => ({
+    this.catalog = (spec.stock ?? []).map((entry) => ({
       typeId: entry.type,
       type: itemType(entry.type),
       price: entry.price ?? price(itemType(entry.type).value, this.markup),
       count: entry.count ?? null,
     }));
+    this.daily = spec.daily ?? null;
+    this.seed = seed;
+    this.day = null;
+    this.stock = this.daily ? [] : this.catalog.map((row) => ({ ...row }));
+    if (this.daily) this.refresh(1);
 
     /** Bumped on every trade, so the UI can redraw only when something moved. */
     this.version = 0;
@@ -61,6 +67,21 @@ export class Shop {
 
   /** What the shop is offering, sold-out rows included. */
   get offers() { return this.stock; }
+
+  /** Replace a rotating shelf once per in-game day. */
+  refresh(day) {
+    if (!this.daily || day === this.day) return false;
+    const rng = makeRng(`${this.seed}:day:${day}`);
+    const pool = this.catalog.map((row) => ({ ...row }));
+    for (let i = pool.length - 1; i > 0; i--) {
+      const j = Math.floor(rng() * (i + 1));
+      [pool[i], pool[j]] = [pool[j], pool[i]];
+    }
+    this.stock = pool.slice(0, this.daily);
+    this.day = day;
+    this.version++;
+    return true;
+  }
 
   /** What the shop pays for one of `typeId`, or null if it will not take it. */
   payFor(typeId) {
@@ -124,11 +145,15 @@ export class Shop {
    * count is written even when nothing has been bought.
    */
   snapshot() {
-    return Object.fromEntries(this.stock.map((row) => [row.typeId, row.count]));
+    const counts = Object.fromEntries(this.stock.map((row) => [row.typeId, row.count]));
+    return this.daily ? { day: this.day, counts } : counts;
   }
 
-  restore(counts) {
-    if (!counts) return;
+  restore(snap) {
+    if (!snap) return;
+    const counts = this.daily ? snap.counts : snap;
+    if (this.daily && Number.isInteger(snap.day)) this.refresh(snap.day);
+    if (!counts || typeof counts !== 'object') return;
     for (const row of this.stock) {
       const n = counts[row.typeId];
       // `undefined` is a row the save had never heard of -- a new line of stock

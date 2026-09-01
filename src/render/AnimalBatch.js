@@ -20,16 +20,27 @@
  * the whole performance: a chicken's walk is a head thrust, and its idle is a
  * peck. Bolt it to the body and you have a wind-up toy.
  *
+ * ON A FISH THAT SECOND NODE IS THE TAIL, and it is the same node doing the
+ * same job: whatever articulates goes in it. A trout's head is welded to its
+ * body and its tail is the entire performance, so the joint is authored at the
+ * tail root and swung sideways rather than hinged down. Two species out of nine
+ * is not enough to rename anything -- what the node means is "the part that
+ * moves", and it always was.
+ *
  * ONE BUILDER PER SPECIES, and no shared "bird" or "quadruped" base. What makes
  * a goat not a sheep is the horns, the tail carried up and the wedge of a head,
- * which is to say it is entirely the parts a base class would not have. Seven
+ * which is to say it is entirely the parts a base class would not have. Nine
  * short functions that each read top to bottom beat one parameterised animal
  * that reads as a spreadsheet.
  *
- * The MOVEMENT differences are not here at all: they are four numbers per
- * species in animalTypes.js under `gait`, because they are the SAME four
+ * The MOVEMENT differences are not here at all: they are six numbers per
+ * species in animalTypes.js under `gait`, because they are the SAME six
  * numbers for every species, and a duck that waddles by virtue of its roll
  * value is a duck anybody can retune without opening this file.
+ *
+ * FISH ARE AUTHORED AROUND THE WATERLINE and everything else around its feet.
+ * That is not an inconsistency: `Animal.y` is the height of the surface a body
+ * sits on, and for a swimmer that surface is the top of the water. See `trout`.
  */
 
 import * as THREE from 'three';
@@ -312,7 +323,110 @@ function crow(p) {
   return { body, head, neckY: 0.235, neckZ: 0.045 };
 }
 
-const BUILDERS = { chicken, duck, rabbit, sheep, goat, cat, crow };
+/**
+ * A trout, authored facing +z -- and, unlike everything above, authored around
+ * the WATERLINE rather than standing on the ground.
+ *
+ * y = 0 is the surface of the water, because `Animal.y` for a swimmer is the
+ * height of the water it is in (see World.groundHeight, which drops a water
+ * tile by WATER_DROP). Everything below y = 0 is therefore behind the water
+ * plane, which is opaque and drawn at exactly that height -- so the belly is
+ * hidden by the pond itself and there is no transparency, no depth sorting and
+ * no second material anywhere in this. What you see is the back, the dorsal fin
+ * and the top lobe of the tail, which is precisely what you see of a real fish
+ * holding under the surface.
+ *
+ * THE HINGED NODE IS THE TAIL. Every species above puts a head in it, because a
+ * head is what articulates on an animal that walks. A fish's head is welded to
+ * its body and its tail is the entire performance, so the second node is
+ * authored about the tail root and swung SIDEWAYS by `gait.sweep` instead of
+ * being hinged down by `gait.bend`. Nothing else about the batch changes: it is
+ * still two instanced meshes and one material per species.
+ */
+function trout(p) {
+  const body = new GeoBuilder();
+  // The spindle. Three lumps rather than one ellipsoid: a fish tapers hard at
+  // both ends, and a single blob reads as a lozenge from directly overhead --
+  // which is the view this has to survive.
+  body.addGeometry(BLOB, trs(0, -0.035, -0.01, 0, 0, 0, 0.052, 0.062, 0.16), p.body);
+  body.addGeometry(BLOB, trs(0, -0.055, 0.02, 0, 0, 0, 0.042, 0.04, 0.1), p.belly);
+  body.addGeometry(BLOB, trs(0, 0.004, -0.02, 0, 0, 0, 0.032, 0.03, 0.13), p.back);
+  // Head: blunter and lower than the body, so the outline narrows to a nose.
+  body.addGeometry(BLOB, trs(0, -0.03, 0.15, 0, 0, 0, 0.038, 0.042, 0.055), p.body);
+  body.addGeometry(NUB, trs(0, -0.03, 0.195, 0, 0, 0, 0.022, 0.026, 0.03), p.back);
+  for (const sx of [-1, 1]) {
+    body.addGeometry(NUB, trs(sx * 0.032, -0.012, 0.175, 0, 0, 0, 0.011, 0.011, 0.011), p.eye);
+    // Pectorals, swept back and flat. They are what stops the shape reading as
+    // a floating stick when the fish is still.
+    body.addGeometry(BOX, trs(sx * 0.05, -0.045, 0.075, 0.2, sx * -0.5, 0, 0.05, 0.008, 0.035), p.fin);
+  }
+  // The dorsal fin, standing clear of the water: half of what says "fish" from
+  // the 3D camera, and nearly all of what says it from overhead.
+  body.addGeometry(CONE, trs(0, 0.038, -0.03, -0.35, 0, 0, 0.009, 0.062, 0.05), p.fin);
+  // The adipose fin -- the small one between dorsal and tail, and the mark that
+  // makes a trout a trout to anybody who has ever held one.
+  body.addGeometry(NUB, trs(0, 0.022, -0.115, 0, 0, 0, 0.007, 0.016, 0.018), p.fin);
+  // Spots along the shoulder, above the line where they can be seen at all.
+  for (const [dx, dz] of [[0.022, 0.06], [-0.026, 0.015], [0.018, -0.05], [-0.02, -0.09]]) {
+    body.addGeometry(NUB, trs(dx, 0.012, dz, 0, 0, 0, 0.011, 0.006, 0.011), p.spot);
+  }
+
+  // The tail, authored about the joint at the tail root, which sits INSIDE the
+  // body -- the same trick the chicken's neck uses, and for the same reason: a
+  // fin hinged at the surface tears loose from the body at the extremes of the
+  // beat.
+  const tail = new GeoBuilder();
+  tail.addGeometry(BLOB, trs(0, -0.02, -0.035, 0, 0, 0, 0.02, 0.028, 0.05), p.body);
+  // A forked caudal: two lobes and a notch between them, and the top lobe is
+  // the one that is out of the water doing the work.
+  tail.addGeometry(CONE, trs(0, 0.005, -0.1, -1.9, 0, 0, 0.008, 0.075, 0.055), p.fin);
+  tail.addGeometry(CONE, trs(0, -0.05, -0.095, -1.35, 0, 0, 0.008, 0.06, 0.045), p.fin);
+
+  return { body, head: tail, neckY: -0.02, neckZ: -0.15 };
+}
+
+/**
+ * A carp, authored facing +z on the same waterline.
+ *
+ * A trout is a spindle; a carp is a SLAB -- deep through the shoulder, blunt at
+ * the nose, and half again as long. Three things carry it: the depth of the
+ * back (which is most of what shows above water), the long low dorsal running
+ * a third of its length, and the pair of barbels at the mouth, which are the
+ * one detail on it that nothing else in this game has.
+ */
+function carp(p) {
+  const body = new GeoBuilder();
+  body.addGeometry(BLOB, trs(0, -0.045, -0.01, 0, 0, 0, 0.07, 0.095, 0.2), p.body);
+  body.addGeometry(BLOB, trs(0, -0.075, 0.03, 0, 0, 0, 0.055, 0.05, 0.13), p.belly);
+  body.addGeometry(BLOB, trs(0, 0.008, -0.03, 0, 0, 0, 0.045, 0.042, 0.16), p.back);
+  // Scale plates: broad flat lozenges along the shoulder, bright against the
+  // back. A carp seen from a bank is a pattern before it is a shape.
+  for (const [dx, dz] of [[0.03, 0.05], [-0.032, 0.0], [0.028, -0.06], [-0.03, -0.11]]) {
+    body.addGeometry(NUB, trs(dx, 0.016, dz, 0, 0, 0, 0.022, 0.007, 0.026), p.scale);
+  }
+  // Head and the down-turned mouth.
+  body.addGeometry(BLOB, trs(0, -0.045, 0.185, 0, 0, 0, 0.052, 0.062, 0.06), p.body);
+  body.addGeometry(NUB, trs(0, -0.055, 0.235, 0, 0, 0, 0.03, 0.028, 0.03), p.back);
+  for (const sx of [-1, 1]) {
+    body.addGeometry(NUB, trs(sx * 0.045, -0.018, 0.205, 0, 0, 0, 0.013, 0.013, 0.013), p.eye);
+    // The barbels: two whiskers off the corners of the mouth, angled down and
+    // back. Small, and the whole species is in them.
+    body.addGeometry(CYL, trs(sx * 0.032, -0.075, 0.235, 1.15, sx * 0.35, 0, 0.005, 0.055, 0.005), p.barbel);
+    body.addGeometry(BOX, trs(sx * 0.066, -0.06, 0.08, 0.25, sx * -0.45, 0, 0.06, 0.01, 0.045), p.fin);
+  }
+  // The long dorsal, low and running most of the back rather than standing up
+  // in one blade the way the trout's does.
+  body.addGeometry(BOX, trs(0, 0.045, -0.045, -0.1, 0, 0, 0.012, 0.055, 0.19), p.fin);
+
+  const tail = new GeoBuilder();
+  tail.addGeometry(BLOB, trs(0, -0.03, -0.04, 0, 0, 0, 0.028, 0.04, 0.06), p.body);
+  tail.addGeometry(CONE, trs(0, 0.01, -0.13, -1.95, 0, 0, 0.011, 0.095, 0.07), p.fin);
+  tail.addGeometry(CONE, trs(0, -0.075, -0.125, -1.3, 0, 0, 0.011, 0.08, 0.06), p.fin);
+
+  return { body, head: tail, neckY: -0.03, neckZ: -0.185 };
+}
+
+const BUILDERS = { chicken, duck, rabbit, sheep, goat, cat, crow, trout, carp };
 
 function modelFor(typeId) {
   let m = MODELS.get(typeId);
@@ -414,13 +528,23 @@ export class AnimalBatch {
     this._tilt.makeRotationFromQuaternion(lieBack);
     for (const { members, model, body, head } of this.batches) {
       const gait = model.gait;
+        // Read once per species rather than per animal. `thrust` is the drive a
+      // head gets along its own axis on each stride, which is a bird's walk and
+      // is exactly wrong for a tail; `sweep` is the lateral swing, which is
+      // zero for everything that has a head in that node. See animalTypes.js.
+      const thrust = gait.thrust ?? 0.035;
+      const sweep = gait.sweep ?? 0;
       for (let i = 0; i < members.length; i++) {
         const animal = members[i];
         const running = animal.speed > 0.2;
         const stride = Math.sin(animal.walkPhase);
         const peck = animal.peck;
 
-        this._root.makeTranslation(animal.x, animal.y, animal.z);
+        // `sink` is depth, and it is zero for everything that walks. On a fish it
+        // is what the opaque water plane turns into visibility: a metre of it
+        // and the animal is simply not on screen, which is how a pond shows you
+        // three fish now and one in a minute (see sim/behaviors.js, Swim).
+        this._root.makeTranslation(animal.x, animal.y - animal.sink, animal.z);
         this._yaw.makeRotationY(animal.yaw);
         this._position.set(0, running ? Math.abs(stride) * gait.bob : 0, 0);
         // Toppling rides the ROLL channel the gait already drives, so a dying
@@ -445,12 +569,20 @@ export class AnimalBatch {
         this._position.set(
           0,
           model.neckY - peck * 0.05,
-          model.neckZ + (running ? stride * 0.035 : 0) + peck * 0.02,
+          model.neckZ + (running ? stride * thrust : 0) + peck * 0.02,
         );
         // Head up while running, by three quarters of whatever the body leans:
         // an animal that keeps its head at rest angle while its shoulders drop
-        // is an animal running face-first at the ground.
-        this._rotation.setFromAxisAngle(_X_AXIS, peck * gait.bend - (running ? gait.lean * 0.75 : 0));
+        // is an animal running face-first at the ground. The Y term is the
+        // OTHER kind of hinge -- a tail beating side to side -- and it rides
+        // the same stride sine the legs do, a quarter cycle behind the body
+        // roll, which is what makes the beat read as driving the fish forward
+        // rather than as a flag in a breeze.
+        this._euler.set(
+          peck * gait.bend - (running ? gait.lean * 0.75 : 0),
+          sweep ? Math.cos(animal.walkPhase) * sweep : 0,
+          0);
+        this._rotation.setFromEuler(this._euler);
         this._neck.compose(this._position, this._rotation, this._scale);
         this._head.copy(this._body).multiply(this._neck);
         head.setMatrixAt(i, this._head);

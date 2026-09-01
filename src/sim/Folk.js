@@ -22,6 +22,12 @@ export class Folk {
     for (const npc of this.npcs) npc.update(dt, this.world);
   }
 
+  refreshShops(day) {
+    let changed = false;
+    for (const npc of this.npcs) changed = npc.shop?.refresh(day) || changed;
+    return changed;
+  }
+
   /** The NPC standing on a tile, or null. */
   at(x, z) {
     return this.npcs.find((n) => n.tileX === x && n.tileZ === z) ?? null;

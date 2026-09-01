@@ -227,7 +227,17 @@
           "tool.shovel",
           "tool.gun",
           "item.shot",
-          "item.game"
+          "item.game",
+          "tool.pickaxe",
+          "tool.hammer",
+          "tool.sword",
+          "tool.torch",
+          "tool.map",
+          "tool.camera",
+          "tool.machinegun",
+          "tool.rod",
+          "item.trout",
+          "item.carp"
         ],
         "stock": [
           {
@@ -253,6 +263,11 @@
             "price": 160
           },
           {
+            "type": "tool.rod",
+            "count": 1,
+            "price": 240
+          },
+          {
             "type": "tool.gun",
             "count": 1,
             "price": 480
@@ -260,6 +275,41 @@
           {
             "type": "item.shot",
             "count": null
+          },
+          {
+            "type": "tool.pickaxe",
+            "count": 1,
+            "price": 270
+          },
+          {
+            "type": "tool.hammer",
+            "count": 1,
+            "price": 195
+          },
+          {
+            "type": "tool.sword",
+            "count": 1,
+            "price": 360
+          },
+          {
+            "type": "tool.torch",
+            "count": 1,
+            "price": 180
+          },
+          {
+            "type": "tool.map",
+            "count": 1,
+            "price": 143
+          },
+          {
+            "type": "tool.camera",
+            "count": 1,
+            "price": 390
+          },
+          {
+            "type": "tool.machinegun",
+            "count": 1,
+            "price": 1350
           }
         ]
       },

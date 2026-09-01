@@ -96,6 +96,8 @@ export function meadowbrook({
     { label: "Tyler's House", interior: 'worlds/interiors/home-tyler.json' }, '0');
   const store = d.placeNear('store.nook', 'building.store', cx + 8, cz + 3, ['g'], 10,
     { label: 'General Store', interior: 'worlds/interiors/store-nook.json' }, '0');
+  const furniture = d.placeNear('store.furniture', 'building.furniture', cx + 15, cz + 3, ['g'], 12,
+    { label: 'Turnip & Timber', interior: 'worlds/interiors/store-furniture.json' }, '0');
 
   // THE NEIGHBOURS. Three houses round the plaza, each with somebody living in
   // it, and each interior a place you are not welcome until you have met them
@@ -114,6 +116,7 @@ export function meadowbrook({
   // its path with it. Doors face south, so the approach starts below them.
   d.pathL(home[0] + 1, home[1] + 3, cx - 1, cz + 11, { level: '0' });
   d.pathL(store[0] + 2, store[1] + 4, cx, cz + 11, { level: '0' });
+  d.pathL(furniture[0] + 2, furniture[1] + 4, cx + 7, cz + 11, { level: '0' });
   d.pathL(cottage[0] + 1, cottage[1] + 3, cx - 10, cz + 12, { level: '0' });
   d.pathL(cabin[0] + 2, cabin[1] + 3, cx + 1, cz + 20, { level: '0' });
   d.pathL(bungalow[0] + 2, bungalow[1] + 3, cx + 11, cz + 12, { level: '0' });
@@ -766,11 +769,14 @@ export function sourwood({
     { label: 'The Old Place', interior: 'worlds/interiors/home-holler.json' }, '0');
   const store = d.placeNear('store.branch', 'building.store', Math.round(creek(sites.store)) + 6, sites.store, ['g'], 11,
     { label: 'Branch Store', interior: 'worlds/interiors/store-branch.json' }, '0');
+  const furniture = d.placeNear('store.furniture', 'building.furniture', store[0] + 7, store[1], ['g'], 12,
+    { label: 'Turnip & Timber', interior: 'worlds/interiors/store-furniture.json' }, '0');
 
   // Each door out to the road. The road is the only through-line in a holler,
   // so everything hangs off it.
   d.pathL(home[0] + 1, home[1] + 3, Math.round(creek(home[1] + 4)) + 4, home[1] + 4, { level: '0' });
   d.pathL(store[0] + 2, store[1] + 4, Math.round(creek(store[1] + 5)) + 4, store[1] + 5, { level: '0' });
+  d.pathL(furniture[0] + 2, furniture[1] + 4, Math.round(creek(furniture[1] + 5)) + 4, furniture[1] + 5, { level: '0' });
   d.pathL(gate[0] + 2, gate[1] + 2, Math.round(creek(gate[1] + 3)) + 4, gate[1] + 3, { level: '0' });
 
   const counts = {
@@ -923,6 +929,8 @@ export function tidewrack({
     { label: "Tyler's House", interior: 'worlds/interiors/home-tyler.json' }, '0');
   const store = d.placeNear('store.driftwood', 'building.store', cx + out(0.54), cz + 2, ['g'], 10,
     { label: 'Driftwood Stores', interior: 'worlds/interiors/store-driftwood.json' }, '0');
+  const furniture = d.placeNear('store.furniture', 'building.furniture', store[0] + 7, store[1], ['g'], 12,
+    { label: 'Turnip & Timber', interior: 'worlds/interiors/store-furniture.json' }, '0');
   const cottage = d.placeNear('home.marnie', 'building.cottage', cx - out(0.57), cz - 3, ['g'], 10,
     { label: "Marnie's Cottage", interior: 'worlds/interiors/home-marnie.json' }, '0');
 
@@ -930,6 +938,7 @@ export function tidewrack({
   // nearest point of the ring road.
   d.pathL(home[0] + 1, home[1] + 3, cx - 1, cz + out(0.54), { level: '0' });
   d.pathL(store[0] + 2, store[1] + 4, cx + out(0.5), cz + 7, { level: '0' });
+  d.pathL(furniture[0] + 2, furniture[1] + 4, cx + out(0.5), cz + 9, { level: '0' });
   d.pathL(cottage[0] + 1, cottage[1] + 3, cx - out(0.5), cz + 3, { level: '0' });
   d.pathL(landing[0] + 2, landing[1] + 2, cx, cz + out(0.6), { level: '0' });
   d.pathL(lookout[0] + 2, lookout[1] + 2, cx - 1, cz + dune[1] + 2, { level: '1' });
@@ -1411,11 +1420,14 @@ export function thistledown({
     { label: "Tyler's House", interior: 'worlds/interiors/home-tyler.json' }, '0');
   const store = d.placeNear('store.wether', 'building.store', road + 4, sites.store, ['g'], 11,
     { label: 'The Wether', interior: 'worlds/interiors/store-wether.json' }, '0');
+  const furniture = d.placeNear('store.furniture', 'building.furniture', store[0] + 7, store[1], ['g'], 12,
+    { label: 'Turnip & Timber', interior: 'worlds/interiors/store-furniture.json' }, '0');
   const croft = d.placeNear('home.nan', 'building.cottage', road - 8, 24, ['g'], 11,
     { label: "Nan's Croft", interior: 'worlds/interiors/home-nan.json' }, '0');
 
   d.pathL(home[0] + 1, home[1] + 3, road, home[1] + 4, { level: '0' });
   d.pathL(store[0] + 2, store[1] + 4, road, store[1] + 5, { level: '0' });
+  d.pathL(furniture[0] + 2, furniture[1] + 4, road, furniture[1] + 5, { level: '0' });
   d.pathL(croft[0] + 1, croft[1] + 3, road, croft[1] + 4, { level: '0' });
   d.pathL(north[0] + 2, north[1] + 2, road, north[1] + 3, { level: '0' });
   d.pathL(south[0] + 2, south[1] + 2, road, south[1] + 3, { level: '0' });
@@ -1901,11 +1913,14 @@ export function rimrock({
     { label: "Tyler's House", interior: 'worlds/interiors/home-tyler.json' }, '0');
   const store = d.placeNear('store.slickrock', 'building.store', cx + 9, cz + 2, ['g', 's'], 11,
     { label: 'Slickrock Post', interior: 'worlds/interiors/store-slickrock.json' }, '0');
+  const furniture = d.placeNear('store.furniture', 'building.furniture', store[0] + 7, store[1], ['g', 's'], 12,
+    { label: 'Turnip & Timber', interior: 'worlds/interiors/store-furniture.json' }, '0');
   const cottage = d.placeNear('home.pike', 'building.cottage', cx - 16, cz + 13, ['g', 's'], 11,
     { label: "Pike's Place", interior: 'worlds/interiors/home-pike.json' }, '0');
 
   d.pathL(home[0] + 1, home[1] + 3, cx - 1, cz + 8, { level: '0' });
   d.pathL(store[0] + 2, store[1] + 4, cx, cz + 8, { level: '0' });
+  d.pathL(furniture[0] + 2, furniture[1] + 4, cx, cz + 10, { level: '0' });
   d.pathL(cottage[0] + 1, cottage[1] + 3, cx - 1, cz + 12, { level: '0' });
   d.pathL(head[0] + 2, head[1] + 2, cx - 1, cz - 13, { level: '1' });
   d.pathL(lip[0] + 2, lip[1] + 2, cx - 1, cz + 21, { level: '0' });
@@ -2317,6 +2332,8 @@ export function ashkettle({
   const [sx, sz] = at(...sites.store);
   const store = d.placeNear('store.cinder', 'building.store', sx - 2, sz, ['g', 'c'], 11,
     { label: 'The Cinder Shop', interior: 'worlds/interiors/store-cinder.json' }, '0');
+  const furniture = d.placeNear('store.furniture', 'building.furniture', store[0] + 7, store[1], ['g', 'c'], 12,
+    { label: 'Turnip & Timber', interior: 'worlds/interiors/store-furniture.json' }, '0');
   const [cxx, czz] = at(...sites.cottage);
   const cottage = d.placeNear('home.vesper', 'building.cottage', cxx - 1, czz, ['g', 'c'], 11,
     { label: "Vesper's", interior: 'worlds/interiors/home-vesper.json' }, '0');
@@ -2328,6 +2345,7 @@ export function ashkettle({
   };
   toRing([home[0] + 1, home[1]], 3);
   toRing([store[0] + 2, store[1]], 4);
+  toRing([furniture[0] + 2, furniture[1]], 4);
   toRing([cottage[0] + 1, cottage[1]], 3);
   toRing([quay[0] + 2, quay[1]], 2);
 
@@ -2714,6 +2732,8 @@ export function sedgewater({
   const [sx, sz] = at(sites.store, 0.44);
   const store = d.placeNear('store.staithe', 'building.store', sx - 2, sz, ['g'], 12,
     { label: 'The Staithe', interior: 'worlds/interiors/store-staithe.json' }, '0');
+  const furniture = d.placeNear('store.furniture', 'building.furniture', store[0] + 7, store[1], ['g'], 12,
+    { label: 'Turnip & Timber', interior: 'worlds/interiors/store-furniture.json' }, '0');
   const [qx, qz] = at(sites.cottage, 0.50);
   const cottage = d.placeNear('home.quill', 'building.cottage', qx - 1, qz, ['g'], 12,
     { label: "Quill's Hut", interior: 'worlds/interiors/home-quill.json' }, '0');
@@ -2729,6 +2749,7 @@ export function sedgewater({
   };
   toWalk([home[0] + 1, home[1]], 3, sites.home, 0.42);
   toWalk([store[0] + 2, store[1]], 4, sites.store, 0.44);
+  toWalk([furniture[0] + 2, furniture[1]], 4, sites.store, 0.50);
   toWalk([cottage[0] + 1, cottage[1]], 3, sites.cottage, 0.50);
   d.pathL(staithe[0] + 2, staithe[1] + 2, cx - 1, cz + toft[1] + 2, { level: '1' });
 
@@ -3091,11 +3112,14 @@ export function bellrock({
     { label: "Tyler's House", interior: 'worlds/interiors/home-tyler.json' }, '0');
   const store = d.placeNear('store.capstan', 'building.store', road + 6, townRow(sites.store), ['g'], 12,
     { label: 'The Capstan', interior: 'worlds/interiors/store-capstan.json' }, '0');
+  const furniture = d.placeNear('store.furniture', 'building.furniture', store[0] + 7, store[1], ['g'], 12,
+    { label: 'Turnip & Timber', interior: 'worlds/interiors/store-furniture.json' }, '0');
   const cottage = d.placeNear('home.sennen', 'building.cottage', road + 16, townRow(sites.cottage), ['g'], 12,
     { label: "Sennen's Cottage", interior: 'worlds/interiors/home-sennen.json' }, '0');
 
   d.pathL(home[0] + 1, home[1] + 3, road - 6, roadZ, { level: '0' });
   d.pathL(store[0] + 2, store[1] + 4, road + 4, roadZ, { level: '0' });
+  d.pathL(furniture[0] + 2, furniture[1] + 4, road + 8, roadZ, { level: '0' });
   d.pathL(cottage[0] + 1, cottage[1] + 3, road + 12, roadZ, { level: '0' });
   d.pathL(quay[0] + 2, quay[1] + 2, road, quay[1] + 3, { level: '0' });
 

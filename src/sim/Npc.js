@@ -66,7 +66,7 @@ export class Npc {
     this.title = this.props.title ?? null;
 
     this.dialog = spec.dialog ?? null;
-    this.shop = spec.shop ? new Shop(spec.shop) : null;
+    this.shop = spec.shop ? new Shop(spec.shop, spec.id) : null;
     this.memory = { flags: new Set(), visits: 0 };
 
     // Placed at his tile centre, NOT nudged to the nearest walkable one the way
