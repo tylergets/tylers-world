@@ -417,8 +417,16 @@ function stump(c) {
 
 // ------------------------------------------------------------------- kits --
 
-/** Primitive name -> shared geometry. The one place kit part names become shapes. */
-const PRIM_GEO = {
+/**
+ * Primitive name -> shared geometry. The one place kit part names become shapes.
+ *
+ * Exported because ui/preview.js draws the same models flat, into SVG, for the
+ * shop -- and it has to be handed the SAME geometry objects, not equivalent
+ * ones: it caches the polygons it derives from each primitive against the
+ * object's identity, so a second BoxGeometry(1,1,1) would be a second cache
+ * entry describing an identical cube.
+ */
+export const PRIM_GEO = {
   box: BOX, cyl: CYL, taper: TAPER, cone: CONE, pyr: PYR, blob: BLOB, chunk: CHUNK,
 };
 
@@ -439,12 +447,40 @@ const PRIM_GEO = {
  * existing but do not hold still.
  */
 function kitParts(c) {
-  for (const part of c.type.staticParts) {
-    const [px, py, pz] = part.at;
-    const [rx, ry, rz] = part.rot;
-    const [sx, sy, sz] = part.size;
-    c.add(PRIM_GEO[part.prim], trs(px, py, pz, rx, ry, rz, sx, sy, sz), c.pal[part.color]);
+  for (const part of c.type.staticParts) addPart(c, part);
+}
+
+/** One part of a kit model, placed. */
+function addPart(c, part) {
+  const [px, py, pz] = part.at;
+  const [rx, ry, rz] = part.rot;
+  const [sx, sy, sz] = part.size;
+  c.add(PRIM_GEO[part.prim], trs(px, py, pz, rx, ry, rz, sx, sy, sz), c.pal[part.color]);
+}
+
+/**
+ * Draw one type's whole model into a ctx that quacks like a PropCtx.
+ *
+ * The seam ui/preview.js buys its rendering through. The bake below cannot use
+ * it and should not: a bake takes STATIC parts only, because the merged buffer
+ * works precisely by never moving, and it takes them per placed object with
+ * that object's id seeding the randomness. A preview has no placed object and
+ * no clock -- it is a picture of the TYPE -- so it wants every part, animated
+ * ones included and standing still, which is exactly the pose a fountain in a
+ * catalogue should be drawn in.
+ *
+ * Returns false for a type nothing here knows how to draw, which is the same
+ * answer buildProps acts on by skipping the object.
+ */
+export function drawProp(c, typeId) {
+  if (c.type.parts) {
+    for (const part of c.type.parts) addPart(c, part);
+    return true;
   }
+  const build = BUILDERS[typeId];
+  if (!build) return false;
+  build(c);
+  return true;
 }
 
 /**

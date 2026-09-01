@@ -59,8 +59,33 @@ export const DAY_LABELS = Object.freeze({
   frozen: 'Frozen',
 });
 
+/**
+ * What dying costs you, gentlest first.
+ *
+ * A setting rather than a rule because there is no right answer to it, only a
+ * preference about what kind of game this is: `keep` makes death a walk home,
+ * `drop` makes it a walk BACK, and `lose` makes it a reason not to take the
+ * shot. The order is the setting, exactly as DAY_LENGTHS is -- the drawer
+ * cycles the array, so a fourth answer is one row here and no new branch.
+ *
+ *   keep   you wake up at home with everything you were carrying
+ *   drop   your pockets are emptied onto the floor where you fell
+ *   lose   your pockets are emptied, full stop
+ */
+export const DEATH_PENALTIES = Object.freeze(['keep', 'drop', 'lose']);
+
+export const DEATH_LABELS = Object.freeze({
+  keep: 'Keep pockets',
+  drop: 'Drop pockets',
+  lose: 'Lose pockets',
+});
+
 export const DEFAULT_GAME = Object.freeze({
   dayLength: 'steady',
+  // `drop` and not `keep`, because a consequence you can walk back to is the
+  // one this game is made of -- the same argument sim/Friends.js makes about a
+  // grudge that runs out. Losing the lot is available to anyone who wants it.
+  deathPenalty: 'drop',
 });
 
 /** One setting, validated against its own list. Same helper as graphics.js. */
@@ -69,7 +94,10 @@ const pick = (list, value, fallback) => (list.includes(value) ? value : fallback
 export function readGameSettings() {
   try {
     const s = JSON.parse(localStorage.getItem(STORAGE_KEY));
-    return { dayLength: pick(DAY_LENGTHS, s?.dayLength, DEFAULT_GAME.dayLength) };
+    return {
+      dayLength: pick(DAY_LENGTHS, s?.dayLength, DEFAULT_GAME.dayLength),
+      deathPenalty: pick(DEATH_PENALTIES, s?.deathPenalty, DEFAULT_GAME.deathPenalty),
+    };
   } catch {
     return { ...DEFAULT_GAME };
   }

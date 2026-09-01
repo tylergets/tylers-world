@@ -125,7 +125,7 @@ const PERF_ROWS = [
 export class Hud {
   constructor(root, {
     onScrub, onToggle, onVoice, onShoreline, onWater, onMap, onWorlds,
-    onQuality, onResolution, onShadows, onAntialias, onDayLength,
+    onQuality, onResolution, onShadows, onAntialias, onDayLength, onGoHome,
   }) {
     root.innerHTML = `
       <div class="hud hud-tl">
@@ -224,6 +224,12 @@ export class Hud {
           <span class="map-mode" id="hud-map-mode"></span>
         </div>
 
+        <button class="hud go-home" id="hud-go-home" disabled
+                title="Walk to the front door of your house">
+          <span class="go-home-icon">&#127968;</span>
+          <span class="go-home-label">Go home</span>
+        </button>
+
         <div class="hud hud-tr" id="hud-panel-tr">
           <div id="hud-debug" hidden></div>
           <div class="hud-sep" id="hud-sep-a" hidden></div>
@@ -307,6 +313,12 @@ export class Hud {
     // is exactly why it must not be able to close the panel: the discoverable
     // way to change the map cannot also be the way to lose it.
     this.mapCard.addEventListener('click', () => onMap(true));
+
+    // Go home. The Hud owns whether the button is live only in the sense that
+    // it renders the answer; the Game decides, in `setHome`, because knowing
+    // whether there is a house to walk to means knowing the place.
+    this.goHomeBtn = root.querySelector('#hud-go-home');
+    this.goHomeBtn.addEventListener('click', () => onGoHome?.());
 
     this.voiceLabel = root.querySelector('#hud-voice-label');
     this.shorelineLabel = root.querySelector('#hud-shoreline-label');
@@ -502,6 +514,21 @@ export class Hud {
     this.minimap.setMode(mode);
     this.mapModeLabel.textContent = mode === 'place' ? 'all' : mode;
     this.mapLabel.textContent = `Map  ${mode}`;
+  }
+
+  /**
+   * Whether the "Go home" button has anywhere to send you.
+   *
+   * Pushed in by the Game once per place, for the same reason the map's mode
+   * is: only the Game knows whether the marked home is in the room you are
+   * standing in. The label stays "Go home" at every size the card can be; the
+   * house's own name goes in the tooltip, where a long one costs nothing.
+   */
+  setHome(ready, name = null) {
+    this.goHomeBtn.disabled = !ready;
+    this.goHomeBtn.title = ready
+      ? `Walk to ${name ?? 'your house'}`
+      : 'No home to walk to here';
   }
 
   /**

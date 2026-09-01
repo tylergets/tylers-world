@@ -11,7 +11,7 @@
   "grid": {"width":12,"height":10,"tileSize":1},
   "layers": {
     "surface": {
-      "palette": {"#":"wall","w":"floor.wood","r":"rug"},
+      "palette": {"#":"wall","w":"floor.wood","t":"floor.tile","r":"rug"},
       "data": [
         "############",
         "#wwwwwwwwww#",
@@ -19,10 +19,10 @@
         "#wwwwwwwwww#",
         "#wwwrrrrwww#",
         "#wwwrrrrwww#",
-        "#wwwwwwwwww#",
-        "#wwwwwwwwww#",
-        "#wwwwwwwwww#",
-        "#####ww#####"
+        "#wwwwttwwww#",
+        "#wwwwttwwww#",
+        "#wwwttttwww#",
+        "#####tt#####"
       ]
     },
     "elevation": {

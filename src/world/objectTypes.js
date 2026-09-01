@@ -191,6 +191,37 @@ export const OBJECT_TYPES = {
     height: 1.5, squash: 0.34,
     palette: { tread: 0xb78654, riser: 0x805a39, rail: 0x68462f },
   },
+
+  // ----------------------------------------------------------------- yard --
+  // Two pieces the player buys indoors and puts down OUTdoors, and they are
+  // ordinary object types like every other -- a fence blocks because its mask
+  // says '#', not because anything in the engine knows what a fence is for.
+  //
+  // A FENCE IS SOLID AND A LADDER IS NOT, and that one character is the whole
+  // difference between them. A fence exists to be in the way of a chicken (see
+  // sim/body.js: an animal sweeps the same circle against the same collision
+  // the player does, so "contains animals" is a consequence of the mask and not
+  // a rule anybody wrote). A ladder exists to be STOOD ON, so it must be walked
+  // into -- what it does is change which STEP off that tile is legal, which is
+  // a fact about traversal and lives in World.canStep.
+  'yard.fence': {
+    category: 'yard', label: 'Fence Post',
+    footprint: solid(1, 1), height: 1.05,
+    squash: 0.34,
+    palette: { post: 0x9d7350, postHi: 0xb98d5f, rail: 0x8a6242, cap: 0x6b4a30 },
+  },
+  // `climb` is how many elevation steps this piece will carry you, up or down,
+  // between its own tile and the one you step to. Stated in the registry rather
+  // than assumed by the traversal rule for the reason every other number here
+  // is: a rope ladder that reached three would be one more entry in this file
+  // and no change at all to World.
+  'yard.ladder': {
+    category: 'yard', label: 'Ladder',
+    footprint: { w: 1, d: 1, mask: ['.'] }, height: 1.9,
+    squash: 0.34,
+    climb: 2,
+    palette: { stile: 0xb98d5f, stileHi: 0xd6ab7c, rung: 0x8a6242, foot: 0x6b4a30 },
+  },
 };
 
 // Derived once at load: the unrotated south-face door cell, if the type has one.

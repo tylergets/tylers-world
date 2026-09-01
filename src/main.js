@@ -226,6 +226,7 @@ class Game {
       onDayLength: () => this.cycleDayLength(),
       onMap: (sizesOnly) => this.cycleMap(sizesOnly),
       onWorlds: () => this.openWorlds(),
+      onGoHome: () => this.goHome(),
     });
 
     this.worlds = new WorldsPanel(hudRoot, {
@@ -512,6 +513,80 @@ class Game {
     }
   }
 
+  /**
+   * Route the walker to a tile, whoever is driving.
+   *
+   * The filter it hands the route to is the one that is ABOUT to be in charge
+   * -- `pendingInput` when a view change is mid-handoff, the live one
+   * otherwise -- because `syncControl` cancels the route on the filter that is
+   * losing control, and a route given to that one would be thrown away by the
+   * next tilt of the camera. `pointAt` does not need this: a click on the
+   * world arrives through the view you are looking at, so the two are already
+   * the same filter.
+   *
+   * @returns {boolean} whether there was anywhere to walk.
+   */
+  walkTo(tile) {
+    if (!this.world.inBounds(...tile)) return false;
+    const route = findPath(this.world, [this.player.tileX, this.player.tileZ], tile);
+    if (!route.length) return false;
+    (this.pendingInput ?? this.input).follow(route);
+    return true;
+  }
+
+  /**
+   * The tile in front of the marked home's door, and the house it belongs to.
+   *
+   * The DOORSTEP rather than the doorway, and that is the whole of the design:
+   * standing on a portal tile takes you through it, so aiming the walk at the
+   * door itself would make "go home" mean "go indoors" and swallow the fade
+   * before the player had asked for it. Stopping one step short leaves the
+   * last one where it belongs, which is with E or with the next footstep.
+   *
+   * Falls back to a walkable tile beside the house when it has no door the
+   * portal index knows about -- a home whose interior is gated behind a house
+   * tier is still a home you can be walked to.
+   *
+   * @returns {{tile: [number, number], name: string}|null} null when the
+   *   marked home is not in the place you are standing in.
+   */
+  homeStep() {
+    const world = this.world;
+    const home = world.objects.find(
+      (obj) => obj.props?.playerHome && !world.felled.has(obj.id),
+    );
+    if (!home) return null;
+
+    const name = home.props?.label ?? 'your house';
+    for (const portal of world.portals.values()) {
+      if (portal.objectId !== home.id || portal.kind !== PORTAL.ENTER) continue;
+      const [tx, tz] = portal.tile;
+      const step = [tx + portal.out.x, tz + portal.out.z];
+      if (world.inBounds(...step) && !world.isBlocked(...step)) return { tile: step, name };
+    }
+
+    // No usable doorstep: aim at the middle of the footprint instead. The tile
+    // is inside a solid building, so the route ends up beside it -- which is
+    // exactly what pathfind.js promises for a goal you cannot stand on.
+    const [ax, az] = home.tile;
+    const { w, d } = home.shape;
+    return { tile: [ax + (w >> 1), az + (d >> 1)], name };
+  }
+
+  /**
+   * Walk to the front door of the marked home in this place.
+   *
+   * Guarded the way a click on the world is -- not mid-doorway, not mid-
+   * conversation -- because it is the same walk, asked for with a button
+   * instead of a pointer.
+   */
+  goHome() {
+    if (this.travel || this.chat.active) return;
+    const home = this.homeStep();
+    if (!home) return;
+    if (!this.walkTo(home.tile)) this.note(`You are already at ${home.name}.`);
+  }
+
   /** Keep the 3D player's heading under the mouse as the camera follows them. */
   facePointer() {
     if (!this.pointer || this.input !== this.free || this.pendingInput === this.grid) return;
@@ -585,6 +660,12 @@ class Game {
     this.angling.reset();
     this.stage.setAngle(null);
     this.hud.setWorld(world, this.stack.length > 0);
+    // "Go home" is only an offer in a place that has your home in it. Settled
+    // here, with everything else that is a fact about the place rather than
+    // about the frame, so the button can never advertise a walk into a house
+    // that is two worlds away.
+    const home = this.homeStep();
+    this.hud.setHome(home !== null, home?.name);
   }
 
   /** Advance house progression by one authored tier and refresh the live place. */

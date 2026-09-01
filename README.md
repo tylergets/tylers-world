@@ -266,6 +266,8 @@ src/
     minimap.js      the corner map: a baked static layer, live dots on top
     mapscreen.js    the map tool's screen: the same picture, zoomed and panned
     icons.js        one drawn glyph per item, for the pockets
+    preview.js      the same models the town is meshed from, drawn flat into
+                    SVG: the pictures on the shop shelf
     photo.js        the camera's roll, and the Save button
     dialogue.js     the conversation box, the buy/sell panel, the typewriter
   settings/

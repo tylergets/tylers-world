@@ -228,6 +228,9 @@ function shootTarget({ world, people, fauna, player, tool, inventory, now, ready
   const ox = Math.sin(player.yaw), oz = Math.cos(player.yaw);
   const reach = tool.range ?? 8;
   const stop = ddaBlock(world, px, pz, ox, oz, reach);
+  // What the walk stopped ON, if anything: the shared scratch is written by
+  // every `ddaBlock` call, so it is read here and nowhere later.
+  const wall = STOP.hit ? world.objectAt(STOP.x, STOP.z) : null;
 
   let bestT = stop, best = null, kind = null;
 
@@ -249,6 +252,24 @@ function shootTarget({ world, people, fauna, player, tool, inventory, now, ready
     bestT = t; best = n; kind = 'npc';
   }
 
+  // Nothing alive on the line, but something the shot can BREAK at the end of
+  // it. Asked last, and it has to be: a chicken standing in front of the tree
+  // is what the shot hits, and the DDA has already been overtaken by any body
+  // nearer than the wall.
+  if (!best && wall && breakable(wall)) {
+    const type = objectType(wall.type);
+    return {
+      verb: 'shoot',
+      tile: [...wall.tile],
+      label: wall.props?.label ?? type.label,
+      blocked: null,
+      kind: 'object',
+      object: wall,
+      hits: 0,
+      range: stop,
+    };
+  }
+
   if (!best) {
     return { verb: 'shoot', tile: null, label: null, blocked: 'nothing in your sights' };
   }
@@ -261,6 +282,60 @@ function shootTarget({ world, people, fauna, player, tool, inventory, now, ready
     target: best,
     range: bestT,
   };
+}
+
+/**
+ * What a shot is allowed to take apart.
+ *
+ * A LIST and not "everything solid", because the two things it leaves out are
+ * the point. A building cannot be shot down -- its doorway is a portal, and a
+ * house you could delete is a place with a save pointing into it. A fixture
+ * belongs to a kit and has a script hanging off it. Everything else that stands
+ * on a tile is fair game, indoors as much as out: the tree in the meadow, the
+ * boulder on the ridge, and the bookcase in somebody's front room.
+ */
+const BREAKABLE = new Set(['tree', 'rock', 'furniture']);
+
+export function breakable(obj) {
+  return !!obj && BREAKABLE.has(objectType(obj.type).category);
+}
+
+/**
+ * How many shots it takes to break something.
+ *
+ * Read off what the thing IS rather than stated per object, on the rule
+ * `mineTarget` already follows for a boulder: how big it is is written down
+ * once, in its footprint, and a second number in the registry would be a second
+ * opinion. Furniture is the flimsiest, a tree takes a magazine, and a rock
+ * takes the most -- which is also the order of how much use a tool is against
+ * them, so the gun stays the expensive way to do any of it.
+ */
+export function shotsToBreak(obj) {
+  const category = objectType(obj.type).category;
+  const big = obj.shape.w * obj.shape.d > 1;
+  if (category === 'furniture') return big ? 3 : 2;
+  if (category === 'rock') return big ? 7 : 5;
+  return 4;
+}
+
+/**
+ * What a shot-up object leaves on the ground.
+ *
+ * Trees and rocks pay exactly what the axe and the pick would have paid --
+ * seeded by the object's own id, so which tool you used does not change what a
+ * given oak was worth. Furniture is the exception and pays SPLINTERS: a chair
+ * you shot is not a chair you can carry away, and the flat-pack it would have
+ * folded into is what the hammer is for. That asymmetry is the whole reason to
+ * own a hammer at all.
+ */
+export function breakDrops(obj) {
+  const category = objectType(obj.type).category;
+  if (category === 'tree') return chopDrops(obj);
+  if (category === 'rock') return mineDrops(obj);
+  const rng = makeRng(`smash:${obj.id}`);
+  const out = ['item.stick'];
+  if (rng() < 0.5) out.push('item.stick');
+  return out;
 }
 
 /** How far off the line a body can stand and still be hit. A shot is not a laser. */
@@ -280,7 +355,19 @@ export const AMMO = 'item.shot';
  * a distance and not a tile, because what the caller compares it against is
  * how far along the line an animal is standing.
  */
+/**
+ * Where the last `ddaBlock` stopped, for the one caller that wants the tile as
+ * well as the distance.
+ *
+ * A shared mutable scratch and not a returned object, on this file's standing
+ * rule: the resolvers are polled ten times a second by the HUD and allocate
+ * nothing but their result. Read it in the same breath as the call -- the next
+ * walk overwrites it.
+ */
+const STOP = { hit: false, x: 0, z: 0 };
+
 function ddaBlock(world, px, pz, ox, oz, reach) {
+  STOP.hit = false;
   let x = Math.floor(px), z = Math.floor(pz);
   const stepX = ox > 0 ? 1 : -1, stepZ = oz > 0 ? 1 : -1;
   const invX = ox === 0 ? Infinity : 1 / Math.abs(ox);
@@ -293,9 +380,35 @@ function ddaBlock(world, px, pz, ox, oz, reach) {
     if (t > reach) return reach;
     if (tMaxX < tMaxZ) { x += stepX; tMaxX += invX; } else { z += stepZ; tMaxZ += invZ; }
     // Out of the world stops a shot as surely as a wall does.
-    if (!world.inBounds(x, z) || world.isBlocked(x, z)) return t;
+    if (!world.inBounds(x, z) || world.isBlocked(x, z)) {
+      STOP.hit = world.inBounds(x, z);
+      STOP.x = x; STOP.z = z;
+      return t;
+    }
   }
   return reach;
+}
+
+/**
+ * Whether one body can see another across this place.
+ *
+ * The shot's walk with nothing to shoot: if a pellet fired from here would
+ * reach there, so does a line of sight. Sharing the DDA rather than writing a
+ * second one is not an economy -- it is the guarantee that a shopkeeper cannot
+ * watch you through a wall she could not shoot through, which is the whole
+ * difference between being caught and getting away with it.
+ *
+ * Allocates nothing, and does not touch the shared STOP scratch's meaning for
+ * anybody: the caller here wants the distance only.
+ *
+ * @returns {boolean} true when the line is clear for the whole distance.
+ */
+export function clearLine(world, x0, z0, x1, z1, range = Infinity) {
+  const dx = x1 - x0, dz = z1 - z0;
+  const dist = Math.hypot(dx, dz);
+  if (dist > range) return false;
+  if (dist < 1e-3) return true;
+  return ddaBlock(world, x0, z0, dx / dist, dz / dist, dist) >= dist;
 }
 
 /**

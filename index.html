@@ -70,6 +70,25 @@
   .map-north { top: 5px; left: 50%; transform: translateX(-50%); opacity: 0.85; }
   .map-mode { right: 7px; bottom: 5px; color: var(--dim); }
 
+  /* Go home. Directly under the map, because "where is my house" and "take me
+     there" are the same question asked twice, and the map is where a player
+     already goes to ask the first half of it.
+
+     It is DISABLED rather than hidden wherever there is no marked home to walk
+     to -- indoors, or in a place that has none. A control that vanishes reads
+     as a bug in the layout; one that greys out reads as an answer. */
+  .go-home {
+    display: flex; align-items: center; gap: 8px;
+    width: 186px; padding: 8px 11px;
+    font: inherit; font-size: 12.5px; font-weight: 600; color: var(--ink);
+    text-align: left; cursor: pointer;
+    transition: background 0.16s, color 0.16s;
+  }
+  .go-home:hover:not(:disabled) { background: rgba(255, 255, 255, 0.16); }
+  .go-home:disabled { color: var(--dim); cursor: default; opacity: 0.6; }
+  .go-home-icon { flex: none; font-size: 13px; line-height: 1; }
+  .go-home-label { flex: 1; letter-spacing: 0.02em; }
+
   .world-name {
     font-size: 17px; font-weight: 650; letter-spacing: -0.01em;
   }
@@ -270,17 +289,21 @@
     border-radius: 10px; padding: 9px 12px; cursor: pointer;
   }
   .shop-tab.on { color: var(--ink); background: rgba(127, 212, 168, 0.16); border-color: var(--accent); }
-  /* Fixed height, not max-height: a panel that grows and shrinks as stock sells
-     out drags the dialog box up and down the screen mid-sentence. */
+  /* Trade panel: the list on the left, one item large on the right. Fixed
+     height, not max-height: a panel that grows and shrinks as stock sells out
+     drags the dialog box up and down the screen mid-sentence. */
+  .shop-body { display: flex; gap: 12px; align-items: stretch; }
   .shop-rows {
-    height: clamp(160px, 28vh, 240px); overflow-y: auto; display: flex; flex-direction: column; gap: 5px;
+    flex: 1; min-width: 0;
+    height: clamp(228px, 33vh, 300px); overflow-y: auto;
+    display: flex; flex-direction: column; gap: 5px;
     scrollbar-width: thin;
   }
   .shop-row {
-    flex: none; display: flex; align-items: center; gap: 13px; width: 100%; min-height: 48px;
+    flex: none; display: flex; align-items: center; gap: 11px; width: 100%; min-height: 52px;
     font: inherit; font-size: 15px; color: var(--ink);
     background: rgba(255, 255, 255, 0.05); border: 1px solid transparent;
-    border-radius: 10px; padding: 10px 13px; cursor: pointer;
+    border-radius: 10px; padding: 8px 13px; cursor: pointer;
   }
   .shop-row:hover { background: rgba(255, 255, 255, 0.11); }
   .shop-row.on { background: rgba(127, 212, 168, 0.15); border-color: var(--accent); }
@@ -288,13 +311,51 @@
      of a thing you cannot buy yet is information, and hiding it makes the shelf
      look like it never stocked one. */
   .shop-row.no { opacity: 0.45; }
+  /* One box for whichever of the three pictures a row got -- a rendering, a
+     drawn icon or the colour chip (see #art in ui/dialogue.js). Sized here and
+     not by the drawing, so a row is the same height whichever it is and a shelf
+     of mixed goods does not ripple. */
+  .shop-art { flex: none; width: 36px; height: 36px; display: grid; place-items: center; }
+  .shop-art .icon { width: 28px; height: 28px; }
   .shop-row .chip { width: 21px; height: 21px; }
+  /* A rendered model fills its box: every one is fitted to the same 100-unit
+     square by ui/preview.js, so one rule sizes all of them. */
+  .model { display: block; width: 100%; height: 100%; }
   .shop-label { flex: 1; }
   .shop-qty { font: 500 13px/1 var(--mono); color: var(--dim); }
   .shop-price {
     font: 600 14px/1 var(--mono); color: #f3d489; min-width: 42px; text-align: right;
   }
   .shop-empty { padding: 18px 3px; font-size: 15px; color: var(--dim); }
+
+  /* The card. Everything on it is derived at draw time from the shop, the bag
+     and the purse -- nothing here is authored per item. */
+  .shop-card {
+    flex: none; width: 198px; display: flex; flex-direction: column; gap: 6px;
+    padding: 11px; overflow: hidden;
+    background: rgba(0, 0, 0, 0.26); border: 1px solid var(--edge); border-radius: 12px;
+  }
+  /* The art flexes and the words do not: on a short window the PICTURE gives up
+     the room, down to nothing if it has to, rather than the price being the
+     thing that falls off the bottom. */
+  .card-art {
+    flex: 1 1 96px; min-height: 0; display: grid; place-items: center;
+    background: rgba(255, 255, 255, 0.05); border-radius: 9px; padding: 4px;
+  }
+  .card-art .icon { width: 62px; height: 62px; }
+  .card-art .chip { width: 44px; height: 44px; }
+  .card-art .model { width: 100%; height: 100%; }
+  .card-name { font-size: 15px; font-weight: 650; line-height: 1.2; }
+  .card-kind { font-size: 11.5px; color: var(--dim); line-height: 1.35; }
+  .card-facts { display: flex; flex-direction: column; gap: 2px; margin: 0; }
+  .card-facts div { display: flex; justify-content: space-between; gap: 8px; align-items: baseline; }
+  .card-facts dt { font-size: 11.5px; color: var(--dim); }
+  .card-facts dd { margin: 0; font: 600 12px/1.3 var(--mono); }
+  .card-facts dd.coin { color: #f3d489; }
+  .card-facts dd.warn { color: #ffb4b4; }
+  .card-why { font-size: 11.5px; line-height: 1.35; color: #ffb4b4; }
+  .card-none { margin: auto; font-size: 12.5px; color: var(--dim); text-align: center; }
+
   .shop-foot {
     display: flex; flex-wrap: wrap; justify-content: space-between; gap: 8px 16px; align-items: baseline;
     margin-top: 12px; font-size: 13px; color: var(--dim);
@@ -311,6 +372,17 @@
     .chat-box { padding: 15px 16px 17px; }
     .shop { padding: 14px; }
     .shop-foot .dim { flex-basis: 100%; }
+    /* Too narrow for two columns, so the card goes UNDER the list and lies on
+       its side rather than being dropped. The picture is the reason the panel
+       exists; a phone-shaped window is not a reason to stop showing it. */
+    .shop-body { flex-direction: column; }
+    .shop-rows { height: clamp(150px, 26vh, 210px); }
+    .shop-card {
+      width: auto; display: grid; grid-template-columns: 74px 1fr;
+      gap: 3px 11px; align-content: center;
+    }
+    .card-art { grid-row: 1 / -1; height: 74px; min-height: 0; }
+    .card-art .icon { width: 52px; height: 52px; }
   }
 
   /* Coins, in the pockets panel. */

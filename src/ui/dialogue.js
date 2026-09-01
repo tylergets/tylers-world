@@ -37,6 +37,9 @@
  */
 
 import { itemType } from '../world/itemTypes.js';
+import { OBJECT_TYPES } from '../world/objectTypes.js';
+import { itemIcon } from './icons.js';
+import { itemModel } from './preview.js';
 import { makeVoice, resolveMode, VOICE_MODES } from '../audio/voice.js';
 
 /** 0xrrggbb -> a CSS colour. */
@@ -70,7 +73,10 @@ export class Chat {
           <button class="shop-tab" data-tab="buy">Buy</button>
           <button class="shop-tab" data-tab="sell">Sell</button>
         </div>
-        <div class="shop-rows" id="shop-rows"></div>
+        <div class="shop-body">
+          <div class="shop-rows" id="shop-rows"></div>
+          <aside class="shop-card" id="shop-card"></aside>
+        </div>
         <div class="shop-foot">
           <span id="shop-note"></span>
           <span class="dim"><b>&#8593;&#8595;</b> pick &middot; <b>&#8592;&#8594;</b> buy/sell &middot; <b>E</b> trade &middot; <b>Esc</b> done</span>
@@ -89,6 +95,7 @@ export class Chat {
     this.shopName = this.el.querySelector('#shop-name');
     this.shopCoins = this.el.querySelector('#shop-coins');
     this.shopRows = this.el.querySelector('#shop-rows');
+    this.shopCard = this.el.querySelector('#shop-card');
     this.shopNote = this.el.querySelector('#shop-note');
     this.tabs = [...this.el.querySelectorAll('.shop-tab')];
 
@@ -111,6 +118,7 @@ export class Chat {
     this.tab = 'buy';
     this.rowSel = { buy: 0, sell: 0 };
     this._stamp = null;         // what was last drawn, for change detection
+    this._shelf = null;         // what the ROWS were last built from
     this._rows = [];            // what the rows on screen currently mean
 
     // Clicking is the same three verbs as the keys, routed through the same
@@ -145,6 +153,7 @@ export class Chat {
     this.tab = 'buy';
     this.rowSel = { buy: 0, sell: 0 };
     this._stamp = null;
+    this._shelf = null;
     // A conversation opens on an EMPTY box, not on the last thing the last
     // person said: `tick` fills it a character at a time from the next frame,
     // and anything already in there would flash on this one.
@@ -388,32 +397,122 @@ export class Chat {
     this._rows = this.tab === 'buy' ? this.#buyRows(shop) : this.#sellRows(shop);
     const sel = this.rowSel[this.tab] = Math.min(this.rowSel[this.tab], Math.max(0, this._rows.length - 1));
 
-    this.shopRows.innerHTML = this._rows.length
-      ? this._rows.map((row, i) => `
-        <button class="shop-row${i === sel ? ' on' : ''}${row.ok ? '' : ' no'}" data-row="${i}">
-          <span class="chip" style="background:${css(row.swatch)}"></span>
-          <span class="shop-label">${esc(row.label)}</span>
-          <span class="shop-qty">${row.qty}</span>
-          <span class="shop-price">${row.price}</span>
-        </button>`).join('')
-      : `<div class="shop-empty">${this.tab === 'buy'
-        ? 'The shelves are bare.' : 'Nothing here they want to buy.'}</div>`;
+    // THE ROWS REBUILD ON THE SHELF, NOT ON THE SELECTION, and that split is
+    // what pays for the pictures. A row now carries a rendering of the thing it
+    // is selling (ui/preview.js), which is a few hundred polygons of SVG, and
+    // rebuilding ten of those every time an arrow key moved the highlight one
+    // line would put a hitch in a running game for a change of one CSS class.
+    //
+    // Everything a row draws is derived from these four counters, so the gate
+    // is safe by construction: anything they do not cover is not on a row. What
+    // does change with the selection is the card, which is one item and is
+    // redrawn every time.
+    const shelf = [this.tab, shop.version, this.ctx.inventory.version, purse.version].join('|');
+    if (shelf !== this._shelf) {
+      this._shelf = shelf;
+      this.shopRows.innerHTML = this._rows.length
+        ? this._rows.map((row, i) => `
+          <button class="shop-row${row.ok ? '' : ' no'}" data-row="${i}">
+            <span class="shop-art">${this.#art(row)}</span>
+            <span class="shop-label">${esc(row.label)}</span>
+            <span class="shop-qty">${row.qty}</span>
+            <span class="shop-price">${row.price}</span>
+          </button>`).join('')
+        : `<div class="shop-empty">${this.tab === 'buy'
+          ? 'The shelves are bare.' : 'Nothing here they want to buy.'}</div>`;
+    }
 
+    // The highlight, and the scroll that keeps it on screen. A rotating shelf
+    // is longer than the panel it is drawn in, and an arrow key that selects a
+    // row nobody can see is an arrow key that appears to do nothing.
+    this.shopRows.querySelectorAll('.shop-row').forEach((el, i) => {
+      el.classList.toggle('on', i === sel);
+      if (i === sel) el.scrollIntoView({ block: 'nearest' });
+    });
+
+    this.shopCard.innerHTML = this.#card(this._rows[sel]);
     this.shopNote.textContent = this.note ?? '';
     this.shopNote.className = this.note?.startsWith("Can't") ? 'shop-warn' : '';
   }
 
+  /**
+   * The picture on a row.
+   *
+   * Three answers, in order of how much each one knows about the thing. A
+   * rendering of the real model, for anything that has one -- which is every
+   * piece of furniture, and is the whole point: a shelf of flat-packs is a
+   * shelf of identical parcels, and a shop that cannot show you the dresser is
+   * a catalogue with no pictures in it. Failing that, the drawn icon out of the
+   * bag (ui/icons.js), which beats any projection of a mesh at this size and is
+   * the right picture of an apple or an axe. Failing both, the colour chip this
+   * panel drew for everything before either of them existed.
+   */
+  #art(row) {
+    return itemModel(row.type)
+      ?? itemIcon(row.typeId)
+      ?? `<span class="chip" style="background:${css(row.type.swatch)}"></span>`;
+  }
+
+  /**
+   * The card beside the list: one row, large, with the numbers a decision needs.
+   *
+   * Everything in it is DERIVED, at the moment it is drawn, from the same three
+   * objects the rows come from. There is no per-item copy anywhere -- no
+   * descriptions table, no price list, no second opinion about what a bed is --
+   * because a sentence about an item written next to the item is the first
+   * thing in this file that would go stale.
+   *
+   * "Coins after" is the one number here that is on no row, and it is the one
+   * the player is doing in their head anyway. It is left negative rather than
+   * clamped: how far short you are is the useful part of being short.
+   */
+  #card(row) {
+    if (!row) return '<div class="card-none">Nothing here to look at.</div>';
+
+    const { inventory, purse } = this.ctx;
+    const buying = this.tab === 'buy';
+    const after = buying ? purse.coins - row.price : purse.coins + row.price;
+    const facts = [
+      [buying ? 'Price' : 'They pay', `${row.price} coin`, 'coin'],
+      buying ? ['On the shelf', row.stock] : ['This slot', row.count],
+      ['In your bag', inventory.count(row.typeId)],
+      ['Coins after', after, after < 0 ? 'warn' : 'coin'],
+    ];
+    return `
+      <div class="card-art">${this.#art(row)}</div>
+      <div class="card-name">${esc(row.type.label)}</div>
+      <div class="card-kind">${blurb(row.type)}</div>
+      <dl class="card-facts">${facts.map(([k, v, cls]) => `
+        <div><dt>${k}</dt><dd${cls ? ` class="${cls}"` : ''}>${esc(v)}</dd></div>`).join('')}
+      </dl>
+      ${row.why ? `<div class="card-why">${esc(row.why)}</div>` : ''}`;
+  }
+
+  /**
+   * WHY a row is refused is worked out here and said in the card, but the
+   * refusal itself is still the Shop's (sim/Shop.js): these three tests are the
+   * three it makes, asked a moment earlier so the panel can grey the row and
+   * name the problem before the player presses the key. If the two ever
+   * disagree the Shop is right and this is the bug.
+   */
   #buyRows(shop) {
     const { inventory, purse } = this.ctx;
     return shop.offers.map((entry) => {
       const out = entry.count !== null && entry.count <= 0;
+      const poor = !purse.canAfford(entry.price);
+      const full = inventory.isFullFor(entry.typeId);
       return {
         entry,
-        swatch: entry.type.swatch,
+        typeId: entry.typeId,
+        type: entry.type,
         label: entry.type.label,
         qty: out ? 'sold out' : (entry.count === null ? '—' : `x${entry.count}`),
+        stock: entry.count === null ? 'plenty' : entry.count,
         price: entry.price,
-        ok: !out && purse.canAfford(entry.price) && !inventory.isFullFor(entry.typeId),
+        ok: !out && !poor && !full,
+        why: out ? 'Sold out today.'
+          : poor ? 'More coin than you have.'
+            : full ? 'No room in your bag for it.' : null,
       };
     });
   }
@@ -434,10 +533,53 @@ export class Chat {
       if (paid === null) return;
       const type = itemType(slot.typeId);
       rows.push({
-        slot: i, swatch: type.swatch, label: type.label,
-        qty: `x${slot.count}`, price: paid, ok: true,
+        slot: i,
+        typeId: slot.typeId,
+        type,
+        label: type.label,
+        qty: `x${slot.count}`,
+        count: slot.count,
+        price: paid,
+        ok: true,
+        why: null,
       });
     });
     return rows;
   }
+}
+
+/** What a tool's verb is FOR, in the words a shopper would use. */
+const VERBS = {
+  chop: 'fells trees',
+  dig: 'turns ground',
+  mine: 'breaks rock',
+  hit: 'swings at things',
+  shoot: 'fires shot',
+  fish: 'catches fish',
+  map: 'shows the whole map',
+  photo: 'takes pictures',
+  light: 'lights the dark',
+};
+
+/**
+ * One line saying what kind of thing this is.
+ *
+ * Derived from the registries and from nothing else. The tempting alternative
+ * is a `description` per item, and it is a trap: three hundred kit pieces
+ * arrive from a file nobody here wrote, so either they all say nothing or the
+ * eight built-ins say something the other three hundred cannot. What the
+ * registries already know -- that a flat-pack becomes a two-by-three piece you
+ * can sleep in, that a tool fells trees, that ten of a thing fit in a slot --
+ * is true of every item in the game and goes stale never.
+ */
+function blurb(type) {
+  if (type.furniture) {
+    const piece = OBJECT_TYPES[type.furniture];
+    if (!piece) return 'Furniture, flat-packed';
+    const use = piece.use === 'sleep' ? ' &middot; sleep in it'
+      : piece.use === 'store' ? ' &middot; holds things' : '';
+    return `Flat-pack &middot; ${piece.footprint.w}&times;${piece.footprint.d} tiles${use}`;
+  }
+  if (type.tool) return `Tool &middot; ${VERBS[type.tool.verb] ?? type.tool.verb}`;
+  return type.stack > 1 ? `Stacks to ${type.stack} a slot` : 'One to a slot';
 }
