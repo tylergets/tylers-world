@@ -65,7 +65,7 @@ const ROWS = [
   ['here', 'here'],
   ['zone', 'floor'],
   ['item', 'take'],
-  ['furniture', 'pack'],
+  ['furniture', 'use'],
   ['tool', 'use'],
   // A fixture's key text is written by its kit ("Make a wish"), so this label
   // is only what the row says before one is ever in front of you.
@@ -647,8 +647,10 @@ export class Hud {
     const item = what?.kind === 'take' ? what.item : null;
     const npc = what?.kind === 'talk' ? what.npc : null;
     const fixture = what?.kind === 'use' ? what.fixture : null;
-    const furniture = what?.kind === 'pack' ? what.object : null;
-    this.#set('furniture', furniture ? objectType(furniture.type).label : null);
+    const furniture = what?.kind === 'furniture' ? what.object : null;
+    const furnitureVerb = what?.action === 'sleep' ? 'sleep'
+      : game.edits?.storedIn(furniture?.id) ? 'take' : 'store';
+    this.#set('furniture', furniture ? objectType(furniture.type).label : null, furnitureVerb);
 
     // The key text comes from the kit file and the value is the thing itself,
     // so the row reads "Make a wish   Fountain". A fixture is the only prompt

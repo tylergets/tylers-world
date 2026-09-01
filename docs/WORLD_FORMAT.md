@@ -199,6 +199,7 @@ place that decides).
 ```jsonc
 "shop": {
   "name": "Marla's Shelves",
+  "hours": { "open": 8, "close": 19 }, // optional; may wrap midnight
   "markup": 1.5,          // what she charges, x the item's value
   "buyRate": 0.5,         // what she pays, x the item's value
   "takes": ["item.stick"],// what she will buy at all; omit for "anything"
@@ -210,6 +211,9 @@ place that decides).
 }
 ```
 
+Outside those hours the NPC remains present but uses the standard closed-shop
+conversation, and no dialog effect can open the till.
+
 Prices are **rates against the item's `value`** (`src/world/itemTypes.js`),
 never a table. So adding a pear to the game cannot leave a shopkeeper with no
 opinion about pears, and a per-entry `price` is only for the thing in the
@@ -218,6 +222,46 @@ place opens. Without `daily`, sold-out rows stay sold out. With `daily`, `stock`
 is the catalog and exactly that many distinct rows are chosen from it each
 in-game day. The choice is seeded by NPC id and day, so reloading cannot reroll
 the shelf; counts and sold-out rows survive saves until the next dawn.
+
+A `type` may name an item that came out of a **kit file** as readily as one the
+game ships with — Turnip & Timber's book is three hundred `kititem.*` rows and
+ten of them on the floor at a time. The only rule is the ordering every kit
+already obeys: the world must `kits`-declare whatever defines those types, or
+the validator rejects the stock row by name (see `docs/KIT_FORMAT.md`).
+
+### `npcs[].schedule` and `npcs[].errands`
+
+`schedule` is a cyclic, clock-driven list. The most recent `at` row owns the
+NPC's post until the next row; the NPC walks to `tile`, faces `facing`, exposes
+`activity` in the HUD, and may become unavailable for conversation.
+
+```jsonc
+"schedule": [
+  { "at": 6, "tile": [18, 49], "facing": "south", "activity": "Tending beds" },
+  { "at": 20, "tile": [18, 49], "facing": "north", "activity": "Inside", "available": false }
+]
+```
+
+Errands are persistent player state while definitions stay in the world file.
+Objectives consume actual simulation events, not inventory snapshots, so
+dropping and re-picking the same object cannot satisfy gathering twice.
+
+```jsonc
+"errands": [{
+  "id": "pond-supper",
+  "title": "Catch trout",
+  "objective": { "kind": "fish", "item": "item.trout", "count": 2 },
+  "reward": { "coins": 80, "relationship": 22 }
+}]
+```
+
+Objective kinds are `gather` (`item`), `fish` (`item`), `process` (`fixture`),
+and `change` (`change` plus optional object `category`). Dialog uses
+`{ "errand": { "id": "...", "status": "available|active|ready|completed" } }`
+and the `errand` effect with action `accept` or `complete`. Relationship checks
+use `{ "relationship": { "atLeast": "acquaintance|friend|close" } }`; the
+legacy `friend` condition means acquaintance-or-better. Time-specific lines use
+`{ "time": { "from": 5, "to": 9 } }`.
 
 ### `npcs[].dialog`
 

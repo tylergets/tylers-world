@@ -73,8 +73,9 @@ const withDoor = (w, d, dx) => {
   return f;
 };
 /** Furniture: solid, waist-high, and squashed hard so it reads as a floor plan. */
-const furniture = (label, w, d, height, palette) => ({
+const furniture = (label, w, d, height, palette, use = null) => ({
   category: 'furniture', label, footprint: solid(w, d), height, squash: 0.34, palette,
+  ...(use ? { use } : {}),
 });
 
 export const OBJECT_TYPES = {
@@ -169,13 +170,13 @@ export const OBJECT_TYPES = {
   // Only ever placed inside interiors, but nothing in the engine enforces that
   // -- a bench in the plaza would work exactly as well.
   'furn.bed': furniture('Bed', 2, 3, 0.95,
-    { frame: 0x8a6242, sheet: 0xf3efe4, quilt: 0x5d86b5, pillow: 0xfdfaf2 }),
+    { frame: 0x8a6242, sheet: 0xf3efe4, quilt: 0x5d86b5, pillow: 0xfdfaf2 }, 'sleep'),
   'furn.table': furniture('Table', 2, 2, 0.8,
     { top: 0xc08b55, leg: 0x8a6242, cloth: 0xe8dcc0 }),
   'furn.chair': furniture('Chair', 1, 1, 0.9,
     { seat: 0xb07a4a, back: 0x8a6242 }),
   'furn.shelf': furniture('Bookcase', 2, 1, 1.9,
-    { body: 0x8a6242, back: 0x6b4a30, book: [0xb4544e, 0x4f8a6a, 0xd8a840, 0x5878ab] }),
+    { body: 0x8a6242, back: 0x6b4a30, book: [0xb4544e, 0x4f8a6a, 0xd8a840, 0x5878ab] }, 'store'),
   'furn.counter': furniture('Counter', 4, 1, 1.05,
     { body: 0xd9c7a4, top: 0x8a6242, panel: 0xc4ae87 }),
   'furn.stove': furniture('Stove', 2, 1, 1.0,
@@ -183,7 +184,7 @@ export const OBJECT_TYPES = {
   'furn.plant': furniture('Potted Plant', 1, 1, 1.25,
     { pot: 0xb2705a, soil: 0x5a4433, leaf: 0x4f9e3f, leafHi: 0x63b84e }),
   'furn.crate': furniture('Crate', 1, 1, 0.8,
-    { body: 0xc09a5f, edge: 0x8a6242 }),
+    { body: 0xc09a5f, edge: 0x8a6242 }, 'store'),
   'furn.stairs': {
     category: 'furniture', label: 'Stairs',
     footprint: { w: 2, d: 3, mask: ['##', '##', '+.'] },

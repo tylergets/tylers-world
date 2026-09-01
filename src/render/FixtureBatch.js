@@ -128,7 +128,14 @@ export class FixtureBatch {
         // against a basin that squashes, and the flatten uniform still applies
         // -- what is switched off is the extra vertical crush, which on a jet
         // of water would flatten the one part whose whole job is to be tall.
-        patchFlatten(new THREE.MeshLambertMaterial({ vertexColors: true }), 1),
+        // No `vertexColors`: these are the UNIT primitives, which carry no colour
+        // attribute of their own -- the colour is per INSTANCE and arrives via
+        // `setColorAt` below. Asking for vertex colours here defines USE_COLOR
+        // in a shader whose `color` attribute is not supplied, which reads as
+        // (0,0,0) and multiplies every instance colour to black. (props.js and
+        // ItemBatch.js do want it: their geometry is built by GeoBuilder, which
+        // writes a real colour attribute.)
+        patchFlatten(new THREE.MeshLambertMaterial(), 1),
         instances.length,
       );
       mesh.name = `fixtures:${prim}`;

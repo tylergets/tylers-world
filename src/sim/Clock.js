@@ -145,7 +145,12 @@ export class Clock {
    */
   advance(dt) {
     if (!(dt > 0)) return 0;
-    this.t += dt / this.daySeconds;
+    return this.#advanceDays(dt / this.daySeconds);
+  }
+
+  #advanceDays(days) {
+    if (!(days > 0)) return 0;
+    this.t += days;
     let crossed = 0;
     while (this.t >= 1) { this.t -= 1; this.day++; crossed++; }
     if (crossed) this.version++;
@@ -167,7 +172,7 @@ export class Clock {
    * Unlike the render bisect keys this one CHANGES SAVED STATE. That is the
    * price of it being the real clock and not a preview.
    */
-  skip(days = 0.1) { return this.advance(days * this.daySeconds); }
+  skip(days = 0.1) { return this.#advanceDays(days); }
 
   snapshot() { return { day: this.day, t: this.t }; }
 

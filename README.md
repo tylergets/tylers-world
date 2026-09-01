@@ -18,9 +18,11 @@ how you tell one world from another.
 switch view. `E` picks things up and talks to people; in a conversation, `↑↓`
 picks a line, `←→` switches between buying and selling, `Esc` walks away, and
 `M` cycles the NPC voice (babble / spoken / off). `Q` puts down what you are
-holding; a furniture flat-pack is assembled on clear ground in front of you,
-facing the same direction. `[` and `]` change the held slot, and `F` uses it if
-it is a tool.
+holding; inside your house, a furniture flat-pack is assembled on clear floor
+in front of you, facing the same direction. Placed beds sleep until dawn, and
+placed crates and bookcases store one inventory stack with `E`. To rearrange,
+empty a piece, face it with the hammer equipped, and press `F` to pack it back
+up. `[` and `]` change the held slot, and `F` uses it if it is a tool.
 `N` sizes the corner minimap — wide, close, the whole place, off — and clicking
 the map itself steps through the sizes without ever turning it off. It fades
 away on the way into the 2D view, where the whole screen is already that picture.
@@ -42,6 +44,13 @@ three neighbours who walk around during the day. Turnip & Timber puts four of
 its eight pieces on sale each morning. Conversations, prices, permanent stock
 and daily catalogs are all data in the world file - see
 [`docs/WORLD_FORMAT.md`](docs/WORLD_FORMAT.md).
+
+People keep a clock: authored schedules move them between daily posts, and
+shops trade only during posted hours. Meadowbrook's neighbours offer persistent
+errands for gathering, fishing, processing flowers, and changing the landscape.
+Completing work raises a four-tier relationship (stranger, acquaintance, friend,
+close), as does returning to talk on a new day; old saves load previous friends
+as acquaintances.
 
 **The game opens on a title screen**: dawn coming up over a valley, and under
 it Continue — the game this tab was last in, named and timestamped — every
@@ -204,6 +213,8 @@ on one the player could not leave.
 
 ```
 public/worlds/*.json              the eight worlds (hand-editable; see docs/)
+public/kits/*.kit.json            fixtures defined in a file, not in code
+public/kits/furniture/*.kit.json  the Turnip & Timber catalogue: 300 pieces, one file each
 src/
   core/         constants, coordinate conventions, seeded RNG
   world/        ← no three.js anywhere in here, so the sim is headless-testable
@@ -212,6 +223,9 @@ src/
     surfaces.js     ground type registry
     forms.js        what is off the edge: one band recipe per world form
     objectTypes.js  object type registry: footprint, mask, height, palette
+    itemTypes.js    item type registry: what a thing is worth, and how many fit
+    kit.js          the kit FORMAT: fixtures and items defined in a file
+    kits.js         kit cache and registration, in the order a world needs it
     animalTypes.js  animal species registry: size, speeds, behaviour, palette
     npcTypes.js     npc registry: size, palette, which body mesh to build
     dialog.js       the dialog script FORMAT: vocabulary + full validation
@@ -241,6 +255,7 @@ src/
     AnimalBatch.js  instanced animal models and animation
     NpcView.js      people, same trick again
     ItemBatch.js    instanced models for the things lying on the floor
+    FixtureBatch.js the parts of a kit fixture that move, per place
     DigBatch.js     instanced holes, drawn on the ground rather than cut into it
     Stage.js        scene assembly, morph orchestration
   ui/
@@ -259,6 +274,8 @@ tools/
   genworld.mjs    regenerate the starter worlds  (npm run genworld)
   checkworld.mjs  validate + ASCII-preview a world, headless
   shoot.mjs       screenshot both views in headless Chrome
+  catalog.mjs     validate the 300 furniture kits, bundle them  (npm run catalog)
+  make-catalog.mjs scaffold a catalogue file for a new piece  (npm run catalog:new)
 ```
 
 `src/world/` and `src/sim/` import nothing from `src/render/` and no three.js at

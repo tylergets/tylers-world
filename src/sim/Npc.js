@@ -67,6 +67,14 @@ export class Npc {
 
     this.dialog = spec.dialog ?? null;
     this.shop = spec.shop ? new Shop(spec.shop, spec.id) : null;
+    this.shopHours = spec.shop?.hours ?? null;
+    this.shopAvailable = this.shop !== null;
+    this.schedule = spec.schedule ?? [];
+    this.errands = spec.errands ?? [];
+    this.activity = null;
+    // Unscheduled NPCs, and headless callers without a clock, remain talkable.
+    this.available = true;
+    this._station = null;
     this.memory = { flags: new Set(), visits: 0 };
 
     // Placed at his tile centre, NOT nudged to the nearest walkable one the way
@@ -140,7 +148,32 @@ export class Npc {
    * on load and walks off again within a second, which is indistinguishable
    * from never having stopped.
    */
-  syncClock(_clock) { /* TEMP verification stub */ }
+  syncClock(clock) {
+    if (!clock) return;
+    const hour = clock.t * 24;
+
+    if (this.shop) {
+      const hours = this.shopHours;
+      this.shopAvailable = !hours || (hours.open < hours.close
+        ? hour >= hours.open && hour < hours.close
+        : hour >= hours.open || hour < hours.close);
+    }
+
+    if (!this.schedule.length) return;
+    // A daily schedule wraps: before its first row, the final row from the
+    // previous evening is still in force.
+    let station = this.schedule[this.schedule.length - 1];
+    for (const row of this.schedule) {
+      if (hour < row.at) break;
+      station = row;
+    }
+    this._station = station;
+    this.activity = station.activity;
+    this.available = station.available;
+    this.home.x = station.tile[0] + 0.5;
+    this.home.z = station.tile[1] + 0.5;
+    this.post = DIR_YAW[station.facing];
+  }
 
   snapshot() {
     return {
@@ -189,7 +222,8 @@ export class Npc {
     this.attention = x === null ? null : { x, z };
   }
 
-  update(dt, world) {
+  update(dt, world, clock = null) {
+    this.syncClock(clock);
     // Down, and nothing else is true while he is. Above everything, so Stroll
     // never sees the frame -- a walker who kept his errand while flat on his
     // back would stand up somewhere he did not fall.
@@ -206,6 +240,19 @@ export class Npc {
       if (Math.hypot(dx, dz) > 1e-3) this._target = Math.atan2(dx, dz);
       this.#stand(dt, world);
       return;
+    }
+
+    if (this._station) {
+      const dx = this.home.x - this.x, dz = this.home.z - this.z;
+      const distance = Math.hypot(dx, dz);
+      if (distance > 0.18) {
+        const speed = this.type.walkSpeed;
+        this.yaw = Math.atan2(dx, dz);
+        sweep(world, this, dt, dx / distance * speed, dz / distance * speed);
+        this._target = this.yaw;
+        this.lean = 0;
+        return;
+      }
     }
 
     if (this.behavior) {

@@ -423,7 +423,7 @@ function checkGrudge(npc) {
 /** A bag with a few of everything, so conditional lines can be walked. */
 function stockedBag() {
   const inv = new Inventory();
-  for (const type of ['item.apple', 'item.stick', 'item.shell']) inv.add(type, 3);
+  for (const type of ['item.apple', 'item.stick', 'item.shell', 'item.flower']) inv.add(type, 3);
   return inv;
 }
 
@@ -458,7 +458,7 @@ function useFixtures(world) {
   if (!targets.length) return;
 
   const inv = new Inventory();
-  for (const type of ['item.apple', 'item.stick', 'item.shell']) inv.add(type, 3);
+  for (const type of ['item.apple', 'item.stick', 'item.shell', 'item.flower']) inv.add(type, 3);
   const ctx = { inventory: inv, purse: new Purse(9999) };
 
   for (const obj of targets) {

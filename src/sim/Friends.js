@@ -89,6 +89,8 @@ export class Friends {
   constructor() {
     /** NPC id -> relationship points. */
     this.points = new Map();
+    /** NPC id -> last game day on which a conversation built the relationship. */
+    this.visited = new Map();
     /** NPC id -> { until: Clock stamp, severity: repeat attacks this feud }. */
     this.foes = new Map();
     /** Bumped on every change, so the HUD can skip a redraw. */
@@ -139,6 +141,22 @@ export class Friends {
     return true;
   }
 
+  /** First meetings grant acquaintance; later visits grant points once per day. */
+  visit(npcId, day) {
+    if (!npcId || this.foes.has(npcId)) return false;
+    if (!this.has(npcId)) {
+      this.points.set(npcId, 10);
+      if (Number.isInteger(day)) this.visited.set(npcId, day);
+      this.version++;
+      return true;
+    }
+    if (!Number.isInteger(day) || this.visited.get(npcId) === day) return false;
+    this.visited.set(npcId, day);
+    this.points.set(npcId, Math.min(100, this.pointsFor(npcId) + 5));
+    this.version++;
+    return true;
+  }
+
   reward(npcId, points) {
     if (!npcId || this.foes.has(npcId) || !(points > 0)) return false;
     this.points.set(npcId, Math.min(100, this.pointsFor(npcId) + points));
@@ -165,6 +183,7 @@ export class Friends {
     const previous = this.foes.get(npcId);
     const fresh = !previous;
     this.points.delete(npcId);
+    this.visited.delete(npcId);
     this.foes.set(npcId, {
       until: now + GRUDGE_DAYS,
       severity: Math.min(MAX_GRUDGE, (previous?.severity ?? 0) + 1),
@@ -213,7 +232,11 @@ export class Friends {
   }
 
   snapshot() {
-    return { relationships: Object.fromEntries(this.points), foes: Object.fromEntries(this.foes) };
+    return {
+      relationships: Object.fromEntries(this.points),
+      visited: Object.fromEntries(this.visited),
+      foes: Object.fromEntries(this.foes),
+    };
   }
 
   /**
@@ -236,6 +259,8 @@ export class Friends {
       ? Object.entries(relationships).flatMap(([id, value]) => Number.isFinite(value)
         ? [[id, Math.max(0, Math.min(100, value))]] : [])
       : (Array.isArray(friends) ? friends.map((id) => [id, 10]) : []));
+    this.visited = new Map(Object.entries(snap?.visited ?? {}).flatMap(([id, day]) =>
+      Number.isInteger(day) && day >= 1 ? [[id, day]] : []));
     this.foes = new Map(Array.isArray(foes)
       ? foes.map((id) => [id, { until: now + GRUDGE_DAYS, severity: 1 }])
       : Object.entries(foes ?? {}).flatMap(([id, saved]) => {
@@ -248,7 +273,10 @@ export class Friends {
     // A hand-edited save could name the same person in both. The feud wins: it
     // is the state with consequences, and getting it wrong the other way hands
     // somebody's front door to the person who shot them.
-    for (const id of this.foes.keys()) this.points.delete(id);
+    for (const id of this.foes.keys()) {
+      this.points.delete(id);
+      this.visited.delete(id);
+    }
     this.version++;
   }
 }

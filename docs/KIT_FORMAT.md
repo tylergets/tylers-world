@@ -90,10 +90,23 @@ halves never blur, which is why a kit is reusable across worlds and why
 `docs/WORLD_FORMAT.md` gains no new concepts — a fixture is an `object`, and
 every consumer of that array already handles it.
 
-### Type ids must start with `fixture.`
+### Type ids must carry their kind's prefix
 
-Enforced at parse, and again in `registerObjectType`. A kit that could define
-`building.store` could silently repaint a town by being loaded next to it.
+| `kind` | prefix | lands in |
+|---|---|---|
+| `object` | `fixture.` | `world/objectTypes.js` |
+| `item` | `kititem.` | `world/itemTypes.js` |
+
+Enforced at parse, and again in `registerObjectType` / `registerItemType`. A kit
+that could define `building.store` could silently repaint a town by being loaded
+next to it, and one that could define `item.apple` could reprice every orchard
+in the game.
+
+Two prefixes rather than one shared `kit.` namespace, because the two registries
+are separate tables and an id is looked up in exactly one of them — so
+`kititem.windsor-chair` and `fixture.windsor-chair` are allowed to be the
+flat-pack and the chair it becomes, which is the relationship the catalogue
+below is built on.
 
 ## `parts` — the model
 
@@ -275,6 +288,98 @@ That is the real cost of the script half of this format, stated plainly: a
 dialog graph can be walked exhaustively without executing anything, and a kit
 cannot. The trade bought a definition that travels.
 
+## `kind: "item"` — a thing you can carry
+
+An **object** is a fact about a tile: it stamps collision, owns an occupancy
+cell, bakes into the merged geometry. An **item** is a fact about the
+simulation: it stacks, it stamps nothing, and a second later it is in your
+pockets. Two kinds and not one loosened set of fields, because an object with a
+`stack` and an item with a `footprint` are both nonsense and a validator that
+accepted either could not say so.
+
+```jsonc
+{
+  "kind": "item",
+  "label": "Turnipwood Wingback Chair",
+  "value": 675,                  // what one is worth, in coins. Shops price off this.
+  "stack": 1,                    // how many fit in one slot. Default 1.
+  "height": 0.18,                // model height, for the hover and the pickup arc
+  "swatch": "#8a6f8e",           // the single colour the HUD chip uses
+  "badge": "chair",              // which parcel stamp the bag draws (see below)
+  "furniture": "fixture.wingback-chair",
+  "palette": { "wrap": "#d9c7a4", "wrapHi": "#eee1c7", "strap": "#8a6242", "mark": "#8a6f8e" }
+}
+```
+
+**A model or a link, and it must be one of them.**
+
+- `parts` gives the item a shape of its own, drawn by `render/ItemBatch.js`
+  exactly as a fixture's parts are drawn by `render/props.js`.
+- `furniture` names the object this item **becomes** when it is put down, and an
+  item that has one is a *flat-pack*: it is drawn as the same kraft parcel every
+  other flat-pack in the game is drawn as, distinguished by the colour of its
+  mark and the silhouette stamped on it. That is not laziness — a flat-packed
+  bed and a flat-packed bookcase genuinely are the same object, a wrapped board
+  with a strap round it, and three hundred distinct silhouettes at 40 pixels
+  would lose the read that matters: *this slot holds furniture*.
+
+An item with neither would be a thing the renderer cannot draw, which is a blank
+slot in the bag rather than an error — so it is an error.
+
+The `furniture` link is checked against the fixtures **in the same kit** and
+against the game's own `furn.*` pieces, so a kit can sell a plain bed without
+shipping a second bed. A flat-pack with no model of its own must carry the four
+parcel colours (`wrap`, `wrapHi`, `strap`, `mark`); a missing one is a message
+naming the file rather than a broken icon on the first frame that draws it.
+
+`badge` is purely presentational, and sits here for the reason `swatch` does:
+which of eight stamped silhouettes says "this parcel holds a chair" is a
+judgement about a drawing. Known names are `bed`, `table`, `chair`, `shelf`,
+`counter`, `stove`, `plant` and `crate`; anything else draws a plain parcel,
+so an older build reading a newer catalogue degrades rather than breaks.
+
+**An item part may not `anim`.** A fixture's moving parts are drawn by
+`render/FixtureBatch.js`, which is per *place* and keyed on world objects; an
+item may be on the floor, in a pocket, or in the player's hand, and only one of
+those three is a place. Writing an animation down and then silently not
+honouring it is worse than refusing it.
+
+## The Turnip & Timber catalogue
+
+Three hundred products, **one file each**, under `public/kits/furniture/`. Each
+file defines both halves of one piece:
+
+```
+public/kits/furniture/wingback-chair.kit.json
+  fixture.wingback-chair    the assembled chair, standing on its tile
+  kititem.wingback-chair    the flat-pack it travels and is sold as
+```
+
+They live together because they are one product; the `furniture` link is checked
+within a single file precisely so a parcel and the thing inside it cannot drift
+apart.
+
+| tool | what it does |
+|---|---|
+| `npm run catalog:new` | scaffolds files for products that do not have one yet. **Never overwrites** — from the first write on, the file is the truth and the script is history. `--force` re-scaffolds. |
+| `npm run catalog` | validates all three hundred through the real `parseKit` and bundles them into `public/kits/turnip-catalog.kit.json`. Run by `predev` and `prebuild`. |
+| `npm run catalog -- --check` | the same, without writing; non-zero if the bundle is stale. |
+
+**Why a bundle exists.** `Kits.loadAll` fetches one file per entry, and a world
+declaring three hundred of them is three hundred round trips before the door
+opens. The individual files stay the unit of authorship; the bundle is the unit
+of loading, and it is generated, never edited.
+
+**Why it loads at boot rather than with the shop.** Every other kit is declared
+by the one world that places it. This one cannot be: a flat-pack bought at
+Turnip & Timber goes into your pockets, walks out of the door and is assembled
+in your own front room — and it is in the *save*, so a fresh session restores an
+inventory holding `kititem.wingback-chair` before it has been anywhere near the
+shop. A per-place dependency would have to be declared by every place the player
+might carry a chair into, which is all of them. So `src/main.js` loads it once
+in `boot()`, and the store interior declares it as well so `npm run checkworld`
+— which never runs `boot()` — still validates the shop's stock rows.
+
 ## The kits this build ships
 
 One kit per household, named for whoever lives there, and each one declared by
@@ -317,10 +422,6 @@ Two knock-on rules fell out of writing eleven of these:
 
 ## Not in v1
 
-- **`kind: "item"`.** The format is shaped to take loose items — same parts, same
-  palette, same script — but an item stamps no collision and stacks, so it is a
-  different set of required fields and should arrive with its own validation
-  rather than by loosening `checkType`.
 - **Unloading a kit.** `fixture.fountain` means the same thing in every world,
   the registry is keyed by type rather than by place, and a type unregistered
   while a world still references it is a world that can no longer be parsed.

@@ -67,6 +67,8 @@ export class Edits {
     this.digs = 0;
     /** Furniture assembled by the player, in placement order. */
     this.placed = [];
+    /** Placed furniture id -> one stored inventory stack. */
+    this.stored = new Map();
     /** Bumped on every change, so the renderer can skip a reconcile. */
     this.version = 0;
     /** object id -> swings landed so far. Transient: see the note above. */
@@ -96,9 +98,26 @@ export class Edits {
 
   isPlaced(id) { return this.placed.some((p) => p.id === id); }
 
+  storedIn(id) { return this.stored.get(id) ?? null; }
+
+  store(id, stack) {
+    if (!this.isPlaced(id) || this.stored.has(id) || !stack) return false;
+    this.stored.set(id, { typeId: stack.typeId, count: stack.count });
+    this.version++;
+    return true;
+  }
+
+  takeStored(id) {
+    const stack = this.stored.get(id);
+    if (!stack) return null;
+    this.stored.delete(id);
+    this.version++;
+    return stack;
+  }
+
   pack(id) {
     const index = this.placed.findIndex((p) => p.id === id);
-    if (index < 0 || !this.world.removeAddedObject(id)) return null;
+    if (index < 0 || this.stored.has(id) || !this.world.removeAddedObject(id)) return null;
     const [placed] = this.placed.splice(index, 1);
     this.version++;
     return placed;
@@ -240,6 +259,7 @@ export class Edits {
       holes: this.holeList.map((h) => [...h.tile]),
       digs: this.digs,
       placed: this.placed.map((p) => ({ ...p, tile: [...p.tile] })),
+      stored: Object.fromEntries([...this.stored].map(([id, stack]) => [id, { ...stack }])),
     };
   }
 
@@ -256,6 +276,12 @@ export class Edits {
       if (p && typeof p.id === 'string' && typeof p.type === 'string'
         && Array.isArray(p.tile) && [0, 90, 180, 270].includes(p.rotation ?? 0)) {
         this.place(p.type, p.tile, p.rotation ?? 0, p.id);
+      }
+    }
+    for (const [id, stack] of Object.entries(snap.stored ?? {})) {
+      if (this.isPlaced(id) && stack && typeof stack.typeId === 'string'
+        && Number.isInteger(stack.count) && stack.count > 0) {
+        this.stored.set(id, { typeId: stack.typeId, count: stack.count });
       }
     }
     // Through `fell` and not straight into the World, so replaying a save takes

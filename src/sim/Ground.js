@@ -64,6 +64,7 @@ export class Ground {
       x, z,
       y: this.world.groundHeight(x, z),
       type: itemType(typeId),
+      dropped: id.startsWith(`${this.world.meta.id}.drop.`),
       /** Seconds since it landed. Purely for the drop's settle animation. */
       age: 0,
     };

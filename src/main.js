@@ -1228,7 +1228,9 @@ class Game {
     // every wall and tree the player happens to be facing is garbage generated
     // by a query that is supposed to be free.
     const obj = this.world.objectAt(ax, az);
-    if (obj && this.edits?.isPlaced(obj.id)) return { kind: 'pack', object: obj };
+    if (obj && this.edits?.isPlaced(obj.id) && objectType(obj.type).use) {
+      return { kind: 'furniture', object: obj, action: objectType(obj.type).use };
+    }
     if (obj && interactOf(obj.type)) {
       const fixture = this.fixtures?.target(obj, this.tradeCtx());
       if (fixture) return { kind: 'use', fixture };
@@ -1243,7 +1245,7 @@ class Game {
     const what = this.interaction();
     if (!what) return;
     if (what.kind === 'take') this.take();
-    else if (what.kind === 'pack') this.packFurniture(what.object);
+    else if (what.kind === 'furniture') this.useFurniture(what);
     else if (what.kind === 'use') this.use(what.fixture);
     else this.talk(what.npc);
   }
@@ -1368,7 +1370,7 @@ class Game {
   talk(npc) {
     if (!npc || this.chat.active) return null;
     npc.lookAt(this.player.x, this.player.z);
-    if (!this.intruding()) this.player.friends.add(npc.id);
+    if (!this.intruding()) this.player.friends.visit(npc.id, this.player.clock.day);
     const ctx = this.tradeCtx();
     const script = this.player.friends.hates(npc.id)
       ? grudgeFor(npc, this.player.friends.grudgeLevel(npc.id))
@@ -1445,7 +1447,9 @@ class Game {
     if (!item) return null;
     if (!this.player.inventory.add(item.typeId, 1)) return null;   // no room
     this.loose.take(item);
-    this.errands.record({ kind: 'gather', item: item.typeId, token: `${this.world.meta.id}:${item.id}` });
+    if (!item.dropped) {
+      this.errands.record({ kind: 'gather', item: item.typeId, token: `${this.world.meta.id}:${item.id}` });
+    }
     return item;
   }
 
@@ -1515,10 +1519,50 @@ class Game {
     return obj;
   }
 
-  /** Fold one player-placed piece back into its inventory item. */
+  /** Use the small set of functions owned by player-placed furniture. */
+  useFurniture({ object: obj, action }) {
+    if (!obj || !this.edits.isPlaced(obj.id)) return null;
+
+    if (action === 'sleep') {
+      const crossed = this.player.clock.skip((1 - this.player.clock.t) + 0.22);
+      if (crossed) this.dawn(crossed);
+      this.note('You sleep until dawn.');
+      return obj;
+    }
+
+    if (action !== 'store') return null;
+    const stored = this.edits.storedIn(obj.id);
+    if (stored) {
+      if (this.player.inventory.room(stored.typeId) < stored.count) {
+        this.note('Make room in your pockets first.');
+        return null;
+      }
+      this.player.inventory.add(stored.typeId, stored.count);
+      this.edits.takeStored(obj.id);
+      this.note(`${itemType(stored.typeId).label} taken out.`);
+      return obj;
+    }
+
+    const held = this.player.inventory.held;
+    if (!held) {
+      this.note('Hold something to put away.');
+      return null;
+    }
+    const stack = { typeId: held.typeId, count: held.count };
+    if (!this.edits.store(obj.id, stack)) return null;
+    this.player.inventory.removeFrom(this.player.inventory.selected, stack.count);
+    this.note(`${itemType(stack.typeId).label} put away.`);
+    return obj;
+  }
+
+  /** Fold one empty player-placed piece back into its inventory item. */
   packFurniture(obj) {
     const itemId = obj && furnitureItemFor(obj.type);
     if (!itemId || !this.edits.isPlaced(obj.id)) return null;
+    if (this.edits.storedIn(obj.id)) {
+      this.note('Empty it before packing it up.');
+      return null;
+    }
     if (this.player.inventory.room(itemId) < 1) {
       this.note('Make room in your pockets first.');
       return null;
@@ -1552,6 +1596,16 @@ class Game {
    */
   toolAction() {
     const held = this.player.inventory.held;
+    if (held?.typeId === 'tool.hammer') {
+      const obj = this.world.objectAt(...this.player.aheadTile());
+      if (obj && this.edits?.isPlaced(obj.id)) {
+        return {
+          verb: 'pack', object: obj, tile: [...obj.tile],
+          label: objectType(obj.type).label,
+          blocked: this.edits.storedIn(obj.id) ? 'empty it first' : null,
+        };
+      }
+    }
     return toolTarget({
       world: this.world,
       edits: this.edits,
@@ -1587,7 +1641,8 @@ class Game {
   useTool() {
     const what = this.toolAction();
     if (!what || what.blocked) return null;
-    const done = what.verb === 'chop' ? this.chop(what)
+    const done = what.verb === 'pack' ? this.packFurniture(what.object)
+      : what.verb === 'chop' ? this.chop(what)
       : what.verb === 'mine' ? this.mine(what)
         : what.verb === 'dig' ? this.dig(what)
           : what.verb === 'fill' ? (this.edits.fill(...what.tile) ? what : null)
