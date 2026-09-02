@@ -96,6 +96,16 @@ import {
 
 const MORPH_TIME = 0.8;   // seconds for a full 3D <-> 2D transition
 const FADE_TIME = 0.26;   // seconds for each half of a doorway fade
+
+/**
+ * Do not turn a high-refresh display into proportionally more game work.
+ * Sixty updates keep motion smooth while putting a ceiling on CPU, GPU and
+ * minimap draws; the half-millisecond allowance avoids halving near-60Hz
+ * displays whose animation timestamps arrive fractionally early.
+ */
+const FRAME_INTERVAL = 1000 / 60;
+const FRAME_EARLY_TOLERANCE = 0.5;
+
 /**
  * How far, in tiles, you can be from an NPC and still start a conversation.
  *
@@ -3206,6 +3216,14 @@ class Game {
   }
 
   frame(now) {
+    if (now < this._nextFrame - FRAME_EARLY_TOLERANCE) {
+      requestAnimationFrame((t) => this.frame(t));
+      return;
+    }
+    this._nextFrame += FRAME_INTERVAL;
+    // A stalled or backgrounded tab resumes from now instead of catching up.
+    if (this._nextFrame < now) this._nextFrame = now + FRAME_INTERVAL;
+
     const dt = Math.min((now - this._last) / 1000, 1 / 20);   // clamp after a stall
     this._last = now;
     this.time += dt;
@@ -3261,7 +3279,12 @@ class Game {
     requestAnimationFrame((t) => this.frame(t));
   }
 
-  start() { requestAnimationFrame((t) => { this._last = t; this.frame(t); }); }
+  start() {
+    requestAnimationFrame((t) => {
+      this._last = this._nextFrame = t;
+      this.frame(t);
+    });
+  }
 }
 
 /** The remembered voice mode, or the default. */

@@ -104,10 +104,9 @@ export const MAP_MODES = Object.freeze([...MAP_SIZES, 'off']);
 
 export const DEFAULT_GRAPHICS = Object.freeze({
   shoreline: SHORELINE_STYLES[0],
-  // The `high` preset, spelled out. This is a game about a place being pleasant
-  // to stand in, and the cheaper levels exist for the machine that asks for
-  // them -- not as the look everybody gets by default.
-  ...PRESETS.high,
+  // Start balanced rather than spending the machine's entire frame budget
+  // before the player has had a chance to choose. High remains one click away.
+  ...PRESETS.medium,
   map: MAP_MODES[0],
 });
 
