@@ -10,7 +10,7 @@
  * exception for three of its slots, and each of those exceptions is a way for a
  * fish to end up on your face.
  *
- * So an outfit is three named places, each holding a type id or nothing. Which
+ * So an outfit is five named places, each holding a type id or nothing. Which
  * garment goes in which is not a choice the player makes; it is `wear.slot` in
  * the item registry, and this class reads it rather than being told.
  *
@@ -39,19 +39,20 @@ import { itemType, wearSlot } from '../world/itemTypes.js';
  *
  * Head down, which is the order a person describes what somebody is wearing in,
  * and the order the drawing stacks in: the shirt is the body, the hat is on top
- * of the head, and the glasses are on the face between them.
+ * of the head, the glasses are on the face between them, and the pants and the
+ * shoes carry on down the legs.
  */
-export const WEAR_SLOTS = Object.freeze(['hat', 'glasses', 'shirt']);
+export const WEAR_SLOTS = Object.freeze(['hat', 'glasses', 'shirt', 'pants', 'shoes']);
 
 /** What each slot is called on screen. */
 export const SLOT_LABEL = Object.freeze({
-  hat: 'Hat', glasses: 'Sunglasses', shirt: 'Shirt',
+  hat: 'Hat', glasses: 'Sunglasses', shirt: 'Shirt', pants: 'Pants', shoes: 'Shoes',
 });
 
 export class Outfit {
   constructor() {
-    /** slot -> type id, or null. Only ever the three keys above. */
-    this.worn = { hat: null, glasses: null, shirt: null };
+    /** slot -> type id, or null. Only ever the five keys above. */
+    this.worn = { hat: null, glasses: null, shirt: null, pants: null, shoes: null };
     /** Bumped on every change, so the model and the HUD redraw only on one. */
     this.version = 0;
   }

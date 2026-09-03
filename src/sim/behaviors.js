@@ -32,11 +32,36 @@ import { range } from '../core/rng.js';
 import { turnToward } from './body.js';
 
 /**
+ * Whether an hour falls inside a waking window, wrapping midnight the same way
+ * shop hours do (see Npc.syncClock): an owl's `[19, 6]` is one test with an OR.
+ */
+function awake(hour, [from, to]) {
+  return from < to ? hour >= from && hour < to : hour >= from || hour < to;
+}
+
+/**
  * Random scurrying: stand still, dash a body-length in some direction, repeat.
  *
  * The dash/stop rhythm is the entire read. An animal that translates smoothly
  * at a constant speed looks like it is on rails no matter how random its
  * heading; the stops are what make it look like it is deciding.
+ *
+ * THREE INSTINCTS, ALL OPTIONAL AND ALL NUMBERS, because what separates a hare
+ * from a tortoise is still not code (see animalTypes.js):
+ *
+ *   fear   `[radius, boost]` -- somebody inside the radius sends it the other
+ *          way at `dart * boost`. The threat is written onto the animal by
+ *          Fauna each frame, exactly the way a lure is written by Fishing:
+ *          from outside, as a suggestion, with the steering staying here.
+ *   herd   0..1 -- when a straggler picks its next dash, this is the chance it
+ *          dashes toward the others of its kind rather than anywhere. A lean
+ *          and not a rule: a flock built from hard following stacks into one
+ *          animal-shaped pile, and one built from a lean just keeps loosely
+ *          reconvening, which is what a field of sheep does.
+ *   active `[from, to]` -- waking hours, wrapping midnight. Outside them the
+ *          animal drowses where it stands: long rests, the odd shuffle of a
+ *          few steps, head tucked. Fear still wakes it -- a sleeping hare is
+ *          not furniture -- which is why flight is tested before drowsing.
  */
 export class Wander {
   constructor(animal) {
@@ -51,21 +76,69 @@ export class Wander {
     this.peckTimer = range(this.rng, ...t.peck);
     this.peckT = 0;
     this.want = 0;      // speed asked for last frame, to notice being blocked
+    this.flee = 0;      // seconds left of running from whatever got too close
   }
 
   update(dt, animal, world) {
     const t = this.type;
 
+    // FLIGHT, before anything else -- before the rest timer, before sleep --
+    // because being fled from is the one thing here that happens TO the animal
+    // rather than on its own clock. Re-armed every frame the threat stays
+    // inside the radius, so backing a hare into a fence keeps it running along
+    // it rather than politely resuming its afternoon at your feet.
+    if (t.fear && animal.threat) {
+      const dx = animal.x - animal.threat.x, dz = animal.z - animal.threat.z;
+      const away = Math.hypot(dx, dz);
+      if (away < t.fear[0]) {
+        // A wall behind it (noticed the usual way: asked for speed, got none)
+        // breaks sideways instead of pressing on -- otherwise the fence corner
+        // is where every chase ends with the animal jogging on the spot.
+        const blocked = this.flee > 0 && this.want > 0.2 && animal.speed < this.want * 0.35;
+        this.heading = (away > 1e-3 ? yawFromVec(dx, dz) : animal.yaw)
+          + range(this.rng, -0.4, 0.4) + (blocked ? range(this.rng, 1.2, 1.9) * (this.rng() < 0.5 ? -1 : 1) : 0);
+        this.flee = 0.6;
+        this.resting = false;
+        animal.peck = 0;
+      }
+    }
+    if (this.flee > 0) {
+      this.flee -= dt;
+      // Flight ends where a dash ends: standing, deciding, somewhere else.
+      if (this.flee <= 0) { this.resting = true; this.timer = range(this.rng, ...t.rest); }
+      turnToward(animal, this.heading, dt, t.turnRate * 1.4);
+      const aligned = Math.max(0, Math.cos(angleDelta(animal.yaw, this.heading)));
+      this.want = t.dart * t.fear[1] * world.surfaceAt(animal.tileX, animal.tileZ).speed * aligned;
+      return { vx: Math.sin(animal.yaw) * this.want, vz: Math.cos(animal.yaw) * this.want };
+    }
+
+    const drowsy = t.active && animal.hour !== null && animal.hour !== undefined
+      && !awake(animal.hour, t.active);
+
     this.timer -= dt;
     if (this.timer <= 0) {
-      this.resting = !this.resting;
-      this.timer = range(this.rng, ...(this.resting ? t.rest : t.burst));
-      if (!this.resting) this.heading = this.#chooseHeading(animal);
+      // Out of hours the clock mostly re-draws the rest: a sleeper holds its
+      // patch of ground, shuffles a step or two now and then, and that is all.
+      // Mostly and not always, so a nighttime meadow still breathes.
+      if (drowsy && this.rng() < 0.8) {
+        this.resting = true;
+        this.timer = range(this.rng, t.rest[1] * 2.5, t.rest[1] * 6);
+      } else {
+        this.resting = !this.resting;
+        this.timer = range(this.rng, ...(this.resting ? t.rest : t.burst));
+        if (!this.resting) {
+          this.heading = this.#chooseHeading(animal);
+          if (drowsy) this.timer = t.burst[0];   // a shuffle, not an outing
+        }
+      }
     }
 
     if (this.resting) {
       this.want = 0;
-      this.#peck(dt, animal, t);
+      // Head tucked is the whole of what sleep looks like, and `peck` already
+      // is "head down, by this much" -- the renderer never asks why.
+      if (drowsy) animal.peck += (0.8 - animal.peck) * Math.min(1, dt * 1.6);
+      else this.#peck(dt, animal, t);
       return { vx: 0, vz: 0 };
     }
 
@@ -114,9 +187,21 @@ export class Wander {
       return home + range(this.rng, -spread, spread);
     }
 
-    const yaw = range(this.rng, -Math.PI, Math.PI);
-    // Off a wall, anything but straight back into it.
-    return avoidCurrent ? this.heading + Math.PI + range(this.rng, -1.6, 1.6) : yaw;
+    if (avoidCurrent) return this.heading + Math.PI + range(this.rng, -1.6, 1.6);
+
+    // The herd: a straggler sometimes dashes back toward the others of its
+    // kind. The centroid is written by Fauna each frame (the lure/threat
+    // route); the 2.5-tile dead zone is what keeps a flock LOOSE -- an animal
+    // already among its fellows picks freely, so the flock mills instead of
+    // contracting to a point.
+    if (this.type.herd && animal.herd && animal.herd.n > 1) {
+      const hx = animal.herd.x - animal.x, hz = animal.herd.z - animal.z;
+      if (Math.hypot(hx, hz) > 2.5 && this.rng() < this.type.herd) {
+        return yawFromVec(hx, hz) + range(this.rng, -0.9, 0.9);
+      }
+    }
+
+    return range(this.rng, -Math.PI, Math.PI);
   }
 
   /** Head-down pecking, on its own clock, only while standing still. */

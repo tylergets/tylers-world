@@ -23,8 +23,12 @@ in front of you, facing the same direction. **Fence posts** and **ladders** are
 put down the same way and go the other way round — outdoors only. A run of
 fence joins itself up post to post and holds animals in; a ladder set against a
 ridge lets you climb it, up or down, and nothing else in the world can use one.
-Placed beds sleep until dawn, and
-placed crates and bookcases store one inventory stack with `E`. To rearrange,
+Placed chairs and sofas can be sat on, beds visibly hold you while sleeping until
+dawn, tables can be leaned on, and stoves warm your hands; move or press `E` to
+stand again. Placed crates and bookcases store one inventory stack with `E`, and
+the player reaches into them while moving the stack. Residents at home use the
+same furniture on their own: they walk over, reserve a free piece, sit, sleep,
+warm themselves, browse shelves, or linger at a table. To rearrange,
 empty a piece, face it with the hammer equipped, and press `F` to pack it back
 up. `[` and `]` change the held slot, and `F` uses it if it is a tool.
 `N` sizes the corner minimap — wide, close, the whole place, off — and clicking

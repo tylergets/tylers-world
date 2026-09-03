@@ -174,6 +174,15 @@ export const OBJECT_TYPES = {
     squash: 0.3,
     palette: { wall: 0xeee2c8, roof: 0x55758a, roofDark: 0x3e596b, trim: 0x8a6242, door: 0x70452f, window: 0xa9d8e5, sign: 0x31556c, signText: 0xfff2c9 },
   },
+  // The second civic building. Stone rather than clapboard, because a museum
+  // is the one building in town that is supposed to outlast the town -- and a
+  // silhouette the player can tell from the hall across the whole plaza.
+  'building.museum': {
+    category: 'building', label: 'Museum',
+    footprint: withDoor(7, 5, 3), height: 4.8,
+    squash: 0.3,
+    palette: { wall: 0xd9d2c2, stone: 0xb8b0a0, roof: 0x7a9a8c, roofDark: 0x5f7d71, trim: 0x8a8272, door: 0x5a4634, window: 0xa9d8e5, column: 0xe8e2d4, sign: 0x3f5a52, signText: 0xf2e6c4 },
+  },
   'building.gate': {
     category: 'building', label: 'Town Gate',
     // Two solid posts with a walk-through gap: the mask is doing real work here.
@@ -183,21 +192,32 @@ export const OBJECT_TYPES = {
     palette: { wall: 0xefe3c6, roof: 0x6fb3a0, roofDark: 0x569688, trim: 0x8a6242, sign: 0xf5f0e2 },
   },
 
+  // --------------------------------------------------------------- vehicle --
+  'vehicle.cab': {
+    category: 'vehicle', label: 'Town Cab',
+    footprint: solid(2, 3), height: 1.65,
+    squash: 0.3,
+    palette: {
+      body: 0xe0aa24, bodyHi: 0xf4c94b, trim: 0x342f29,
+      glass: 0x8fc2ce, tire: 0x292929, hub: 0xd8d0bd, lamp: 0xffefad,
+    },
+  },
+
   // ------------------------------------------------------------ furniture --
   // Only ever placed inside interiors, but nothing in the engine enforces that
   // -- a bench in the plaza would work exactly as well.
   'furn.bed': furniture('Bed', 2, 3, 0.95,
     { frame: 0x8a6242, sheet: 0xf3efe4, quilt: 0x5d86b5, pillow: 0xfdfaf2 }, 'sleep'),
   'furn.table': furniture('Table', 2, 2, 0.8,
-    { top: 0xc08b55, leg: 0x8a6242, cloth: 0xe8dcc0 }),
+    { top: 0xc08b55, leg: 0x8a6242, cloth: 0xe8dcc0 }, 'lean'),
   'furn.chair': furniture('Chair', 1, 1, 0.9,
-    { seat: 0xb07a4a, back: 0x8a6242 }),
+    { seat: 0xb07a4a, back: 0x8a6242 }, 'sit'),
   'furn.shelf': furniture('Bookcase', 2, 1, 1.9,
     { body: 0x8a6242, back: 0x6b4a30, book: [0xb4544e, 0x4f8a6a, 0xd8a840, 0x5878ab] }, 'store'),
   'furn.counter': furniture('Counter', 4, 1, 1.05,
     { body: 0xd9c7a4, top: 0x8a6242, panel: 0xc4ae87 }),
   'furn.stove': furniture('Stove', 2, 1, 1.0,
-    { body: 0xe6e1d6, top: 0x565c63, dial: 0xb4544e, oven: 0x3f454b }),
+    { body: 0xe6e1d6, top: 0x565c63, dial: 0xb4544e, oven: 0x3f454b }, 'warm'),
   'furn.plant': furniture('Potted Plant', 1, 1, 1.25,
     { pot: 0xb2705a, soil: 0x5a4433, leaf: 0x4f9e3f, leafHi: 0x63b84e }),
   'furn.crate': furniture('Crate', 1, 1, 0.8,
@@ -218,8 +238,24 @@ export const OBJECT_TYPES = {
     { board: 0x8b4b55, edge: 0x4f2831, text: 0xf4d77c }),
   'furn.sign.cheats': furniture('Office of Cheats', 3, 1, 1.8,
     { board: 0x623f91, edge: 0x29203f, text: 0x70f0da }),
+  'furn.sign.fish': furniture('Fish Gallery', 3, 1, 1.8,
+    { board: 0x3f6f8f, edge: 0x24404f, text: 0xd8f2ff }),
+  'furn.sign.game': furniture('Game Gallery', 3, 1, 1.8,
+    { board: 0x6f8f4a, edge: 0x3c4f28, text: 0xf2f6d8 }),
+  'furn.sign.poker': furniture('Card Cellar', 3, 1, 1.8,
+    { board: 0x8f3f4f, edge: 0x4f2028, text: 0xf6d8a8 }),
+  // The cellar's centrepiece: an ordinary table wearing the felt. Same
+  // builder, greener paint -- see render/props.js on why that costs nothing.
+  'furn.pokertable': furniture('Card Table', 2, 2, 0.8,
+    { top: 0x2f7a52, leg: 0x4f3a28, cloth: 0x256344 }),
 
   // ----------------------------------------------------------------- yard --
+  'yard.mailbox': {
+    category: 'mailbox', label: 'Mailbox',
+    footprint: solid(1, 1), height: 1.45,
+    squash: 0.34,
+    palette: { post: 0x8a6242, box: 0x3f6f8f, dark: 0x294b68, flag: 0xd85b50, letter: 0xf5efd9 },
+  },
   // Two pieces the player buys indoors and puts down OUTdoors, and they are
   // ordinary object types like every other -- a fence blocks because its mask
   // says '#', not because anything in the engine knows what a fence is for.

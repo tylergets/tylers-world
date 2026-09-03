@@ -38,8 +38,36 @@ export class Fauna {
     this.version = 0;
   }
 
-  update(dt) {
-    for (const animal of this.animals) animal.update(dt, this.world);
+  /**
+   * @param {object} [clock]   the player's clock, for species with waking hours
+   * @param {object} [player]  where the player is, for species that flee. Both
+   *   optional so a headless caller (checkworld) ticks a flock the old way.
+   *
+   * What the instincts read is WRITTEN ONTO EACH ANIMAL here rather than passed
+   * down the call chain, on the precedent `lure` set: Fauna is the one thing
+   * that can see the whole flock and the whole frame, and the behavior stays a
+   * strategy that reads its animal. The herd centroids cost one pass over the
+   * flock, and only species that herd pay it.
+   */
+  update(dt, clock = null, player = null) {
+    const hour = clock ? clock.t * 24 : null;
+
+    let herds = null;
+    for (const a of this.animals) {
+      if (!a.type.herd || a.dying !== null) continue;
+      herds ??= new Map();
+      let h = herds.get(a.typeId);
+      if (!h) herds.set(a.typeId, h = { x: 0, z: 0, n: 0 });
+      h.x += a.x; h.z += a.z; h.n++;
+    }
+    if (herds) for (const h of herds.values()) { h.x /= h.n; h.z /= h.n; }
+
+    for (const animal of this.animals) {
+      animal.hour = hour;
+      animal.threat = player && animal.type.fear ? player : null;
+      animal.herd = herds?.get(animal.typeId) ?? null;
+      animal.update(dt, this.world);
+    }
 
     // A dead animal stays in the flock while it falls, so the batch goes on
     // drawing it without anything having to reconcile mid-topple. The ONE

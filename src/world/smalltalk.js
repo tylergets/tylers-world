@@ -152,14 +152,14 @@ const STRANGER = [
  */
 const ACQUAINTANCE = [
   chat(
-    'There you are again. Good. People who turn up twice usually turn up a third time, and by then we have stopped counting.',
+    'There you are again, {player}. Good. People who turn up twice usually turn up a third time, and by then we have stopped counting.',
     'You were counting?',
     'Everybody counts the first few. It is not suspicion, it is arithmetic. A town this size notices one new person the way a pond notices a stone.',
     'While you have stopped counting --',
     'See you a third time, then.',
   ),
   chat(
-    ['Morning. Or near enough.', 'I put your name to your face today without having to think about it, which I mention because it is the little ceremonies that matter.'],
+    ['Morning. Or near enough.', 'I put your name to your face today without having to think about it -- {player}, there, no hesitation -- which I mention because it is the little ceremonies that matter.'],
     'What comes after the name ceremony?',
     'Borrowing. Somebody will lend you something they will not miss, and then ask after it forever. It is not about the item.',
     'I had a question, actually.',
@@ -229,7 +229,7 @@ const ACQUAINTANCE = [
  */
 const FRIEND = [
   chat(
-    ['There you are. I was just thinking about you, and not even in the way where I needed something carried.', 'Well. Mostly not.'],
+    ['There you are, {player}. I was just thinking about you, and not even in the way where I needed something carried.', 'Well. Mostly not.'],
     'What needs carrying?',
     ['Nothing today. But it warms me that you asked, and I am filing the offer away where I keep the useful ones.', 'It is a well-organised place, that file.'],
     'Go on then, what were you after?',
@@ -271,7 +271,7 @@ const FRIEND = [
     'Back to my fake chore. Bye.',
   ),
   chat(
-    ['You look well. I say that as a friend, meaning I would also tell you if you did not.', 'That is the whole service I offer. Honesty with a smile on it.'],
+    ['You look well, {player}. I say that as a friend, meaning I would also tell you if you did not.', 'That is the whole service I offer. Honesty with a smile on it.'],
     'And if I did not look well?',
     'I would feed you and stand over you while you ate. Ask anyone. I have a reputation and a ladle.',
     'While I am looking well, then --',
@@ -306,7 +306,7 @@ const FRIEND = [
  */
 const CLOSE = [
   chat(
-    ['You.', 'Good. It is a better day already, and it was not a bad one to start with.'],
+    ['{player}.', 'Good. It is a better day already, and it was not a bad one to start with.'],
     'That is the whole greeting?',
     'We are past greetings. Greetings are for people who are not sure the other one is pleased. You know I am pleased.',
     'Right then. To business.',

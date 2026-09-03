@@ -179,6 +179,16 @@ export const NPC_TYPES = {
       pants: 0x4a4030, shoe: 0x332c26, hair: 0xb9b3a6, eye: 0x2a2320,
     },
   },
+
+  'folk.cabbie': {
+    ...FOLK,
+    voice: { pitch: 0.92, rate: 24, timbre: 'sawtooth' },
+    label: 'Cab Driver',
+    palette: {
+      skin: 0xc98e68, shirt: 0x263849, apron: 0xd6aa2d, apronDark: 0xa77d18,
+      pants: 0x2e3135, shoe: 0x24211e, hair: 0x49352a, eye: 0x211d1a,
+    },
+  },
 };
 
 export function npcType(typeId) {

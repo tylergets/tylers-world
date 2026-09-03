@@ -46,12 +46,25 @@
  */
 
 import { npcType } from '../world/npcTypes.js';
+import { objectType } from '../world/objectTypes.js';
 import { DIR_YAW, angleDelta } from '../core/constants.js';
-import { makeRng, range, hashString } from '../core/rng.js';
+import { makeRng, range, pick, hashString } from '../core/rng.js';
+import { SKIN_COLORS, HAIR_COLORS, EYE_COLORS, skinColorOf, hairColorOf, eyeColorOf }
+  from './Identity.js';
 import { sweep, turnToward } from './body.js';
 import { makeBehavior } from './behaviors.js';
 import { clearLine } from './tools.js';
+import { findPath } from './pathfind.js';
 import { Shop } from './Shop.js';
+
+const FURNITURE_KIND = Object.freeze({
+  sleep: 'lie', sit: 'sit', warm: 'warm', lean: 'lean', store: 'reach',
+});
+
+const FURNITURE_ACTIVITY = Object.freeze({
+  lie: 'Sleeping', sit: 'Sitting down', warm: 'Warming up',
+  lean: 'At the table', reach: 'Looking through the shelves',
+});
 
 /**
  * How somebody who has caught you at it behaves.
@@ -139,6 +152,38 @@ export class Npc {
       seed: hashString(spec.id),
       ...(this.props.voice ?? {}),
     };
+
+    /**
+     * How this particular person LOOKS: skin, hair and eyes, drawn from the
+     * same three tables the player picks from (see Identity.js) so town and
+     * player share one vocabulary of faces.
+     *
+     * Same order of authority as the voice above -- type default overridden by
+     * an id-seeded roll, overridden by whatever the world file says (`props`
+     * may carry `skin`/`hair`/`eyes` ids) -- and for the same reason: from the
+     * top-down camera a person IS their colours, and a town of one type used
+     * to be one person standing in twenty places.
+     *
+     * A SEPARATE rng stream, not `this.rng`, and that is load-bearing: the
+     * voice jitter above has already drawn from `this.rng`, and inserting
+     * draws between it and the glance below would reroll every glance in the
+     * game. Two independent streams mean neither can reshuffle the other.
+     *
+     * Never saved, exactly like the voice: derived fresh from the id on every
+     * construction, stable because the id is, and free to improve when the
+     * colour tables do. `key` is for the view's geometry cache.
+     */
+    const looks = makeRng(`look:${spec.id}`);
+    const skinId = this.props.skin ?? pick(looks, SKIN_COLORS).id;
+    const hairId = this.props.hair ?? pick(looks, HAIR_COLORS).id;
+    const eyeId = this.props.eyes ?? pick(looks, EYE_COLORS).id;
+    this.look = {
+      key: `${skinId}.${hairId}.${eyeId}`,
+      skin: skinColorOf(skinId),
+      hair: hairColorOf(hairId),
+      eye: eyeColorOf(eyeId),
+    };
+
     this._glance = range(this.rng, ...this.type.glance);
     this._target = this.post;
     /** Who he is looking at, while someone is talking to him. */
@@ -177,6 +222,10 @@ export class Npc {
      * a lot of machinery for a walk you can watch take two seconds.
      */
     this.goal = null;
+    /** A reserved trip to furniture, followed by its visible occupied pose. */
+    this.furniturePlan = null;
+    this.furnitureUse = null;
+    this._furnitureWait = range(this.rng, 3, 9);
 
     /**
      * Seconds left of wanting to shoot you, and what he is owed.
@@ -289,6 +338,7 @@ export class Npc {
     // survives, and it is what puts him back on his feet still coming -- but he
     // is not walking anywhere or asking anybody for money while he is flat.
     this.goal = null;
+    this.leaveFurniture();
     this.confront = null;
   }
 
@@ -305,6 +355,7 @@ export class Npc {
     this.hostile = Math.max(this.hostile, seconds);
     this.confront = null;
     this.goal = null;
+    this.leaveFurniture();
     this.attention = null;
     // Half a beat before the first shot, so it reads as him raising the gun
     // rather than as the theft having a damage number attached to it.
@@ -322,6 +373,7 @@ export class Npc {
     this.hostile = 0;
     this.confront = null;
     this.goal = null;
+    this.leaveFurniture();
   }
 
   /** True while he is coming over about something rather than living his day. */
@@ -329,6 +381,7 @@ export class Npc {
 
   /** Send him to a tile in the place he is standing in. */
   walkTo(x, z) {
+    this.leaveFurniture();
     this.goal = { x: x + 0.5, z: z + 0.5 };
   }
 
@@ -346,6 +399,7 @@ export class Npc {
     this.y = world.groundHeight(this.x, this.z);
     this.speed = 0;
     this.goal = null;
+    this.leaveFurniture();
     this.attention = null;
     this.behavior?.reset?.();
     this.home = { x: this.x, z: this.z };
@@ -362,7 +416,70 @@ export class Npc {
    * round.
    */
   lookAt(x, z) {
+    if (x !== null) this.leaveFurniture();
     this.attention = x === null ? null : { x, z };
+  }
+
+  /** The object id this person has claimed while approaching or using it. */
+  get furnitureId() {
+    return this.furnitureUse?.objectId ?? this.furniturePlan?.objectId ?? null;
+  }
+
+  /** Release a reservation or occupied pose and delay the next domestic whim. */
+  leaveFurniture() {
+    if (!this.furniturePlan && !this.furnitureUse) return false;
+    this.furniturePlan = null;
+    this.furnitureUse = null;
+    this.activity = null;
+    this._furnitureWait = range(this.rng, 5, 13);
+    return true;
+  }
+
+  /**
+   * Pick one unclaimed usable piece in this home and reserve a route to it.
+   * Called by Folk, which owns the room and therefore knows everybody else's
+   * reservations. Returns the claimed object id, or null.
+   */
+  considerFurniture(world, clock, claimed) {
+    if (world.kind !== 'interior' || this.shop || this.props.pokerSeat
+      || this.attention || this.roused || this.goal || this.furnitureId
+      || this.speed > 0.15 || this._furnitureWait > 0) return null;
+
+    this._furnitureWait = range(this.rng, 5, 13);
+    if (this.rng() > 0.65) return null;
+
+    const options = [];
+    for (const obj of world.objects) {
+      if (world.felled.has(obj.id) || claimed.has(obj.id)) continue;
+      let action;
+      try { action = objectType(obj.type).use; } catch { continue; }
+      const kind = FURNITURE_KIND[action];
+      if (!kind || (kind === 'lie' && !clock?.isNight)) continue;
+      const stand = approachTile(world, obj, this.x, this.z);
+      if (!stand) continue;
+      const route = findPath(world, [this.tileX, this.tileZ], stand);
+      if ((this.tileX !== stand[0] || this.tileZ !== stand[1])
+        && (!route.length || route.at(-1)[0] !== stand[0] || route.at(-1)[1] !== stand[1])) continue;
+      const d = Math.hypot(stand[0] + 0.5 - this.x, stand[1] + 0.5 - this.z);
+      options.push({ obj, kind, stand, route, score: d + this.rng() * 2 });
+    }
+    if (!options.length) return null;
+
+    // At night a bed wins if one is reachable; otherwise nearby pieces win
+    // softly, with enough seeded variation not to produce the same evening.
+    const beds = options.filter((o) => o.kind === 'lie');
+    const pool = beds.length ? beds : options;
+    pool.sort((a, b) => a.score - b.score);
+    const pick = pool[0];
+    this.furniturePlan = {
+      objectId: pick.obj.id,
+      kind: pick.kind,
+      stand: pick.stand,
+      route: pick.route,
+      duration: pick.kind === 'lie' ? range(this.rng, 12, 25) : range(this.rng, 4, 11),
+    };
+    this.behavior?.reset?.();
+    return pick.obj.id;
   }
 
   /**
@@ -373,6 +490,7 @@ export class Npc {
   update(dt, world, clock = null, target = null) {
     this.firing = false;
     this.syncClock(clock);
+    if (!this.furnitureId) this._furnitureWait -= dt;
     // Down, and nothing else is true while he is. Above everything, so Stroll
     // never sees the frame -- a walker who kept his errand while flat on his
     // back would stand up somewhere he did not fall.
@@ -398,6 +516,25 @@ export class Npc {
       // Standing exactly on him is not a direction. Keep the last heading.
       if (Math.hypot(dx, dz) > 1e-3) this._target = Math.atan2(dx, dz);
       this.#stand(dt, world);
+      return;
+    }
+
+    if (this.furnitureUse) {
+      if (!world.objectById(this.furnitureUse.objectId)
+        || (this.furnitureUse.kind === 'lie' && !clock?.isNight)) {
+        this.leaveFurniture();
+      } else {
+        this.furnitureUse.until -= dt;
+        this.activity = FURNITURE_ACTIVITY[this.furnitureUse.kind];
+        this._target = this.furnitureUse.yaw;
+        this.#stand(dt, world);
+        if (this.furnitureUse.until <= 0) this.leaveFurniture();
+        return;
+      }
+    }
+
+    if (this.furniturePlan) {
+      if (!this.#approachFurniture(dt, world)) this.leaveFurniture();
       return;
     }
 
@@ -452,6 +589,40 @@ export class Npc {
       this._target = this.post + range(this.rng, -arc, arc);
     }
     this.#stand(dt, world);
+  }
+
+  /** Follow the reserved tile route, then exchange it for an occupied pose. */
+  #approachFurniture(dt, world) {
+    const plan = this.furniturePlan;
+    const obj = world.objectById(plan.objectId);
+    if (!obj || world.felled.has(obj.id)) return false;
+
+    const next = plan.route[0];
+    if (next) {
+      const tx = next[0] + 0.5, tz = next[1] + 0.5;
+      const dx = tx - this.x, dz = tz - this.z;
+      const distance = Math.hypot(dx, dz);
+      if (distance < 0.16) {
+        plan.route.shift();
+        this.speed = 0;
+        if (plan.route.length) return true;
+      }
+      else {
+        const heading = Math.atan2(dx, dz);
+        turnToward(this, heading, dt, this.type.turnRate);
+        const aligned = Math.max(0, Math.cos(angleDelta(this.yaw, heading)));
+        const want = this.type.walkSpeed * aligned;
+        sweep(world, this, dt, Math.sin(this.yaw) * want, Math.cos(this.yaw) * want);
+        this._target = this.yaw;
+        this.lean = 0;
+        return true;
+      }
+    }
+
+    const pose = furniturePose(world, obj, plan.kind, this.x, this.z);
+    this.furniturePlan = null;
+    this.furnitureUse = { ...pose, objectId: obj.id, kind: plan.kind, until: plan.duration };
+    return true;
   }
 
   /**
@@ -515,4 +686,40 @@ export class Npc {
     // is what leans his shoulders. Read, never written, by NpcView.
     this.lean = angleDelta(this.post, this.yaw);
   }
+}
+
+/** Nearest clear tile touching an object's footprint. */
+function approachTile(world, obj, x, z) {
+  const [ax, az] = obj.tile;
+  const { w, d } = obj.shape;
+  let best = null, bestD = Infinity;
+  for (let tx = ax - 1; tx <= ax + w; tx++) {
+    for (let tz = az - 1; tz <= az + d; tz++) {
+      if (tx >= ax && tx < ax + w && tz >= az && tz < az + d) continue;
+      if (!world.inBounds(tx, tz) || world.isBlocked(tx, tz) || world.portalAt(tx, tz)) continue;
+      const distance = (tx + 0.5 - x) ** 2 + (tz + 0.5 - z) ** 2;
+      if (distance < bestD) { best = [tx, tz]; bestD = distance; }
+    }
+  }
+  return best;
+}
+
+/** The same object-relative pose the player uses, derived without moving sim. */
+function furniturePose(world, obj, kind, standX, standZ) {
+  const type = objectType(obj.type);
+  const cx = obj.tile[0] + obj.shape.w / 2;
+  const cz = obj.tile[1] + obj.shape.d / 2;
+  const objectYaw = -obj.rotation * Math.PI / 180;
+  let x = standX, z = standZ, yaw = Math.atan2(cx - standX, cz - standZ);
+  if (kind === 'sit' || kind === 'lie') {
+    const localZ = kind === 'lie' ? type.footprint.d / 2 - 0.48 : 0;
+    x = cx + Math.sin(objectYaw) * localZ;
+    z = cz + Math.cos(objectYaw) * localZ;
+    yaw = objectYaw;
+  }
+  const seatY = Math.max(0.12, (type.useHeight ?? 0.48) - 0.22);
+  return {
+    x, z, yaw,
+    y: world.groundHeight(x, z) + (kind === 'sit' ? seatY : kind === 'lie' ? 0.58 : 0),
+  };
 }

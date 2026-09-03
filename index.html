@@ -472,6 +472,136 @@
     .card-art .icon { width: 52px; height: 52px; }
   }
 
+  /* The museum cellar's card table. Unlike the quiet utility panels, this
+     takes the room: the felt is the interface, with each player fixed around
+     it so bets and revealed cards remain readable without a separate list. */
+  .pokerroom {
+    position: absolute; inset: 0; z-index: 16; pointer-events: auto;
+    display: grid; place-items: center; padding: 16px;
+    background: radial-gradient(circle at 50% 46%, rgba(56, 29, 18, 0.35), rgba(5, 7, 10, 0.8));
+  }
+  .pokerroom[hidden] { display: none; }
+  .pk-card {
+    width: min(1040px, calc(100vw - 32px)); height: min(720px, calc(100vh - 32px));
+    min-height: 500px; display: flex; flex-direction: column; overflow: hidden;
+    color: #f8edda; background: #17120f;
+    border: 1px solid #6d4b2c; border-radius: 18px;
+    box-shadow: 0 24px 80px rgba(0, 0, 0, 0.72), inset 0 1px rgba(255, 255, 255, 0.05);
+  }
+  .pk-head {
+    flex: none; display: flex; align-items: center; gap: 16px; padding: 13px 17px;
+    background: linear-gradient(#2b2119, #211812); border-bottom: 1px solid #604229;
+  }
+  .pk-head h2 {
+    margin: 0; font-family: Georgia, serif; font-size: 23px; font-weight: 500;
+    letter-spacing: 0.01em;
+  }
+  .pk-kicker {
+    margin-bottom: 2px; color: #c9a66e; font-size: 9px; font-weight: 750;
+    letter-spacing: 0.18em; text-transform: uppercase;
+  }
+  .pk-bank { margin-left: auto; color: #f0ca78; font: 650 12px/1 var(--mono); }
+  .pk-leave, .pk-act, .pk-buyins button {
+    font: inherit; font-size: 12px; font-weight: 650; color: #f8edda; cursor: pointer;
+    border: 1px solid #765535; border-radius: 8px; background: #39291d; padding: 8px 12px;
+  }
+  .pk-leave:hover, .pk-act:hover, .pk-buyins button:hover { background: #4a3625; }
+  .pk-leave:disabled, .pk-act:disabled, .pk-buyins button:disabled { opacity: 0.38; cursor: default; }
+  .pk-body { flex: 1; min-height: 0; display: grid; grid-template-columns: minmax(0, 1fr) 190px; }
+  .pk-felt {
+    position: relative; min-width: 0; min-height: 0; overflow: hidden;
+    background: radial-gradient(ellipse at center, #246846 0 42%, #185037 70%, #103425 100%);
+    box-shadow: inset 0 0 0 9px #523820, inset 0 0 0 13px #90643a, inset 0 0 54px rgba(0, 0, 0, 0.58);
+  }
+  .pk-felt::after {
+    content: ""; position: absolute; inset: 14% 17%; pointer-events: none;
+    border: 1px solid rgba(246, 222, 174, 0.17); border-radius: 48%;
+  }
+  .pk-middle {
+    position: absolute; z-index: 1; left: 50%; top: 50%; transform: translate(-50%, -50%);
+    width: 54%; text-align: center;
+  }
+  .pk-pot { min-height: 22px; color: #f0ca78; font: 700 12px/1 var(--mono); text-transform: uppercase; }
+  .pk-board, .pk-hole { display: flex; justify-content: center; gap: 5px; }
+  .pk-note { min-height: 22px; margin-top: 10px; font-size: 12px; color: #e5d8c5; }
+  .pk-seat {
+    position: absolute; z-index: 2; width: 150px; padding: 7px 9px; text-align: center;
+    background: rgba(12, 13, 11, 0.82); border: 1px solid rgba(229, 202, 153, 0.24);
+    border-radius: 10px; box-shadow: 0 5px 16px rgba(0, 0, 0, 0.35);
+  }
+  .pk-s0 { left: 50%; bottom: 4%; transform: translateX(-50%); }
+  .pk-s1 { left: 3%; top: 50%; transform: translateY(-50%); }
+  .pk-s2 { left: 50%; top: 4%; transform: translateX(-50%); }
+  .pk-s3 { right: 3%; top: 50%; transform: translateY(-50%); }
+  .pk-seat.turn { border-color: #f0ca78; box-shadow: 0 0 0 2px rgba(240, 202, 120, 0.2); }
+  .pk-seat.winner { background: rgba(72, 59, 23, 0.92); }
+  .pk-seat.folded { opacity: 0.48; }
+  .pk-who { display: flex; align-items: center; justify-content: center; gap: 6px; }
+  .pk-avatar {
+    width: 22px; height: 22px; display: grid; place-items: center; border-radius: 50%;
+    color: white; background: hsl(var(--hue) 42% 39%); font: 700 11px/1 var(--mono);
+  }
+  .pk-name { max-width: 84px; overflow: hidden; text-overflow: ellipsis; font-size: 12px; font-weight: 700; }
+  .pk-btn-disc {
+    width: 17px; height: 17px; display: grid; place-items: center; border-radius: 50%;
+    color: #3b2b1d; background: #ead7b5; font: 800 9px/1 var(--mono);
+  }
+  .pk-hole { min-height: 42px; margin: 6px 0 4px; }
+  .pk-c {
+    width: 32px; height: 42px; display: inline-grid; place-items: center;
+    color: #191713; background: #fffaf0; border: 1px solid #d8cab1; border-radius: 5px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.28); font: 750 12px/1 var(--mono);
+  }
+  .pk-red { color: #b12d35; }
+  .pk-back { border-color: #d4b77f; background: repeating-linear-gradient(45deg, #7b2732 0 4px, #a4414b 4px 8px); }
+  .pk-empty { color: transparent; border-color: rgba(255, 255, 255, 0.12); background: rgba(0, 0, 0, 0.12); box-shadow: none; }
+  .pk-stack { color: #f0ca78; font: 650 11px/1 var(--mono); }
+  .pk-tag { min-height: 15px; margin-top: 3px; color: #c3b6a3; font-size: 9px; text-transform: uppercase; }
+  .pk-inbet { margin-left: 7px; color: #f0ca78; font-family: var(--mono); }
+  .pk-side { min-width: 0; padding: 12px; background: #201812; border-left: 1px solid #604229; }
+  .pk-log {
+    height: 100%; overflow-y: auto; scrollbar-width: thin; color: #bbaa93;
+    font: 500 10.5px/1.55 var(--mono);
+  }
+  .pk-log div + div { margin-top: 7px; }
+  .pk-controls {
+    flex: none; min-height: 61px; display: flex; justify-content: center; align-items: center;
+    flex-wrap: wrap; gap: 8px; padding: 10px 14px; background: #211812; border-top: 1px solid #604229;
+  }
+  .pk-deal, .pk-raise-btn { border-color: #c49a54; background: #5c4326; }
+  .pk-fold { color: #e7ada4; }
+  .pk-raise { display: flex; align-items: center; gap: 7px; }
+  .pk-slider { width: min(180px, 20vw); accent-color: #d8ad62; }
+  .pk-lobby { padding: 12px; border-radius: 10px; background: rgba(10, 18, 13, 0.78); }
+  .pk-lobby p { margin: 0 0 10px; line-height: 1.5; }
+  .pk-buyins { display: flex; flex-wrap: wrap; justify-content: center; gap: 6px; }
+  .pk-broke { color: #e7ada4; font-size: 12px; }
+  .pk-act:focus-visible, .pk-leave:focus-visible, .pk-buyins button:focus-visible {
+    outline: 2px solid #f0ca78; outline-offset: 2px;
+  }
+
+  @media (max-width: 700px) {
+    .pokerroom { padding: 0; }
+    .pk-card { width: 100vw; height: 100vh; min-height: 430px; border: 0; border-radius: 0; }
+    .pk-head { gap: 9px; padding: 9px 10px; }
+    .pk-head h2 { font-size: 18px; }
+    .pk-kicker { display: none; }
+    .pk-bank { font-size: 10px; }
+    .pk-leave { padding: 7px 8px; }
+    .pk-body { display: block; position: relative; }
+    .pk-felt { height: 100%; }
+    .pk-side { display: none; }
+    .pk-seat { width: 112px; padding: 5px; }
+    .pk-s1 { left: 2%; top: 44%; }
+    .pk-s3 { right: 2%; top: 44%; }
+    .pk-middle { width: 62%; }
+    .pk-c { width: 27px; height: 36px; font-size: 10px; }
+    .pk-hole { min-height: 36px; margin: 4px 0 2px; }
+    .pk-controls { min-height: 58px; padding: 7px; gap: 5px; }
+    .pk-act { padding: 7px 9px; }
+    .pk-slider { display: none; }
+  }
+
   /* Coins, in the pockets panel. */
   .bag-coins { font: 600 11.5px/1 var(--mono); color: #f3d489; }
 
@@ -563,13 +693,13 @@
     font-size: 10px; font-weight: 700; color: var(--dim);
     letter-spacing: 0.08em; text-transform: uppercase;
   }
-  #worlds-seed {
+  #worlds-seed, #title-seed {
     flex: 1; min-width: 0;
     font: 600 12.5px/1 var(--mono); color: var(--ink);
     background: rgba(0, 0, 0, 0.3); border: 1px solid var(--edge);
     border-radius: 7px; padding: 7px 9px;
   }
-  #worlds-seed:focus { outline: none; border-color: var(--accent); }
+  #worlds-seed:focus, #title-seed:focus { outline: none; border-color: var(--accent); }
 
   .modal-actions { display: flex; gap: 7px; margin-top: 11px; }
   .btn {
@@ -704,6 +834,10 @@
   .to-tool-label { margin-top: 7px; color: var(--dim); font: 650 9px/1 var(--mono); letter-spacing: .12em; text-transform: uppercase; }
   .to-brushes { display: grid; grid-template-columns: repeat(3, 1fr); gap: 5px; }
   .to-brushes button { justify-content: center; padding: 7px 4px; font-family: var(--mono); }
+  .to-brushes button:disabled { opacity: .35; cursor: default; }
+  .to-elevation-key { display: grid; gap: 5px; color: var(--dim); font: 600 9px/1 var(--mono); }
+  .to-elevation-key i { width: 100%; height: 8px; border-radius: 4px; background: linear-gradient(90deg, #285296, #ffc84b); }
+  .to-elevation-key span:last-child { text-align: right; }
   .to-map-wrap { min-height: 360px; display: grid; place-items: center; overflow: auto; padding: 10px; background: #0a0e14; border: 1px solid var(--edge); border-radius: 10px; }
   .to-map { max-width: 100%; image-rendering: pixelated; cursor: crosshair; touch-action: none; }
   .to-status { grid-column: 1 / -1; min-height: 18px; color: #9fd8b8; font: 550 11px/1.45 var(--mono); }
@@ -972,6 +1106,58 @@
   }
   .tt-note.bad { color: #ffb4b4; }
 
+  /* -- who's playing ------------------------------------------------------ */
+  /* The character sequence, between picking a world and standing in it. The
+     mirror is square and the form takes the rest; on a phone the two stack,
+     because a mirror worth having is worth more than a row worth keeping. */
+  .who-wrap { display: flex; gap: 14px; align-items: flex-start; }
+  .who-mirror {
+    flex: none; width: 108px; height: 108px;
+    background: rgba(0, 0, 0, 0.25); border: 1px solid var(--edge);
+    border-radius: 12px; overflow: hidden;
+  }
+  .who-form { flex: 1; min-width: 0; }
+  .who-label {
+    display: block; margin: 9px 0 4px;
+    font-size: 10px; font-weight: 700; color: var(--dim);
+    letter-spacing: 0.08em; text-transform: uppercase;
+  }
+  .who-form .who-label:first-child { margin-top: 0; }
+  .who-name-row { display: flex; gap: 5px; }
+  .who-name-row .who-dice { flex: none; font-size: 16px; line-height: 1; padding: 4px 10px; }
+  #who-name {
+    flex: 1; min-width: 0; width: 100%;
+    font: inherit; font-size: 13px; font-weight: 600; color: var(--ink);
+    background: rgba(0, 0, 0, 0.3); border: 1px solid var(--edge);
+    border-radius: 7px; padding: 7px 9px;
+  }
+  #who-name:focus { outline: none; border-color: var(--accent); }
+  .who-row { display: flex; flex-wrap: wrap; gap: 5px; }
+  .who-opt {
+    flex: 1 1 auto; font: inherit; font-size: 12px; font-weight: 620; color: var(--ink);
+    background: rgba(255, 255, 255, 0.05); border: 1px solid transparent;
+    border-radius: 8px; padding: 6px 9px; cursor: pointer;
+    transition: background 0.13s, border-color 0.13s;
+  }
+  .who-opt:hover { background: rgba(255, 255, 255, 0.11); }
+  .who-opt.on { background: rgba(127, 212, 168, 0.15); border-color: var(--accent); }
+  .who-hues { margin-top: 7px; }
+  .who-row + .who-row:not(.who-hues) { margin-top: 5px; }
+  .who-opt.who-day { flex: 1 1 0; padding: 6px 0; text-align: center; }
+  .who-hue {
+    flex: none; width: 24px; height: 24px; padding: 0;
+    border: 2px solid rgba(255, 255, 255, 0.18); border-radius: 50%; cursor: pointer;
+    transition: border-color 0.13s, transform 0.13s;
+  }
+  .who-hue:hover { transform: scale(1.12); }
+  .who-hue.on { border-color: var(--accent); }
+  .who-opt:focus-visible, .who-hue:focus-visible, #who-name:focus-visible {
+    outline: 2px solid var(--accent); outline-offset: 2px;
+  }
+  @media (max-width: 420px) {
+    .who-wrap { flex-direction: column; align-items: center; }
+  }
+
   .tt-go:focus-visible, .tt-card .pick:focus-visible, .tt-card .btn:focus-visible {
     outline: 2px solid var(--accent); outline-offset: 2px;
   }
@@ -979,6 +1165,93 @@
   @media (max-height: 620px) {
     .tt-brand { margin-bottom: 10px; }
     .tt-list { max-height: 34vh; }
+  }
+
+  /* Mail is a thing held up to read, so the town remains visible and alive. */
+  .mailbox-screen {
+    position: fixed; inset: 0; z-index: 19; display: grid; place-items: center;
+    padding: 20px; background: rgba(5, 7, 10, 0.48); pointer-events: auto;
+  }
+  .mailbox-screen[hidden] { display: none; }
+  .mailbox-card {
+    width: min(760px, 100%); max-height: min(620px, calc(100vh - 40px));
+    overflow: hidden; color: #322b22; background: #e9dfc9;
+    border: 1px solid #b8a98c; border-radius: 12px;
+    box-shadow: 0 18px 52px rgba(0, 0, 0, 0.55);
+  }
+  .mailbox-head {
+    display: flex; align-items: center; gap: 10px; padding: 12px 15px;
+    color: #f5efe2; background: #31556c; border-bottom: 1px solid #243e4f;
+  }
+  .mailbox-head h2 { flex: 1; margin: 0; font: 650 17px/1 var(--font); }
+  .mailbox-mark { color: #f0ca78; font-size: 20px; }
+  .mailbox-hint { color: #bdcbd3; font: 600 10px/1 var(--mono); }
+  .mailbox-head .modal-x { color: #dce6eb; }
+  .mailbox-layout { display: grid; grid-template-columns: 220px minmax(0, 1fr); min-height: 360px; }
+  .mailbox-list { overflow-y: auto; padding: 9px; background: #d8ccb3; border-right: 1px solid #b8a98c; }
+  .mailbox-row {
+    position: relative; display: flex; flex-direction: column; gap: 3px;
+    width: 100%; padding: 9px 10px; text-align: left; color: #41382c;
+    background: transparent; border: 1px solid transparent; border-radius: 7px; cursor: pointer;
+  }
+  .mailbox-row:hover { background: rgba(255, 255, 255, 0.35); }
+  .mailbox-row.on { background: #f3ead7; border-color: #aa9878; }
+  .mailbox-row.unread::before {
+    content: ""; position: absolute; left: 3px; top: 14px;
+    width: 5px; height: 5px; border-radius: 50%; background: #b84c43;
+  }
+  .mailbox-row strong { font-size: 12.5px; }
+  .mailbox-row span { color: #766957; font-size: 10.5px; }
+  .letter { overflow-y: auto; padding: clamp(24px, 5vw, 48px); background: #f3ead7; }
+  .letter h3 { margin: 0 0 5px; font: 700 22px/1.2 Georgia, serif; color: #2e2922; }
+  .letter-from { padding-bottom: 16px; color: #776957; font-size: 11px; border-bottom: 1px solid #cfc0a4; }
+  .letter-body { margin-top: 22px; white-space: pre-wrap; font: 16px/1.65 Georgia, serif; }
+  .letter-parcel {
+    display: flex; align-items: center; gap: 12px; margin-top: 26px; padding: 11px 12px;
+    color: #443a2d; background: #e3d3b3; border: 1px dashed #9f8964; border-radius: 8px;
+    font-size: 12px; font-weight: 650;
+  }
+  .letter-parcel:empty { display: none; }
+  .letter-parcel span { flex: 1; }
+  .letter-parcel button {
+    flex: none; padding: 7px 10px; color: #f5efe2; background: #31556c;
+    border: 1px solid #243e4f; border-radius: 7px; font: 650 11px/1 var(--font); cursor: pointer;
+  }
+  .letter-parcel button:hover { background: #3e6b87; }
+  .letter-parcel.claimed { color: #766957; background: transparent; border-style: solid; }
+  .letter-message { min-height: 18px; margin-top: 8px; color: #8b4b3e; font-size: 11px; }
+
+  /* World actions sit at the click, RuneScape-style: a compact noun heading
+     followed by verbs, with unavailable tool actions still explaining why. */
+  .context-menu {
+    position: fixed; z-index: 40; width: 220px; padding: 6px;
+    pointer-events: auto; overflow: hidden;
+    background: rgba(13, 18, 25, 0.97); border: 1px solid rgba(127, 212, 168, 0.38);
+    border-radius: 9px; box-shadow: 0 14px 38px rgba(0, 0, 0, 0.52);
+  }
+  .context-title {
+    padding: 5px 8px 7px; color: var(--dim); border-bottom: 1px solid var(--edge);
+    font-size: 10px; font-weight: 750; letter-spacing: 0.09em; text-transform: uppercase;
+  }
+  .context-action {
+    display: flex; align-items: baseline; justify-content: space-between; gap: 10px;
+    width: 100%; min-height: 35px; padding: 7px 8px;
+    color: var(--ink); background: transparent; border: 0; border-radius: 6px;
+    font: 650 12.5px/1.2 var(--font); text-align: left; cursor: pointer;
+  }
+  .context-action:hover:not(:disabled), .context-action:focus-visible {
+    color: #d9ffeb; background: rgba(127, 212, 168, 0.16); outline: none;
+  }
+  .context-action small { color: var(--dim); font: 600 9.5px/1 var(--font); white-space: nowrap; }
+  .context-action:disabled { color: #6f7c89; cursor: default; }
+
+  @media (max-width: 600px) {
+    .mailbox-screen { padding: 0; }
+    .mailbox-card { width: 100vw; height: 100vh; max-height: none; border: 0; border-radius: 0; }
+    .mailbox-layout { grid-template-columns: 1fr; grid-template-rows: auto 1fr; height: calc(100% - 49px); }
+    .mailbox-list { display: flex; overflow-x: auto; padding: 7px; border-right: 0; border-bottom: 1px solid #b8a98c; }
+    .mailbox-row { flex: 0 0 180px; }
+    .letter { padding: 26px 22px; }
   }
 
   /* The whole opening is decoration. Someone who has asked their system not to

@@ -62,10 +62,13 @@ import {
 import { Residents } from './sim/Residents.js';
 import { placeOwner, witness } from './sim/Watch.js';
 import { Fishing } from './sim/Fishing.js';
+import { Museum } from './sim/Museum.js';
+import { Mail } from './sim/Mail.js';
 import { Errands } from './sim/Errands.js';
 import { FreeInput, GridInput } from './sim/inputs.js';
 import { findPath } from './sim/pathfind.js';
 import { Keyboard } from './sim/Keyboard.js';
+import { dayOfYear, dateLabel, YEAR_DAYS } from './sim/Clock.js';
 import { yawFromVec, DIR_VEC } from './core/constants.js';
 import { makeRng } from './core/rng.js';
 import { Hud } from './ui/hud.js';
@@ -77,6 +80,10 @@ import { TownHallOffice } from './ui/townhall.js';
 import { invalidatePlaceBake } from './ui/minimap.js';
 import { PhotoView } from './ui/photo.js';
 import { Wardrobe } from './ui/wardrobe.js';
+import { PokerRoom } from './ui/poker.js';
+import { MailboxView } from './ui/mailbox.js';
+import { UiStore } from './ui/react/store.js';
+import { presentUi } from './ui/react/root.jsx';
 import { VOICE_MODES } from './audio/voice.js';
 import * as sfx from './audio/sfx.js';
 import { setPlaceMusic, unlockMusic } from './audio/music.js';
@@ -94,7 +101,7 @@ import {
 } from './settings/game.js';
 import {
   SAVE_VERSION, listSaves, readSave, writeSave, deleteSave,
-  sessionSaveId, setSessionSaveId, newSaveId, STARTERS,
+  sessionSaveId, setSessionSaveId, newSaveId, seedSource, STARTERS,
 } from './sim/Save.js';
 
 const MORPH_TIME = 0.8;   // seconds for a full 3D <-> 2D transition
@@ -184,6 +191,7 @@ const VOICE_KEY = 'tw.voice';
 
 class Game {
   constructor(places, world, canvas, hudRoot, fadeEl) {
+    this.ui = new UiStore();
     this.places = places;
     this.fadeEl = fadeEl;
     this.stack = [];       // return addresses, innermost last
@@ -220,6 +228,8 @@ class Game {
      * it through a doorway is exactly what `setPlace` refuses to let happen.
      */
     this.angling = new Fishing();
+    this.museum = new Museum();
+    this.mail = new Mail();
     // Antialiasing is a context property, so it is passed in at construction
     // and cannot be changed after. Everything else below is a live switch.
     this.stage = new Stage(canvas, { antialias: this.graphics.antialias === 'on' });
@@ -231,6 +241,9 @@ class Game {
     this.errands = new Errands(this.player.friends);
     this.keys = new Keyboard(window, unlockMusic);
     this.pointer = null;
+    this.contextMenu = null;
+    this.contextVersion = 0;
+    this.pendingContext = null;
     canvas.addEventListener('pointermove', (e) => {
       this.pointer = { x: e.clientX, y: e.clientY };
     });
@@ -239,6 +252,7 @@ class Game {
       unlockMusic();
       this.pointAt(e);
     });
+    canvas.addEventListener('contextmenu', (e) => e.preventDefault());
 
     this.free = new FreeInput();
     this.grid = new GridInput();
@@ -296,18 +310,22 @@ class Game {
     this.worlds = new WorldsPanel(hudRoot, {
       onStart: (choice) => this.startWorld(choice),
       onLoad: (id) => this.loadSave(id),
-      onDelete: (id) => { deleteSave(id); this.worlds.show(listSaves()); },
-      onSave: () => this.saveNow(),
+      onDelete: (id) => {
+        if (id === this.saveId) this.saveId = null;
+        deleteSave(id);
+        this.worlds.show(listSaves());
+      },
+      onSave: () => {
+        const detached = !this.saveId;
+        if (detached) this.saveId = newSaveId();
+        const saved = this.saveNow();
+        if (saved) setSessionSaveId(this.saveId);
+        else if (detached) this.saveId = null;
+        return saved;
+      },
     });
 
-    // The conversation overlay. Built once and hidden, like every other panel:
-    // a box created on the first "hello" spends that hello laying out.
-    //
-    // AFTER the Hud, and it has to be: the Hud builds its panels by writing
-    // hudRoot.innerHTML, which throws away every child already in there. Built
-    // first, the chat box is detached the moment the HUD appears -- and a
-    // detached overlay fails in the worst possible way, because the game still
-    // hands the keyboard to a conversation nobody can see.
+    // Controllers stay synchronous; one React root presents all active UI.
     this.chat = new Chat(hudRoot, { mode: readVoiceMode() });
 
     // The two screens the carried tools open. Built here for the reason the
@@ -319,6 +337,8 @@ class Game {
     this.wardrobe = new Wardrobe(hudRoot, (row) => this.changeClothes(row));
     this.townOffice = new TownHallOffice(hudRoot, {
       onTerrain: (request) => this.planTerrain(request),
+      onBuildingValidate: (request) => this.validateBuildingPlacement(request),
+      onBuildingMove: (request) => this.planBuildingMove(request),
       onPopulation: (request) => this.planPopulation(request),
       onCheat: (request) => this.applyCheat(request),
       onClose: () => {
@@ -326,6 +346,14 @@ class Game {
         this.officeNpc = null;
       },
     });
+    this.poker = new PokerRoom(hudRoot, {
+      onClose: (message) => {
+        this.pokerNpc?.lookAt(null);
+        this.pokerNpc = null;
+        if (message) this.note(message);
+      },
+    });
+    this.mailbox = new MailboxView(hudRoot, (id) => this.mail.claim(id, this.player.inventory));
 
     this.hud.setVoice(this.chat.mode);
     this.hud.setMap(this.graphics.map);
@@ -350,6 +378,10 @@ class Game {
     this._onResize = () => this.resize();
     addEventListener('resize', this._onResize);
     this.resize();
+    presentUi(this);
+    this.hud.update(this);
+    this.ui.tickHud();
+    this.ui.commit(this);
   }
 
   resize() {
@@ -571,36 +603,323 @@ class Game {
     else this.free.cancel();
   }
 
-  /**
-   * In 3D, use the selected tool or walk to the clicked tile. In top-down, keep
-   * the map's existing click-to-walk behaviour.
-   *
-   * The route is computed from the tile the player STANDS on, so it starts where
-   * the walker will be by the time it takes its first step, not where it was
-   * mid-stride. GridInput drops any leading tile it is already on.
-   */
+  /** Open actions for a clicked entity, or walk immediately on open ground. */
   pointAt(event) {
-    if (event.button !== 0 || this.travel || this.chat.active) return;
+    if ((event.button !== 0 && event.button !== 2) || this.worldInputBlocked()) return;
     const point = this.stage.pickPoint(event.clientX, event.clientY);
     if (!point) return;
     const tile = [Math.floor(point.x), Math.floor(point.z)];
     if (!this.world.inBounds(...tile)) return;
 
-    if (this.input === this.free && this.pendingInput !== this.grid) {
-      this.pointer = { x: event.clientX, y: event.clientY };
-      this.facePoint(point);
-      if (toolOf(this.player.inventory.held?.typeId)) {
-        this.free.cancel();
-        this.useTool();
-      } else {
-        this.free.follow(findPath(this.world, [this.player.tileX, this.player.tileZ], tile, this.player.climbs));
-      }
+    const menu = this.contextActionsAt(point, event.clientX, event.clientY, tile);
+    if (menu.target || event.button === 2) {
+      (this.pendingInput ?? this.input).cancel();
+      this.pendingContext = null;
+      this.contextMenu = { ...menu, x: event.clientX, y: event.clientY };
+      this.contextVersion++;
       return;
     }
 
-    if (this.input === this.grid && this.pendingInput !== this.free) {
-      this.grid.follow(findPath(this.world, [this.player.tileX, this.player.tileZ], tile, this.player.climbs));
+    this.closeContextMenu();
+    this.pendingContext = null;
+    this.walkTo(tile);
+  }
+
+  closeContextMenu() {
+    if (!this.contextMenu) return;
+    this.contextMenu = null;
+    this.contextVersion++;
+  }
+
+  worldInputBlocked() {
+    return !!(this.travel || this.worlds?.open || this.chat?.active || this.townOffice?.open
+      || this.poker?.open || this.mailbox?.open || this.photos?.open
+      || this.mapScreen?.open || this.wardrobe?.open);
+  }
+
+  /** Cancel both a visible context menu and an action walking toward its target. */
+  cancelContextAction() {
+    this.closeContextMenu();
+    this.pendingContext = null;
+    (this.pendingInput ?? this.input).cancel();
+  }
+
+  /** Build verbs for the live simulation entity nearest the click. */
+  contextActionsAt(point, clientX, clientY, tile) {
+    const hit = this.contextEntityAt(point, clientX, clientY, tile);
+    const actions = [];
+    const add = (id, label, data = {}) => actions.push({ id, label, ...data });
+    const toolAction = (verb, label, data, required) => {
+      const slot = this.toolSlot(verb);
+      add(verb, label, {
+        ...data, toolVerb: verb, disabled: slot < 0, reason: slot < 0 ? `Need ${required}` : null,
+      });
+    };
+
+    if (hit?.kind === 'npc') {
+      const npc = hit.target;
+      if (npc.talkable) add('talk', `Talk to ${npc.name}`, { verb: 'talk', targetKind: 'npc', targetId: npc.id, tile: [npc.tileX, npc.tileZ] });
+      if (npc.downed <= 0) toolAction('shoot', `Shoot ${npc.name}`, { targetKind: 'npc', targetId: npc.id, tile: [npc.tileX, npc.tileZ] }, 'a gun');
+      add('walk', 'Walk here', { verb: 'walk', tile });
+      return { title: npc.name, actions, target: true };
     }
+
+    if (hit?.kind === 'animal') {
+      const animal = hit.target, label = animal.type.label;
+      toolAction('shoot', `Shoot ${label}`, { targetKind: 'animal', targetId: animal.id, tile: [animal.tileX, animal.tileZ] }, 'a gun');
+      add('walk', 'Walk here', { verb: 'walk', tile });
+      return { title: label, actions, target: true };
+    }
+
+    if (hit?.kind === 'item') {
+      const item = hit.target;
+      add('take', `Take ${item.type.label}`, {
+        verb: 'take', targetKind: 'item', targetId: item.id, tile: item.tile,
+      });
+      add('walk', 'Walk here', { verb: 'walk', tile });
+      return { title: item.type.label, actions, target: true };
+    }
+
+    const portal = this.world.portalAt(...tile);
+    if (portal && (!hit
+      || (hit.kind === 'object' && objectType(hit.target.type).category === 'building'))) {
+      const verb = portal.kind === PORTAL.EXIT ? 'Leave' : 'Enter';
+      add('portal', `${verb} ${portal.label ?? ''}`.trim(), { verb: 'portal', tile });
+      return { title: portal.label ?? 'Doorway', actions, target: true };
+    }
+
+    if (hit?.kind === 'object') {
+      const obj = hit.target, type = objectType(obj.type);
+      const label = obj.props?.label ?? type.label;
+      const data = { targetKind: 'object', targetId: obj.id, tile };
+      if (type.category === 'tree') toolAction('chop', `Chop ${label}`, data, 'an axe');
+      if (type.category === 'rock') toolAction('mine', `Mine ${label}`, data, 'a pickaxe');
+      if (type.category === 'mailbox') add('mailbox', 'Check mail', { ...data, verb: 'mailbox' });
+      if (this.edits?.isPlaced(obj.id) && type.use) add('furniture', `${this.furnitureVerb(type.use)} ${label}`, { ...data, verb: 'furniture' });
+      if (interactOf(obj.type)) {
+        const fixture = this.fixtures?.target(obj, this.tradeCtx());
+        if (fixture) add('use', `${fixture.label} ${label}`, { ...data, verb: 'use' });
+      }
+      if (breakable(obj)) toolAction('shoot', `Shoot ${label}`, data, 'a gun');
+      add('walk', 'Walk here', { verb: 'walk', tile });
+      return { title: label, actions, target: true };
+    }
+
+    const item = this.loose.itemAt(...tile);
+    if (item) {
+      add('take', `Take ${item.type.label}`, { verb: 'take', targetKind: 'item', targetId: item.id, tile });
+      add('walk', 'Walk here', { verb: 'walk', tile });
+      return { title: item.type.label, actions, target: true };
+    }
+
+    const planting = this.plantingTarget(...tile);
+    if (planting) {
+      const verb = planting.action === 'harvest' ? 'Harvest' : planting.action === 'sow' ? 'Sow' : 'Inspect';
+      add('plant', `${verb} ${planting.label}`, {
+        verb: 'plant', targetKind: 'tile', targetId: tile.join(','), tile,
+        seedType: planting.seedType ?? null,
+      });
+      add('walk', 'Walk here', { verb: 'walk', tile });
+      return { title: planting.label, actions, target: true };
+    }
+
+    if (portal) {
+      const verb = portal.kind === PORTAL.EXIT ? 'Leave' : 'Enter';
+      add('portal', `${verb} ${portal.label ?? ''}`.trim(), { verb: 'portal', tile });
+      return { title: portal.label ?? 'Doorway', actions, target: true };
+    }
+
+    add('walk', 'Walk here', { verb: 'walk', tile });
+    return { title: this.world.surfaceAt(...tile).name, actions, target: false };
+  }
+
+  furnitureVerb(use) {
+    return use === 'sleep' ? 'Sleep in' : use === 'sit' ? 'Sit on'
+      : use === 'lean' ? 'Lean on' : use === 'warm' ? 'Warm up at' : 'Use';
+  }
+
+  /** Screen-space hit testing avoids raycasting shader-flattened merged meshes. */
+  contextEntityAt(point, clientX, clientY, tile) {
+    let best = null, bestScore = 1;
+    const consider = (kind, target, x, y, z, radius) => {
+      const screen = this.stage.projectPoint(x, y, z);
+      if (!screen) return;
+      const score = Math.hypot(screen.x - clientX, screen.y - clientY) / radius;
+      if (score < bestScore) { best = { kind, target }; bestScore = score; }
+    };
+
+    for (const npc of (this.people?.npcs ?? [])) {
+      consider('npc', npc, npc.x, npc.y + 0.55, npc.z, 34);
+      consider('npc', npc, npc.x, npc.y, npc.z, 25);
+    }
+    for (const animal of (this.live?.animals ?? [])) {
+      if (animal.dying !== null) continue;
+      consider('animal', animal, animal.x, animal.y + 0.3, animal.z, 28);
+    }
+    for (const item of (this.loose?.items ?? [])) {
+      consider('item', item, item.x, item.y + 0.16, item.z, 24);
+    }
+
+    const nearby = this.world.objectsInRect(point.x - 6, point.z - 6, point.x + 6, point.z + 6);
+    for (const obj of nearby) {
+      const type = objectType(obj.type);
+      if (!['tree', 'rock', 'mailbox', 'furniture'].includes(type.category)
+        && !interactOf(obj.type) && !breakable(obj)) continue;
+      const x = obj.tile[0] + obj.shape.w * 0.5, z = obj.tile[1] + obj.shape.d * 0.5;
+      const y = this.world.groundHeight(x, z);
+      const radius = type.category === 'tree' ? 44 : Math.max(28, Math.min(48, 24 + type.height * 8));
+      consider('object', obj, x, y + type.height * 0.35, z, radius);
+      consider('object', obj, x, y + type.height * 0.78, z, radius);
+    }
+    if (best) return best;
+    const obj = this.world.objectAt(...tile);
+    return obj ? { kind: 'object', target: obj } : null;
+  }
+
+  toolSlot(verb) {
+    const slots = this.player.inventory.slots;
+    const held = slots[this.player.inventory.selected];
+    if (toolOf(held?.typeId)?.verb === verb) return this.player.inventory.selected;
+    return slots.findIndex((slot) => toolOf(slot?.typeId)?.verb === verb);
+  }
+
+  chooseContextAction(id) {
+    const action = this.contextMenu?.actions.find((entry) => entry.id === id);
+    if (!action) return;
+    this.closeContextMenu();
+    if (this.worldInputBlocked()) return;
+    if (action.disabled) { this.note(action.reason); return; }
+    this.pendingContext = null;
+    if (action.verb === 'walk' || action.verb === 'portal') {
+      this.walkTo(action.tile);
+      return;
+    }
+    if (action.toolVerb) {
+      const slot = this.toolSlot(action.toolVerb);
+      if (slot < 0) { this.note(`You no longer have the tool for ${action.label.toLowerCase()}.`); return; }
+      this.player.inventory.select(slot);
+    } else if (action.seedType) {
+      const slot = this.player.inventory.slots.findIndex((entry) => entry?.typeId === action.seedType);
+      if (slot < 0) { this.note('You no longer have those seeds.'); return; }
+      this.player.inventory.select(slot);
+    }
+    this.pendingContext = {
+      ...action, placeId: this.world.meta.id, nextAt: this.time, routed: false, routeAttempts: 0,
+    };
+    (this.pendingInput ?? this.input).cancel();
+    this.advanceContextAction();
+  }
+
+  contextTarget(action) {
+    if (action.placeId !== this.world.meta.id) return null;
+    if (action.targetKind === 'object') return this.world.objectById(action.targetId);
+    if (action.targetKind === 'npc') return this.people?.byId(action.targetId);
+    if (action.targetKind === 'animal') return this.live?.animals.find((animal) => animal.id === action.targetId) ?? null;
+    if (action.targetKind === 'item') return this.loose.itemAt(...action.tile)?.id === action.targetId
+      ? this.loose.itemAt(...action.tile) : null;
+    return action.targetKind === 'tile' ? { x: action.tile[0] + 0.5, z: action.tile[1] + 0.5 } : null;
+  }
+
+  contextMatches(what, action) {
+    if (!what) return false;
+    if (action.targetKind === 'object') return what.object?.id === action.targetId;
+    return what.target?.id === action.targetId && what.kind === action.targetKind;
+  }
+
+  /** Continue a click command after walking, always revalidating before mutation. */
+  advanceContextAction() {
+    const action = this.pendingContext;
+    if (!action || this.time < action.nextAt) return;
+    const target = this.contextTarget(action);
+    if (!target) { this.pendingContext = null; return; }
+    const point = target.x !== undefined ? target
+      : { x: target.tile[0] + target.shape.w * 0.5, z: target.tile[1] + target.shape.d * 0.5 };
+    this.facePoint(point);
+
+    let done = false;
+    if (action.verb === 'talk') {
+      if (target.talkable && Math.hypot(target.x - this.player.x, target.z - this.player.z) <= TALK_RANGE) {
+        done = !!this.talk(target);
+      }
+    } else if (action.verb === 'take') {
+      if (this.reachable()?.id === target.id) done = !!this.take(target);
+    } else if (action.verb === 'plant') {
+      const what = this.plantingTarget(...action.tile);
+      if (what && this.player.aheadTile().every((value, i) => value === action.tile[i])) {
+        if (what.blocked) {
+          this.note(what.blocked);
+          this.pendingContext = null;
+          return;
+        }
+        done = !!this.tendPlant(what);
+      }
+    } else if (['mailbox', 'furniture', 'use'].includes(action.verb)) {
+      const ahead = this.world.objectAt(...this.player.aheadTile());
+      if (ahead?.id === target.id) {
+        if (action.verb === 'mailbox') { this.mailbox.show(this.mail); done = true; }
+        else if (action.verb === 'furniture') {
+          done = !!this.useFurniture({ kind: 'furniture', object: target, action: objectType(target.type).use });
+        } else {
+          const fixture = this.fixtures?.target(target, this.tradeCtx());
+          done = fixture ? !!this.use(fixture) : false;
+        }
+      }
+    } else {
+      const what = this.toolAction();
+      if (this.contextMatches(what, action)) {
+        if (what.blocked) { this.note(what.blocked); this.pendingContext = null; return; }
+        done = !!this.useTool();
+        if (done && (action.verb === 'chop' || action.verb === 'mine')
+          && this.world.objectById(action.targetId)) {
+          action.nextAt = this.time + 0.55;
+          return;
+        }
+      } else if (what?.blocked === 'out of shot') {
+        this.note(what.blocked);
+        this.pendingContext = null;
+        return;
+      } else if (what?.blocked === 'reloading') {
+        action.nextAt = this._readyAt;
+        return;
+      }
+    }
+
+    if (done) { this.pendingContext = null; return; }
+    const controller = this.pendingInput ?? this.input;
+    if (controller.destination) return;
+    if (action.routeAttempts >= 3 || !this.routeContextAction(action, target)) {
+      this.note(`You can't reach ${action.label.replace(/^[^ ]+ /, '')}.`);
+      this.pendingContext = null;
+    }
+  }
+
+  routeContextAction(action, target) {
+    const from = [this.player.tileX, this.player.tileZ];
+    let goals;
+    if (action.targetKind === 'object' || action.targetKind === 'tile' && action.verb !== 'talk') {
+      const x = target.tile?.[0] ?? action.tile[0], z = target.tile?.[1] ?? action.tile[1];
+      const w = target.shape?.w ?? 1, d = target.shape?.d ?? 1;
+      goals = [];
+      for (let dx = 0; dx < w; dx++) goals.push([x + dx, z - 1], [x + dx, z + d]);
+      for (let dz = 0; dz < d; dz++) goals.push([x - 1, z + dz], [x + w, z + dz]);
+      goals = goals.filter((goal) => this.world.inBounds(...goal) && !this.world.isBlocked(...goal));
+    } else {
+      goals = [[Math.floor(target.x), Math.floor(target.z)]];
+    }
+
+    let best = null;
+    for (const goal of goals) {
+      if (goal[0] === from[0] && goal[1] === from[1]) continue;
+      const route = findPath(this.world, from, goal, this.player.climbs);
+      const end = route.at(-1);
+      if (!end || end[0] !== goal[0] || end[1] !== goal[1]) continue;
+      if (route.length && (!best || route.length < best.length)) best = route;
+    }
+    if (!best) return false;
+    (this.pendingInput ?? this.input).follow(best);
+    action.routed = true;
+    action.routeAttempts++;
+    return true;
   }
 
   /**
@@ -706,6 +1025,8 @@ class Game {
    * where we are without also updating the simulation's, or vice versa.
    */
   setPlace(world, tile, facing) {
+    this.closeContextMenu();
+    this.pendingContext = null;
     this.world = world;
     setPlaceMusic(world);
     // Portal availability is derived from player progression. Do this before
@@ -733,6 +1054,7 @@ class Game {
     this.live = this.faunaFor(world);
     this.live.sync(this.edits.culled);
     this.live.reconcile(this.edits.wildlife);
+    this.museum.sync(world, this.live);
     this.stage.setFauna(this.live);
     this.people = this.folkFor(world);
     // Front doors first, then who is behind them: `learn` reads this place for
@@ -761,6 +1083,7 @@ class Game {
     // that do not exist yet.
     this.endChat();
     this.townOffice.close();
+    this.poker.leave();
     this.input.reset();
     this.grid.reset();
     // Remember the arrival tile as already-visited, or a doorway you step out
@@ -1013,8 +1336,11 @@ class Game {
 
   /** Open the worlds panel, with the save list as it stands right now. */
   openWorlds() {
+    this.cancelContextAction();
     this.hud.toggleSettings(false);
     this.wardrobe.close();
+    this.mailbox.close();
+    this.poker.leave();
     this.worlds.show(listSaves());
   }
 
@@ -1036,7 +1362,9 @@ class Game {
    * two worlds whose interiors are both `worlds/interiors/home-tyler.json`
    * would otherwise share a front room.
    */
-  beginSession(world, { source, saveId, name, pending = null, restore = null }) {
+  beginSession(world, { source, saveId, name, pending = null, restore = null, identity = null }) {
+    this.poker.leave();
+    this.mailbox.close();
     this.places.reset(world);
     // Put the place back the way its file describes it. A World is cached by
     // URL and survives a session ending (world/places.js), so the town this
@@ -1087,8 +1415,17 @@ class Game {
     // both of which ask who the player is friends with.
     this.player.inventory.restore(restore?.inventory ?? { slots: [], selected: 0 });
     this.player.outfit.restore(restore?.outfit);
+    // Who you are. Three cases, in order: a new game hands in what the start
+    // sequence collected; a loaded save carries its own (or predates the block
+    // and gets the default, which is the character as always drawn); a new
+    // world started from INSIDE a session hands in nothing and keeps the
+    // person you already are -- same player, different place.
+    if (identity) this.player.identity.restore(identity);
+    else if (restore) this.player.identity.restore(restore.identity);
     this.player.purse.restore(restore?.coins);
     this.player.purse.setUnlimited(this.cheats.money);
+    this.museum.restore(restore?.museum);
+    this.mail.restore(restore?.mail);
     // A save from before there was time has no clock in it, and the sensible
     // reading of that is the morning of the first day -- which is what
     // Clock.restore does with an absent block. See Save.js on why the save
@@ -1126,6 +1463,7 @@ class Game {
       const starterSeed = climateOf(world) === 'arid' ? 'seed.pumpkin'
         : climateOf(world) === 'marsh' ? 'seed.cress' : 'seed.turnip';
       this.player.inventory.add(starterSeed, 4);
+      this.mail.welcome(this.player.identity.name, world.meta.name ?? name ?? 'your new home');
     }
 
     this.setPlace(world, world.spawn.tile, world.spawn.facing);
@@ -1266,11 +1604,14 @@ class Game {
       player: {
         inventory: p.inventory.snapshot(),
         outfit: p.outfit.snapshot(),
+        identity: p.identity.snapshot(),
         coins: p.purse.coins,
         friends: p.friends.snapshot(),
         errands: this.errands.snapshot(),
         clock: p.clock.snapshot(),
         health: p.health.snapshot(),
+        museum: this.museum.snapshot(),
+        mail: this.mail.snapshot(),
         houseStories: this.houseStories,
         cheats: { ...this.cheats },
       },
@@ -1301,12 +1642,18 @@ class Game {
    */
   stateStamp() {
     const p = this.player;
+    const placeEdits = [...this.changes]
+      .map(([id, edits]) => `${id}:${edits.version}`)
+      .join(',');
     return `${this.world.meta.id}|${p.tileX},${p.tileZ}|${this.stack.length}|health:${p.health.version}`
       + `|${p.inventory.version}|${p.outfit.version}|${p.purse.version}|${p.friends.version}`
       + `|errands:${this.errands.version}`
+      + `|museum:${this.museum.version}`
+      + `|mail:${this.mail.version}`
       + `|house:${this.houseStories}`
       + `|cheats:${Number(this.cheats.money)}${Number(this.cheats.ammo)}${Number(this.cheats.invulnerable)}`
       + `|${this.loose.version}|${this.edits.version}|${this.fixtures.version}`
+      + `|changes:${placeEdits}`
       + `|${this._talked ?? 0}`
       // The DAY, and deliberately not the time of day. This string is the
       // autosave's change detector, and a value that moves every frame would
@@ -1329,7 +1676,7 @@ class Game {
   autosave(dt) {
     if (!this.saveId) return;
     this._sinceSave += dt;
-    if (this._sinceSave < AUTOSAVE_EVERY || this.travel) return;
+    if (this._sinceSave < AUTOSAVE_EVERY || this.travel || this.poker.open) return;
     this._sinceSave = 0;
     if (this.stateStamp() === this._savedStamp) return;
     this.saveNow();
@@ -1752,6 +2099,10 @@ class Game {
     // every wall and tree the player happens to be facing is garbage generated
     // by a query that is supposed to be free.
     const obj = this.world.objectAt(ax, az);
+    if (obj && objectType(obj.type).category === 'mailbox') {
+      const unread = this.mail.unread;
+      return { kind: 'mailbox', object: obj, label: unread ? `Read mail (${unread} new)` : 'Check mail' };
+    }
     if (obj && this.edits?.isPlaced(obj.id) && objectType(obj.type).use) {
       return { kind: 'furniture', object: obj, action: objectType(obj.type).use };
     }
@@ -1770,6 +2121,10 @@ class Game {
     if (!what) return;
     if (what.kind === 'take') this.take();
     else if (what.kind === 'plant') this.tendPlant(what);
+    else if (what.kind === 'mailbox') {
+      this.cancelContextAction();
+      this.mailbox.show(this.mail);
+    }
     else if (what.kind === 'furniture') this.useFurniture(what);
     else if (what.kind === 'use') this.use(what.fixture);
     else this.talk(what.npc);
@@ -1867,6 +2222,16 @@ class Game {
     for (const folk of this.folk.values()) {
       newStock = folk.refreshShops(this.player.clock.day) || newStock;
     }
+    if (dayOfYear(this.player.clock.day) === this.player.identity.birthday) {
+      this.mail.queue({
+        id: `birthday:${Math.floor((this.player.clock.day - 1) / YEAR_DAYS)}`,
+        from: 'Town Hall',
+        subject: `Happy birthday, ${this.player.identity.name}!`,
+        body: `Dear ${this.player.identity.name},\n\nEveryone at Town Hall wishes you a very happy birthday. We hope the year ahead brings good weather, good neighbours, and plenty worth coming home to.\n\nWarmly,\nTown Hall`,
+        attachments: [{ typeId: 'item.flower', count: 1 }],
+      }, this.player.clock.day);
+    }
+    const newMail = this.mail.deliver(this.player.clock.day);
 
     // A night mends what a shot took, and it is the only thing that does.
     // There is no bandage, no food that heals and nothing to buy for it: the
@@ -1876,11 +2241,17 @@ class Game {
     const mended = this.player.health.restore();
 
     const sky = weatherOn(this.world, this.player.clock.day);
-    const lines = [`Day ${this.player.clock.day}.`];
+    const lines = [`Day ${this.player.clock.day}, ${dateLabel(dayOfYear(this.player.clock.day))}.`];
+    // The one morning a year that is about you. Ahead of the weather, because
+    // a town would mention your birthday before it mentioned the rain.
+    if (dayOfYear(this.player.clock.day) === this.player.identity.birthday) {
+      lines.push(`Happy birthday, ${this.player.identity.name}!`);
+    }
     if (sky) lines.push(WEATHER_KINDS[sky].note);
     if (mended) lines.push('You feel better for the sleep.');
     if (back) lines.push('Something is moving out there again.');
     if (newStock) lines.push('The furniture shop has new stock.');
+    if (newMail) lines.push(`${newMail === 1 ? 'A new letter is' : `${newMail} new letters are`} waiting in your mailbox.`);
     this.note(lines.join(' '));
     return days;
   }
@@ -1967,7 +2338,9 @@ class Game {
    */
   talk(npc) {
     if (!npc || this.chat.active) return null;
+    this.cancelContextAction();
     this.pendingOffice = null;
+    this.pendingPoker = null;
     if (['planner', 'wildlife', 'cheats'].includes(npc.props.office)) {
       const back = this.stack.at(-1)?.world;
       if (!back || back.kind !== 'exterior') {
@@ -1996,6 +2369,14 @@ class Game {
     if (npc.confront) return this.confront(npc);
     npc.lookAt(this.player.x, this.player.z);
     if (!this.intruding()) this.player.friends.visit(npc.id, this.player.clock.day);
+    if (['friend', 'close'].includes(this.player.friends.tier(npc.id))) {
+      this.mail.queue({
+        id: `friend:${npc.id}`,
+        from: npc.name,
+        subject: 'Glad you moved here',
+        body: `Dear ${this.player.identity.name},\n\nI have been thinking how different this place feels since you arrived. I am glad we got to know each other, and glad to call you my friend.\n\n${npc.name}`,
+      }, this.player.clock.day + 1);
+    }
     const ctx = this.tradeCtx();
     // The greeting on the front of an ordinary conversation is keyed to the
     // relationship tier, so a stranger and a close friend open differently.
@@ -2005,13 +2386,16 @@ class Game {
       ? grudgeFor(npc, this.player.friends.grudgeLevel(npc.id))
       : (npc.shop && !npc.shopAvailable
         ? closedFor(npc)
-        : withSmallTalk(npc, this.player.friends.tier(npc.id), npc.dialog));
+        : (npc.props.noSmallTalk
+          ? npc.dialog
+          : withSmallTalk(npc, this.player.friends.tier(npc.id), npc.dialog)));
     this.chat.open(new Dialogue(npc, ctx, script), ctx);
     this.talking = npc;
     return npc;
   }
 
   openTownOffice(npc, office, context) {
+    this.cancelContextAction();
     npc.lookAt(this.player.x, this.player.z);
     this.townOffice.show(office, context);
     this.officeNpc = npc;
@@ -2044,6 +2428,54 @@ class Game {
     fauna.rebuild(edits.culled, edits.wildlife);
     const skipped = (tiles?.length ?? 0) - allowed.length;
     return { ok: true, message: `${changed} tile${changed === 1 ? '' : 's'} painted${skipped ? `; ${skipped} protected` : ''}.` };
+  }
+
+  /** Validate the exact footprint shared by planner preview and placement. */
+  validateBuildingPlacement({ world, people, id, tile, rotation }) {
+    const obj = world?.objectById(id);
+    if (!obj || objectType(obj.type).category !== 'building') {
+      return { ok: false, message: 'That is not a building the planner can move.' };
+    }
+    const placement = world.objectPlacement(id, tile, rotation);
+    if (!placement.ok) return { ...placement, message: placement.reason };
+    for (let dz = 0; dz < placement.shape.d; dz++) {
+      for (let dx = 0; dx < placement.shape.w; dx++) {
+        const x = tile?.[0] + dx, z = tile?.[1] + dz;
+        if (people?.own.some((npc) => Math.floor(npc.x) === x && Math.floor(npc.z) === z)) {
+          return { ok: false, message: 'Someone is standing on that site.', shape: placement.shape };
+        }
+      }
+    }
+    return { ...placement, message: 'This site is clear.' };
+  }
+
+  /** Transform one building, then refresh every derived view of that exterior. */
+  planBuildingMove({ world, edits, fauna, people, id, tile, rotation }) {
+    const obj = world?.objectById(id);
+    const validation = this.validateBuildingPlacement({ world, people, id, tile, rotation });
+    if (!validation.ok) return validation;
+    if (obj.tile[0] === tile[0] && obj.tile[1] === tile[1] && obj.rotation === validation.rotation) {
+      return { ok: false, message: `${objectType(obj.type).label} has not changed.` };
+    }
+    const rotated = obj.rotation !== validation.rotation;
+    const moved = obj.tile[0] !== tile[0] || obj.tile[1] !== tile[1];
+    if (!edits.moveBuilding(id, tile, validation.rotation)) return { ok: false, message: 'That building could not be changed.' };
+
+    invalidatePlaceBake(world);
+    this.stage.invalidateWorld(world);
+    fauna.rebuild(edits.culled, edits.wildlife);
+    this.residents.learn(world);
+
+    const back = this.stack.at(-1);
+    if (back?.world === world && obj.props?.interior === this.world.url) {
+      const portal = [...world.portals.values()].find((entry) => entry.objectId === id);
+      if (portal) {
+        back.tile = [portal.tile[0] + portal.out.x, portal.tile[1] + portal.out.z];
+        back.facing = portal.facing;
+      }
+    }
+    const action = moved && rotated ? 'moved and rotated' : rotated ? 'rotated' : 'moved';
+    return { ok: true, message: `${objectType(obj.type).label} ${action}.` };
   }
 
   /** Set and immediately reconcile one Fish & Wildlife population target. */
@@ -2084,17 +2516,21 @@ class Game {
   }
 
   /**
-   * What a dialog is allowed to touch: the player's pockets, and nothing else.
+   * The narrow set of game capabilities a dialog is allowed to request.
    *
    * Built fresh rather than held, because the inventory and the purse are the
    * player's and the player can change places; a context captured once would
-   * be a live reference to exactly the two objects that are meant to survive
-   * that, which is fine today and is the kind of fine that stops being true.
+   * be a live reference to objects and callbacks captured in a former place,
+   * which is fine today and is the kind of fine that stops being true.
    */
   tradeCtx() {
     return {
       inventory: this.player.inventory,
       purse: this.player.purse,
+      // What `{player}` expands to in any line of any script. A value rather
+      // than a getter because a name cannot change mid-conversation: the one
+      // place it is set is the title screen. See sim/Dialogue.js `#say`.
+      playerName: this.player.identity.name,
       // Nearly read-only from in there: a script may ask whether you two have
       // met (the `friend` condition) and no effect grants it. The one effect
       // that does write is `peace`, which ENDS a feud and is paid for by the
@@ -2104,12 +2540,43 @@ class Game {
       clock: this.player.clock,
       houseStories: () => this.houseStories,
       setHouseStories: (stories) => this.setHouseStories(stories),
+      travel: (url) => this.travelByCab(url),
       // The other effect that reaches back out into the world, and it is here
       // on the same terms: the script can only report which of three answers
       // the player gave to somebody who caught them, and the Game decides what
       // each of them means. See world/theft.js.
       settleTheft: (npc, answer) => this.settleTheft(npc, answer),
+      // Poker waits until the conversation has closed so two overlays never
+      // compete for the same keyboard press.
+      openPoker: (npc) => { this.pendingPoker = npc; },
     };
+  }
+
+  /** Ride to a place while retaining the cab stand as its return address. */
+  travelByCab(url) {
+    if (this.travel || typeof url !== 'string') return false;
+    const back = {
+      world: this.world,
+      tile: [this.player.tileX, this.player.tileZ],
+      facing: this.player.facing,
+      label: 'Cab stand',
+    };
+    this.beginTravel(this.places.get(url), (world) => {
+      this.stack.push(back);
+      this.setPlace(world, world.spawn.tile, world.spawn.facing);
+    });
+    return true;
+  }
+
+  /** Sit with the cellar's authored regulars; chips move through PokerRoom. */
+  openPoker(npc) {
+    this.cancelContextAction();
+    const opponents = this.people.npcs
+      .filter((person) => person.props.pokerSeat)
+      .map((person) => ({ name: person.name, style: person.props.pokerSeat }));
+    npc?.lookAt(this.player.x, this.player.z);
+    this.pokerNpc = npc;
+    this.poker.show({ purse: this.player.purse, opponents });
   }
 
   /** Close the conversation, if there is one, and let the NPC look away. */
@@ -2150,9 +2617,10 @@ class Game {
    * it back on failure is how items get eaten by a rounding error in the middle
    * of the two operations.
    */
-  take() {
+  take(target = null) {
     const item = this.reachable();
     if (!item) return null;
+    if (target && item.id !== target.id) return null;
     if (!this.player.inventory.add(item.typeId, 1)) return null;   // no room
     this.loose.take(item);
     if (!item.dropped) {
@@ -2317,13 +2785,29 @@ class Game {
     if (!obj || !this.edits.isPlaced(obj.id)) return null;
 
     if (action === 'sleep') {
+      this.poseAtFurniture(obj, 'lie');
       const crossed = this.player.clock.skip((1 - this.player.clock.t) + 0.22);
       if (crossed) this.dawn(crossed);
-      this.note('You sleep until dawn.');
+      this.note('You sleep until dawn. Move or press E to get up.');
+      return obj;
+    }
+
+    if (action === 'sit') {
+      this.poseAtFurniture(obj, 'sit');
+      this.note('You take a seat. Move or press E to stand.');
+      return obj;
+    }
+
+    if (action === 'warm' || action === 'lean') {
+      this.poseAtFurniture(obj, action);
+      this.note(action === 'warm'
+        ? 'You warm your hands. Move or press E to step away.'
+        : 'You lean for a while. Move or press E to step away.');
       return obj;
     }
 
     if (action !== 'store') return null;
+    this.poseAtFurniture(obj, 'reach', 0.7);
     const stored = this.edits.storedIn(obj.id);
     if (stored) {
       if (this.player.inventory.room(stored.typeId) < stored.count) {
@@ -2346,6 +2830,32 @@ class Game {
     this.player.inventory.removeFrom(this.player.inventory.selected, stack.count);
     this.note(`${itemType(stack.typeId).label} put away.`);
     return obj;
+  }
+
+  /** Put the rendered player on, or visibly at work against, a piece. */
+  poseAtFurniture(obj, kind, duration = 0) {
+    const type = objectType(obj.type);
+    const cx = obj.tile[0] + obj.shape.w / 2;
+    const cz = obj.tile[1] + obj.shape.d / 2;
+    const yaw = -obj.rotation * Math.PI / 180;
+    let x = this.player.x, z = this.player.z;
+
+    if (kind === 'sit' || kind === 'lie') {
+      // Chairs use their centre. Beds put the feet toward the open end while
+      // the body extends along local -Z to the pillow/headboard.
+      const localZ = kind === 'lie' ? type.footprint.d / 2 - 0.48 : 0;
+      x = cx + Math.sin(yaw) * localZ;
+      z = cz + Math.cos(yaw) * localZ;
+    }
+
+    this.player.speed = 0;
+    const seatY = Math.max(0.12, (type.useHeight ?? 0.48) - 0.22);
+    this.player.furnitureUse = {
+      kind, x, z,
+      y: this.world.groundHeight(x, z) + (kind === 'sit' ? seatY : kind === 'lie' ? 0.58 : 0),
+      yaw: kind === 'warm' || kind === 'lean' || kind === 'reach' ? this.player.yaw : yaw,
+      until: duration ? this.time + duration : 0,
+    };
   }
 
   /** Fold one empty player-placed piece back into its inventory item. */
@@ -2596,7 +3106,18 @@ class Game {
     }
 
     this.tickFolk(dt);
-    this.live.update(dt);
+    this.tickFauna(dt);
+  }
+
+  /** Let the letter panel own navigation while the town continues underneath. */
+  updateMailbox(dt) {
+    const k = this.keys;
+    if (k.pressed('Escape') || k.pressed('KeyE')) this.mailbox.close();
+    else if (k.pressed('Enter') || k.pressed('Space')) this.mailbox.claim();
+    else if (k.pressed('ArrowUp') || k.pressed('KeyW')) this.mailbox.move(-1);
+    else if (k.pressed('ArrowDown') || k.pressed('KeyS')) this.mailbox.move(1);
+    this.tickFolk(dt);
+    this.tickFauna(dt);
   }
 
   /** Flip through the roll, and put the camera down. */
@@ -2607,7 +3128,7 @@ class Game {
     if (k.pressed('ArrowRight') || k.pressed('KeyD')) this.photos.step(-1);
 
     this.tickFolk(dt);
-    this.live.update(dt);
+    this.tickFauna(dt);
   }
 
   /** Drive the wardrobe while the world continues underneath it. */
@@ -2619,14 +3140,14 @@ class Game {
     else if (k.pressed('KeyE') || k.pressed('Space') || k.pressed('Enter')) this.wardrobe.confirm();
 
     this.tickFolk(dt);
-    this.live.update(dt);
+    this.tickFauna(dt);
   }
 
   /** Town Hall desks own Escape while the town continues living underneath. */
   updateTownOffice(dt) {
     if (this.keys.pressed('Escape')) this.townOffice.close();
     this.tickFolk(dt);
-    this.live.update(dt);
+    this.tickFauna(dt);
   }
 
   /** Put on or remove the garment selected in the wardrobe. */
@@ -2686,6 +3207,21 @@ class Game {
     return what;
   }
 
+  /** Record a catch and queue the curator's one-time first-exhibit note. */
+  recordExhibit(animal) {
+    const discovered = this.museum.record(animal, this.player.clock.day);
+    const tally = this.museum.tally();
+    if (discovered && tally.fish + tally.game === 1) {
+      this.mail.queue({
+        id: 'museum:first-exhibit',
+        from: 'Museum Curator',
+        subject: 'Your first exhibit',
+        body: `Dear ${this.player.identity.name},\n\nYour first discovery has taken its place in the museum. A collection begins with one careful observation, and the galleries are better for yours.\n\nThank you,\nThe Museum Curator`,
+      }, this.player.clock.day + 1);
+    }
+    return discovered;
+  }
+
   /**
    * Hit whatever is within reach.
    *
@@ -2721,6 +3257,9 @@ class Game {
     const animal = this.live.kill(what.target.id);
     if (!animal) return null;
     this.edits.cull(animal.id);
+    if (this.recordExhibit(animal)) {
+      this.note(`New museum exhibit: ${animal.type.label}.`);
+    }
     for (const typeId of killDrops(animal)) this.spill(typeId, what.tile);
     return what;
   }
@@ -2735,6 +3274,7 @@ class Game {
    * and the resolver has already settled that.
    */
   openMap(what) {
+    this.cancelContextAction();
     this.mapScreen.show(this.world, this.player);
     return what;
   }
@@ -2750,6 +3290,7 @@ class Game {
    * between pressing the button and getting the picture.
    */
   takePhoto(what) {
+    this.cancelContextAction();
     const tool = toolOf(this.player.inventory.held?.typeId);
     this._readyAt = this.time + (tool?.cooldown ?? 0.6);
     const caption = `${this.world.meta.name ?? 'Somewhere'} · ${this.player.clock.label}`;
@@ -2815,6 +3356,11 @@ class Game {
 
     if (what.kind === 'npc') {
       what.target.knockDown();
+      this.mail.queueHurt(
+        what.target,
+        this.player.identity.name,
+        this.player.clock.day + 1,
+      );
       // Shooting somebody is the exact inverse of saying hello, and it costs
       // exactly what saying hello bought: the friendship, and with it their
       // front door -- the trespass clock starts again the moment you are no
@@ -2833,6 +3379,9 @@ class Game {
     const animal = this.live.kill(what.target.id);
     if (!animal) return null;
     this.edits.cull(animal.id);
+    if (this.recordExhibit(animal)) {
+      this.note(`New museum exhibit: ${animal.type.label}.`);
+    }
     for (const typeId of killDrops(animal)) this.spill(typeId, what.tile);
     return what;
   }
@@ -2907,6 +3456,7 @@ class Game {
     this.stage.setAngle(null);
     if (!this.live.take(fish.id)) return null;
     this.edits.cull(fish.id);
+    const discovered = this.recordExhibit(fish);
     sfx.splash(0.3);
     // Spilled at the PLAYER's feet and not at the float, which is the one place
     // in this game where those differ: the float is in water, and water is the
@@ -2916,7 +3466,9 @@ class Game {
       this.spill(typeId, [this.player.tileX, this.player.tileZ]);
       this.errands.record({ kind: 'fish', item: typeId, token: `${this.world.meta.id}:${fish.id}` });
     }
-    this.note(`A ${fish.type.label.toLowerCase()}.`);
+    this.note(discovered
+      ? `New museum exhibit: ${fish.type.label}.`
+      : `A ${fish.type.label.toLowerCase()}.`);
     return what;
   }
 
@@ -3068,16 +3620,27 @@ class Game {
 
     // The people keep breathing and the animals keep moving while you talk.
     this.tickFolk(dt);
-    this.live.update(dt);
+    this.tickFauna(dt);
     this.talking?.lookAt(this.player.x, this.player.z);
 
     this.chat.draw();
     if (this.chat.dialogue?.done) {
       const pending = this.pendingOffice;
+      const poker = this.pendingPoker;
       this.pendingOffice = null;
+      this.pendingPoker = null;
       this.endChat();
       if (pending) this.openTownOffice(pending.npc, pending.office, pending.context);
+      else if (poker) this.openPoker(poker);
     }
+  }
+
+  /** The table owns input while the cellar and its inhabitants keep moving. */
+  updatePoker(dt) {
+    if (this.keys.pressed('Escape')) this.poker.leave();
+    this.poker.update(dt);
+    this.tickFolk(dt);
+    this.tickFauna(dt);
   }
 
   /**
@@ -3097,9 +3660,20 @@ class Game {
    * box is shut.
    */
   tickFolk(dt) {
-    this.people.update(dt, this.player.clock, this.chat.active ? null : this.player);
+    this.people.update(dt, this.player.clock, this.chat.active || this.poker.open ? null : this.player);
     for (const npc of this.people.firing()) this.shotAt(npc);
     this.watchRoused();
+  }
+
+  /**
+   * Tick the live place's animals, with what their instincts read: the hour,
+   * for species that keep hours, and where the player is, for species that
+   * flee. The counterpart of tickFolk and the one call site for the same
+   * reason -- an animal that fled you on the ordinary frame and ignored you on
+   * the map screen would be two different animals.
+   */
+  tickFauna(dt) {
+    this.live.update(dt, this.player.clock, this.player);
   }
 
   /**
@@ -3111,7 +3685,7 @@ class Game {
    * in front of you.
    */
   watchRoused() {
-    if (this.chat.active || this.player.downed > 0) return;
+    if (this.chat.active || this.poker.open || this.player.downed > 0) return;
     for (const npc of this.people.npcs) {
       if (!npc.confront || npc.downed > 0) continue;
       if (Math.hypot(npc.x - this.player.x, npc.z - this.player.z) > CONFRONT_RANGE) continue;
@@ -3138,6 +3712,12 @@ class Game {
     // take orders -- see turnCamera.
     this.turnCamera(dt);
 
+    if (this.worldInputBlocked() && (this.contextMenu || this.pendingContext)) {
+      this.closeContextMenu();
+      this.pendingContext = null;
+      (this.pendingInput ?? this.input).cancel();
+    }
+
     // Mid-doorway the screen is black and the player is between two places, so
     // there is nothing sensible for input to act on. The camera morph above
     // still runs -- it is view state, and freezing it would strand a toggle.
@@ -3152,7 +3732,11 @@ class Game {
     // session, so leaving the chickens walking around underneath it -- and,
     // worse, the trespass clock running -- would mean coming back from a
     // decision you had not made yet to consequences you had not chosen.
-    if (this.worlds.open) { this.keys.endFrame(); return; }
+    if (this.worlds.open) {
+      if (this.keys.pressed('Escape')) this.worlds.close();
+      this.keys.endFrame();
+      return;
+    }
 
     // Time, and where it sits in this list is the whole of what it means.
     //
@@ -3196,7 +3780,7 @@ class Game {
     if (this.player.downed > 0) {
       this.player.downed = Math.max(0, this.player.downed - dt);
       this.player.speed = 0;
-      this.live.update(dt);
+      this.tickFauna(dt);
       this.tickFolk(dt);
       this.keys.endFrame();
       return;
@@ -3221,6 +3805,18 @@ class Game {
 
     if (this.townOffice.open) {
       this.updateTownOffice(dt);
+      this.keys.endFrame();
+      return;
+    }
+
+    if (this.poker.open) {
+      this.updatePoker(dt);
+      this.keys.endFrame();
+      return;
+    }
+
+    if (this.mailbox.open) {
+      this.updateMailbox(dt);
       this.keys.endFrame();
       return;
     }
@@ -3251,16 +3847,43 @@ class Game {
       return;
     }
 
+    // Furniture owns the body until its brief action ends or the player asks
+    // to leave it. The simulation remains at the walkable tile beside the solid
+    // object; only the rendered body occupies the seat or mattress, so sitting
+    // never punches a special hole in the shared collision model.
+    if (this.player.furnitureUse) {
+      const use = this.player.furnitureUse;
+      const moving = this.keys.state.up || this.keys.state.down
+        || this.keys.state.left || this.keys.state.right;
+      const leave = moving || this.keys.pressed('KeyE') || this.keys.pressed('Space')
+        || this.keys.pressed('Escape') || (use.until && this.time >= use.until);
+      if (leave) this.player.furnitureUse = null;
+      else {
+        this.player.speed = 0;
+        this.tickFauna(dt);
+        this.tickFolk(dt);
+        this.tickLine(dt);
+        this.keys.endFrame();
+        return;
+      }
+    }
+
     // The view toggle and the debug probes come AFTER the conversation check,
     // and that ordering is load-bearing: `pressed` CONSUMES a key, so a probe
     // polled first would eat the number keys a dialog uses to pick a line and
     // change the render scale instead of answering the shopkeeper.
+    if (this.keys.pressed('Escape')) {
+      this.closeContextMenu();
+      this.pendingContext = null;
+      (this.pendingInput ?? this.input).cancel();
+    }
     if (this.keys.pressed('Tab') || this.keys.pressed('KeyV')) this.toggleView();
 
     if (this.keys.pressed('KeyN')) this.cycleMap();
 
     if (this.keys.pressed('KeyO')) { this.openWorlds(); this.keys.endFrame(); return; }
     if (this.keys.pressed('KeyG')) {
+      this.cancelContextAction();
       this.wardrobe.show({ outfit: this.player.outfit, inventory: this.player.inventory });
       this.keys.endFrame();
       return;
@@ -3307,6 +3930,12 @@ class Game {
     // asks for the one it wants rather than deciding here, because which yaw a
     // filter steers by is a fact about that filter.
     const camYaw = this.input === this.grid ? this.orbit.stepYaw : this.orbit.yaw;
+    const manualMove = this.keys.state.up || this.keys.state.down
+      || this.keys.state.left || this.keys.state.right;
+    if (manualMove && (this.contextMenu || this.pendingContext)) {
+      this.closeContextMenu();
+      this.pendingContext = null;
+    }
     const { vx, vz } = this.input.update(dt, this.player, this.keys.state, this.world, camYaw);
     // The cursor only owns the heading while the player STANDS STILL. While
     // any movement is requested, the input filter has already turned the body
@@ -3315,6 +3944,7 @@ class Game {
     // the mouse instead of walking forward.
     if (vx === 0 && vz === 0) this.facePointer();
     this.player.move(dt, vx, vz);
+    this.advanceContextAction();
 
     // Interaction reads the position the player is standing in NOW, so it runs
     // after the move and before the portal check: a step that carries you onto
@@ -3345,7 +3975,7 @@ class Game {
     // Only the live place's animals tick. A town whose chickens kept walking
     // while you were indoors would cost a frame budget that belongs to the room
     // you are standing in, to move things nobody can see.
-    this.live.update(dt);
+    this.tickFauna(dt);
     this.tickFolk(dt);
     // AFTER the animals, so a fish that reached the float this frame is at the
     // float when the line is asked about it, rather than a frame behind -- the
@@ -3403,7 +4033,8 @@ class Game {
    * is worth stating rather than leaving to that.
    */
   turnCamera(dt) {
-    const live = !this.travel && !this.worlds.open && !this.chat.active && !this.townOffice.open;
+    const live = !this.travel && !this.worlds.open && !this.chat.active
+      && !this.townOffice.open && !this.poker.open && !this.mailbox.open;
     const k = this.keys;
     const held = live ? (k.state.turnRight ? 1 : 0) - (k.state.turnLeft ? 1 : 0) : 0;
     const tap = live ? (k.pressed('Period') ? 1 : 0) - (k.pressed('Comma') ? 1 : 0) : 0;
@@ -3444,6 +4075,9 @@ class Game {
     // "buy fewer draw calls", and one combined number says neither.
     const t0 = performance.now();
     this.update(dt);
+    // Publish interaction-critical controller and simulation versions only
+    // after the synchronous update has settled this frame's state.
+    this.ui.commit(this);
     const t1 = performance.now();
     this.stage.render(this.player, this.viewT, this.time, this.orbit.yaw);
     const t2 = performance.now();
@@ -3478,10 +4112,14 @@ class Game {
       this.fps = this._fpsFrames / this._fpsAccum;
       this._fpsAccum = 0; this._fpsFrames = 0;
     }
-    // The readout rebuilds DOM; at 60Hz that is pure layout churn for numbers
-    // nobody can read that fast.
+    // Readout derivations remain deliberately capped at 10 Hz.
     this._hudT += dt;
-    if (this._hudT >= 0.1) { this._hudT = 0; this.hud.update(this); }
+    if (this._hudT >= 0.1) {
+      this._hudT = 0;
+      this.hud.update(this);
+      this.ui.tickHud();
+      this.ui.commit(this);
+    }
 
     this.autosave(dt);
 
@@ -3530,7 +4168,7 @@ async function buildChoice(places, choice) {
     const built = generate({ form: choice.form, seed: choice.seed });
     return {
       world: places.put(Game.genUrl(built.id), built.data),
-      source: { kind: 'seed', form: built.form, seed: built.seed, name: built.name },
+      source: { ...seedSource(built.form, built.seed), name: built.name },
       name: built.name,
     };
   }
@@ -3566,10 +4204,10 @@ function gameWorld(places, source) {
  */
 
 /** A world nobody has played yet, with a save slot opened for it. */
-async function newGame(hold, choice) {
+async function newGame(hold, choice, identity = null) {
   const { world, source, name } = await buildChoice(hold.places, choice);
   const game = new Game(hold.places, world, hold.canvas, hold.hudRoot, hold.fadeEl);
-  game.beginSession(world, { source, saveId: newSaveId(), name });
+  game.beginSession(world, { source, saveId: newSaveId(), name, identity });
   setSessionSaveId(game.saveId);
   game.saveNow();
   return game;
@@ -3676,9 +4314,9 @@ async function boot() {
     // autosave is in here. `pagehide` rather than `beforeunload` because a
     // phone backgrounding the tab never fires the latter, and `visibilitychange`
     // covers the case where the tab is never closed at all, just left.
-    addEventListener('pagehide', () => game.saveNow());
+    addEventListener('pagehide', () => { game.poker.leave(); game.saveNow(); });
     addEventListener('visibilitychange', () => {
-      if (document.visibilityState === 'hidden') game.saveNow();
+      if (document.visibilityState === 'hidden') { game.poker.leave(); game.saveNow(); }
     });
     // Handles for the screenshot harness and for poking at things in devtools.
     window.__game = game;
@@ -3697,7 +4335,7 @@ async function boot() {
       if (!snap) throw new Error('that save could not be read');
       return play(await resumedGame(hold, snap));
     },
-    onStart: async (choice) => play(await newGame(hold, choice)),
+    onStart: async (choice, identity) => play(await newGame(hold, choice, identity)),
     onDelete: (id) => { deleteSave(id); menu(); },
   });
 
@@ -3709,6 +4347,7 @@ async function boot() {
         id: resume.id,
         name: resume.name,
         place: resume.at?.label ?? null,
+        who: resume.player?.identity?.name ?? null,
         savedAt: resume.savedAt,
       },
       saves: listSaves(),

@@ -414,7 +414,7 @@ export function itemIcon(typeId) {
  *
  * Thirty hand-authored icons would be thirty drawings of a hat, and the bag
  * would still be showing you the one fact that matters at 34 pixels -- shirt,
- * hat or glasses, in this colour. So there are three, and they read the same
+ * hat, glasses, pants or shoes, in this colour. So there are five, and they read the same
  * `wear` block the model and the shop picture read: a wide brim is drawn wide
  * and a tall crown is drawn tall, off the numbers rather than by eye, which is
  * what stops an eleventh hat from needing an eleventh icon.
@@ -430,13 +430,60 @@ function wearGlyph(type) {
   const span = (v, lo, hi, a, b) => a + (b - a) * Math.min(1, Math.max(0, (v - lo) / (hi - lo)));
 
   if (slot === 'shirt') {
+    // The pattern vocabulary from itemTypes.js `shirt`, at 24 pixels: bands
+    // and pins are bars across the torso box (x 7.8..16.2, y 10..17.6, clear
+    // of the sleeves and the hem), dots are dots, plaid is both bars, and the
+    // yoke sits under the collar. Same word, same colour, third drawing.
+    const kind = type.wear.pattern;
+    const marks = (c) => {
+      if (kind === 'band') return `<path d="M7.8 12h8.4v2.4H7.8z" fill="${c}"/>`;
+      if (kind === 'hoops') {
+        return [10.6, 13.2, 15.8].map((y) => `<path d="M7.8 ${y}h8.4v1.5H7.8z" fill="${c}"/>`).join('');
+      }
+      if (kind === 'pins') {
+        return [9.3, 11.5, 13.7].map((x) => `<path d="M${x} 10h1.3v7.6h-1.3z" fill="${c}"/>`).join('');
+      }
+      if (kind === 'dots') {
+        return [[9.6, 11.5], [13.2, 10.8], [15, 13.4], [10.4, 14.8], [13.6, 16.4]]
+          .map(([cx, cy]) => `<circle cx="${cx}" cy="${cy}" r="1.15" fill="${c}"/>`).join('');
+      }
+      if (kind === 'plaid') {
+        return [11.3, 14.5].map((y) => `<path d="M7.8 ${y}h8.4v1.4H7.8z" fill="${c}"/>`).join('')
+          + [9.4, 12.2, 15].map((x) => `<path d="M${x} 10h1.2v7.6h-1.2z" fill="${c}"/>`).join('');
+      }
+      if (kind === 'yoke') return `<path d="M7.8 8.8h8.4v2.6H7.8z" fill="${c}"/>`;
+      return '';
+    };
     return (p) => `
       <path d="M8.7 3.8 12 5.8l3.3-2 5.4 3-2.1 4.4-2.4-1.2v10.2H7.8V10L5.4 11.2 3.3 6.8z"
             fill="${css(p.cloth)}"/>
+      ${kind ? marks(css(p.pattern)) : ''}
       <path d="M8.7 3.8 12 5.8l3.3-2-.8 2.4c-.8 1-1.6 1.5-2.5 1.5s-1.7-.5-2.5-1.5z"
             fill="${css(p.clothDark)}"/>
       <path d="M7.8 17.6h8.4v2.6H7.8z" fill="${css(p.clothDark)}" opacity="0.8"/>`;
   }
+
+  // Pants: a waistband and two legs, ending where the cut says they end -- the
+  // same fact the folded parts and the worn model state, read at 24 pixels.
+  if (slot === 'pants') {
+    const hem = type.wear.cut === 'short' ? 14.5 : 20.5;
+    return (p) => `
+      <path d="M7 3.5h10v2.4H7z" fill="${css(p.clothDark)}"/>
+      <path d="M7 5.9h10l.6 ${(hem - 5.9).toFixed(1)}h-4.4L12 9.8l-1.2 ${(hem - 5.9 - 3.9).toFixed(1)}H6.4z"
+            fill="${css(p.cloth)}"/>
+      <path d="M6.8 ${(hem - 1.6).toFixed(1)}h4.2l.2 1.6H6.6zM12.8 ${(hem - 1.6).toFixed(1)}h4.4l.2 1.6h-4.8z"
+            fill="${css(p.clothDark)}"/>`;
+  }
+
+  // Shoes: the pair side by side, toes down, each with its strap of trim.
+  if (slot === 'shoes') {
+    return (p) => [5.2, 14.2].map((x) => `
+      <rect x="${x}" y="7" width="4.6" height="8" rx="1.6" fill="${css(p.leather)}"/>
+      <path d="M${x} 13.2c0 2.4 1 3.8 2.3 3.8s2.3-1.4 2.3-3.8z" fill="${css(p.leather)}"/>
+      <rect x="${(x + 0.6).toFixed(1)}" y="9.6" width="3.4" height="1.7" rx="0.8"
+            fill="${css(p.trim)}"/>`).join('');
+  }
+  if (slot !== 'glasses') return null;
 
   if (slot === 'hat') {
     const rx = span(type.wear.brim, 0.27, 0.46, 4.6, 10.4);

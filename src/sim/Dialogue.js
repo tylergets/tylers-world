@@ -11,11 +11,10 @@
  * THE CONTEXT IS THE ONLY WAY IT TOUCHES THE WORLD
  * ------------------------------------------------
  * Effects need to give you a flower and take your coins, so the machine is
- * handed `{ inventory, purse, friends }` and reaches nothing else. It cannot
- * move the player, cannot open a door, and cannot mutate the place -- so "what
- * can a line of dialog in a world file do to my game" has an answer you can
- * read in one screen, which matters rather a lot for a format meant to be
- * hand-edited.
+ * handed a narrow context and reaches nothing else. Most effects touch pockets
+ * or relationships; `travel` can only request a destination from Game, which
+ * owns the actual place swap and return address. A script still cannot mutate a
+ * place directly, so "what can a line of dialog do" remains a closed list.
  *
  * `friends` is ALMOST read-only, and the exception is worth stating because it
  * is the only one. A script may ask whether you are welcome (the `friend`
@@ -48,7 +47,8 @@ export class Dialogue {
   /**
    * @param {Npc} npc  the person talking; supplies the memory and the shop
    * @param {{inventory: Inventory, purse: Purse, friends?: Friends,
-   *   houseStories?: function(): number, setHouseStories?: function(number): void}} ctx
+   *   houseStories?: function(): number, setHouseStories?: function(number): void,
+   *   travel?: function(string): void}} ctx
    * @param {object} [script]  what he says, defaulting to his own dialog. The
    *   one caller that passes something else is the one talking to somebody who
    *   is angry, who gets a grudge script instead -- see world/grudge.js. It is
@@ -76,7 +76,23 @@ export class Dialogue {
   get speaker() { return this.npc.name; }
 
   /** The line currently being said, or null once the conversation is over. */
-  get text() { return this.node ? this.node.text[this.page] : null; }
+  get text() { return this.node ? this.#say(this.node.text[this.page]) : null; }
+
+  /**
+   * A line with its tokens filled in: `{player}` becomes whoever is playing.
+   *
+   * Done HERE and not at parse time, deliberately -- these two getters are the
+   * one gate every rendered word passes through (the typewriter, the skip, the
+   * redraw and the choice menu all read them), so a token expanded here is
+   * expanded everywhere, including in the smalltalk, grudge, closed-shop and
+   * theft scripts that never went near a world file. The fallback is for
+   * callers with no player at all, like tools/checkworld.mjs: absent means the
+   * caller is not asking, and "friend" is what a villager says in that case.
+   */
+  #say(text) {
+    if (typeof text !== 'string' || !text.includes('{')) return text;
+    return text.replaceAll('{player}', this.ctx.playerName ?? 'friend');
+  }
 
   /** True while the shop has the screen. */
   get trading() { return this.shop !== null; }
@@ -89,7 +105,7 @@ export class Dialogue {
   get choices() {
     if (!this.node || this.trading || !this.#onLastPage) return [];
     return this.node.choices
-      .map((choice, index) => ({ ...choice, index }))
+      .map((choice, index) => ({ ...choice, text: this.#say(choice.text), index }))
       .filter((choice) => this.#test(choice.when));
   }
 
@@ -187,7 +203,9 @@ export class Dialogue {
         // The Game owns progression and the consequences of changing it. An
         // absent callback is a headless format walker, where effects are inert.
         case 'houseStories': this.ctx.setHouseStories?.(v); break;
+        case 'travel': this.ctx.travel?.(v); break;
         case 'shop': if (v) this.shop = this.npc.shop; break;
+        case 'poker': if (v) this.ctx.openPoker?.(this.npc); break;
         case 'gift': if (v) this.#gift(); break;
         // Absent friends is a caller who is not asking -- checkworld drives
         // these scripts with no player in the world -- and the sensible thing

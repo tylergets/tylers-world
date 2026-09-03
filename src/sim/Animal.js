@@ -88,6 +88,17 @@ export class Animal {
      */
     this.lure = null;
     /**
+     * What the instincts read, all written by Fauna each frame on the same
+     * contract as `lure` -- from outside, as facts, with the behavior keeping
+     * the steering. `hour` is the clock for species with waking hours,
+     * `threat` is where the player is for species that flee, and `herd` is the
+     * centroid of this species' flock for species that keep together. Null for
+     * a headless caller, and for every species that never asked.
+     */
+    this.hour = null;
+    this.threat = null;
+    this.herd = null;
+    /**
      * 0..1 through toppling over, or null for an animal that is alive.
      *
      * Null and not 0, so "is it dying" is a question with a yes/no answer

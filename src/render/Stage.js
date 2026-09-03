@@ -447,6 +447,18 @@ export class Stage {
     return hit?.point ?? null;
   }
 
+  /** Project a world point into viewport pixels for lightweight entity picking. */
+  projectPoint(x, y, z) {
+    const r = this.renderer.domElement.getBoundingClientRect();
+    if (!r.width || !r.height) return null;
+    const point = new THREE.Vector3(x, y, z).project(this.rig.camera);
+    if (point.z < -1 || point.z > 1) return null;
+    return {
+      x: r.left + (point.x + 1) * r.width * 0.5,
+      y: r.top + (1 - point.y) * r.height * 0.5,
+    };
+  }
+
   /** The tile containing a picked ground point. */
   pickTile(clientX, clientY) {
     const point = this.pickPoint(clientX, clientY);
@@ -990,7 +1002,7 @@ export class Stage {
     entry.pairs = folk.npcs.map((npc) => {
       const pair = kept.get(npc);
       if (pair) { kept.delete(npc); return pair; }
-      const view = new NpcView(npc.typeId);
+      const view = new NpcView(npc.typeId, npc.look);
       entry.group.add(view.root);
       return { npc, view };
     });

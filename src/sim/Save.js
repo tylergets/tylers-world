@@ -44,6 +44,8 @@
 
 /** Bumped when the shape below changes incompatibly. Older saves are refused. */
 export const SAVE_VERSION = 1;
+/** Generated saves require the exact generator revision that built their baseline. */
+export const GENERATED_WORLD_VERSION = 1;
 
 /** The index: enough about each save to draw a list without reading them all. */
 const INDEX_KEY = 'tw.saves';
@@ -83,13 +85,15 @@ export function listSaves() {
   const index = read(INDEX_KEY);
   if (!Array.isArray(index)) return [];
   return index
-    .filter((e) => e && typeof e.id === 'string')
+    .filter((e) => e && typeof e.id === 'string'
+      && (e.kind !== 'seed' || e.generator === GENERATED_WORLD_VERSION))
     .sort((a, b) => (b.savedAt ?? 0) - (a.savedAt ?? 0));
 }
 
 export function readSave(id) {
   const snap = read(slotKey(id));
-  if (!snap || snap.v !== SAVE_VERSION) return null;
+  if (!snap || snap.v !== SAVE_VERSION
+    || snap.source?.kind === 'seed' && snap.source.generator !== GENERATED_WORLD_VERSION) return null;
   return snap;
 }
 
@@ -108,7 +112,11 @@ export function writeSave(snap) {
     name: snap.name,
     form: snap.source?.form ?? null,
     kind: snap.source?.kind ?? 'file',
+    generator: snap.source?.generator ?? null,
     place: snap.at?.label ?? null,
+    // Who was being played, for the row: "Meadowbrook" answers where a save
+    // is, and two saves in the same world are told apart by who you were.
+    who: snap.player?.identity?.name ?? null,
     savedAt: snap.savedAt,
   };
   const index = [entry, ...rest];
@@ -183,4 +191,6 @@ export const STARTERS = [
 
 /** How a save says which world it is. */
 export const fileSource = (url) => ({ kind: 'file', url });
-export const seedSource = (form, seed) => ({ kind: 'seed', form, seed: seed >>> 0 });
+export const seedSource = (form, seed) => ({
+  kind: 'seed', form, seed: seed >>> 0, generator: GENERATED_WORLD_VERSION,
+});

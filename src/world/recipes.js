@@ -22,9 +22,32 @@
 import { Draft } from './draft.js';
 
 const TOWN_HALL = { label: 'Town Hall', interior: 'worlds/interiors/town-hall.json' };
+const MUSEUM = { label: 'Museum', interior: 'worlds/interiors/museum.json' };
 
 function addTownHall(d, x, z, allow = ['g', 'c'], radius = 20, level = '0') {
   return d.placeNear('town.hall', 'building.townhall', x, z, allow, radius, TOWN_HALL, level);
+}
+
+/** Place the other civic building near Town Hall and join their front walks. */
+function addMuseum(d, hall, allow = ['g', 'c', 's'], radius = 24, level = '0') {
+  const museum = d.placeNear(
+    'town.museum', 'building.museum', hall[0] + 11, hall[1], allow, radius, MUSEUM, level,
+  );
+  d.pathL(museum[0] + 3, museum[1] + 5, hall[0] + 4, hall[1] + 6, { level });
+  return museum;
+}
+
+/** Place the player's home and its reachable mailbox as one town feature. */
+function addPlayerHome(d, id, x, z, allow, radius, props, level) {
+  const home = d.placeNear(id, 'building.home', x, z, allow, radius, props, level);
+  const mailboxTiles = [
+    [home[0] + 3, home[1] + 3], [home[0] + 4, home[1] + 2],
+    [home[0] - 1, home[1] + 2], [home[0] + 4, home[1] + 3],
+  ];
+  const mailbox = mailboxTiles.find(([mx, mz]) => d.free(mx, mz, 1, 1, ['g', 'c', 's'], level));
+  if (!mailbox) throw new Error(`${id}: no room for its mailbox`);
+  d.place('mailbox.player', 'yard.mailbox', mailbox[0], mailbox[1]);
+  return home;
 }
 
 const NEIGHBOR_DOOR_X = {
@@ -164,7 +187,7 @@ export function meadowbrook({
 
   const lookout = d.placeNear('gate.north', 'building.gate', cx - 4, cz - 16, ['c', 'g'], 8,
     { label: 'Meadowbrook Lookout' }, '1');
-  const home = d.placeNear('home.player', 'building.home', cx - 10, cz + 4, ['g'], 10,
+  const home = addPlayerHome(d, 'home.player', cx - 10, cz + 4, ['g'], 10,
     { label: "Tyler's House", interior: 'worlds/interiors/home-tyler.json', playerHome: true }, '0');
   const store = d.placeNear('store.nook', 'building.store', cx + 8, cz + 3, ['g'], 10,
     { label: 'General Store', interior: 'worlds/interiors/store-nook.json' }, '0');
@@ -189,6 +212,7 @@ export function meadowbrook({
   const bungalow = d.placeNear('home.tobin', 'building.bungalow', cx + 15, cz + 8, ['g'], 10,
     { label: "Tobin's Bungalow", interior: 'worlds/interiors/home-tobin.json', owner: 'folk.tobin' }, '0');
   const hall = addTownHall(d, cx - 4, cz + 8, ['g', 'c'], 18);
+  addMuseum(d, hall);
   addNeighbors(d, [
     {
       id: 'lark', name: 'Lark', title: 'Hedge Binder', home: 'Cabin', type: 'building.cabin',
@@ -907,7 +931,7 @@ export function sourwood({
 
   const gate = d.placeNear('gate.mouth', 'building.gate', Math.round(creek(sites.gate)) + 2, sites.gate, ['c', 'g'], 10,
     { label: 'Sourwood Holler' }, '0');
-  const home = d.placeNear('home.holler', 'building.home', Math.round(creek(sites.home)) - 8, sites.home, ['g'], 11,
+  const home = addPlayerHome(d, 'home.holler', Math.round(creek(sites.home)) - 8, sites.home, ['g'], 11,
     { label: 'The Old Place', interior: 'worlds/interiors/home-holler.json', playerHome: true }, '0');
   const store = d.placeNear('store.branch', 'building.store', Math.round(creek(sites.store)) + 6, sites.store, ['g'], 11,
     { label: 'Branch Store', interior: 'worlds/interiors/store-branch.json' }, '0');
@@ -916,6 +940,7 @@ export function sourwood({
   const clothier = d.placeNear('store.clothier', 'building.clothier', furniture[0] + 7, furniture[1], ['g'], 12,
     { label: 'Cuff & Collar', interior: 'worlds/interiors/store-clothier.json' }, '0');
   const hall = addTownHall(d, Math.round(creek(spawnRow)) - 11, spawnRow, ['g', 'c'], 24);
+  addMuseum(d, hall);
   addNeighbors(d, [
     {
       id: 'alder', name: 'Alder', title: 'Creek Reader', home: 'Cottage', type: 'building.cottage',
@@ -1092,7 +1117,7 @@ export function tidewrack({
     { label: 'Tidewrack Dune' }, '1');
   const landing = d.placeNear('gate.landing', 'building.gate', cx, cz + out(0.78), ['s', 'g'], 8,
     { label: 'Tidewrack Landing' }, '0');
-  const home = d.placeNear('home.player', 'building.home', cx - 6, cz + out(0.54), ['g'], 10,
+  const home = addPlayerHome(d, 'home.player', cx - 6, cz + out(0.54), ['g'], 10,
     { label: "Tyler's House", interior: 'worlds/interiors/home-tyler.json', playerHome: true }, '0');
   const store = d.placeNear('store.driftwood', 'building.store', cx + out(0.54), cz + 2, ['g'], 10,
     { label: 'Driftwood Stores', interior: 'worlds/interiors/store-driftwood.json' }, '0');
@@ -1108,6 +1133,7 @@ export function tidewrack({
   const cottage = d.placeNear('home.marnie', 'building.cottage', cx - out(0.57), cz - 3, ['g'], 10,
     { label: "Marnie's Cottage", interior: 'worlds/interiors/home-marnie.json', owner: 'folk.marnie' }, '0');
   const hall = addTownHall(d, cx + out(0.35), cz + out(0.22), ['g', 'c'], 22);
+  addMuseum(d, hall);
   addNeighbors(d, [
     {
       id: 'coral', name: 'Coral', title: 'Net Mender', home: 'Cottage', type: 'building.cottage',
@@ -1610,7 +1636,7 @@ export function thistledown({
     { label: 'Thistledown Gap' }, '0');
   const south = d.placeNear('gate.south', 'building.gate', road - 3, sites.south, ['c', 'g'], 10,
     { label: 'The Low Road' }, '0');
-  const home = d.placeNear('home.player', 'building.home', road - 9, sites.home, ['g'], 11,
+  const home = addPlayerHome(d, 'home.player', road - 9, sites.home, ['g'], 11,
     { label: "Tyler's House", interior: 'worlds/interiors/home-tyler.json', playerHome: true }, '0');
   const store = d.placeNear('store.wether', 'building.store', road + 4, sites.store, ['g'], 11,
     { label: 'The Wether', interior: 'worlds/interiors/store-wether.json' }, '0');
@@ -1621,6 +1647,7 @@ export function thistledown({
   const croft = d.placeNear('home.nan', 'building.cottage', road - 8, 24, ['g'], 11,
     { label: "Nan's Croft", interior: 'worlds/interiors/home-nan.json', owner: 'folk.nan' }, '0');
   const hall = addTownHall(d, road - 13, spawnRow, ['g', 'c'], 24);
+  addMuseum(d, hall);
   addNeighbors(d, [
     {
       id: 'heather', name: 'Heather', title: 'Wool Carder', home: 'Cottage', type: 'building.cottage',
@@ -2128,7 +2155,7 @@ export function rimrock({
     { label: 'Rimrock Head' }, '1');
   const lip = d.placeNear('gate.lip', 'building.gate', cx - 2, cz + 22, ['c', 'g', 's'], 8,
     { label: 'The Long Look' }, '0');
-  const home = d.placeNear('home.player', 'building.home', cx - 12, cz + 1, ['g'], 11,
+  const home = addPlayerHome(d, 'home.player', cx - 12, cz + 1, ['g'], 11,
     { label: "Tyler's House", interior: 'worlds/interiors/home-tyler.json', playerHome: true }, '0');
   const store = d.placeNear('store.slickrock', 'building.store', cx + 9, cz + 2, ['g', 's'], 11,
     { label: 'Slickrock Post', interior: 'worlds/interiors/store-slickrock.json' }, '0');
@@ -2139,6 +2166,7 @@ export function rimrock({
   const cottage = d.placeNear('home.pike', 'building.cottage', cx - 16, cz + 13, ['g', 's'], 11,
     { label: "Pike's Place", interior: 'worlds/interiors/home-pike.json', owner: 'folk.pike' }, '0');
   const hall = addTownHall(d, cx - 4, cz + 12, ['g', 's', 'c'], 20);
+  addMuseum(d, hall);
   addNeighbors(d, [
     {
       id: 'mesa', name: 'Mesa', title: 'Rain Jar Keeper', home: 'Cottage', type: 'building.cottage',
@@ -2571,7 +2599,7 @@ export function ashkettle({
    * is paint, the floor either side of it is grass, and `heal` checks the walk.
    */
   const [hx, hz] = at(...sites.home);
-  const home = d.placeNear('home.player', 'building.home', hx - 1, hz, ['g', 'c'], 11,
+  const home = addPlayerHome(d, 'home.player', hx - 1, hz, ['g', 'c'], 11,
     { label: "Tyler's House", interior: 'worlds/interiors/home-tyler.json', playerHome: true }, '0');
   const [sx, sz] = at(...sites.store);
   const store = d.placeNear('store.cinder', 'building.store', sx - 2, sz, ['g', 'c'], 11,
@@ -2585,6 +2613,7 @@ export function ashkettle({
     { label: "Vesper's", interior: 'worlds/interiors/home-vesper.json', owner: 'folk.vesper' }, '0');
   const [thx, thz] = at(1.3, 0.58);
   const hall = addTownHall(d, thx - 4, thz, ['g', 'c'], 26);
+  addMuseum(d, hall);
   addNeighbors(d, [
     {
       id: 'ember', name: 'Ember', title: 'Ash Glazier', home: 'Cottage', type: 'building.cottage',
@@ -2994,7 +3023,7 @@ export function sedgewater({
   const staithe = d.placeNear('gate.staithe', 'building.gate', tx, tz, ['c', 'g'], 7,
     { label: 'Sedgewater Staithe' }, '1');
   const [hx, hz] = at(sites.home, 0.42);
-  const home = d.placeNear('home.player', 'building.home', hx - 1, hz, ['g'], 12,
+  const home = addPlayerHome(d, 'home.player', hx - 1, hz, ['g'], 12,
     { label: "Tyler's House", interior: 'worlds/interiors/home-tyler.json', playerHome: true }, '0');
   const [sx, sz] = at(sites.store, 0.44);
   const store = d.placeNear('store.staithe', 'building.store', sx - 2, sz, ['g'], 12,
@@ -3007,6 +3036,7 @@ export function sedgewater({
   const cottage = d.placeNear('home.quill', 'building.cottage', qx - 1, qz, ['g'], 12,
     { label: "Quill's Hut", interior: 'worlds/interiors/home-quill.json', owner: 'folk.quill' }, '0');
   const hall = addTownHall(d, cx - 4, cz + toft[1] + 7, ['g', 'c'], 26);
+  addMuseum(d, hall);
   addNeighbors(d, [
     {
       id: 'reed', name: 'Reed', title: 'Thatch Layer', home: 'Cottage', type: 'building.cottage',
@@ -3397,7 +3427,7 @@ export function bellrock({
     { label: 'Bellrock Quay' }, '0');
   const down = d.placeNear('gate.down', 'building.gate', road - 4, row(sites.down), ['g'], 10,
     { label: 'The Bellrock Down' }, '3');
-  const home = d.placeNear('home.player', 'building.home', road - 12, townRow(sites.home), ['g'], 12,
+  const home = addPlayerHome(d, 'home.player', road - 12, townRow(sites.home), ['g'], 12,
     { label: "Tyler's House", interior: 'worlds/interiors/home-tyler.json', playerHome: true }, '0');
   const store = d.placeNear('store.capstan', 'building.store', road + 6, townRow(sites.store), ['g'], 12,
     { label: 'The Capstan', interior: 'worlds/interiors/store-capstan.json' }, '0');
@@ -3408,6 +3438,7 @@ export function bellrock({
   const cottage = d.placeNear('home.sennen', 'building.cottage', road + 16, townRow(sites.cottage), ['g'], 12,
     { label: "Sennen's Cottage", interior: 'worlds/interiors/home-sennen.json', owner: 'folk.sennen' }, '0');
   const hall = addTownHall(d, road - 4, townRow(0.5), ['g', 'c'], 24);
+  addMuseum(d, hall);
   addNeighbors(d, [
     {
       id: 'kelp', name: 'Kelp', title: 'Rope Walker', home: 'Cottage', type: 'building.cottage',

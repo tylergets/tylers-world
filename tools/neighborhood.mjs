@@ -270,17 +270,10 @@ export const TOWNS = {
   },
 };
 
-/** The wildlife each town takes in, two of each, when the settlers arrive. */
-export const WILDLIFE = {
-  meadowbrook: ['cow', 'pony', 'goose', 'robin', 'sparrow', 'hare', 'hedgehog', 'peacock'],
-  sourwood: ['boar', 'deer', 'fox', 'squirrel', 'owl', 'turkey', 'badger', 'mouse'],
-  tidewrack: ['gull', 'heron', 'otter', 'sparrow', 'mouse', 'dog'],
-  thistledown: ['donkey', 'pheasant', 'hare', 'hedgehog', 'magpie', 'frog'],
-  rimrock: ['tortoise', 'donkey', 'owl', 'magpie', 'fox', 'mouse'],
-  ashkettle: ['pig', 'raccoon', 'skunk', 'pigeon', 'mouse', 'tortoise'],
-  sedgewater: ['heron', 'frog', 'otter', 'ferret', 'goose', 'mouse'],
-  bellrock: ['gull', 'pigeon', 'robin', 'ferret', 'badger', 'frog'],
-};
+// The wildlife table moved to src/world/wildlife.js so the in-game generator
+// can stock a fresh town from it too; re-exported here for the tools that
+// always read it alongside the cast.
+export { WILDLIFE } from '../src/world/wildlife.js';
 
 /** Flatten one town's people into full records, in a stable order. */
 export function settlersOf(town, offset = 0) {

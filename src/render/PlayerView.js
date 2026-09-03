@@ -62,6 +62,7 @@ import * as THREE from 'three';
 import { GeoBuilder, trs } from './geo.js';
 import { patchFlatten } from './flatten.js';
 import { itemModel } from './ItemBatch.js';
+import { hairColorOf, skinColorOf, eyeColorOf } from '../sim/Identity.js';
 
 const BOX = new THREE.BoxGeometry(1, 1, 1);
 const BLOB = new THREE.IcosahedronGeometry(1, 2);
@@ -71,20 +72,21 @@ const TORSO = new THREE.CylinderGeometry(0.19, 0.155, 1, 12);
 
 const PAL = {
   skin: 0xf3c9a2, shirt: 0x4a9be0, shirtDark: 0x3a7cb8,
-  pants: 0x3c4a68, shoe: 0x2c323d, hair: 0x6b4423, eye: 0x2a2320,
+  pants: 0x3c4a68, pantsDark: 0x2e3950, shoe: 0x2c323d,
+  hair: 0x6b4423, eye: 0x2a2320,
 };
 
 // --------------------------------------------------------------- clothing --
 /**
- * What a garment does to this model, and the three shapes it can take.
+ * What a garment does to this model, and the five shapes it can take.
  *
- * A SHIRT IS A REBUILD AND THE OTHER TWO ARE A SWAP, and the split falls out of
- * where the colour lives. The torso and the upper arms carry the shirt in their
- * VERTICES -- every model in this project is vertex-coloured so that ten meshes
- * still compile one program -- so a change of shirt is two small geometries
- * rebuilt and the old two disposed. That is a handful of triangles, once, on a
- * key press; keeping a material per shirt to avoid it would cost a second
- * program for the whole of every frame.
+ * CLOTH IS A REBUILD AND HEADGEAR IS A SWAP, and the split falls out of where
+ * the colour lives. The torso, the arms and the legs carry the shirt, pants
+ * and shoes in their VERTICES -- every model in this project is vertex-coloured
+ * so that ten meshes still compile one program -- so a change of clothes is a
+ * few small geometries rebuilt and the old ones disposed. That is a handful of
+ * triangles, once, on a key press; keeping a material per garment to avoid it
+ * would cost a second program for the whole of every frame.
  *
  * A hat and a pair of glasses are their own meshes hung off the head, so those
  * are a geometry swap and a `visible` flag, and the geometry is cached per type
@@ -155,20 +157,183 @@ function glassesParts(b, type) {
   b.addGeometry(BOX, trs(0, LENS_Y, LENS_Z + 0.006, 0, 0, 0, 0.07, 0.018, 0.03), p.frame);
 }
 
+/**
+ * The torso's x-radius at a world height, which is the taper restated as a
+ * function: 0.155 at the hem (y -0.01) rising to 0.19 at the shoulder (y 0.33),
+ * the numbers TORSO above is built from. Every pattern piece computes its own
+ * radius from this instead of guessing, which is what keeps a pin proud of the
+ * cloth at the hem AND at the chest of a body that is wider at the top.
+ */
+const TORSO_R = (y) => 0.155 + 0.035 * ((y + 0.01) / 0.34);
+
+/**
+ * The worn half of a shirt's pattern -- the same six words `shirt` in
+ * world/itemTypes.js documents, drawn round the body in one colour.
+ *
+ * Every marking rides PROUD of the cloth rather than being painted on it,
+ * because two coplanar colours on one surface is a z-fight, not a pattern. A
+ * hoop is an untapered cylinder sized to its own height's radius; pins are
+ * three stacked segments each at their height's radius (one full-height box
+ * would be buried at the shoulder or floating at the hem); dots are squashed
+ * blobs half-sunk into the surface. Plaid is hoops and pins together, with the
+ * pins standing a shade prouder -- which is the weave, at this scale.
+ */
+function torsoPattern(b, kind, c) {
+  const hoop = (y, h) => b.addGeometry(CYL,
+    trs(0, y, 0, 0, 0, 0, TORSO_R(y) + 0.007, h, TORSO_R(y) * 0.85 + 0.007), c);
+  const pins = (w) => {
+    for (let i = 0; i < 6; i++) {
+      const a = i * Math.PI / 3;
+      for (const y of [0.045, 0.16, 0.275]) {
+        b.addGeometry(BOX, trs(
+          Math.sin(a) * (TORSO_R(y) + 0.006), y, Math.cos(a) * (TORSO_R(y) * 0.85 + 0.006),
+          0, a, 0, w, 0.118, 0.016), c);
+      }
+    }
+  };
+  if (kind === 'band') hoop(0.19, 0.075);
+  if (kind === 'hoops') for (const y of [0.08, 0.16, 0.24]) hoop(y, 0.05);
+  if (kind === 'yoke') hoop(0.275, 0.085);
+  if (kind === 'pins') pins(0.021);
+  if (kind === 'plaid') {
+    for (const y of [0.10, 0.22]) hoop(y, 0.045);
+    pins(0.015);
+  }
+  if (kind === 'dots') {
+    // Two rings of five, the second turned half a step so the dots stagger.
+    for (const [row, y] of [[0, 0.095], [1, 0.205]]) {
+      for (let i = 0; i < 5; i++) {
+        const a = (i + row * 0.5) * Math.PI * 2 / 5;
+        b.addGeometry(BLOB, trs(
+          Math.sin(a) * (TORSO_R(y) + 0.003), y, Math.cos(a) * (TORSO_R(y) * 0.85 + 0.003),
+          0, a, 0, 0.026, 0.026, 0.014), c);
+      }
+    }
+  }
+}
+
 /** The torso, in whatever shirt is on. Rebuilt on a change; see `#setOutfit`. */
 function torsoGeometry(p) {
   const b = new GeoBuilder();
   b.addGeometry(TORSO, trs(0, 0.16, 0, 0, 0, 0, 1, 0.34, 0.85), p.shirt);
+  if (p.pattern) torsoPattern(b, p.pattern, p.patternColor);
   b.addGeometry(BOX, trs(0, 0.02, 0, 0, 0, 0, 0.34, 0.07, 0.28), p.shirtDark);
   b.addGeometry(BOX, trs(0, 0.30, 0, 0, 0, 0, 0.21, 0.05, 0.19), p.shirtDark);
   return b.build();
 }
 
-/** One sleeved upper arm, shared by both sides. Rebuilt with the torso. */
+/**
+ * The head, in a given cut and colour of hair. Rebuilt on a change of identity
+ * exactly the way the torso is on a change of shirt (see `#setIdentity`); the
+ * skin and the eyes ride along in the rebuild because all of it shares the one
+ * vertex-coloured buffer.
+ *
+ * EVERY CUT STAYS INSIDE THE HAT'S ENVELOPE. BRIM_Y and the registry's crown
+ * sizes were chosen so a hat encloses the head from 0.33 upward (see the
+ * comment on BRIM_Y), so a style may add bulk BELOW the brim line -- curtains,
+ * a bob's weight, a tail down the back -- but nothing taller than the crop's
+ * 0.435 crown, or there is a haircut that pokes through every hat in the shop.
+ */
+function headGeometry(style, hair, skin, eye = PAL.eye) {
+  const b = new GeoBuilder();
+  b.addGeometry(BLOB, trs(0, 0.16, 0, 0, 0, 0, 0.245, 0.25, 0.235), skin);
+
+  if (style === 'buzz') {
+    // Barely proud of the scalp: the silhouette is the skin's, in hair colour.
+    b.addGeometry(BLOB, trs(0, 0.2, -0.01, 0, 0, 0, 0.25, 0.218, 0.242), hair);
+  } else {
+    // The crop's crown, which the bob and the ponytail both start from.
+    b.addGeometry(BLOB, trs(0, 0.21, -0.015, 0, 0, 0, 0.258, 0.225, 0.252), hair);
+    b.addGeometry(BOX, trs(0, 0.10, -0.19, 0.2, 0, 0, 0.44, 0.2, 0.16), hair);
+  }
+  if (style === 'bob') {
+    // The weight: a fuller back and two curtains past the ears, ending level.
+    b.addGeometry(BOX, trs(0, 0.03, -0.165, 0.08, 0, 0, 0.46, 0.3, 0.17), hair);
+    for (const sx of [-1, 1]) {
+      b.addGeometry(BOX, trs(sx * 0.225, 0.09, 0.02, 0, 0, 0, 0.075, 0.3, 0.26), hair);
+    }
+  }
+  if (style === 'ponytail') {
+    // A tie at the crown's back and three beads falling from it. Blobs rather
+    // than an angled cylinder because they read as a tail from BOTH cameras --
+    // straight down the back in 3D, a dot behind the head from above.
+    b.addGeometry(BLOB, trs(0, 0.24, -0.26, 0, 0, 0, 0.075, 0.075, 0.075), hair);
+    b.addGeometry(BLOB, trs(0, 0.13, -0.295, 0, 0, 0, 0.062, 0.09, 0.062), hair);
+    b.addGeometry(BLOB, trs(0, 0.0, -0.315, 0, 0, 0, 0.05, 0.085, 0.05), hair);
+  }
+
+  // Eyes on the +z face: yaw 0 is south, which is straight at the camera.
+  for (const sx of [-0.095, 0.095]) {
+    b.addGeometry(BLOB, trs(sx, 0.17, 0.205, 0, 0, 0, 0.035, 0.05, 0.03), eye);
+  }
+  return b.build();
+}
+
+/**
+ * One sleeved upper arm, shared by both sides. Rebuilt with the torso.
+ *
+ * A hooped or plaid shirt hoops its sleeves too -- one ring per arm, because a
+ * breton whose stripes stop at the shoulder seam reads as a mistake -- and the
+ * other patterns leave the sleeve plain, because a pinstripe or a polka dot at
+ * sleeve size is a smudge.
+ */
 function upperGeometry(p) {
   const b = new GeoBuilder();
   b.addGeometry(BLOB, trs(0, 0, 0, 0, 0, 0, 0.063, 0.063, 0.063), p.shirt);
   b.addGeometry(CYL, trs(0, -UPPER / 2, 0, 0, 0, 0, 0.052, UPPER, 0.052), p.shirt);
+  if (p.pattern === 'hoops' || p.pattern === 'plaid') {
+    b.addGeometry(CYL, trs(0, -0.09, 0, 0, 0, 0, 0.057, 0.032, 0.057), p.patternColor);
+  }
+  return b.build();
+}
+
+/**
+ * One forearm, shared by both sides. Bare by default -- a visible elbow is what
+ * sells the bend -- but a long-sleeved shirt runs its cloth to the wrist, a
+ * touch wider than the arm so the cuff reads as cloth over skin rather than as
+ * a painted arm. The hand stays skin either way: a sleeve that swallowed it
+ * would put a mitten on every pose.
+ */
+function foreGeometry(p) {
+  const b = new GeoBuilder();
+  const r = p.sleeves === 'long' ? 0.05 : 0.046;
+  b.addGeometry(CYL, trs(0, -FORE / 2, 0, 0, 0, 0, r, FORE, r),
+    p.sleeves === 'long' ? p.shirt : p.skin);
+  b.addGeometry(BLOB, trs(0, -FORE, 0, 0, 0, 0, 0.062, 0.062, 0.062), p.skin);
+  return b.build();
+}
+
+/** The thigh, in whatever pants are on. Shorts and trousers agree this far. */
+function thighGeometry(p) {
+  const b = new GeoBuilder();
+  b.addGeometry(CYL, trs(0, -THIGH / 2, 0, 0, 0, 0, 0.075, THIGH, 0.075), p.pants);
+  // A pair of shorts ends here, and says so with a hem a shade darker.
+  if (p.shorts) {
+    b.addGeometry(CYL, trs(0, -THIGH + 0.018, 0, 0, 0, 0, 0.078, 0.034, 0.078), p.pantsDark);
+  }
+  return b.build();
+}
+
+/**
+ * The shin and the shoe, one geometry: they fold at the same knee.
+ *
+ * Trousers run their cloth to the ankle and turn up a darker cuff; shorts leave
+ * the shin bare. The shoe is the same blob either way, in the leather of
+ * whatever is on the feet, with a strap across the instep in the shoe's trim
+ * colour -- one accent, because at this size a shoe is a toe seen from above
+ * and the strap is the only marking wide enough to survive.
+ */
+function shinGeometry(p) {
+  const b = new GeoBuilder();
+  b.addGeometry(CYL, trs(0, -SHIN / 2, 0, 0, 0, 0, 0.068, SHIN, 0.068),
+    p.shorts ? p.skin : p.pants);
+  if (!p.shorts) {
+    b.addGeometry(CYL, trs(0, -SHIN + 0.048, 0, 0, 0, 0, 0.071, 0.03, 0.071), p.pantsDark);
+  }
+  b.addGeometry(BLOB, trs(0, -SHIN + 0.015, 0.025, 0, 0, 0, 0.093, 0.06, 0.125), p.shoe);
+  if (p.shoeTrim != null) {
+    b.addGeometry(BOX, trs(0, -SHIN + 0.043, 0.028, 0, 0, 0, 0.1, 0.018, 0.052), p.shoeTrim);
+  }
   return b.build();
 }
 
@@ -589,14 +754,6 @@ function smoothstep(x) {
   return t * t * (3 - 2 * t);
 }
 
-function mesh(build, material) {
-  const b = new GeoBuilder();
-  build(b);
-  const m = new THREE.Mesh(b.build(), material);
-  m.castShadow = true;
-  return m;
-}
-
 export class PlayerView {
   constructor() {
     this.root = new THREE.Group();      // world position
@@ -618,40 +775,33 @@ export class PlayerView {
     const mat = patchFlatten(new THREE.MeshLambertMaterial({ vertexColors: true }), 1);
     this.material = mat;
 
-    const thighG = new GeoBuilder();
-    thighG.addGeometry(CYL, trs(0, -THIGH / 2, 0, 0, 0, 0, 0.075, THIGH, 0.075), PAL.pants);
-    const thigh = thighG.build();
-
-    const shinG = new GeoBuilder();
-    shinG.addGeometry(CYL, trs(0, -SHIN / 2, 0, 0, 0, 0, 0.068, SHIN, 0.068), PAL.pants);
-    shinG.addGeometry(BLOB, trs(0, -SHIN + 0.015, 0.025, 0, 0, 0, 0.093, 0.06, 0.125), PAL.shoe);
-    const shin = shinG.build();
-
-    // The two geometries a shirt lives in. Kept on `this` because a change of
-    // shirt rebuilds exactly these and disposes what they were. See `#setOutfit`.
+    // Every geometry a garment lives in, kept on `this` because dressing
+    // rebuilds exactly these and disposes what they were. See `#setOutfit`.
+    // The shirt is the torso, the upper arms and (long-sleeved) the forearms;
+    // the pants are the thighs and shins; the shoes ride in the shin buffer.
     this.upperGeo = upperGeometry(PAL);
-
-    // Bare forearms, which is what makes an elbow visible at all: a sleeve that
-    // ran to the wrist would hide the one joint these animations bend most.
-    const foreG = new GeoBuilder();
-    foreG.addGeometry(CYL, trs(0, -FORE / 2, 0, 0, 0, 0, 0.046, FORE, 0.046), PAL.skin);
-    foreG.addGeometry(BLOB, trs(0, -FORE, 0, 0, 0, 0, 0.062, 0.062, 0.062), PAL.skin);
-    const fore = foreG.build();
+    this.foreGeo = foreGeometry(PAL);
+    this.thighGeo = thighGeometry(PAL);
+    this.shinGeo = shinGeometry(PAL);
 
     // ------------------------------------------------------------- legs --
     this.legs = [];
+    this.thighMeshes = [];
+    this.shinMeshes = [];
     for (const side of [-1, 1]) {
       const hip = new THREE.Group();
       hip.position.set(side * 0.105, HIP_Y, 0);
       const knee = new THREE.Group();
       knee.position.set(0, -THIGH, 0);
-      const thighM = new THREE.Mesh(thigh, mat);
-      const shinM = new THREE.Mesh(shin, mat);
+      const thighM = new THREE.Mesh(this.thighGeo, mat);
+      const shinM = new THREE.Mesh(this.shinGeo, mat);
       thighM.castShadow = shinM.castShadow = true;
       knee.add(shinM);
       hip.add(thighM, knee);
       this.bob.add(hip);
       this.legs.push({ hip, knee });
+      this.thighMeshes.push(thighM);
+      this.shinMeshes.push(shinM);
     }
 
     // ------------------------------------------------------------ torso --
@@ -670,15 +820,12 @@ export class PlayerView {
     this.head = new THREE.Group();
     this.head.position.set(0, 0.32, 0);
     this.torso.add(this.head);
-    this.head.add(mesh((b) => {
-      b.addGeometry(BLOB, trs(0, 0.16, 0, 0, 0, 0, 0.245, 0.25, 0.235), PAL.skin);
-      b.addGeometry(BLOB, trs(0, 0.21, -0.015, 0, 0, 0, 0.258, 0.225, 0.252), PAL.hair);
-      b.addGeometry(BOX, trs(0, 0.10, -0.19, 0.2, 0, 0, 0.44, 0.2, 0.16), PAL.hair);
-      // Eyes on the +z face: yaw 0 is south, which is straight at the camera.
-      for (const sx of [-0.095, 0.095]) {
-        b.addGeometry(BLOB, trs(sx, 0.17, 0.205, 0, 0, 0, 0.035, 0.05, 0.03), PAL.eye);
-      }
-    }, mat));
+    // The crop in the palette's colours, i.e. the character as always drawn --
+    // replaced on the first frame by whatever the identity actually says.
+    this.skin = PAL.skin;
+    this.headM = new THREE.Mesh(headGeometry('crop', PAL.hair, PAL.skin), mat);
+    this.headM.castShadow = true;
+    this.head.add(this.headM);
 
     // --------------------------------------------------------- worn --
     // Two empty meshes on the head, hidden until there is something to put in
@@ -694,18 +841,20 @@ export class PlayerView {
     // ------------------------------------------------------------- arms --
     this.arms = [];
     this.upperMeshes = [];
+    this.foreMeshes = [];
     for (const side of [-1, 1]) {
       const arm = new THREE.Group();
       arm.position.set(side * SHOULDER_X, SHOULDER_Y, 0);
       const elbow = new THREE.Group();
       elbow.position.set(0, -UPPER, 0);
       const upperM = new THREE.Mesh(this.upperGeo, mat);
-      const foreM = new THREE.Mesh(fore, mat);
+      const foreM = new THREE.Mesh(this.foreGeo, mat);
       upperM.castShadow = foreM.castShadow = true;
       elbow.add(foreM);
       arm.add(upperM, elbow);
       this.torso.add(arm);
       this.upperMeshes.push(upperM);
+      this.foreMeshes.push(foreM);
       this.arms.push({ arm, elbow, side, shoulder: new THREE.Vector3(side * SHOULDER_X, SHOULDER_Y, 0) });
     }
     [this.armL, this.armR] = this.arms;
@@ -725,6 +874,8 @@ export class PlayerView {
     this.holdData = null;
     /** -1 so the first frame dresses the model, whatever it is wearing. */
     this.wornVersion = -1;
+    /** Same bargain for the haircut. See `#setIdentity`. */
+    this.whoVersion = -1;
 
     /** Smoothed 0..1 "is walking", so a stopped step does not snap the legs. */
     this.gait = 0;
@@ -784,8 +935,13 @@ export class PlayerView {
     const dt = Math.min(0.1, Math.max(0, time - this._time));
     this._time = time;
 
-    this.root.position.set(player.x, player.y, player.z);
-    this.yawG.rotation.y = player.yaw;
+    const furniture = player.furnitureUse;
+    this.root.position.set(
+      furniture?.x ?? player.x,
+      furniture?.y ?? player.y,
+      furniture?.z ?? player.z,
+    );
+    this.yawG.rotation.y = furniture?.yaw ?? player.yaw;
     // Hinged at the origin, i.e. at the feet, which is what keeps them planted
     // on the right tile however far the model is laid over.
     this.tilt.quaternion.copy(lieBack);
@@ -799,14 +955,21 @@ export class PlayerView {
     const total = player.downFor ?? left;
     const down = left <= 0 ? 0
       : Math.min(1, Math.min((total - left) / DROP_TIME, left / RISE_TIME));
-    this.fall.rotation.z = down * TOPPLE;
-    if (down > 0) this.tilt.quaternion.slerp(_UPRIGHT, down);
+    this.fall.rotation.set(furniture?.kind === 'lie' ? -Math.PI / 2 : 0, 0,
+      furniture ? 0 : down * TOPPLE);
+    if (furniture?.kind === 'lie') this.tilt.quaternion.identity();
+    else if (down > 0) this.tilt.quaternion.slerp(_UPRIGHT, down);
 
-    this.#setHeld(player.inventory?.held?.typeId ?? null);
+    this.#setHeld(furniture ? null : (player.inventory?.held?.typeId ?? null));
+    // Identity BEFORE outfit, and the order is load-bearing: a change of skin
+    // invalidates the outfit rebuild (the forearms, and bare shins under
+    // shorts, are painted in skin), and running it first means the same frame
+    // redresses the body rather than the next one.
+    this.#setIdentity(player.identity ?? null);
     this.#setOutfit(player.outfit ?? null);
 
     // ------------------------------------------------------------- gait --
-    const speed = player.speed ?? 0;
+    const speed = furniture ? 0 : (player.speed ?? 0);
     const want = Math.min(1, speed / 3.2);
     this.gait += (want - this.gait) * Math.min(1, dt * 12);
     const g = this.gait;
@@ -826,6 +989,12 @@ export class PlayerView {
       leg.hip.rotation.x = -Math.sin(ph) * swing;
       leg.knee.rotation.x = 0.06 + fold * Math.max(0, Math.cos(ph - 0.35));
     }
+    if (furniture?.kind === 'sit') {
+      for (const leg of this.legs) {
+        leg.hip.rotation.x = -1.25;
+        leg.knee.rotation.x = 1.4;
+      }
+    }
 
     // The bounce, DERIVED rather than tuned. A leg that swings out from the
     // hip is a shorter leg vertically, by exactly (1 - cos swing) of its
@@ -840,13 +1009,18 @@ export class PlayerView {
     // ------------------------------------------------- torso and head --
     const breath = Math.sin(time * 1.7) * 0.014;
     const pose = this.#pose(time);
+    const furnitureLean = furniture?.kind === 'warm' ? 0.20
+      : furniture?.kind === 'lean' || furniture?.kind === 'reach' ? 0.16
+        : furniture?.kind === 'sit' ? 0.04 : 0;
+    const furnitureLook = furniture?.kind === 'warm' ? 0.12
+      : furniture?.kind === 'lean' || furniture?.kind === 'reach' ? 0.16 : 0;
     this.torso.rotation.set(
-      0.03 + 0.16 * g + breath * (1 - g) + (pose?.lean ?? 0),
+      0.03 + 0.16 * g + breath * (1 - g) + (pose?.lean ?? 0) + furnitureLean,
       sin * 0.09 * g,
       -sin * 0.03 * g,
     );
     this.head.rotation.set(
-      -0.05 * g - breath * 0.6 + (pose?.look ?? 0),
+      -0.05 * g - breath * 0.6 + (pose?.look ?? 0) + furnitureLook,
       -sin * 0.045 * g,
       0,
     );
@@ -876,6 +1050,22 @@ export class PlayerView {
         );
         this.#solve(arm, _v);
       }
+    }
+
+    // Empty-handed furniture poses. Authored as hand targets for the same IK
+    // solver tool actions use, so wrists stay attached when clothing changes.
+    if (furniture?.kind === 'sit') {
+      this.#solve(this.armL, _v.set(-0.13, 0.08, 0.14));
+      this.#solve(this.armR, _v.set(0.13, 0.08, 0.14));
+    } else if (furniture?.kind === 'warm') {
+      this.#solve(this.armL, _v.set(-0.055, 0.16, 0.25));
+      this.#solve(this.armR, _v.set(0.055, 0.16, 0.25));
+    } else if (furniture?.kind === 'lean') {
+      this.#solve(this.armL, _v.set(-0.14, 0.12, 0.27));
+      this.#solve(this.armR, _v.set(0.14, 0.12, 0.27));
+    } else if (furniture?.kind === 'reach') {
+      this.#solve(this.armL, _v.set(-0.19, 0.08, 0.08));
+      this.#solve(this.armR, _v.set(0.05, 0.18, 0.29));
     }
   }
 
@@ -960,30 +1150,84 @@ export class PlayerView {
    * that did not move. The counter also makes the guard correct across a load,
    * where the outfit changes without anybody pressing anything.
    *
-   * The hat and the glasses are a cached geometry and a flag. The SHIRT is a
-   * rebuild of the torso and of the one upper-arm geometry both sleeves share,
-   * and the old two are disposed here -- this is the only place in the model
-   * that ever replaces a buffer, so it is also the only place that has to.
+   * The hat and the glasses are a cached geometry and a flag. Everything else
+   * is a rebuild: the SHIRT is the torso, the shared upper arm and -- when it
+   * has sleeves -- the shared forearm; the PANTS are the thigh and the shin;
+   * the SHOES ride in the shin's buffer, which is why pants and shoes rebuild
+   * together. The old buffers are disposed here -- this is the only place in
+   * the model that ever replaces one, so it is also the only place that has to.
    */
   #setOutfit(outfit) {
     if (!outfit || outfit.version === this.wornVersion) return;
     this.wornVersion = outfit.version;
 
+    // One palette for the whole rebuild: the defaults under the chosen skin,
+    // with every worn garment laying its own colours (and its cut) over the
+    // top. The skin is the identity's, kept on `this` by `#setIdentity`, so
+    // hands and bare shins are the same person as the face.
     const shirt = outfit.type('shirt');
-    const pal = shirt
-      ? { ...PAL, shirt: shirt.palette.cloth, shirtDark: shirt.palette.clothDark }
-      : PAL;
+    const pants = outfit.type('pants');
+    const shoes = outfit.type('shoes');
+    const pal = { ...PAL, skin: this.skin };
+    if (shirt) {
+      pal.shirt = shirt.palette.cloth;
+      pal.shirtDark = shirt.palette.clothDark;
+      pal.pattern = shirt.wear.pattern;
+      pal.patternColor = shirt.palette.pattern;
+      pal.sleeves = shirt.wear.sleeves;
+    }
+    if (pants) {
+      pal.pants = pants.palette.cloth;
+      pal.pantsDark = pants.palette.clothDark;
+      pal.shorts = pants.wear.cut === 'short';
+    }
+    if (shoes) {
+      pal.shoe = shoes.palette.leather;
+      pal.shoeTrim = shoes.palette.trim;
+    }
+
     this.torsoM.geometry.dispose();
     this.torsoM.geometry = torsoGeometry(pal);
     this.upperGeo.dispose();
     this.upperGeo = upperGeometry(pal);
     for (const m of this.upperMeshes) m.geometry = this.upperGeo;
+    this.foreGeo.dispose();
+    this.foreGeo = foreGeometry(pal);
+    for (const m of this.foreMeshes) m.geometry = this.foreGeo;
+    this.thighGeo.dispose();
+    this.thighGeo = thighGeometry(pal);
+    for (const m of this.thighMeshes) m.geometry = this.thighGeo;
+    this.shinGeo.dispose();
+    this.shinGeo = shinGeometry(pal);
+    for (const m of this.shinMeshes) m.geometry = this.shinGeo;
 
     for (const [slot, mesh_] of [['hat', this.hat], ['glasses', this.glasses]]) {
       const type = outfit.type(slot);
       mesh_.visible = !!type;
       if (type) mesh_.geometry = wornGeometry(type);
     }
+  }
+
+  /**
+   * Cut the hair, and only when the identity actually changed.
+   *
+   * Guarded on Identity's version counter for the reason `#setOutfit` is
+   * guarded on Outfit's: this runs every frame, a head rebuilt sixty times a
+   * second is sixty allocations for a picture that did not move, and the
+   * counter makes the guard correct across a load, where the haircut changes
+   * without anybody pressing anything.
+   */
+  #setIdentity(identity) {
+    if (!identity || identity.version === this.whoVersion) return;
+    this.whoVersion = identity.version;
+    this.skin = skinColorOf(identity.skin);
+    this.headM.geometry.dispose();
+    this.headM.geometry = headGeometry(
+      identity.hair, hairColorOf(identity.color), this.skin, eyeColorOf(identity.eye));
+    // The body wears the skin too -- forearms always, shins under shorts --
+    // and those buffers are the outfit rebuild's. Invalidate it rather than
+    // rebuilding them here, so there is exactly one place that dresses a limb.
+    this.wornVersion = -1;
   }
 
   /**

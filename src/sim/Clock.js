@@ -74,6 +74,29 @@ export const PHASE_STARTS = Object.freeze([
 /** What a new game opens on: mid-morning, with the whole day ahead of it. */
 export const START_T = 0.34;
 
+// ---------------------------------------------------------------- calendar --
+/**
+ * The year, derived and never stored. `day` is the only fact; everything below
+ * is arithmetic on it, the same bargain weatherOn strikes with the day number.
+ * Seven days a season keeps a whole year inside a couple of hours of play, for
+ * the reason the day itself is twenty minutes: a season nobody's session ever
+ * turns over is a feature nobody will believe exists.
+ */
+export const SEASONS = Object.freeze(['Spring', 'Summer', 'Autumn', 'Winter']);
+export const DAYS_PER_SEASON = 7;
+export const YEAR_DAYS = SEASONS.length * DAYS_PER_SEASON;
+
+/** Day 1 is Spring 1. Returns 0..YEAR_DAYS-1, the form a birthday is kept in. */
+export function dayOfYear(day) {
+  return ((Math.floor(day) - 1) % YEAR_DAYS + YEAR_DAYS) % YEAR_DAYS;
+}
+
+/** "Spring 3", for a picker row or a morning note. Takes a 0-based dayOfYear. */
+export function dateLabel(doy) {
+  const d = ((Math.floor(doy) % YEAR_DAYS) + YEAR_DAYS) % YEAR_DAYS;
+  return `${SEASONS[Math.floor(d / DAYS_PER_SEASON)]} ${(d % DAYS_PER_SEASON) + 1}`;
+}
+
 /** The phase name at a given fraction of a day. */
 export function phaseAt(t) {
   let name = PHASE_STARTS[0][1];

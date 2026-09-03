@@ -35,7 +35,7 @@
         "#tttttttttttttt#wwww#ddddddddd#",
         "#tttttttttttttt#wwww#ddddddddd#",
         "#wwwwwwwwwwwwwwwwwww#ddddddddd#",
-        "###############ww##############"
+        "################ww#############"
       ]
     },
     "elevation": {
@@ -63,7 +63,7 @@
         "4000000000000004000040000000004",
         "4000000000000004000040000000004",
         "4000000000000000000040000000004",
-        "4444444444444440044444444444444"
+        "4444444444444444004444444444444"
       ]
     },
     "flags": {
@@ -155,6 +155,6 @@
       "dialog":{"start":"desk","nodes":{"desk":{"text":"Every rule has a form, and every form has an exception box. Mine are already checked.","then":"end"}}}
     }
   ],
-  "exits": [{"tile":[15,22]},{"tile":[16,22]}],
-  "spawn": {"tile":[15,21],"facing":"north"}
+  "exits": [{"tile":[16,22]},{"tile":[17,22]}],
+  "spawn": {"tile":[16,21],"facing":"north"}
 }

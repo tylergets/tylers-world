@@ -37,6 +37,29 @@ import { registerObjectType } from './objectTypes.js';
 import { registerItemType } from './itemTypes.js';
 import { MAX_SOURCE, ready as sandboxReady } from '../script/Sandbox.js';
 
+/** Catalogue badges whose furniture has an ordinary built-in use. */
+const FURNITURE_USE = Object.freeze({
+  bed: 'sleep',
+  chair: 'sit',
+  shelf: 'store',
+  stove: 'warm',
+  table: 'lean',
+});
+
+/** Top of the broadest horizontal part, which is a chair's sitting surface. */
+function seatHeight(parts) {
+  let best = null, bestArea = 0;
+  for (const part of parts ?? []) {
+    const [sx, sy, sz] = part.size;
+    if (sy > Math.min(sx, sz) * 0.75) continue;
+    const area = sx * sz;
+    if (area <= bestArea) continue;
+    bestArea = area;
+    best = part.at[1] + sy / 2;
+  }
+  return best;
+}
+
 /** Resolve `run` against the kit's own URL, keeping it in the same directory. */
 function beside(kitUrl, name) {
   const slash = kitUrl.lastIndexOf('/');
@@ -124,6 +147,19 @@ export class Kits {
     }));
 
     if (scripted.length) await sandboxReady();
+
+    // A catalogue badge already states what broad kind of furniture is inside
+    // a flat-pack. Carry that fact onto the assembled object so three hundred
+    // authored chairs do not each need an identical `use: sit` field. An
+    // explicit scripted interaction wins: a piano stool that does something
+    // bespoke must remain that thing rather than quietly becoming a plain seat.
+    for (const item of Object.values(kit.items)) {
+      const type = kit.types[item.furniture];
+      const use = FURNITURE_USE[item.badge];
+      if (!type || !use || type.interact || type.use) continue;
+      type.use = use;
+      if (use === 'sit') type.useHeight = seatHeight(type.parts);
+    }
 
     // Objects before items, so a flat-pack whose fixture is defined in this
     // same kit can never be registered ahead of the thing it assembles into.

@@ -39,7 +39,10 @@
  * get the identical world back weeks later.
  */
 
-import { heal, verifyForm } from './draft.js';
+import { flood, heal, verifyForm } from './draft.js';
+import { parseWorldFile } from './WorldFile.js';
+import { World } from './World.js';
+import { WILDLIFE } from './wildlife.js';
 import {
   ashkettle, bellrock, meadowbrook, rimrock, sedgewater, sourwood, thistledown, tidewrack,
 } from './recipes.js';
@@ -69,6 +72,12 @@ export const FORMS = [
 const RECIPES = {
   island: meadowbrook, holler: sourwood, atoll: tidewrack, gap: thistledown,
   mesa: rimrock, caldera: ashkettle, fen: sedgewater, coast: bellrock,
+};
+
+/** form -> the shipped town whose wildlife roster it takes in. */
+const ROSTER = {
+  island: 'meadowbrook', holler: 'sourwood', atoll: 'tidewrack', gap: 'thistledown',
+  mesa: 'rimrock', caldera: 'ashkettle', fen: 'sedgewater', coast: 'bellrock',
 };
 
 /** How many seeds to try before admitting the request was a bad one. */
@@ -444,6 +453,43 @@ Object.assign(OPTS, {
   mesa: mesaOpts, caldera: calderaOpts, fen: fenOpts, coast: coastOpts,
 });
 
+/**
+ * Two of each of the town's species, on open reachable grass -- the same pass
+ * tools/genhomes.mjs runs when it settles a shipped town, because a generated
+ * holler with no boar in it is not the kind of place the shipped one is.
+ *
+ * Runs AFTER `heal`, so the flood is over the ground the player actually gets:
+ * an animal seeded on a stranded ledge keeps to the patch it starts in, and a
+ * patch nobody can walk to is a species that ships missing. Drawn off the same
+ * roll as the land, so a stored (form, seed) regrows its animals where they
+ * were.
+ */
+function stockWildlife(world, town, rnd) {
+  const wild = WILDLIFE[town] ?? [];
+  if (!wild.length) return;
+
+  const built = new World(parseWorldFile(world));
+  const seen = flood(built, world.spawn.tile);
+  const ground = [];
+  for (let z = 0; z < built.height; z++) {
+    for (let x = 0; x < built.width; x++) {
+      if (!seen[built.idx(x, z)]) continue;
+      if (built.isBlocked(x, z) || built.surfaceAt(x, z).name !== 'grass') continue;
+      ground.push([x, z]);
+    }
+  }
+  for (let i = ground.length - 1; i > 0; i--) {
+    const j = Math.floor(rnd() * (i + 1));
+    [ground[i], ground[j]] = [ground[j], ground[i]];
+  }
+  let cursor = 0;
+  for (const species of wild) {
+    for (let n = 0; n < 2 && cursor < ground.length; n++) {
+      world.animals.push({ id: `wild.${species}.${n}`, type: species, tile: ground[cursor++] });
+    }
+  }
+}
+
 export function generate({ form = 'island', seed = randomSeed(), name } = {}) {
   if (!FORMS.some((f) => f.id === form)) throw new Error(`unknown form "${form}"`);
 
@@ -467,6 +513,7 @@ export function generate({ form = 'island', seed = randomSeed(), name } = {}) {
       const { stranded } = heal(world, world.spawn.tile);
       if (stranded !== 0) { failures.push(`${stranded} tiles cut off`); continue; }
 
+      stockWildlife(world, ROSTER[form], rnd);
       return { data: world, form, seed: seed >>> 0, name: label, id, attempts: attempt + 1 };
     } catch (err) {
       failures.push(err.message);

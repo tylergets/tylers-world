@@ -1,0 +1,254 @@
+╭─── Claude Code v2.1.234 ─────────────────────────────────────────────────────╮
+│                                                    │ Tips for getting        │
+│                 Welcome back Tyler!                │ started                 │
+│                                                    │ Run /init to create a … │
+│                       ▐▛███▜▌                      │ ─────────────────────── │
+│                      ▝▜█████▛▘                     │ What's new              │
+│                        ▘▘ ▝▝                       │ Fixed Bash commands fa… │
+│   Fable 5 · Claude Max · tylergetsay@gmail.com's   │ Fixed "always allow" n… │
+│   Organization                                     │ Fixed Remote Control s… │
+│             ~/Development/tylers-world             │ /release-notes for more │
+╰──────────────────────────────────────────────────────────────────────────────╯
+
+
+❯ I want to switch some of this games code to a better frontend engine like     
+  React                                                                         
+
+● I'll explore the codebase first to understand how the game is structured —
+  particularly which parts are DOM/UI code (a good fit for React) versus
+  canvas/game-loop code (which usually shouldn't be React-ified).
+
+● Explore(Explore game architecture and UI)
+  ⎿  Backgrounded agent (↓ to manage · ctrl+o to expand)
+
+● While that runs, I'll take a quick look at the top-level files myself to get
+  oriented.
+
+  Read 1 file, listed 1 directory (ctrl+o to expand)
+
+● The project is a Vite + Three.js game with a vanilla-JS UI layer (12 modules
+  in src/ui/). I'm waiting on the exploration agent's detailed report on how
+  those UI surfaces are built and how they couple to the game state before
+  designing the migration approach.
+
+✻ Brewed for 25s
+
+● Agent "Explore game architecture and UI" finished · 2m 52s
+
+● Exploration is done, and it's a clear picture. The game is a Vite + Three.js
+  app where the 3D world renders to a WebGL canvas and all UI is hand-rolled
+  DOM: innerHTML templates plus targeted textContent updates, with version
+  counters (Inventory.version, Dialogue.version, etc.) as the change-detection
+  system. That version-counter pattern actually maps very cleanly onto React's
+  useSyncExternalStore, so a migration is quite feasible — but a few parts
+  should deliberately not become React (the WebGL canvas, the per-frame minimap
+  canvases, and the title screen's pre-JS SVG animation).
+
+  Before I design the plan, there are two decisions that are genuinely yours:
+
+● User answered Claude's questions:
+  ⎿  · How much of the UI should move to React in this effort? There are ~12 UI 
+     surfaces; some are simple modals, while the HUD (915 lines) and 
+     dialogue/shop overlay (605 lines) are the most intricate and most coupled 
+     to the frame loop. → All modals + HUD
+     · React proper, or Preact? Both use the same component model and JSX. This 
+     game ships to GitHub Pages; React adds ~45KB gzipped to the bundle, Preact 
+     ~4KB with a near-identical API. → React (Recommended)
+
+● Full migration of all modals plus the HUD to React, keeping the title screen
+  as-is. Now I'll have a Plan agent design the implementation in detail.
+
+● Plan(Design React migration plan)
+  ⎿  Backgrounded agent (↓ to manage · ctrl+o to expand)
+
+● The design agent is working through the panel code now to produce a concrete
+  migration plan. I'll write up the final plan once its report comes back.
+
+✻ Brewed for 1m 9s
+
+● Agent "Design React migration plan" finished · 6m 17s
+
+● The design is back and it's solid. Let me spot-check a few load-bearing claims
+  before writing the final plan — particularly whether Inventory.select bumps
+  the version counter (a flagged open question).
+
+  Read 1 file, ran 1 shell command (ctrl+o to expand)
+
+● Updated plan
+  ⎿  /plan to preview
+  ⎿  User rejected Claude's plan:
+     ╭─────────────────────────────────────────────────────────────────────────╮
+     │ Migrate the UI layer of tylers-world to React                           │
+     │                                                                         │
+     │ Context                                                                 │
+     │                                                                         │
+     │ The game renders its world with three.js into <canvas id="view">; every │
+     │ UI surface is hand-rolled DOM in src/ui/ (~3.9k lines): innerHTML       │
+     │ templates built once, updated with targeted textContent/hidden writes,  │
+     │ change-detected by integer version counters polled from the frame loop. │
+     │ The user wants this on a real frontend framework. Decisions made with   │
+     │ the user: migrate all modal panels and the HUD to React proper (react + │
+     │ react-dom, JSX, plain JS). The title screen (title.js + the static SVG  │
+     │ in index.html) stays vanilla — it deliberately paints before any JS     │
+     │ loads. minimap.js stays imperative canvas. icons.js / preview.js /      │
+     │ picks.js stay as pure SVG-string/data helpers, injected via one shared  │
+     │ <Svg html={...}/> component using dangerouslySetInnerHTML.              │
+     │                                                                         │
+     │ Architecture                                                            │
+     │                                                                         │
+     │ Core pattern: thin controllers + pure views + per-frame commit          │
+     │                                                                         │
+     │ Do not lift state into React or add listeners to the 11 sim classes     │
+     │ with version counters. Instead:                                         │
+     │                                                                         │
+     │ 1. Controllers: each existing src/ui/*.js file is trimmed in place into │
+     │ a plain-JS controller class (same exports) that owns all interaction    │
+     │ state as real fields (open becomes a boolean — today it's read off the  │
+     │ DOM via get open() { return !this.el.hidden }, which must invert),      │
+     │ keeps the exact method surface main.js calls (chat.move/confirm/cancel, │
+     │ wardrobe.show, mapScreen.zoomBy, …), and bumps its own version counter  │
+     │ on every mutation. This keeps Game.update's modal cascade               │
+     │ (src/main.js:3152–3275) and its ~60 call sites byte-for-byte unchanged, │
+     │ and keeps sim-facing reads synchronous (React state would be stale      │
+     │ within the same frame).                                                 │
+     │ 2. Views: src/ui/react/*.jsx components are pure views over             │
+     │ (controller, game); click handlers call the same controller methods the │
+     │ keyboard path calls (preserves the repo invariant "a mouse can never    │
+     │ reach a state the keyboard cannot", src/ui/dialogue.js:124).            │
+     │ 3. Store (src/ui/react/store.js): a UiStore with                        │
+     │ subscribe/getSnapshot/commit(stamp); React subscribes via               │
+     │ useSyncExternalStore. In Game.frame right after this.update(dt)         │
+     │ (src/main.js:3454 area), commit a stamp joining the                     │
+     │ interaction-critical counters: each panel controller's version, plus    │
+     │ inventory.version, purse.version, health.version, dialogue?.version,    │
+     │ shop?.version. The 10Hz block that today calls this.hud.update(this)    │
+     │ (src/main.js:3492) instead bumps a hudTick folded into the stamp —      │
+     │ clock/readouts/perf rows re-render at 10Hz exactly as now. Never put    │
+     │ per-frame values (game.time, viewT) in the stamp. Components read live  │
+     │ game fields directly during render via a GameContext; single-writer rAF │
+     │ loop means no tearing.                                                  │
+     │ 4. Mount: a <div id="ui-react"> appended inside #hud, styled #ui-react  │
+     │ { display: contents; } (panels rely on #hud positioning; wardrobe uses  │
+     │ absolute; inset:0). createRoot once at module scope in                  │
+     │ src/ui/react/root.jsx; presentUi(game) renders <UI key={game.uiKey}     │
+     │ game={game}/> so a second new Game remounts instead of double-mounting. │
+     │ No StrictMode (controllers are external mutable singletons; write       │
+     │ attach-effects idempotently anyway).                                    │
+     │                                                                         │
+     │ Things that stay imperative behind refs                                 │
+     │                                                                         │
+     │ - Minimap canvas (hud.drawMap → minimap.draw, 60Hz), mapscreen          │
+     │ #ms-canvas + its zoom label (written per frame), town-hall planner      │
+     │ canvas (pointer-capture painting). Views render <canvas                 │
+     │ ref={c.attachCanvas}>; native listeners (wheel {passive:false},         │
+     │ pointermove) attach in effects; all draw methods null-guard until the   │
+     │ ref attaches (open-frame race).                                         │
+     │ - Chat typewriter: tick(dt) keeps writing the revealing line into a     │
+     │ ref-held, childless <div className="chat-text"> via textContent (React  │
+     │ never reconciles a childless element's text). tick bumps version only   │
+     │ at line boundaries — same moments draw(true) fires today — so no 60Hz   │
+     │ re-renders. Keep the chat container always mounted with                 │
+     │ hidden={!active} so the text node exists before the first tick.         │
+     │                                                                         │
+     │ Files                                                                   │
+     │                                                                         │
+     │ New: src/ui/react/{root.jsx, store.js, Svg.jsx, HudView.jsx,            │
+     │ ChatView.jsx, WorldsView.jsx, WardrobeView.jsx, TownOfficeView.jsx,     │
+     │ MapScreenView.jsx, PhotoView.jsx}, src/ui/ui.css.                       │
+     │ Modified:                                                               │
+     │ src/ui/{hud,dialogue,worlds,wardrobe,townhall,mapscreen,photo}.js (trim │
+     │ to controllers), src/main.js (commit hook, presentUi, drop root args),  │
+     │ index.html (CSS split), package.json, vite.config.js.                   │
+     │ Untouched: title.js, minimap.js, icons.js, preview.js, picks.js,        │
+     │ everything in sim/, render/, world/.                                    │
+     │                                                                         │
+     │ Steps (each ends with a passing npx vite build)                         │
+     │                                                                         │
+     │ 1. CSS extraction: move index.html lines ~8–1038 to src/ui/ui.css,      │
+     │ imported at the top of src/main.js. Keep inline in index.html: body,    │
+     │ #view, #fade, #title, .title, .tt-* rules — the title scene must paint  │
+     │ before modules load. Class names unchanged. Add #ui-react { display:    │
+     │ contents; }.                                                            │
+     │ 2. De-fang the Hud innerHTML hazard: src/ui/hud.js:134 builds a wrapper │
+     │ div and prepends it to #hud instead of assigning root.innerHTML (which  │
+     │ currently destroys siblings and forces construction order, see comment  │
+     │ at src/main.js:303–316).                                                │
+     │ 3. Scaffolding: add react, react-dom (deps) and @vitejs/plugin-react    │
+     │ (dev; if its peer range lags Vite 8, fall back to                       │
+     │ @vitejs/plugin-react-swc — the build is the arbiter). plugins:          │
+     │ [react()] in vite.config.js. Create root.jsx/store.js/Svg.jsx; wire     │
+     │ this.ui.commit(stamp) into Game.frame and hudTick into the 10Hz block;  │
+     │ presentUi(this) at the end of the Game constructor. <UI> renders        │
+     │ nothing yet.                                                            │
+     │ 4. PhotoView (photo.js, simplest — proves the pattern): controller      │
+     │ keeps roll/at/open, add/close/step/save; view is a card with <img       │
+     │ src={shot.url}> and buttons.                                            │
+     │ 5. Wardrobe: keep row-building + cursor-clamp (#layout) in the          │
+     │ controller — the clamp mutates at, which must not happen during render. │
+     │ Row click sets at then calls confirm().                                 │
+     │ 6. WorldsPanel: controller keeps the async busy lock and its window     │
+     │ Escape listener (exists because Game.update returns before polling keys │
+     │ while this modal pauses the sim — unchanged reasoning). Seed input is   │
+     │ controlled with the digit filter. Verify the "Building…" note paints    │
+     │ before synchronous world-gen (existing twoFrames() at src/main.js:3523  │
+     │ should cover it; add one in the controller if not).                     │
+     │ 7. TownHallOffice: three sub-renders on office; planner canvas          │
+     │ imperative with pointer capture in an effect; render                    │
+     │ data-office={office} if the stylesheet keys on it (check).              │
+     │ 8. MapScreen: mostly already imperative — only the shell becomes React. │
+     │ Zoom label stays ref-written from draw(). Game.frame keeps calling      │
+     │ mapScreen.draw(this) at 60Hz.                                           │
+     │ 9. Chat/Shop (dialogue.js, subtlest): typewriter per above; the _stamp  │
+     │ gate dies (the frame commit is the stamp); the _shelf gate becomes      │
+     │ useMemo(buildShelf, [tab, shop.version, inv.version, purse.version]) so │
+     │ itemModel's three.js projection never runs on highlight moves;          │
+     │ scrollIntoView in an effect keyed on [tab, rowSel[tab]]; keep           │
+     │ onPointerDown stopPropagation for parity.                               │
+     │ 10. Hud, in 3 commits: (a) frame + settings drawer (all 15 constructor  │
+     │ callbacks unchanged) + pushed labels (setVoice/setMap/setWorld/… become │
+     │ field-assign + bump) + keymap + scrub slider (uncontrolled ref, skip    │
+     │ 10Hz write while document.activeElement === el, per hud.js:642–644);    │
+     │ (b) readout/debug/perf rows + hearts (useMemo on health.version) +      │
+     │ clock — derivations from update()/#actionRows/#toolRow (lines ~636–913) │
+     │ become pure render functions at 10Hz; (c) bag/pockets (useMemo on       │
+     │ [inv.version] — verified: Inventory.select and cycle both bump version) │
+     │ + minimap canvas (construct Minimap lazily on ref attach, re-apply      │
+     │ cached mode/world). hud.update(game) is deleted; drawMap(game) survives │
+     │ unchanged. Every HUD button blurs on mouseup via a shared <UiButton>    │
+     │ (ports hud.js:394–395 — movement keys must work right after a click).   │
+     │ 11. Cleanup: remove step-2's wrapper hack, dead                         │
+     │ _stamp/_shelf/_bagVersion/_inv bookkeeping, stale construction-order    │
+     │ comments.                                                               │
+     │                                                                         │
+     │ Verification                                                            │
+     │                                                                         │
+     │ - npx vite build after every step (the repo's only sanctioned check per │
+     │ AGENTS.md — no dev server, no puppeteer; hand runtime checks to the     │
+     │ user).                                                                  │
+     │ - Per-panel manual checklists for the user, keyed to the keyboard       │
+     │ cascade (highest-risk surface): Photo (camera, arrows, Save, Esc);      │
+     │ Wardrobe (G, ↑↓ skips headers, E swaps, Esc); Worlds (O pauses sim,     │
+     │ seed filter, Start shows "Building…" before the freeze, backdrop        │
+     │ click); TownHall (planner drag-paints with brush sizes, Esc fires       │
+     │ onClose); MapScreen (wheel zoom toward cursor, drag/WASD pan, F         │
+     │ recentre-close, world swap refits); Chat/Shop (reveal syncs with voice, │
+     │ mid-line press completes, tabs/arrows/E trade, coins update same        │
+     │ frame, Esc two-step, M cycles voice); Hud (P/K/B/N gear drawer, all     │
+     │ settings buttons fire, minimap 60Hz, perf numbers 10Hz).                │
+     │ - Cross-cutting: click a HUD button then immediately press WASD         │
+     │ (blur-on-mouseup); ?play / ?world= boot paths; perf panel's cpu sim/cpu │
+     │ map rows should not move vs. pre-migration (React renders after         │
+     │ frame() returns).                                                       │
+     │                                                                         │
+     │ Key risks                                                               │
+     │                                                                         │
+     │ - 60Hz re-render traps: keep typewriter text, zoom label, and all       │
+     │ canvases behind refs; audit the commit stamp for per-frame values.      │
+     │ - Focus/keyboard: panels never add key listeners (except Worlds'        │
+     │ Escape); <UiButton> blur; scrub-slider focus guard.                     │
+     │ - Stacking: React wrapper must be display: contents inside #hud or      │
+     │ wardrobe anchoring and #fade/#title paint order break.                  │
+     │ - Vite 8 plugin peer range (fallback named in step 3).                  │
+     ╰─────────────────────────────────────────────────────────────────────────╯
+
+✻ Brewed for 21m 7s

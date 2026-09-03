@@ -23,10 +23,11 @@ import { World } from './World.js';
 const FOOT = {
   'building.home': [4, 3], 'building.store': [5, 4], 'building.furniture': [5, 4],
   'building.clothier': [5, 4], 'building.gate': [5, 2],
-  'building.townhall': [9, 6],
+  'building.townhall': [9, 6], 'building.museum': [7, 5],
   'building.cottage': [3, 3], 'building.cabin': [4, 3], 'building.bungalow': [5, 3],
   'tree.oak': [1, 1], 'tree.pine': [1, 1], 'tree.palm': [1, 1],
   'rock.small': [1, 1], 'rock.large': [2, 2],
+  'yard.mailbox': [1, 1],
 };
 
 /**

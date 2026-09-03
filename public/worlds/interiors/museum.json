@@ -1,0 +1,93 @@
+{
+  "format": "tw.world",
+  "version": 1,
+  "kind": "interior",
+  "meta": {
+    "id": "museum.interior",
+    "name": "Museum",
+    "note": "The fish and game galleries display every species you have collected."
+  },
+  "grid": {"width":29,"height":21,"tileSize":1},
+  "ambience": {"music":"home","sky":"#20333b","sun":1.1,"hemi":2.4,"hemiSky":"#e5f4ef"},
+  "layers": {
+    "surface": {
+      "palette": {"#":"wall.panel","t":"floor.tile","w":"water","g":"grass","r":"rug"},
+      "data": [
+        "#############################",
+        "#ttttttttttt##tttttttttttttt#",
+        "#ttwwwwwwwwt##ttggggggggggtt#",
+        "#ttwwwwwwwwt##ttggggggggggtt#",
+        "#ttwwwwwwwwt##ttggggggggggtt#",
+        "#ttwwwwwwwwt##ttggggggggggtt#",
+        "#ttwwwwwwwwt##ttggggggggggtt#",
+        "#ttwwwwwwwwt##ttggggggggggtt#",
+        "#ttttttttttttttttttttttttttt#",
+        "#ttttttttttttttttttttttttttt#",
+        "#######tttttttttttttt########",
+        "#ttttttttttttttttttttttttttt#",
+        "#ttttttttttttttttttttttttttt#",
+        "#ttttttttttttttttttttttttttt#",
+        "#ttttttttttrrrrrrrtttttttttt#",
+        "#ttttttttttrrrrrrrtttttttttt#",
+        "#ttttttttttrrrrrrrtttttttttt#",
+        "#ttttttttttrrrrrrrtttttttttt#",
+        "#ttttttttttrrrrrrrtttttttttt#",
+        "#ttttttttttttttttttttttttttt#",
+        "##############tt#############"
+      ]
+    },
+    "elevation": {
+      "palette": {"0":"0","4":"4"},
+      "data": [
+        "44444444444444444444444444444",
+        "40000000000044000000000000004",
+        "40000000000044000000000000004",
+        "40000000000044000000000000004",
+        "40000000000044000000000000004",
+        "40000000000044000000000000004",
+        "40000000000044000000000000004",
+        "40000000000044000000000000004",
+        "40000000000000000000000000004",
+        "40000000000000000000000000004",
+        "44444440000000000000004444444",
+        "40000000000000000000000000004",
+        "40000000000000000000000000004",
+        "40000000000000000000000000004",
+        "40000000000000000000000000004",
+        "40000000000000000000000000004",
+        "40000000000000000000000000004",
+        "40000000000000000000000000004",
+        "40000000000000000000000000004",
+        "40000000000000000000000000004",
+        "44444444444444004444444444444"
+      ]
+    },
+    "flags": {
+      "palette": {".":"none"},
+      "data": [
+        ".............................",".............................",".............................",
+        ".............................",".............................",".............................",
+        ".............................",".............................",".............................",
+        ".............................",".............................",".............................",
+        ".............................",".............................",".............................",
+        ".............................",".............................",".............................",
+        ".............................",".............................","............................."
+      ]
+    }
+  },
+  "objects": [
+    {"id":"fish.sign","type":"furn.sign.fish","tile":[2,8],"props":{"label":"FISH GALLERY"}},
+    {"id":"fish.bench","type":"furn.table","tile":[9,8]},
+    {"id":"game.sign","type":"furn.sign.game","tile":[23,8],"props":{"label":"GAME GALLERY"}},
+    {"id":"game.bench","type":"furn.table","tile":[18,8]},
+    {"id":"lobby.shelf.a","type":"furn.shelf","tile":[2,12]},
+    {"id":"lobby.shelf.b","type":"furn.shelf","tile":[25,12]},
+    {"id":"lobby.plant.a","type":"furn.plant","tile":[8,16]},
+    {"id":"lobby.plant.b","type":"furn.plant","tile":[20,16]},
+    {"id":"cellar.sign","type":"furn.sign.poker","tile":[3,18],"props":{"label":"CARD CELLAR"}},
+    {"id":"stairs.basement","type":"furn.stairs","tile":[23,16],"props":{"label":"Card Cellar","interior":"worlds/interiors/museum-basement.json"}}
+  ],
+  "npcs": [],
+  "exits": [{"tile":[14,20]},{"tile":[15,20]}],
+  "spawn": {"tile":[14,19],"facing":"north"}
+}

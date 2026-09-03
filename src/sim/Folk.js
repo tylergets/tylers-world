@@ -75,7 +75,12 @@ export class Folk {
 
   update(dt, clock = null, target = null) {
     this.#syncGrudges();
-    for (const npc of this.npcs) npc.update(dt, this.world, clock, target);
+    const claimed = new Set(this.npcs.map((npc) => npc.furnitureId).filter(Boolean));
+    for (const npc of this.npcs) {
+      npc.update(dt, this.world, clock, target);
+      const id = npc.considerFurniture(this.world, clock, claimed);
+      if (id) claimed.add(id);
+    }
   }
 
   /** Everybody who has just pulled a trigger, or an empty array. */

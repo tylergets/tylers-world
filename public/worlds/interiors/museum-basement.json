@@ -1,0 +1,100 @@
+{
+  "format": "tw.world",
+  "version": 1,
+  "kind": "interior",
+  "meta": {
+    "id": "museum.basement",
+    "name": "Card Cellar",
+    "note": "A low room, a green table, and a game that pays in real coin."
+  },
+  "grid": {"width":21,"height":17,"tileSize":1},
+  "ambience": {"music":"home","sky":"#171a20","sun":0.35,"hemi":1.8,"hemiSky":"#e8c98f"},
+  "layers": {
+    "surface": {
+      "palette": {"#":"wall.stripe","d":"floor.wood.dark","r":"rug"},
+      "data": [
+        "#####################",
+        "#ddddddddddddddddddd#",
+        "#ddddddddddddddddddd#",
+        "#ddddddddddddddddddd#",
+        "#ddddddddddddddddddd#",
+        "#ddddddrrrrrrrdddddd#",
+        "#ddddddrrrrrrrdddddd#",
+        "#ddddddrrrrrrrdddddd#",
+        "#ddddddrrrrrrrdddddd#",
+        "#ddddddrrrrrrrdddddd#",
+        "#ddddddrrrrrrrdddddd#",
+        "#ddddddddddddddddddd#",
+        "#ddddddddddddddddddd#",
+        "#ddddddddddddddddddd#",
+        "#ddddddddddddddddddd#",
+        "#ddddddddddddddddddd#",
+        "##########dd#########"
+      ]
+    },
+    "elevation": {
+      "palette": {"0":"0","4":"4"},
+      "data": [
+        "444444444444444444444",
+        "400000000000000000004",
+        "400000000000000000004",
+        "400000000000000000004",
+        "400000000000000000004",
+        "400000000000000000004",
+        "400000000000000000004",
+        "400000000000000000004",
+        "400000000000000000004",
+        "400000000000000000004",
+        "400000000000000000004",
+        "400000000000000000004",
+        "400000000000000000004",
+        "400000000000000000004",
+        "400000000000000000004",
+        "400000000000000000004",
+        "444444444400444444444"
+      ]
+    },
+    "flags": {
+      "palette": {".":"none"},
+      "data": [
+        ".....................",".....................",".....................",
+        ".....................",".....................",".....................",
+        ".....................",".....................",".....................",
+        ".....................",".....................",".....................",
+        ".....................",".....................",".....................",
+        ".....................","....................."
+      ]
+    }
+  },
+  "objects": [
+    {"id":"poker.table","type":"furn.pokertable","tile":[9,7]},
+    {"id":"poker.chair.n","type":"furn.chair","tile":[9,5]},
+    {"id":"poker.chair.w","type":"furn.chair","tile":[7,8]},
+    {"id":"poker.chair.e","type":"furn.chair","tile":[11,8]},
+    {"id":"poker.chair.s","type":"furn.chair","tile":[10,10]},
+    {"id":"cellar.sign","type":"furn.sign.poker","tile":[2,2],"props":{"label":"HOLD'EM NIGHT"}},
+    {"id":"cellar.crate.a","type":"furn.crate","tile":[2,13]},
+    {"id":"cellar.crate.b","type":"furn.crate","tile":[3,13]},
+    {"id":"cellar.crate.c","type":"furn.crate","tile":[17,13]},
+    {"id":"cellar.shelf","type":"furn.shelf","tile":[16,2]}
+  ],
+  "npcs": [
+    {
+      "id":"museum.marrow","type":"folk.villager","tile":[10,4],"facing":"south",
+      "props":{"name":"Marrow","title":"Cellar Dealer","pokerSeat":{"loose":0.3,"aggr":0.35,"bluff":0.06},"voice":{"pitch":0.78,"rate":19,"timbre":"sawtooth"}},
+      "dialog":{"start":"hello","nodes":{"hello":{"text":"Five and ten blinds. The cards are honest even when the players are not.","choices":[{"text":"Deal me in.","do":[{"poker":true}],"to":"end"},{"text":"Maybe later.","to":"end"}]}}}
+    },
+    {
+      "id":"museum.dilly","type":"folk.villager","tile":[6,8],"facing":"east",
+      "props":{"name":"Dilly","title":"Cellar Regular","pokerSeat":{"loose":0.75,"aggr":0.45,"bluff":0.18},"voice":{"pitch":1.16,"rate":25,"timbre":"triangle"}},
+      "dialog":{"start":"hello","nodes":{"hello":{"text":"I call more hands than Marrow thinks wise. Sit down and prove him right.","choices":[{"text":"Deal me in.","do":[{"poker":true}],"to":"end"},{"text":"Not tonight.","to":"end"}]}}}
+    },
+    {
+      "id":"museum.vesper","type":"folk.villager","tile":[13,8],"facing":"west",
+      "props":{"name":"Vesper","title":"Cellar Regular","pokerSeat":{"loose":0.5,"aggr":0.8,"bluff":0.14},"voice":{"pitch":0.94,"rate":22,"timbre":"square"}},
+      "dialog":{"start":"hello","nodes":{"hello":{"text":"Coin only gets interesting once it reaches the middle of the table.","choices":[{"text":"Deal me in.","do":[{"poker":true}],"to":"end"},{"text":"I will keep mine.","to":"end"}]}}}
+    }
+  ],
+  "exits": [{"tile":[10,16]},{"tile":[11,16]}],
+  "spawn": {"tile":[10,15],"facing":"north"}
+}

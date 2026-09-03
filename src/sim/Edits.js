@@ -67,6 +67,8 @@ export class Edits {
     this.terrain = new Map();
     /** species id -> desired population chosen by Fish and Wildlife. */
     this.wildlife = new Map();
+    /** authored building id -> its approved replacement tile and rotation. */
+    this.buildings = new Map();
     /** tile index -> the id of the tree whose stump is on it, and back again. */
     this.stumps = new Map();
     this.stumpTile = new Map();
@@ -116,6 +118,21 @@ export class Edits {
     this.wildlife.set(type, count);
     this.version++;
     return true;
+  }
+
+  /** Transform one authored building and retain only its difference from the file. */
+  moveBuilding(id, tile, rotation = 0) {
+    const obj = this.world.objectById(id);
+    if (!obj || objectType(obj.type).category !== 'building') return null;
+    const moved = this.world.moveObject(id, tile, rotation);
+    if (!moved) return null;
+    const baseTile = this.world.baseObjectTiles.get(id);
+    const baseRotation = this.world.baseObjectRotations.get(id) ?? 0;
+    if (baseTile?.[0] === tile[0] && baseTile?.[1] === tile[1] && baseRotation === moved.rotation) {
+      this.buildings.delete(id);
+    } else this.buildings.set(id, { tile: [...tile], rotation: moved.rotation });
+    this.version++;
+    return moved;
   }
 
   place(type, tile, rotation = 0, id = null) {
@@ -351,6 +368,9 @@ export class Edits {
       stored: Object.fromEntries([...this.stored].map(([id, stack]) => [id, { ...stack }])),
       terrain: [...this.terrain].map(([i, surface]) => [i % this.world.width, Math.floor(i / this.world.width), surface]),
       wildlife: Object.fromEntries(this.wildlife),
+      buildings: Object.fromEntries([...this.buildings].map(([id, transform]) => [id, {
+        tile: [...transform.tile], rotation: transform.rotation,
+      }])),
     };
   }
 
@@ -374,6 +394,17 @@ export class Edits {
     for (const [type, count] of Object.entries(snap.wildlife ?? {})) {
       if (ANIMAL_TYPES[type] && Number.isInteger(count) && count >= 0 && count <= 40) {
         this.wildlife.set(type, count);
+      }
+    }
+    for (const [id, transform] of Object.entries(snap.buildings ?? {})) {
+      // Tile arrays are moves saved before planner rotation was introduced.
+      const tile = Array.isArray(transform) ? transform : transform?.tile;
+      const rotation = Array.isArray(transform)
+        ? this.world.objectById(id)?.rotation ?? 0
+        : transform?.rotation ?? 0;
+      if (Array.isArray(tile) && Number.isInteger(tile[0]) && Number.isInteger(tile[1])
+        && [0, 90, 180, 270].includes(rotation)) {
+        this.moveBuilding(id, tile, rotation);
       }
     }
     for (const p of snap.placed ?? []) {

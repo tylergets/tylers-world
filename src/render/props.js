@@ -360,6 +360,51 @@ function townHall(c) {
   c.add(PYR, trs(0, 5.08, 0, 0, Math.PI / 4, 0, 1.0, 0.55, 1.0), p.roofDark);
 }
 
+/**
+ * The museum: a stone hall with a columned porch.
+ *
+ * Sized for the 7x5 footprint the registry gives it. The columns and the
+ * stepped base are what read as "museum" at plaza distance -- the same trick
+ * the shops play with their awnings, done in limestone.
+ */
+function museum(c) {
+  const p = c.pal;
+  const W = 6.6, D = 4.4, wallH = 2.6;
+  const face = D / 2;
+
+  // Two stone steps, then the hall.
+  c.box(0, 0.1, 0, W + 0.5, 0.2, D + 0.5, p.stone);
+  c.box(0, 0.28, 0, W + 0.22, 0.16, D + 0.22, p.trim);
+  c.box(0, wallH / 2 + 0.36, 0, W, wallH, D, p.wall);
+  // A stone band under the eaves, like a cornice.
+  c.box(0, wallH + 0.42, 0, W + 0.14, 0.18, D + 0.14, p.stone);
+  gableRoof(c, W, D, wallH + 0.5, 1.15, 0.34, p.roof, p.roofDark);
+
+  // The porch: a shallow slab on four columns, over the door.
+  for (const x of [-1.35, -0.5, 0.5, 1.35]) {
+    c.add(CYL, trs(x, wallH / 2 + 0.3, face + 0.55, 0, 0, 0, 0.13, wallH - 0.2, 0.13), p.column);
+  }
+  c.box(0, wallH + 0.28, face + 0.5, 3.4, 0.3, 1.4, p.stone);
+  c.add(PYR, trs(0, wallH + 0.62, face + 0.5, 0, 0, 0, 1.75, 0.45, 0.8), p.roofDark);
+
+  // Door and flanking windows.
+  c.box(0, 1.15, face + 0.05, 1.1, 1.7, 0.12, p.trim);
+  c.box(0, 1.1, face + 0.13, 0.8, 1.5, 0.06, p.door);
+  for (const x of [-2.4, 2.4]) {
+    c.box(x, 1.5, face + 0.06, 0.8, 1.15, 0.12, p.trim);
+    c.box(x, 1.5, face + 0.13, 0.6, 0.92, 0.055, p.window);
+    c.box(x, 1.5, face + 0.16, 0.055, 0.92, 0.025, p.trim);
+  }
+
+  // The name over the porch.
+  c.box(0, wallH + 0.62, face + 0.16, 3.1, 0.5, 0.08, p.sign);
+  shopSign(c, face, 1, 0, c.obj.props?.label ?? c.type.label, p.signText, wallH + 0.62, 2.8);
+
+  // A low glass lantern along the ridge: the skylight over the fish room.
+  c.box(0, wallH + 1.78, -0.4, 2.2, 0.34, 0.9, p.trim);
+  c.box(0, wallH + 1.8, -0.4, 2.05, 0.24, 0.78, p.window);
+}
+
 function constructionSign(c) {
   const p = c.pal;
   c.box(0, 1.05, 0, 2.8, 1.15, 0.14, p.edge);
@@ -494,7 +539,35 @@ function crate(c) {
   c.box(0, s + 0.02, 0, s + 0.04, 0.05, s + 0.04, p.edge, yaw);
 }
 
+// A compact old town taxi: long bonnet, enclosed cab, checker stripe and sign.
+function cab(c) {
+  const p = c.pal;
+  c.box(0, 0.48, 0.1, 1.72, 0.55, 2.55, p.body);
+  c.box(0, 0.76, -0.58, 1.58, 0.22, 0.95, p.bodyHi);
+  c.box(0, 1.12, 0.48, 1.5, 0.74, 1.18, p.body);
+  c.box(0, 1.22, 0.46, 1.28, 0.5, 1.2, p.glass);
+  c.box(0, 1.51, 0.46, 1.58, 0.12, 1.22, p.trim);
+  c.box(0, 1.67, 0.46, 0.68, 0.2, 0.38, p.bodyHi);
+  c.box(0, 1.68, 0.67, 0.5, 0.08, 0.03, p.trim);
+  for (const x of [-0.86, 0.86]) for (const z of [-0.72, 0.88]) {
+    c.add(CYL, trs(x, 0.43, z, 0, 0, Math.PI / 2, 0.34, 0.16, 0.34), p.tire);
+    c.add(CYL, trs(x * 1.01, 0.43, z, 0, 0, Math.PI / 2, 0.17, 0.17, 0.17), p.hub);
+  }
+  for (const x of [-0.55, 0.55]) c.box(x, 0.67, -1.22, 0.24, 0.2, 0.1, p.lamp);
+  for (let i = 0; i < 5; i++) c.box(-0.56 + i * 0.28, 0.62, 1.39, 0.14, 0.15, 0.04, i % 2 ? p.bodyHi : p.trim);
+}
+
 // ------------------------------------------------------------------ yard --
+
+function mailbox(c) {
+  const p = c.pal;
+  c.box(0, 0.62, 0, 0.14, 1.24, 0.14, p.post);
+  c.box(0, 1.14, 0, 0.68, 0.46, 0.48, p.box);
+  c.box(0, 1.14, 0.255, 0.61, 0.35, 0.04, p.dark);
+  c.box(0, 1.16, 0.282, 0.42, 0.21, 0.015, p.letter);
+  c.box(0.39, 1.38, 0, 0.06, 0.42, 0.06, p.flag);
+  c.box(0.29, 1.56, 0, 0.24, 0.16, 0.04, p.flag);
+}
 
 /**
  * A fence post, with rails to whichever neighbours are also fence posts.
@@ -581,7 +654,9 @@ const BUILDERS = {
   'building.furniture': store,
   'building.clothier': store,
   'building.townhall': townHall,
+  'building.museum': museum,
   'building.gate': gate,
+  'vehicle.cab': cab,
   'furn.bed': bed,
   'furn.table': table,
   'furn.chair': chair,
@@ -596,6 +671,11 @@ const BUILDERS = {
   'furn.sign.wildlife': constructionSign,
   'furn.sign.mayor': constructionSign,
   'furn.sign.cheats': constructionSign,
+  'furn.sign.fish': constructionSign,
+  'furn.sign.game': constructionSign,
+  'furn.sign.poker': constructionSign,
+  'furn.pokertable': table,
+  'yard.mailbox': mailbox,
   'yard.fence': fence,
   'yard.ladder': ladder,
 };

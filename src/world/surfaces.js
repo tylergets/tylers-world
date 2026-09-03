@@ -29,17 +29,17 @@ export const SURFACES = [
   {
     name: 'grass',
     color3d: 0x7fbe57, flat: 0x93d466, edge: 0x66a343,
-    walkable: true, speed: 1.0, water: false,
+    walkable: true, speed: 1.0, water: false, pattern: 8,
   },
   {
     name: 'concrete',
     color3d: 0xc7c1b2, flat: 0xd8d3c6, edge: 0xa8a294,
-    walkable: true, speed: 1.12, water: false,
+    walkable: true, speed: 1.12, water: false, pattern: 9,
   },
   {
     name: 'sand',
     color3d: 0xe4cf9b, flat: 0xf0e0b2, edge: 0xc9b27c,
-    walkable: true, speed: 0.86, water: false,
+    walkable: true, speed: 0.86, water: false, pattern: 10,
   },
   {
     name: 'water',
@@ -56,12 +56,12 @@ export const SURFACES = [
   {
     name: 'floor.tile',
     color3d: 0xd7d1c2, flat: 0xe4dece, edge: 0xaea895,
-    walkable: true, speed: 1.1, water: false,
+    walkable: true, speed: 1.1, water: false, pattern: 11,
   },
   {
     name: 'rug',
     color3d: 0xa8515a, flat: 0xbb5d67, edge: 0x7f3d45,
-    walkable: true, speed: 0.98, water: false,
+    walkable: true, speed: 0.98, water: false, pattern: 12,
   },
   {
     // Deliberately several steps darker than every floor: from overhead a room

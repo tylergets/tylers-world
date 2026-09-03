@@ -37,6 +37,7 @@ import { Friends } from './Friends.js';
 import { Clock } from './Clock.js';
 import { Outfit } from './Outfit.js';
 import { Health } from './Health.js';
+import { Identity } from './Identity.js';
 
 export class Player {
   constructor(world) {
@@ -56,6 +57,10 @@ export class Player {
     // -- you are wearing it. Separate from the bag because a head holds one hat
     // and a slot holds a stack of anything. See Outfit.js.
     this.outfit = new Outfit();
+    // Who you are -- the name, gender and hair the start sequence collected.
+    // On this list for the plainest reason any of it is: you take yourself
+    // through every door. See Identity.js.
+    this.identity = new Identity();
     // Time, and it belongs here for the plainest version of the reason: walking
     // into a shop must not put the sun back where it was. Everything else on
     // this list crosses a doorway because it is in your pockets; the clock
@@ -75,6 +80,8 @@ export class Player {
      * entire mechanical difference between being shot at and being shouted at.
      */
     this.downed = 0;
+    /** A visible, transient use of furniture. It is a pose, not saved state. */
+    this.furnitureUse = null;
     this.placeIn(world, world.spawn.tile, world.spawn.facing);
   }
 
@@ -108,6 +115,7 @@ export class Player {
    * resetting it makes the player's legs snap on every threshold.
    */
   placeIn(world, tile, facing = DIR.SOUTH) {
+    this.furnitureUse = null;
     this.world = world;
     const [tx, tz] = world.nearestWalkable(...tile);
     this.x = tx + 0.5;

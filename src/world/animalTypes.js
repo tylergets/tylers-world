@@ -56,6 +56,16 @@ export const ANIMAL_TYPES = {
   chicken: {
     label: 'Chicken',
     behavior: 'wander',
+    /**
+     * The three optional instincts (see sim/behaviors.js): `fear` scatters it
+     * off anybody inside the radius at `dart * boost`, `herd` leans a
+     * straggler's next dash toward its own kind, and `active` is the waking
+     * window -- outside it the animal drowses where it stands. A chicken
+     * scatters underfoot and roosts after dark, which is most of what anybody
+     * knows about chickens.
+     */
+    fear: [1.5, 1.2],
+    active: [5, 21],
 
     /** Collision radius, in tiles. Smaller than the player's 0.3: it fits gaps you don't. */
     radius: 0.18,
@@ -101,6 +111,8 @@ export const ANIMAL_TYPES = {
   duck: {
     label: 'Duck',
     behavior: 'wander',
+    fear: [1.7, 1.15],
+    active: [5, 21],
     radius: 0.20,
     height: 0.50,
 
@@ -133,6 +145,9 @@ export const ANIMAL_TYPES = {
   rabbit: {
     label: 'Rabbit',
     behavior: 'wander',
+    /** The widest flight radius in the farmyard: a rabbit is mostly distance. */
+    fear: [3.2, 1.3],
+    active: [4, 22],
     radius: 0.16,
     height: 0.44,
 
@@ -162,6 +177,9 @@ export const ANIMAL_TYPES = {
   sheep: {
     label: 'Sheep',
     behavior: 'wander',
+    /** No fear -- a sheep outsources worrying -- but the strongest herd here. */
+    herd: 0.55,
+    active: [5, 22],
     radius: 0.30,
     height: 0.58,
 
@@ -193,6 +211,7 @@ export const ANIMAL_TYPES = {
   goat: {
     label: 'Goat',
     behavior: 'wander',
+    active: [5, 22],
     radius: 0.26,
     height: 0.64,
 
@@ -223,6 +242,8 @@ export const ANIMAL_TYPES = {
   cat: {
     label: 'Cat',
     behavior: 'wander',
+    /** Close and fast, no hours: a cat is crepuscular everywhere it goes. */
+    fear: [1.2, 1.35],
     radius: 0.18,
     height: 0.46,
 
@@ -253,6 +274,8 @@ export const ANIMAL_TYPES = {
   crow: {
     label: 'Crow',
     behavior: 'wander',
+    fear: [2.4, 1.25],
+    active: [5, 20],
     radius: 0.17,
     height: 0.46,
 
@@ -434,13 +457,21 @@ function fishSpecies(label, {
   };
 }
 
+// The land factories also pass through the three optional INSTINCTS the
+// wander strategy honors -- `fear: [radius, boost]`, `herd: 0..1`, and
+// `active: [from, to]` waking hours -- documented where they are spent, at the
+// top of sim/behaviors.js. Absent fields cost nothing: a species that never
+// asked reads exactly as it did before the instincts existed.
+
 /** A ground bird on the chicken's clock, resized and refeathered. */
 function birdSpecies(label, {
   size = 1, speed = 1, calm = 1, range = 6.5, fig = {}, palette, gait = {},
+  fear = null, herd = null, active = null,
 }) {
   return {
     label,
     behavior: 'wander',
+    ...(fear && { fear }), ...(herd && { herd }), ...(active && { active }),
     radius: 0.18 * size,
     height: 0.46 * size,
     dart: 2.7 * speed,
@@ -460,10 +491,12 @@ function birdSpecies(label, {
 /** A four-legged grazer or prowler on the goat's frame. */
 function quadSpecies(label, {
   size = 1, speed = 1, calm = 1, range = 7.5, fig = {}, palette, gait = {},
+  fear = null, herd = null, active = null,
 }) {
   return {
     label,
     behavior: 'wander',
+    ...(fear && { fear }), ...(herd && { herd }), ...(active && { active }),
     radius: 0.26 * size,
     height: 0.6 * size,
     dart: 2.2 * speed,
@@ -483,10 +516,12 @@ function quadSpecies(label, {
 /** Something small and quick, on the rabbit's nerves. */
 function critterSpecies(label, {
   size = 1, speed = 1, calm = 1, range = 5, fig = {}, palette, gait = {},
+  fear = null, herd = null, active = null,
 }) {
   return {
     label,
     behavior: 'wander',
+    ...(fear && { fear }), ...(herd && { herd }), ...(active && { active }),
     radius: 0.16 * size,
     height: 0.4 * size,
     dart: 3.5 * speed,
@@ -799,61 +834,78 @@ for (const [id, def] of Object.entries(FISH)) {
 const LAND = {
   // -- birds ---------------------------------------------------------------
   goose: birdSpecies('Goose', {
+    // A goose keeps its gaggle and barely yields ground -- the smallest flight
+    // radius here, because the goose is not the one who is worried.
     size: 1.35, speed: 0.8, calm: 1.3, range: 7,
+    herd: 0.5, fear: [1.2, 1.15], active: [5, 21],
     fig: { neck: 1.6, bill: 'flat', tail: 'wedge', plump: 1.1 },
     gait: { roll: 0.18, bend: 1.1 },
     palette: { body: 0xdcd6c6, bodyShade: 0xbcb5a2, tail: 0xcac3b0, bill: 0xe08a34, leg: 0xd97f30, eye: 0x241f1b },
   }),
   turkey: birdSpecies('Turkey', {
     size: 1.4, speed: 0.85, calm: 1.2, range: 6,
+    herd: 0.4, fear: [1.8, 1.2], active: [6, 20],
     fig: { tail: 'fan', wattle: true, plump: 1.2 },
     gait: { roll: 0.12, bob: 0.03 },
     palette: { body: 0x5a4436, bodyShade: 0x403026, tail: 0x6e5340, bill: 0xc9a878, leg: 0xb5726b, eye: 0x241f1b, comb: 0xc23a35 },
   }),
   pigeon: birdSpecies('Pigeon', {
     size: 0.85, range: 7,
+    fear: [1.6, 1.3], active: [6, 20],
     fig: { tail: 'wedge', flash: true },
     palette: { body: 0x8d93a2, bodyShade: 0x6d7382, tail: 0x555b6a, bill: 0x54565e, leg: 0xc46a5a, eye: 0xd8863c, flash: 0x3f7a52 },
   }),
   gull: birdSpecies('Gull', {
     size: 1.0, speed: 1.1, range: 8,
+    fear: [2.0, 1.25],
     fig: { tail: 'wedge', bill: 'long' },
     palette: { body: 0xeceae2, bodyShade: 0xc4c2ba, tail: 0x9a988f, bill: 0xe0a83c, leg: 0xe89a48, eye: 0x241f1b },
   }),
   sparrow: birdSpecies('Sparrow', {
     size: 0.55, speed: 1.2, calm: 0.7, range: 6,
+    fear: [2.4, 1.35], active: [5, 20],
     fig: { tail: 'wedge' },
     palette: { body: 0x9c8464, bodyShade: 0x77624a, tail: 0x63503a, bill: 0x54473a, leg: 0xb59473, eye: 0x241f1b },
   }),
   robin: birdSpecies('Robin', {
+    // The tamest of the small birds: half a sparrow's flight radius, because a
+    // robin's whole reputation is standing on the spade you just put down.
     size: 0.55, speed: 1.15, calm: 0.7, range: 5.5,
+    fear: [1.2, 1.3], active: [5, 20],
     fig: { tail: 'wedge', breast: true },
     palette: { body: 0x8a7a62, bodyShade: 0x685c4a, tail: 0x55483a, bill: 0x54473a, leg: 0x9c8468, eye: 0x241f1b, breast: 0xd06a38 },
   }),
   owl: birdSpecies('Owl', {
+    // The night shift: dusk to dawn. By day it drowses on its patch, which is
+    // exactly the still, head-sunk owl worth finding in a wood at noon.
     size: 1.05, speed: 0.9, calm: 2.2, range: 5,
+    active: [19, 6], fear: [2.0, 1.2],
     fig: { tail: 'wedge', bill: 'hook', crest: true, plump: 1.15 },
     gait: { bend: 0.6, bob: 0.02 },
     palette: { body: 0xa8916c, bodyShade: 0x84704f, tail: 0x6e5c40, bill: 0x4c4238, leg: 0x8d7853, eye: 0xe0b23c, crest: 0x84704f },
   }),
   magpie: birdSpecies('Magpie', {
     size: 0.9, speed: 1.15, calm: 0.8, range: 8,
+    fear: [2.2, 1.3], active: [5, 20],
     fig: { tail: 'long', flash: true },
     palette: { body: 0x24262e, bodyShade: 0x17191f, tail: 0x2c3e52, bill: 0x2c2e33, leg: 0x33353a, eye: 0xc8bda6, flash: 0xe8e6dc },
   }),
   peacock: birdSpecies('Peacock', {
     size: 1.3, speed: 0.8, calm: 1.6, range: 6,
+    fear: [1.5, 1.15], active: [6, 21],
     fig: { tail: 'train', neck: 1.3, crest: true },
     gait: { roll: 0.06, bob: 0.025 },
     palette: { body: 0x2c5e8a, bodyShade: 0x1d4468, tail: 0x2f6e4c, bill: 0x8a8272, leg: 0x8d8468, eye: 0x241f1b, crest: 0x2c5e8a, mark: 0x3c8a5e },
   }),
   pheasant: birdSpecies('Pheasant', {
     size: 1.05, speed: 1.05, range: 7,
+    fear: [3.0, 1.3], active: [6, 20],
     fig: { tail: 'long', collar: true },
     palette: { body: 0xa05c34, bodyShade: 0x7c4426, tail: 0x6e4c2c, bill: 0xc9bd9c, leg: 0x8d7853, eye: 0xd0442f, collar: 0xe8e6dc, head: 0x2f5e46 },
   }),
   heron: birdSpecies('Heron', {
     size: 1.5, speed: 0.75, calm: 2.4, range: 7,
+    fear: [3.5, 1.25], active: [4, 21],
     fig: { neck: 2.1, legLen: 1.8, bill: 'long', tail: 'wedge', plump: 0.8 },
     gait: { roll: 0.03, bob: 0.02, bend: 1.0 },
     palette: { body: 0x9aa4ac, bodyShade: 0x76828c, tail: 0x5c6870, bill: 0xd8a83c, leg: 0x54565e, eye: 0xd8c47c },
@@ -862,23 +914,27 @@ const LAND = {
   // -- the farmyard and the wood -------------------------------------------
   pig: quadSpecies('Pig', {
     size: 1.15, speed: 0.9, calm: 1.2, range: 6,
+    active: [6, 20],
     fig: { bulk: 1.3, legLen: 0.6, ears: 'flop', tail: 'curl', snout: 1 },
     palette: { body: 0xe2a68f, bodyShade: 0xc08a74, belly: 0xf0c8b4, ear: 0xd49a84, leg: 0xc08a74, eye: 0x241f1b, nose: 0xc97e68 },
   }),
   cow: quadSpecies('Cow', {
     size: 1.7, speed: 0.7, calm: 1.8, range: 8,
+    herd: 0.4, active: [5, 21],
     fig: { bulk: 1.4, legLen: 0.9, ears: 'side', horns: 'short', patches: true },
     gait: { bob: 0.02 },
     palette: { body: 0xe8e2d4, bodyShade: 0xc6c0b0, belly: 0xf2eee2, ear: 0xd6d0c0, leg: 0xd0cabb, hoof: 0x3b342c, horn: 0xd8c9a4, eye: 0x241f1b, patch: 0x4c4238 },
   }),
   pony: quadSpecies('Pony', {
     size: 1.6, speed: 1.3, calm: 1.4, range: 9,
+    herd: 0.35,
     fig: { bulk: 0.95, legLen: 1.3, ears: 'up', mane: true, tail: 'brush' },
     gait: { bob: 0.045, lean: 0.12 },
     palette: { body: 0xa8734a, bodyShade: 0x855a39, belly: 0xc99a6e, ear: 0x96663f, leg: 0x774f32, hoof: 0x3b342c, mane: 0x4c3524, eye: 0x241f1b },
   }),
   donkey: quadSpecies('Donkey', {
     size: 1.45, speed: 0.95, calm: 1.7, range: 8,
+    active: [5, 21],
     fig: { bulk: 1.0, legLen: 1.15, ears: 'tall', mane: true, tail: 'brush' },
     palette: { body: 0x8d8478, bodyShade: 0x6e675d, belly: 0xcac2b2, ear: 0x7d756a, leg: 0x625c52, hoof: 0x3b342c, mane: 0x4a453d, eye: 0x241f1b },
   }),
@@ -889,45 +945,60 @@ const LAND = {
     palette: { body: 0xc09a62, bodyShade: 0x9c7c4c, belly: 0xe8d6b4, ear: 0x8a6a40, leg: 0xa8874f, eye: 0x241f1b, nose: 0x322a24 },
   }),
   fox: quadSpecies('Fox', {
+    // Dusk to well past breakfast: crepuscular reads as "you mostly see it at
+    // the edges of the day", which is the whole romance of a fox.
     size: 0.95, speed: 1.5, calm: 1.1, range: 9,
+    fear: [3.0, 1.3], active: [17, 9],
     fig: { bulk: 0.75, legLen: 0.95, ears: 'up', tail: 'bush', snout: 0.9 },
     gait: { bob: 0.045, lean: 0.16 },
     palette: { body: 0xc9642f, bodyShade: 0xa04d23, belly: 0xefe4d2, ear: 0x3a2c22, leg: 0x3a2c22, tail: 0xc9642f, tip: 0xefe4d2, eye: 0x241f1b, nose: 0x2c241e },
   }),
   deer: quadSpecies('Deer', {
+    // Everything at once: the longest flight in the game, a loose herd, and
+    // hours that put it out at dawn and dusk. A deer you got close to is a
+    // deer that was asleep.
     size: 1.5, speed: 1.5, calm: 1.6, range: 10,
+    fear: [4.0, 1.35], herd: 0.45, active: [4, 22],
     fig: { bulk: 0.8, legLen: 1.5, ears: 'up', horns: 'antler', tail: 'down' },
     gait: { bob: 0.06, lean: 0.14 },
     palette: { body: 0xa8845c, bodyShade: 0x866846, belly: 0xe6d8bc, ear: 0x96754e, leg: 0x77603f, hoof: 0x3b342c, horn: 0x8d7b5e, eye: 0x241f1b },
   }),
   boar: quadSpecies('Boar', {
+    // A sounder keeps together, and a boar gives you very little ground.
     size: 1.3, speed: 1.1, calm: 1.3, range: 8,
+    herd: 0.35, fear: [1.6, 1.2],
     fig: { bulk: 1.25, legLen: 0.75, ears: 'up', snout: 1, tusks: true, mane: true },
     palette: { body: 0x5c4c3d, bodyShade: 0x42362b, belly: 0x8d7a64, ear: 0x4c3f32, leg: 0x3c3128, mane: 0x33291f, tusk: 0xe8e0cc, eye: 0x241f1b, nose: 0x594a3c },
   }),
   badger: quadSpecies('Badger', {
     size: 0.85, speed: 0.9, calm: 1.5, range: 6,
+    active: [18, 7], fear: [2.2, 1.2],
     fig: { bulk: 1.15, legLen: 0.55, ears: 'round', snout: 0.8, stripes: true },
     palette: { body: 0x8d8d88, bodyShade: 0x6a6a65, belly: 0x4c4c48, ear: 0x5c5c58, leg: 0x3c3c38, eye: 0x241f1b, stripe: 0xece9e0, nose: 0x2c2824 },
   }),
   raccoon: quadSpecies('Raccoon', {
     size: 0.85, speed: 1.1, calm: 1.0, range: 7.5,
+    active: [18, 8], fear: [2.0, 1.25],
     fig: { bulk: 1.0, legLen: 0.7, ears: 'up', tail: 'ring', snout: 0.7, mask: true },
     palette: { body: 0x8a8578, bodyShade: 0x69655a, belly: 0xb5b0a2, ear: 0x5c584e, leg: 0x4a463e, tail: 0x8a8578, ring: 0x3c3830, eye: 0x241f1b, mask: 0x332f28, nose: 0x28241f },
   }),
   skunk: quadSpecies('Skunk', {
+    // Night hours and no fear at all. A skunk has an arrangement.
     size: 0.8, speed: 0.85, calm: 1.4, range: 6,
+    active: [18, 7],
     fig: { bulk: 0.95, legLen: 0.6, ears: 'round', tail: 'bush', stripes: true },
     palette: { body: 0x2c2a28, bodyShade: 0x1d1b1a, belly: 0x3c3a38, ear: 0x33312e, leg: 0x242220, tail: 0x2c2a28, stripe: 0xefede4, eye: 0x241f1b, nose: 0x1a1816 },
   }),
   otter: quadSpecies('Otter', {
     size: 0.9, speed: 1.25, calm: 0.9, range: 8,
+    fear: [2.4, 1.3],
     fig: { bulk: 0.8, legLen: 0.55, ears: 'round', tail: 'taper', snout: 0.6 },
     gait: { roll: 0.1, bob: 0.05 },
     palette: { body: 0x6a5540, bodyShade: 0x4e3e2e, belly: 0xc2ab84, ear: 0x5c4936, leg: 0x453727, tail: 0x5c4936, eye: 0x241f1b, nose: 0x2c241e },
   }),
   ferret: quadSpecies('Ferret', {
     size: 0.65, speed: 1.35, calm: 0.8, range: 7,
+    fear: [2.4, 1.3], active: [16, 9],
     fig: { bulk: 0.6, legLen: 0.5, ears: 'round', tail: 'taper', long: true, mask: true },
     gait: { roll: 0.08, bob: 0.06 },
     palette: { body: 0xcbb894, bodyShade: 0x9a8a6c, belly: 0x5c4c38, ear: 0x8d7c5e, leg: 0x5c4c38, tail: 0x8d7c5e, eye: 0x241f1b, mask: 0x4c3e2e, nose: 0x8d5f52 },

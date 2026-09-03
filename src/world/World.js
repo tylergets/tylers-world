@@ -71,6 +71,8 @@ export class World {
     this.zones = data.zones ?? [null];
     this.objects = data.objects;
     this.authoredObjectCount = this.objects.length;
+    this.baseObjectTiles = new Map(this.objects.map((obj) => [obj.id, [...obj.tile]]));
+    this.baseObjectRotations = new Map(this.objects.map((obj) => [obj.id, obj.rotation ?? 0]));
     // Where this place's animals START. The live ones belong to sim/Fauna.js:
     // World holds facts derived from the file, and nothing in it is ever ticked.
     this.animals = data.animals ?? [];
@@ -207,6 +209,53 @@ export class World {
     return true;
   }
 
+  /** Check an authored object's proposed transform without changing the world. */
+  objectPlacement(id, tile, rotation = 0) {
+    const obj = this.objectById(id);
+    const turns = rotation / 90;
+    if (!obj || !this.baseObjectTiles.has(id) || !Array.isArray(tile)
+      || !Number.isInteger(turns)) return { ok: false, reason: 'That building transform is invalid.' };
+    const [ax, az] = tile;
+    const normalizedRotation = ((rotation % 360) + 360) % 360;
+    const shape = rotateMask(objectType(obj.type).footprint, normalizedRotation / 90);
+    if (!Number.isInteger(ax) || !Number.isInteger(az)) {
+      return { ok: false, reason: 'That building transform is invalid.', shape };
+    }
+
+    const elevation = this.elevationAt(ax, az);
+    for (let dz = 0; dz < shape.d; dz++) {
+      for (let dx = 0; dx < shape.w; dx++) {
+        const x = ax + dx, z = az + dz;
+        if (!this.inBounds(x, z)) return { ok: false, reason: 'The footprint extends outside the map.', shape };
+        if (!this.surfaceAt(x, z).walkable) return { ok: false, reason: 'Buildings need walkable ground.', shape };
+        if (this.dug.has(this.idx(x, z))) return { ok: false, reason: 'Fill the holes on that site first.', shape };
+        if (this.isRamp(x, z)) return { ok: false, reason: 'Buildings cannot stand on ramps.', shape };
+        if (this.elevationAt(x, z) !== elevation) return { ok: false, reason: 'The whole footprint must be level.', shape };
+        const occupant = this.objectAt(x, z);
+        if (occupant && occupant.id !== id) return { ok: false, reason: 'Another object occupies that site.', shape };
+        if (this.npcs.some((npc) => npc.tile[0] === x && npc.tile[1] === z
+          || npc.schedule?.some((row) => row.tile?.[0] === x && row.tile?.[1] === z))) {
+          return { ok: false, reason: 'That site is reserved for a town resident.', shape };
+        }
+      }
+    }
+    return { ok: true, shape, rotation: normalizedRotation };
+  }
+
+  /** Apply a transform previously described by `objectPlacement`. */
+  moveObject(id, tile, rotation = 0) {
+    const obj = this.objectById(id);
+    const placement = this.objectPlacement(id, tile, rotation);
+    if (!obj || !placement.ok
+      || obj.tile[0] === tile[0] && obj.tile[1] === tile[1] && obj.rotation === placement.rotation) return null;
+    const [ax, az] = tile;
+    obj.tile = [ax, az];
+    obj.rotation = placement.rotation;
+    obj.shape = placement.shape;
+    this.#derive();
+    return obj;
+  }
+
   /** Open or fill a hole on a tile. Returns false if the tile is out of bounds. */
   setHole(x, z, open) {
     if (!this.inBounds(x, z)) return false;
@@ -253,6 +302,12 @@ export class World {
    */
   revert() {
     this.objects.length = this.authoredObjectCount;
+    for (const obj of this.objects) {
+      const tile = this.baseObjectTiles.get(obj.id);
+      if (tile) obj.tile = [...tile];
+      obj.rotation = this.baseObjectRotations.get(obj.id) ?? 0;
+      obj.shape = rotateMask(objectType(obj.type).footprint, obj.rotation / 90);
+    }
     this.surface.set(this.baseSurface);
     this.elevation.set(this.baseElevation);
     this.flags.set(this.baseFlags);

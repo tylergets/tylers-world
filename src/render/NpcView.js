@@ -8,11 +8,12 @@
  * argument.)
  *
  * ONE BUILDER, MANY TYPES. `folk` is the only body shape here, and every NPC
- * type names it (see npcTypes.js `model`). What varies is the PALETTE, which is
- * per type -- so a second shopkeeper in a different apron costs a registry
- * entry and no geometry. Geometry is still built once per TYPE rather than once
- * per builder, because the colours are baked into the vertices: that is what
- * lets every person in a place share one material and one draw call each.
+ * type names it (see npcTypes.js `model`). What varies is the PALETTE: the
+ * type supplies the clothes, and each person's own `look` (sim/Npc.js) lays
+ * their skin, hair and eyes over it. Geometry is built once per distinct LOOK
+ * rather than once per builder, because the colours are baked into the
+ * vertices: that is what lets people who do share a look share one buffer,
+ * and everyone share one program.
  *
  * The apron is the read. From overhead, a villager and a shopkeeper are two
  * discs of hair, and the only thing that says which one you can trade with is
@@ -29,7 +30,16 @@ const BOX = new THREE.BoxGeometry(1, 1, 1);
 const BLOB = new THREE.IcosahedronGeometry(1, 2);
 const CYL = new THREE.CylinderGeometry(1, 1, 1, 10);
 
-/** Type id -> { body, head, material, neckY } built once, shared by instances. */
+/**
+ * `typeId:lookKey` -> { body, head, material, neckY }, built once and shared.
+ *
+ * Keyed by the LOOK and not just the type, because colours are baked into
+ * vertices: two villagers with different hair cannot share a buffer. The key
+ * space is still bounded -- one entry per distinct look actually standing in a
+ * loaded place, not per NPC -- so a town of twenty costs at most twenty small
+ * builds where it used to cost five, which is the honest price of them not all
+ * being the same person. See sim/Npc.js `look`.
+ */
 const MODELS = new Map();
 
 /** Furrowed brows and a downturned mouth, shared by every angry NPC view. */
@@ -54,10 +64,6 @@ const ANGRY_MATERIAL = patchFlatten(new THREE.MeshLambertMaterial({ vertexColors
  */
 function folk(p) {
   const body = new GeoBuilder();
-  for (const sx of [-0.11, 0.11]) {
-    body.addGeometry(CYL, trs(sx, 0.15, 0, 0, 0, 0, 0.075, 0.3, 0.075), p.pants);
-    body.addGeometry(BLOB, trs(sx, 0.045, 0.02, 0, 0, 0, 0.095, 0.055, 0.13), p.shoe);
-  }
   body.addGeometry(new THREE.CylinderGeometry(0.2, 0.16, 1, 12),
     trs(0, 0.46, 0, 0, 0, 0, 1, 0.34, 0.85), p.shirt);
   if (p.apron) {
@@ -83,24 +89,36 @@ function folk(p) {
   for (const sx of [-0.09, 0.09]) {
     head.addGeometry(BLOB, trs(sx, 0.22, 0.196, 0, 0, 0, 0.033, 0.048, 0.03), p.eye);
   }
-  return { body, head, neckY: 0.6 };
+
+  // One leg authored from its hip. It remains a separate node so sitting is a
+  // real change of pose rather than the whole person shrinking into a chair.
+  const leg = new GeoBuilder();
+  leg.addGeometry(CYL, trs(0, -0.15, 0, 0, 0, 0, 0.075, 0.3, 0.075), p.pants);
+  leg.addGeometry(BLOB, trs(0, -0.255, 0.02, 0, 0, 0, 0.095, 0.055, 0.13), p.shoe);
+  return { body, head, leg, neckY: 0.6 };
 }
 
 const BUILDERS = { folk };
 
-function modelFor(typeId) {
-  let m = MODELS.get(typeId);
+function modelFor(typeId, look = null) {
+  const key = look ? `${typeId}:${look.key}` : typeId;
+  let m = MODELS.get(key);
   if (m) return m;
 
   const type = npcType(typeId);
   const build = BUILDERS[type.model];
   if (!build) throw new Error(`No mesh builder "${type.model}" for npc type "${typeId}"`);
 
-  const { body, head, neckY } = build(type.palette);
+  // The type's palette carries the CLOTHES -- the apron is still what says
+  // "shopkeep" -- and the look lays the person over them.
+  const palette = look
+    ? { ...type.palette, skin: look.skin, hair: look.hair, eye: look.eye }
+    : type.palette;
+  const { body, head, leg, neckY } = build(palette);
   // Squash 1: the counter-rotation already solves the overhead read.
   const material = patchFlatten(new THREE.MeshLambertMaterial({ vertexColors: true }), 1);
-  m = { body: body.build(), head: head.build(), material, neckY };
-  MODELS.set(typeId, m);
+  m = { body: body.build(), head: head.build(), leg: leg.build(), material, neckY };
+  MODELS.set(key, m);
   return m;
 }
 
@@ -113,8 +131,8 @@ const RISE_TIME = 0.55;
 const _UPRIGHT = new THREE.Quaternion();
 
 export class NpcView {
-  constructor(typeId) {
-    const m = modelFor(typeId);
+  constructor(typeId, look = null) {
+    const m = modelFor(typeId, look);
 
     // Node order as everywhere else: tilt is CAMERA-space and sits outside the
     // WORLD-space facing, or the model keels over sideways when it faces east.
@@ -142,6 +160,16 @@ export class NpcView {
     this.expression = new THREE.Mesh(ANGRY_FACE, ANGRY_MATERIAL);
     bodyMesh.castShadow = headMesh.castShadow = this.expression.castShadow = true;
     this.bob.add(bodyMesh);
+    this.legs = [];
+    for (const x of [-0.11, 0.11]) {
+      const hip = new THREE.Group();
+      hip.position.set(x, 0.3, 0);
+      const legMesh = new THREE.Mesh(m.leg, m.material);
+      legMesh.castShadow = true;
+      hip.add(legMesh);
+      this.bob.add(hip);
+      this.legs.push(hip);
+    }
     this.neck.add(headMesh);
     this.neck.add(this.expression);
     this.neck.position.y = m.neckY;
@@ -153,7 +181,12 @@ export class NpcView {
    * @param {number} time      seconds, for the breathing
    */
   update(npc, lieBack, time) {
-    this.root.position.set(npc.x, npc.y, npc.z);
+    const furniture = npc.furnitureUse;
+    this.root.position.set(
+      furniture?.x ?? npc.x,
+      furniture?.y ?? npc.y,
+      furniture?.z ?? npc.z,
+    );
     const grudge = npc.grudge ?? 0;
     this.expression.visible = grudge > 0;
     this.expression.scale.setScalar(1 + Math.max(0, grudge - 1) * 0.08);
@@ -163,7 +196,8 @@ export class NpcView {
     const left = npc.downed ?? 0;
     const down = left <= 0 ? 0
       : Math.min(1, Math.min((recover - left) / DROP_TIME, left / RISE_TIME));
-    this.fall.rotation.z = down * TOPPLE;
+    this.fall.rotation.set(furniture?.kind === 'lie' ? -Math.PI / 2 : 0, 0,
+      furniture ? 0 : down * TOPPLE);
 
     this.tilt.quaternion.copy(lieBack);
     // Blend the lie-back OUT as he goes down, and this is the part that makes
@@ -174,7 +208,8 @@ export class NpcView {
     // is the soles of his shoes. Upright he billboards; flat he is seen from
     // above lying flat, which is what he actually is. One representation, both
     // views -- the same argument the whole project rests on, one level deeper.
-    if (down > 0) this.tilt.quaternion.slerp(_UPRIGHT, down);
+    if (furniture?.kind === 'lie') this.tilt.quaternion.identity();
+    else if (down > 0) this.tilt.quaternion.slerp(_UPRIGHT, down);
 
     // The BODY holds the heading and the HEAD carries the glance, up to a
     // point. A person who turns their whole body to look at a customer reads as
@@ -187,10 +222,13 @@ export class NpcView {
     // the body, so subtracting it from the authoritative heading gives the
     // shoulders for someone glancing off a post (where it is the post) and for
     // someone walking down the lane (where it is the way he is going).
-    const lean = npc.lean ?? 0;
+    const lean = furniture ? 0 : (npc.lean ?? 0);
     const shoulder = Math.sign(lean) * Math.max(0, Math.abs(lean) - 0.7);
-    this.yawG.rotation.y = npc.yaw - lean + shoulder;
+    this.yawG.rotation.y = (furniture?.yaw ?? npc.yaw) - lean + shoulder;
     this.neck.rotation.y = lean - shoulder;
+
+    const seated = furniture?.kind === 'sit';
+    for (const leg of this.legs) leg.rotation.x = seated ? -1.35 : 0;
 
     // Walking, and then breathing: the same bounce-and-roll the player has, so
     // a villager crossing the square moves like the thing the player is
@@ -198,7 +236,13 @@ export class NpcView {
     // when he stops -- tiny, and on its own clock per NPC (seeded off the
     // position, so two people in one room are never in step), because a
     // perfectly still model next to an animated player reads as "not loaded".
-    if (npc.speed > 0.15) {
+    if (furniture) {
+      const phase = time * 1.6 + npc.x + npc.z;
+      this.bob.position.y = Math.sin(phase) * 0.005;
+      this.bob.rotation.z = 0;
+      this.bob.rotation.x = furniture.kind === 'warm' ? 0.2
+        : furniture.kind === 'lean' || furniture.kind === 'reach' ? 0.15 : 0;
+    } else if (npc.speed > 0.15) {
       this.bob.position.y = Math.abs(Math.sin(npc.walkPhase)) * 0.04;
       this.bob.rotation.z = Math.sin(npc.walkPhase) * 0.03;
       this.bob.rotation.x = 0;

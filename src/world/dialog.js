@@ -63,6 +63,7 @@
  *   { "take": { "type": "item.apple", "count": 3 } }
  *   { "coins": -25 }                      spend (negative) or earn (positive)
  *   { "houseStories": 2 }                upgrade the player's house to this tier
+ *   { "travel": "worlds/interiors/debug-room.json" }  go to another place
  *   { "shop": true }                      open the trade interface
  *   { "gift": true }                      hand over one of whatever is in your
  *                                         hand, whatever it happens to be
@@ -108,6 +109,7 @@ const CONDITIONS = {
   visits: 'number',
   coins: 'number',
   houseStories: 'tier',
+  travel: 'string',
   has: 'itemcount',
   room: 'itemcount',
   not: 'cond',
@@ -124,6 +126,7 @@ const EFFECTS = {
   coins: 'number',
   houseStories: 'tier',
   shop: 'boolean',
+  poker: 'boolean',
   gift: 'boolean',
   peace: 'boolean',
   errand: 'errandEffect',

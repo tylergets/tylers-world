@@ -251,12 +251,290 @@
           "wear.glasses.mirror",
           "wear.glasses.amber",
           "wear.glasses.ink",
-          "wear.glasses.jade"
+          "wear.glasses.jade",
+          "wear.shirt.crimson",
+          "wear.shirt.scarlet",
+          "wear.shirt.brick",
+          "wear.shirt.coral",
+          "wear.shirt.salmon",
+          "wear.shirt.peach",
+          "wear.shirt.apricot",
+          "wear.shirt.tangerine",
+          "wear.shirt.marigold",
+          "wear.shirt.gold",
+          "wear.shirt.mustard",
+          "wear.shirt.honey",
+          "wear.shirt.butter",
+          "wear.shirt.lemon",
+          "wear.shirt.chartreuse",
+          "wear.shirt.lime",
+          "wear.shirt.fern",
+          "wear.shirt.sage",
+          "wear.shirt.olive",
+          "wear.shirt.pine",
+          "wear.shirt.forest",
+          "wear.shirt.mint",
+          "wear.shirt.seafoam",
+          "wear.shirt.jade",
+          "wear.shirt.emerald",
+          "wear.shirt.viridian",
+          "wear.shirt.juniper",
+          "wear.shirt.laurel",
+          "wear.shirt.basil",
+          "wear.shirt.cedar",
+          "wear.shirt.spruce",
+          "wear.shirt.aqua",
+          "wear.shirt.cyan",
+          "wear.shirt.turquoise",
+          "wear.shirt.lagoon",
+          "wear.shirt.cerulean",
+          "wear.shirt.azure",
+          "wear.shirt.cobalt",
+          "wear.shirt.sapphire",
+          "wear.shirt.navy",
+          "wear.shirt.midnight",
+          "wear.shirt.denim",
+          "wear.shirt.steel",
+          "wear.shirt.slate",
+          "wear.shirt.periwinkle",
+          "wear.shirt.iris",
+          "wear.shirt.violet",
+          "wear.shirt.lavender",
+          "wear.shirt.lilac",
+          "wear.shirt.orchid",
+          "wear.shirt.mauve",
+          "wear.shirt.magenta",
+          "wear.shirt.fuchsia",
+          "wear.shirt.berry",
+          "wear.shirt.mulberry",
+          "wear.shirt.wine",
+          "wear.shirt.maroon",
+          "wear.shirt.burgundy",
+          "wear.shirt.cherry",
+          "wear.shirt.raspberry",
+          "wear.shirt.blush",
+          "wear.shirt.petal",
+          "wear.shirt.flamingo",
+          "wear.shirt.bubblegum",
+          "wear.shirt.taupe",
+          "wear.shirt.fawn",
+          "wear.shirt.camel",
+          "wear.shirt.khaki",
+          "wear.shirt.tan",
+          "wear.shirt.biscuit",
+          "wear.shirt.oat",
+          "wear.shirt.cream",
+          "wear.shirt.ivory",
+          "wear.shirt.chalk",
+          "wear.shirt.ash",
+          "wear.shirt.dove",
+          "wear.shirt.pewter",
+          "wear.shirt.graphite",
+          "wear.shirt.charcoal",
+          "wear.shirt.onyx",
+          "wear.shirt.storm",
+          "wear.shirt.fog",
+          "wear.shirt.cloud",
+          "wear.shirt.glacier",
+          "wear.shirt.arctic",
+          "wear.shirt.copper",
+          "wear.shirt.bronze",
+          "wear.shirt.sienna",
+          "wear.shirt.clay",
+          "wear.shirt.ember",
+          "wear.hat.boater",
+          "wear.hat.bowler",
+          "wear.hat.fedora",
+          "wear.hat.panama",
+          "wear.hat.cloche",
+          "wear.hat.porkpie",
+          "wear.hat.trilby",
+          "wear.hat.homburg",
+          "wear.hat.gambler",
+          "wear.hat.field",
+          "wear.hat.pillbox",
+          "wear.hat.fez",
+          "wear.hat.stovepipe",
+          "wear.hat.coachman",
+          "wear.hat.boonie",
+          "wear.hat.deerstalker",
+          "wear.hat.skullcap",
+          "wear.hat.gaucho",
+          "wear.hat.cavalier",
+          "wear.hat.miner",
+          "wear.hat.bell-topper",
+          "wear.hat.cap-sky",
+          "wear.hat.cap-moss",
+          "wear.hat.cap-plum",
+          "wear.hat.cap-gold",
+          "wear.hat.cap-rose",
+          "wear.hat.cap-ink",
+          "wear.hat.cap-teal",
+          "wear.hat.beanie-rust",
+          "wear.hat.beanie-navy",
+          "wear.hat.beanie-mustard",
+          "wear.hat.beanie-rose",
+          "wear.hat.beanie-fog",
+          "wear.hat.beanie-moss",
+          "wear.hat.beret-ink",
+          "wear.hat.beret-plum",
+          "wear.hat.beret-moss",
+          "wear.hat.beret-sand",
+          "wear.hat.beret-sky",
+          "wear.hat.bucket-denim",
+          "wear.hat.bucket-cream",
+          "wear.hat.bucket-rose",
+          "wear.hat.bucket-charcoal",
+          "wear.hat.bucket-lime",
+          "wear.hat.sun-lilac",
+          "wear.hat.sun-mint",
+          "wear.hat.sun-peach",
+          "wear.hat.sun-linen",
+          "wear.hat.wool-ember",
+          "wear.hat.wool-storm",
+          "wear.hat.wool-oat",
+          "wear.hat.felt-forest",
+          "wear.hat.felt-wine",
+          "wear.hat.felt-slate",
+          "wear.hat.straw-rose",
+          "wear.hat.straw-teal",
+          "wear.hat.ranger-sand",
+          "wear.hat.ranger-slate",
+          "wear.hat.top-wine",
+          "wear.hat.top-navy",
+          "wear.glasses.copper",
+          "wear.glasses.slate",
+          "wear.glasses.gold",
+          "wear.glasses.silver",
+          "wear.glasses.tortoise",
+          "wear.glasses.moss",
+          "wear.glasses.sky",
+          "wear.glasses.plum",
+          "wear.glasses.ruby",
+          "wear.glasses.onyx",
+          "wear.glasses.pearl",
+          "wear.glasses.sunset",
+          "wear.glasses.sea",
+          "wear.glasses.denim",
+          "wear.glasses.wine",
+          "wear.glasses.lime",
+          "wear.glasses.honey",
+          "wear.glasses.fog",
+          "wear.glasses.coral",
+          "wear.glasses.navy",
+          "wear.glasses.blossom",
+          "wear.glasses.steel",
+          "wear.glasses.mint",
+          "wear.glasses.ember",
+          "wear.glasses.violet",
+          "wear.glasses.sand",
+          "wear.glasses.glacier",
+          "wear.glasses.cherry",
+          "wear.glasses.bronze",
+          "wear.glasses.arctic",
+          "wear.glasses.berry",
+          "wear.glasses.olive",
+          "wear.glasses.dusk",
+          "wear.glasses.dawn",
+          "wear.glasses.moon",
+          "wear.glasses.storm",
+          "wear.glasses.lagoon",
+          "wear.glasses.mustard",
+          "wear.glasses.iris",
+          "wear.glasses.clay",
+          "wear.glasses.sprout",
+          "wear.glasses.cobalt",
+          "wear.glasses.peach",
+          "wear.glasses.graphite",
+          "wear.glasses.seafoam",
+          "wear.glasses.cocoa",
+          "wear.glasses.flare",
+          "wear.glasses.frost",
+          "wear.glasses.night",
+          "wear.glasses.prism",
+          "wear.shirt.breton",
+          "wear.shirt.harbor",
+          "wear.shirt.meadow",
+          "wear.shirt.ember-ring",
+          "wear.shirt.bee",
+          "wear.shirt.berry-ring",
+          "wear.shirt.wave",
+          "wear.shirt.orchard",
+          "wear.shirt.fisher",
+          "wear.shirt.flannel",
+          "wear.shirt.pullover",
+          "wear.shirt.moor",
+          "wear.shirt.guernsey",
+          "wear.shirt.turtleneck",
+          "wear.shirt.cardigan",
+          "wear.shirt.skipper",
+          "wear.pants.denim",
+          "wear.pants.indigo",
+          "wear.pants.charcoal",
+          "wear.pants.khaki",
+          "wear.pants.olive",
+          "wear.pants.brown",
+          "wear.pants.tan",
+          "wear.pants.slate",
+          "wear.pants.forest",
+          "wear.pants.wine",
+          "wear.pants.navy",
+          "wear.pants.cream",
+          "wear.pants.rust",
+          "wear.pants.plum",
+          "wear.pants.black",
+          "wear.pants.moss",
+          "wear.pants.shorts-denim",
+          "wear.pants.shorts-khaki",
+          "wear.pants.shorts-sand",
+          "wear.pants.shorts-sky",
+          "wear.pants.shorts-coral",
+          "wear.pants.shorts-olive",
+          "wear.pants.shorts-ink",
+          "wear.pants.shorts-mint",
+          "wear.shoes.cloud",
+          "wear.shoes.trail",
+          "wear.shoes.loafer",
+          "wear.shoes.cherry",
+          "wear.shoes.sky",
+          "wear.shoes.moss",
+          "wear.shoes.espadrille",
+          "wear.shoes.deck",
+          "wear.shoes.slipper",
+          "wear.shoes.buckle",
+          "wear.shoes.oxford",
+          "wear.shoes.brogue",
+          "wear.shoes.cream-loafer",
+          "wear.shoes.ink-boot",
+          "wear.shoes.trainer",
+          "wear.shoes.clog",
+          "wear.shoes.mule",
+          "wear.shoes.runner",
+          "wear.shoes.fog",
+          "wear.shoes.lime",
+          "wear.shirt.polka-plum",
+          "wear.shirt.polka-cream",
+          "wear.shirt.polka-teal",
+          "wear.shirt.polka-rose",
+          "wear.shirt.pinstripe-cream",
+          "wear.shirt.pinstripe-forest",
+          "wear.shirt.plaid-picnic",
+          "wear.shirt.plaid-sky",
+          "wear.shirt.yoke-varsity",
+          "wear.shirt.yoke-raglan",
+          "wear.shirt.yoke-sunset",
+          "wear.shirt.pinstripe-ink",
+          "wear.shirt.pinstripe-denim",
+          "wear.shirt.plaid-forest",
+          "wear.shirt.plaid-ember",
+          "wear.shirt.yoke-western"
         ],
         "daily": {
           "shirt": 3,
           "hat": 1,
-          "glasses": 1
+          "glasses": 1,
+          "pants": 2,
+          "shoes": 1
         },
         "stock": [
           {
@@ -407,6 +685,1386 @@
           {
             "type": "wear.glasses.jade",
             "group": "glasses",
+            "count": 1
+          },
+          {
+            "type": "wear.shirt.crimson",
+            "group": "shirt",
+            "count": 1
+          },
+          {
+            "type": "wear.shirt.scarlet",
+            "group": "shirt",
+            "count": 1
+          },
+          {
+            "type": "wear.shirt.brick",
+            "group": "shirt",
+            "count": 1
+          },
+          {
+            "type": "wear.shirt.coral",
+            "group": "shirt",
+            "count": 1
+          },
+          {
+            "type": "wear.shirt.salmon",
+            "group": "shirt",
+            "count": 1
+          },
+          {
+            "type": "wear.shirt.peach",
+            "group": "shirt",
+            "count": 1
+          },
+          {
+            "type": "wear.shirt.apricot",
+            "group": "shirt",
+            "count": 1
+          },
+          {
+            "type": "wear.shirt.tangerine",
+            "group": "shirt",
+            "count": 1
+          },
+          {
+            "type": "wear.shirt.marigold",
+            "group": "shirt",
+            "count": 1
+          },
+          {
+            "type": "wear.shirt.gold",
+            "group": "shirt",
+            "count": 1
+          },
+          {
+            "type": "wear.shirt.mustard",
+            "group": "shirt",
+            "count": 1
+          },
+          {
+            "type": "wear.shirt.honey",
+            "group": "shirt",
+            "count": 1
+          },
+          {
+            "type": "wear.shirt.butter",
+            "group": "shirt",
+            "count": 1
+          },
+          {
+            "type": "wear.shirt.lemon",
+            "group": "shirt",
+            "count": 1
+          },
+          {
+            "type": "wear.shirt.chartreuse",
+            "group": "shirt",
+            "count": 1
+          },
+          {
+            "type": "wear.shirt.lime",
+            "group": "shirt",
+            "count": 1
+          },
+          {
+            "type": "wear.shirt.fern",
+            "group": "shirt",
+            "count": 1
+          },
+          {
+            "type": "wear.shirt.sage",
+            "group": "shirt",
+            "count": 1
+          },
+          {
+            "type": "wear.shirt.olive",
+            "group": "shirt",
+            "count": 1
+          },
+          {
+            "type": "wear.shirt.pine",
+            "group": "shirt",
+            "count": 1
+          },
+          {
+            "type": "wear.shirt.forest",
+            "group": "shirt",
+            "count": 1
+          },
+          {
+            "type": "wear.shirt.mint",
+            "group": "shirt",
+            "count": 1
+          },
+          {
+            "type": "wear.shirt.seafoam",
+            "group": "shirt",
+            "count": 1
+          },
+          {
+            "type": "wear.shirt.jade",
+            "group": "shirt",
+            "count": 1
+          },
+          {
+            "type": "wear.shirt.emerald",
+            "group": "shirt",
+            "count": 1
+          },
+          {
+            "type": "wear.shirt.viridian",
+            "group": "shirt",
+            "count": 1
+          },
+          {
+            "type": "wear.shirt.juniper",
+            "group": "shirt",
+            "count": 1
+          },
+          {
+            "type": "wear.shirt.laurel",
+            "group": "shirt",
+            "count": 1
+          },
+          {
+            "type": "wear.shirt.basil",
+            "group": "shirt",
+            "count": 1
+          },
+          {
+            "type": "wear.shirt.cedar",
+            "group": "shirt",
+            "count": 1
+          },
+          {
+            "type": "wear.shirt.spruce",
+            "group": "shirt",
+            "count": 1
+          },
+          {
+            "type": "wear.shirt.aqua",
+            "group": "shirt",
+            "count": 1
+          },
+          {
+            "type": "wear.shirt.cyan",
+            "group": "shirt",
+            "count": 1
+          },
+          {
+            "type": "wear.shirt.turquoise",
+            "group": "shirt",
+            "count": 1
+          },
+          {
+            "type": "wear.shirt.lagoon",
+            "group": "shirt",
+            "count": 1
+          },
+          {
+            "type": "wear.shirt.cerulean",
+            "group": "shirt",
+            "count": 1
+          },
+          {
+            "type": "wear.shirt.azure",
+            "group": "shirt",
+            "count": 1
+          },
+          {
+            "type": "wear.shirt.cobalt",
+            "group": "shirt",
+            "count": 1
+          },
+          {
+            "type": "wear.shirt.sapphire",
+            "group": "shirt",
+            "count": 1
+          },
+          {
+            "type": "wear.shirt.navy",
+            "group": "shirt",
+            "count": 1
+          },
+          {
+            "type": "wear.shirt.midnight",
+            "group": "shirt",
+            "count": 1
+          },
+          {
+            "type": "wear.shirt.denim",
+            "group": "shirt",
+            "count": 1
+          },
+          {
+            "type": "wear.shirt.steel",
+            "group": "shirt",
+            "count": 1
+          },
+          {
+            "type": "wear.shirt.slate",
+            "group": "shirt",
+            "count": 1
+          },
+          {
+            "type": "wear.shirt.periwinkle",
+            "group": "shirt",
+            "count": 1
+          },
+          {
+            "type": "wear.shirt.iris",
+            "group": "shirt",
+            "count": 1
+          },
+          {
+            "type": "wear.shirt.violet",
+            "group": "shirt",
+            "count": 1
+          },
+          {
+            "type": "wear.shirt.lavender",
+            "group": "shirt",
+            "count": 1
+          },
+          {
+            "type": "wear.shirt.lilac",
+            "group": "shirt",
+            "count": 1
+          },
+          {
+            "type": "wear.shirt.orchid",
+            "group": "shirt",
+            "count": 1
+          },
+          {
+            "type": "wear.shirt.mauve",
+            "group": "shirt",
+            "count": 1
+          },
+          {
+            "type": "wear.shirt.magenta",
+            "group": "shirt",
+            "count": 1
+          },
+          {
+            "type": "wear.shirt.fuchsia",
+            "group": "shirt",
+            "count": 1
+          },
+          {
+            "type": "wear.shirt.berry",
+            "group": "shirt",
+            "count": 1
+          },
+          {
+            "type": "wear.shirt.mulberry",
+            "group": "shirt",
+            "count": 1
+          },
+          {
+            "type": "wear.shirt.wine",
+            "group": "shirt",
+            "count": 1
+          },
+          {
+            "type": "wear.shirt.maroon",
+            "group": "shirt",
+            "count": 1
+          },
+          {
+            "type": "wear.shirt.burgundy",
+            "group": "shirt",
+            "count": 1
+          },
+          {
+            "type": "wear.shirt.cherry",
+            "group": "shirt",
+            "count": 1
+          },
+          {
+            "type": "wear.shirt.raspberry",
+            "group": "shirt",
+            "count": 1
+          },
+          {
+            "type": "wear.shirt.blush",
+            "group": "shirt",
+            "count": 1
+          },
+          {
+            "type": "wear.shirt.petal",
+            "group": "shirt",
+            "count": 1
+          },
+          {
+            "type": "wear.shirt.flamingo",
+            "group": "shirt",
+            "count": 1
+          },
+          {
+            "type": "wear.shirt.bubblegum",
+            "group": "shirt",
+            "count": 1
+          },
+          {
+            "type": "wear.shirt.taupe",
+            "group": "shirt",
+            "count": 1
+          },
+          {
+            "type": "wear.shirt.fawn",
+            "group": "shirt",
+            "count": 1
+          },
+          {
+            "type": "wear.shirt.camel",
+            "group": "shirt",
+            "count": 1
+          },
+          {
+            "type": "wear.shirt.khaki",
+            "group": "shirt",
+            "count": 1
+          },
+          {
+            "type": "wear.shirt.tan",
+            "group": "shirt",
+            "count": 1
+          },
+          {
+            "type": "wear.shirt.biscuit",
+            "group": "shirt",
+            "count": 1
+          },
+          {
+            "type": "wear.shirt.oat",
+            "group": "shirt",
+            "count": 1
+          },
+          {
+            "type": "wear.shirt.cream",
+            "group": "shirt",
+            "count": 1
+          },
+          {
+            "type": "wear.shirt.ivory",
+            "group": "shirt",
+            "count": 1
+          },
+          {
+            "type": "wear.shirt.chalk",
+            "group": "shirt",
+            "count": 1
+          },
+          {
+            "type": "wear.shirt.ash",
+            "group": "shirt",
+            "count": 1
+          },
+          {
+            "type": "wear.shirt.dove",
+            "group": "shirt",
+            "count": 1
+          },
+          {
+            "type": "wear.shirt.pewter",
+            "group": "shirt",
+            "count": 1
+          },
+          {
+            "type": "wear.shirt.graphite",
+            "group": "shirt",
+            "count": 1
+          },
+          {
+            "type": "wear.shirt.charcoal",
+            "group": "shirt",
+            "count": 1
+          },
+          {
+            "type": "wear.shirt.onyx",
+            "group": "shirt",
+            "count": 1
+          },
+          {
+            "type": "wear.shirt.storm",
+            "group": "shirt",
+            "count": 1
+          },
+          {
+            "type": "wear.shirt.fog",
+            "group": "shirt",
+            "count": 1
+          },
+          {
+            "type": "wear.shirt.cloud",
+            "group": "shirt",
+            "count": 1
+          },
+          {
+            "type": "wear.shirt.glacier",
+            "group": "shirt",
+            "count": 1
+          },
+          {
+            "type": "wear.shirt.arctic",
+            "group": "shirt",
+            "count": 1
+          },
+          {
+            "type": "wear.shirt.copper",
+            "group": "shirt",
+            "count": 1
+          },
+          {
+            "type": "wear.shirt.bronze",
+            "group": "shirt",
+            "count": 1
+          },
+          {
+            "type": "wear.shirt.sienna",
+            "group": "shirt",
+            "count": 1
+          },
+          {
+            "type": "wear.shirt.clay",
+            "group": "shirt",
+            "count": 1
+          },
+          {
+            "type": "wear.shirt.ember",
+            "group": "shirt",
+            "count": 1
+          },
+          {
+            "type": "wear.hat.boater",
+            "group": "hat",
+            "count": 1
+          },
+          {
+            "type": "wear.hat.bowler",
+            "group": "hat",
+            "count": 1
+          },
+          {
+            "type": "wear.hat.fedora",
+            "group": "hat",
+            "count": 1
+          },
+          {
+            "type": "wear.hat.panama",
+            "group": "hat",
+            "count": 1
+          },
+          {
+            "type": "wear.hat.cloche",
+            "group": "hat",
+            "count": 1
+          },
+          {
+            "type": "wear.hat.porkpie",
+            "group": "hat",
+            "count": 1
+          },
+          {
+            "type": "wear.hat.trilby",
+            "group": "hat",
+            "count": 1
+          },
+          {
+            "type": "wear.hat.homburg",
+            "group": "hat",
+            "count": 1
+          },
+          {
+            "type": "wear.hat.gambler",
+            "group": "hat",
+            "count": 1
+          },
+          {
+            "type": "wear.hat.field",
+            "group": "hat",
+            "count": 1
+          },
+          {
+            "type": "wear.hat.pillbox",
+            "group": "hat",
+            "count": 1
+          },
+          {
+            "type": "wear.hat.fez",
+            "group": "hat",
+            "count": 1
+          },
+          {
+            "type": "wear.hat.stovepipe",
+            "group": "hat",
+            "count": 1
+          },
+          {
+            "type": "wear.hat.coachman",
+            "group": "hat",
+            "count": 1
+          },
+          {
+            "type": "wear.hat.boonie",
+            "group": "hat",
+            "count": 1
+          },
+          {
+            "type": "wear.hat.deerstalker",
+            "group": "hat",
+            "count": 1
+          },
+          {
+            "type": "wear.hat.skullcap",
+            "group": "hat",
+            "count": 1
+          },
+          {
+            "type": "wear.hat.gaucho",
+            "group": "hat",
+            "count": 1
+          },
+          {
+            "type": "wear.hat.cavalier",
+            "group": "hat",
+            "count": 1
+          },
+          {
+            "type": "wear.hat.miner",
+            "group": "hat",
+            "count": 1
+          },
+          {
+            "type": "wear.hat.bell-topper",
+            "group": "hat",
+            "count": 1
+          },
+          {
+            "type": "wear.hat.cap-sky",
+            "group": "hat",
+            "count": 1
+          },
+          {
+            "type": "wear.hat.cap-moss",
+            "group": "hat",
+            "count": 1
+          },
+          {
+            "type": "wear.hat.cap-plum",
+            "group": "hat",
+            "count": 1
+          },
+          {
+            "type": "wear.hat.cap-gold",
+            "group": "hat",
+            "count": 1
+          },
+          {
+            "type": "wear.hat.cap-rose",
+            "group": "hat",
+            "count": 1
+          },
+          {
+            "type": "wear.hat.cap-ink",
+            "group": "hat",
+            "count": 1
+          },
+          {
+            "type": "wear.hat.cap-teal",
+            "group": "hat",
+            "count": 1
+          },
+          {
+            "type": "wear.hat.beanie-rust",
+            "group": "hat",
+            "count": 1
+          },
+          {
+            "type": "wear.hat.beanie-navy",
+            "group": "hat",
+            "count": 1
+          },
+          {
+            "type": "wear.hat.beanie-mustard",
+            "group": "hat",
+            "count": 1
+          },
+          {
+            "type": "wear.hat.beanie-rose",
+            "group": "hat",
+            "count": 1
+          },
+          {
+            "type": "wear.hat.beanie-fog",
+            "group": "hat",
+            "count": 1
+          },
+          {
+            "type": "wear.hat.beanie-moss",
+            "group": "hat",
+            "count": 1
+          },
+          {
+            "type": "wear.hat.beret-ink",
+            "group": "hat",
+            "count": 1
+          },
+          {
+            "type": "wear.hat.beret-plum",
+            "group": "hat",
+            "count": 1
+          },
+          {
+            "type": "wear.hat.beret-moss",
+            "group": "hat",
+            "count": 1
+          },
+          {
+            "type": "wear.hat.beret-sand",
+            "group": "hat",
+            "count": 1
+          },
+          {
+            "type": "wear.hat.beret-sky",
+            "group": "hat",
+            "count": 1
+          },
+          {
+            "type": "wear.hat.bucket-denim",
+            "group": "hat",
+            "count": 1
+          },
+          {
+            "type": "wear.hat.bucket-cream",
+            "group": "hat",
+            "count": 1
+          },
+          {
+            "type": "wear.hat.bucket-rose",
+            "group": "hat",
+            "count": 1
+          },
+          {
+            "type": "wear.hat.bucket-charcoal",
+            "group": "hat",
+            "count": 1
+          },
+          {
+            "type": "wear.hat.bucket-lime",
+            "group": "hat",
+            "count": 1
+          },
+          {
+            "type": "wear.hat.sun-lilac",
+            "group": "hat",
+            "count": 1
+          },
+          {
+            "type": "wear.hat.sun-mint",
+            "group": "hat",
+            "count": 1
+          },
+          {
+            "type": "wear.hat.sun-peach",
+            "group": "hat",
+            "count": 1
+          },
+          {
+            "type": "wear.hat.sun-linen",
+            "group": "hat",
+            "count": 1
+          },
+          {
+            "type": "wear.hat.wool-ember",
+            "group": "hat",
+            "count": 1
+          },
+          {
+            "type": "wear.hat.wool-storm",
+            "group": "hat",
+            "count": 1
+          },
+          {
+            "type": "wear.hat.wool-oat",
+            "group": "hat",
+            "count": 1
+          },
+          {
+            "type": "wear.hat.felt-forest",
+            "group": "hat",
+            "count": 1
+          },
+          {
+            "type": "wear.hat.felt-wine",
+            "group": "hat",
+            "count": 1
+          },
+          {
+            "type": "wear.hat.felt-slate",
+            "group": "hat",
+            "count": 1
+          },
+          {
+            "type": "wear.hat.straw-rose",
+            "group": "hat",
+            "count": 1
+          },
+          {
+            "type": "wear.hat.straw-teal",
+            "group": "hat",
+            "count": 1
+          },
+          {
+            "type": "wear.hat.ranger-sand",
+            "group": "hat",
+            "count": 1
+          },
+          {
+            "type": "wear.hat.ranger-slate",
+            "group": "hat",
+            "count": 1
+          },
+          {
+            "type": "wear.hat.top-wine",
+            "group": "hat",
+            "count": 1
+          },
+          {
+            "type": "wear.hat.top-navy",
+            "group": "hat",
+            "count": 1
+          },
+          {
+            "type": "wear.glasses.copper",
+            "group": "glasses",
+            "count": 1
+          },
+          {
+            "type": "wear.glasses.slate",
+            "group": "glasses",
+            "count": 1
+          },
+          {
+            "type": "wear.glasses.gold",
+            "group": "glasses",
+            "count": 1
+          },
+          {
+            "type": "wear.glasses.silver",
+            "group": "glasses",
+            "count": 1
+          },
+          {
+            "type": "wear.glasses.tortoise",
+            "group": "glasses",
+            "count": 1
+          },
+          {
+            "type": "wear.glasses.moss",
+            "group": "glasses",
+            "count": 1
+          },
+          {
+            "type": "wear.glasses.sky",
+            "group": "glasses",
+            "count": 1
+          },
+          {
+            "type": "wear.glasses.plum",
+            "group": "glasses",
+            "count": 1
+          },
+          {
+            "type": "wear.glasses.ruby",
+            "group": "glasses",
+            "count": 1
+          },
+          {
+            "type": "wear.glasses.onyx",
+            "group": "glasses",
+            "count": 1
+          },
+          {
+            "type": "wear.glasses.pearl",
+            "group": "glasses",
+            "count": 1
+          },
+          {
+            "type": "wear.glasses.sunset",
+            "group": "glasses",
+            "count": 1
+          },
+          {
+            "type": "wear.glasses.sea",
+            "group": "glasses",
+            "count": 1
+          },
+          {
+            "type": "wear.glasses.denim",
+            "group": "glasses",
+            "count": 1
+          },
+          {
+            "type": "wear.glasses.wine",
+            "group": "glasses",
+            "count": 1
+          },
+          {
+            "type": "wear.glasses.lime",
+            "group": "glasses",
+            "count": 1
+          },
+          {
+            "type": "wear.glasses.honey",
+            "group": "glasses",
+            "count": 1
+          },
+          {
+            "type": "wear.glasses.fog",
+            "group": "glasses",
+            "count": 1
+          },
+          {
+            "type": "wear.glasses.coral",
+            "group": "glasses",
+            "count": 1
+          },
+          {
+            "type": "wear.glasses.navy",
+            "group": "glasses",
+            "count": 1
+          },
+          {
+            "type": "wear.glasses.blossom",
+            "group": "glasses",
+            "count": 1
+          },
+          {
+            "type": "wear.glasses.steel",
+            "group": "glasses",
+            "count": 1
+          },
+          {
+            "type": "wear.glasses.mint",
+            "group": "glasses",
+            "count": 1
+          },
+          {
+            "type": "wear.glasses.ember",
+            "group": "glasses",
+            "count": 1
+          },
+          {
+            "type": "wear.glasses.violet",
+            "group": "glasses",
+            "count": 1
+          },
+          {
+            "type": "wear.glasses.sand",
+            "group": "glasses",
+            "count": 1
+          },
+          {
+            "type": "wear.glasses.glacier",
+            "group": "glasses",
+            "count": 1
+          },
+          {
+            "type": "wear.glasses.cherry",
+            "group": "glasses",
+            "count": 1
+          },
+          {
+            "type": "wear.glasses.bronze",
+            "group": "glasses",
+            "count": 1
+          },
+          {
+            "type": "wear.glasses.arctic",
+            "group": "glasses",
+            "count": 1
+          },
+          {
+            "type": "wear.glasses.berry",
+            "group": "glasses",
+            "count": 1
+          },
+          {
+            "type": "wear.glasses.olive",
+            "group": "glasses",
+            "count": 1
+          },
+          {
+            "type": "wear.glasses.dusk",
+            "group": "glasses",
+            "count": 1
+          },
+          {
+            "type": "wear.glasses.dawn",
+            "group": "glasses",
+            "count": 1
+          },
+          {
+            "type": "wear.glasses.moon",
+            "group": "glasses",
+            "count": 1
+          },
+          {
+            "type": "wear.glasses.storm",
+            "group": "glasses",
+            "count": 1
+          },
+          {
+            "type": "wear.glasses.lagoon",
+            "group": "glasses",
+            "count": 1
+          },
+          {
+            "type": "wear.glasses.mustard",
+            "group": "glasses",
+            "count": 1
+          },
+          {
+            "type": "wear.glasses.iris",
+            "group": "glasses",
+            "count": 1
+          },
+          {
+            "type": "wear.glasses.clay",
+            "group": "glasses",
+            "count": 1
+          },
+          {
+            "type": "wear.glasses.sprout",
+            "group": "glasses",
+            "count": 1
+          },
+          {
+            "type": "wear.glasses.cobalt",
+            "group": "glasses",
+            "count": 1
+          },
+          {
+            "type": "wear.glasses.peach",
+            "group": "glasses",
+            "count": 1
+          },
+          {
+            "type": "wear.glasses.graphite",
+            "group": "glasses",
+            "count": 1
+          },
+          {
+            "type": "wear.glasses.seafoam",
+            "group": "glasses",
+            "count": 1
+          },
+          {
+            "type": "wear.glasses.cocoa",
+            "group": "glasses",
+            "count": 1
+          },
+          {
+            "type": "wear.glasses.flare",
+            "group": "glasses",
+            "count": 1
+          },
+          {
+            "type": "wear.glasses.frost",
+            "group": "glasses",
+            "count": 1
+          },
+          {
+            "type": "wear.glasses.night",
+            "group": "glasses",
+            "count": 1
+          },
+          {
+            "type": "wear.glasses.prism",
+            "group": "glasses",
+            "count": 1
+          },
+          {
+            "type": "wear.shirt.breton",
+            "group": "shirt",
+            "count": 1
+          },
+          {
+            "type": "wear.shirt.harbor",
+            "group": "shirt",
+            "count": 1
+          },
+          {
+            "type": "wear.shirt.meadow",
+            "group": "shirt",
+            "count": 1
+          },
+          {
+            "type": "wear.shirt.ember-ring",
+            "group": "shirt",
+            "count": 1
+          },
+          {
+            "type": "wear.shirt.bee",
+            "group": "shirt",
+            "count": 1
+          },
+          {
+            "type": "wear.shirt.berry-ring",
+            "group": "shirt",
+            "count": 1
+          },
+          {
+            "type": "wear.shirt.wave",
+            "group": "shirt",
+            "count": 1
+          },
+          {
+            "type": "wear.shirt.orchard",
+            "group": "shirt",
+            "count": 1
+          },
+          {
+            "type": "wear.shirt.fisher",
+            "group": "shirt",
+            "count": 1
+          },
+          {
+            "type": "wear.shirt.flannel",
+            "group": "shirt",
+            "count": 1
+          },
+          {
+            "type": "wear.shirt.pullover",
+            "group": "shirt",
+            "count": 1
+          },
+          {
+            "type": "wear.shirt.moor",
+            "group": "shirt",
+            "count": 1
+          },
+          {
+            "type": "wear.shirt.guernsey",
+            "group": "shirt",
+            "count": 1
+          },
+          {
+            "type": "wear.shirt.turtleneck",
+            "group": "shirt",
+            "count": 1
+          },
+          {
+            "type": "wear.shirt.cardigan",
+            "group": "shirt",
+            "count": 1
+          },
+          {
+            "type": "wear.shirt.skipper",
+            "group": "shirt",
+            "count": 1
+          },
+          {
+            "type": "wear.pants.denim",
+            "group": "pants",
+            "count": 1
+          },
+          {
+            "type": "wear.pants.indigo",
+            "group": "pants",
+            "count": 1
+          },
+          {
+            "type": "wear.pants.charcoal",
+            "group": "pants",
+            "count": 1
+          },
+          {
+            "type": "wear.pants.khaki",
+            "group": "pants",
+            "count": 1
+          },
+          {
+            "type": "wear.pants.olive",
+            "group": "pants",
+            "count": 1
+          },
+          {
+            "type": "wear.pants.brown",
+            "group": "pants",
+            "count": 1
+          },
+          {
+            "type": "wear.pants.tan",
+            "group": "pants",
+            "count": 1
+          },
+          {
+            "type": "wear.pants.slate",
+            "group": "pants",
+            "count": 1
+          },
+          {
+            "type": "wear.pants.forest",
+            "group": "pants",
+            "count": 1
+          },
+          {
+            "type": "wear.pants.wine",
+            "group": "pants",
+            "count": 1
+          },
+          {
+            "type": "wear.pants.navy",
+            "group": "pants",
+            "count": 1
+          },
+          {
+            "type": "wear.pants.cream",
+            "group": "pants",
+            "count": 1
+          },
+          {
+            "type": "wear.pants.rust",
+            "group": "pants",
+            "count": 1
+          },
+          {
+            "type": "wear.pants.plum",
+            "group": "pants",
+            "count": 1
+          },
+          {
+            "type": "wear.pants.black",
+            "group": "pants",
+            "count": 1
+          },
+          {
+            "type": "wear.pants.moss",
+            "group": "pants",
+            "count": 1
+          },
+          {
+            "type": "wear.pants.shorts-denim",
+            "group": "pants",
+            "count": 1
+          },
+          {
+            "type": "wear.pants.shorts-khaki",
+            "group": "pants",
+            "count": 1
+          },
+          {
+            "type": "wear.pants.shorts-sand",
+            "group": "pants",
+            "count": 1
+          },
+          {
+            "type": "wear.pants.shorts-sky",
+            "group": "pants",
+            "count": 1
+          },
+          {
+            "type": "wear.pants.shorts-coral",
+            "group": "pants",
+            "count": 1
+          },
+          {
+            "type": "wear.pants.shorts-olive",
+            "group": "pants",
+            "count": 1
+          },
+          {
+            "type": "wear.pants.shorts-ink",
+            "group": "pants",
+            "count": 1
+          },
+          {
+            "type": "wear.pants.shorts-mint",
+            "group": "pants",
+            "count": 1
+          },
+          {
+            "type": "wear.shoes.cloud",
+            "group": "shoes",
+            "count": 1
+          },
+          {
+            "type": "wear.shoes.trail",
+            "group": "shoes",
+            "count": 1
+          },
+          {
+            "type": "wear.shoes.loafer",
+            "group": "shoes",
+            "count": 1
+          },
+          {
+            "type": "wear.shoes.cherry",
+            "group": "shoes",
+            "count": 1
+          },
+          {
+            "type": "wear.shoes.sky",
+            "group": "shoes",
+            "count": 1
+          },
+          {
+            "type": "wear.shoes.moss",
+            "group": "shoes",
+            "count": 1
+          },
+          {
+            "type": "wear.shoes.espadrille",
+            "group": "shoes",
+            "count": 1
+          },
+          {
+            "type": "wear.shoes.deck",
+            "group": "shoes",
+            "count": 1
+          },
+          {
+            "type": "wear.shoes.slipper",
+            "group": "shoes",
+            "count": 1
+          },
+          {
+            "type": "wear.shoes.buckle",
+            "group": "shoes",
+            "count": 1
+          },
+          {
+            "type": "wear.shoes.oxford",
+            "group": "shoes",
+            "count": 1
+          },
+          {
+            "type": "wear.shoes.brogue",
+            "group": "shoes",
+            "count": 1
+          },
+          {
+            "type": "wear.shoes.cream-loafer",
+            "group": "shoes",
+            "count": 1
+          },
+          {
+            "type": "wear.shoes.ink-boot",
+            "group": "shoes",
+            "count": 1
+          },
+          {
+            "type": "wear.shoes.trainer",
+            "group": "shoes",
+            "count": 1
+          },
+          {
+            "type": "wear.shoes.clog",
+            "group": "shoes",
+            "count": 1
+          },
+          {
+            "type": "wear.shoes.mule",
+            "group": "shoes",
+            "count": 1
+          },
+          {
+            "type": "wear.shoes.runner",
+            "group": "shoes",
+            "count": 1
+          },
+          {
+            "type": "wear.shoes.fog",
+            "group": "shoes",
+            "count": 1
+          },
+          {
+            "type": "wear.shoes.lime",
+            "group": "shoes",
+            "count": 1
+          },
+          {
+            "type": "wear.shirt.polka-plum",
+            "group": "shirt",
+            "count": 1
+          },
+          {
+            "type": "wear.shirt.polka-cream",
+            "group": "shirt",
+            "count": 1
+          },
+          {
+            "type": "wear.shirt.polka-teal",
+            "group": "shirt",
+            "count": 1
+          },
+          {
+            "type": "wear.shirt.polka-rose",
+            "group": "shirt",
+            "count": 1
+          },
+          {
+            "type": "wear.shirt.pinstripe-cream",
+            "group": "shirt",
+            "count": 1
+          },
+          {
+            "type": "wear.shirt.pinstripe-forest",
+            "group": "shirt",
+            "count": 1
+          },
+          {
+            "type": "wear.shirt.plaid-picnic",
+            "group": "shirt",
+            "count": 1
+          },
+          {
+            "type": "wear.shirt.plaid-sky",
+            "group": "shirt",
+            "count": 1
+          },
+          {
+            "type": "wear.shirt.yoke-varsity",
+            "group": "shirt",
+            "count": 1
+          },
+          {
+            "type": "wear.shirt.yoke-raglan",
+            "group": "shirt",
+            "count": 1
+          },
+          {
+            "type": "wear.shirt.yoke-sunset",
+            "group": "shirt",
+            "count": 1
+          },
+          {
+            "type": "wear.shirt.pinstripe-ink",
+            "group": "shirt",
+            "count": 1
+          },
+          {
+            "type": "wear.shirt.pinstripe-denim",
+            "group": "shirt",
+            "count": 1
+          },
+          {
+            "type": "wear.shirt.plaid-forest",
+            "group": "shirt",
+            "count": 1
+          },
+          {
+            "type": "wear.shirt.plaid-ember",
+            "group": "shirt",
+            "count": 1
+          },
+          {
+            "type": "wear.shirt.yoke-western",
+            "group": "shirt",
             "count": 1
           }
         ]

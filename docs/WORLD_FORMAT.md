@@ -321,8 +321,9 @@ whether there is *anything* in the player's hand, which is the one question
 `has` cannot ask.
 
 **Effects** (`do`): `set`, `clear`, `give`, `take`, `coins`, `shop`, `gift`,
-`peace`. One key per object; a list is an order. `gift` hands over one of
-whatever is held; `peace` ends a feud (below).
+`peace`, `travel`. One key per object; a list is an order. `gift` hands over one
+of whatever is held; `peace` ends a feud (below); `travel` names a world URL and
+asks the game to move there while retaining the current place as the way back.
 
 Flags and the visit count live on the **NPC**, not on the conversation, so they
 outlive it — and the NPC outlives you leaving the room.

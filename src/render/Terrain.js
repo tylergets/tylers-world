@@ -256,7 +256,19 @@ function terrainMaterial() {
         varying float vWater;
         varying float vShore;
         varying float vPattern;
-        varying vec3 vWorldPos;`)
+        varying vec3 vWorldPos;
+
+        float terrainHash(vec2 p) {
+          return fract(sin(dot(p, vec2(127.1, 311.7))) * 43758.5453);
+        }
+
+        float terrainNoise(vec2 p) {
+          vec2 i = floor(p);
+          vec2 f = fract(p);
+          f = f * f * (3.0 - 2.0 * f);
+          return mix(mix(terrainHash(i), terrainHash(i + vec2(1.0, 0.0)), f.x),
+            mix(terrainHash(i + vec2(0.0, 1.0)), terrainHash(i + vec2(1.0)), f.x), f.y);
+        }`)
       .replace('#include <begin_vertex>', `#include <begin_vertex>
         vLocal = aLocal;
         vWater = aWater;
@@ -281,26 +293,35 @@ function terrainMaterial() {
 
         outgoingLight = mix(outgoingLight, diffuseColor.rgb * 1.04 * uTint, uFlat);
 
-        // Textureless interior finishes. Surface IDs select a pattern, while
-        // tile-local coordinates keep every finish inside the terrain's one
-        // merged draw call. IDs 1-4 are floors; 5-7 are wallpaper.
+        // Textureless finishes. Local coordinates define constructed surfaces;
+        // world coordinates keep organic detail continuous across tile seams.
+        // Everything remains in the terrain's single merged draw call.
         if (vPattern > 0.5 && vPattern < 1.5) {
           float boards = min(fract(vLocal.x * 4.0), 1.0 - fract(vLocal.x * 4.0));
           float seam = 1.0 - smoothstep(0.0, 0.055, boards);
           float stagger = 1.0 - smoothstep(0.0, 0.035,
             min(fract(vLocal.y * 2.0 + floor(vLocal.x * 4.0) * 0.5),
               1.0 - fract(vLocal.y * 2.0 + floor(vLocal.x * 4.0) * 0.5)));
-          outgoingLight *= 1.0 - max(seam, stagger) * 0.16;
+          float plank = terrainHash(floor(vWorldPos.xz * vec2(4.0, 2.0)));
+          float grain = sin(vWorldPos.z * 48.0 + sin(vWorldPos.z * 9.0 + plank * 6.28));
+          outgoingLight *= (0.94 + plank * 0.10 + grain * 0.018)
+            * (1.0 - max(seam, stagger) * 0.2);
         } else if (vPattern > 1.5 && vPattern < 2.5) {
           float check = mod(floor(vLocal.x * 2.0) + floor(vLocal.y * 2.0), 2.0);
-          outgoingLight *= mix(0.72, 1.08, check);
+          vec2 checkEdge = min(fract(vLocal * 2.0), 1.0 - fract(vLocal * 2.0));
+          float checkGrout = 1.0 - smoothstep(0.0, 0.045, min(checkEdge.x, checkEdge.y));
+          outgoingLight *= mix(0.72, 1.08, check) * (1.0 - checkGrout * 0.14);
         } else if (vPattern > 2.5 && vPattern < 3.5) {
           float weave = abs(fract((vLocal.x + vLocal.y) * 5.0) - 0.5);
           float crossWeave = abs(fract((vLocal.x - vLocal.y) * 5.0) - 0.5);
-          outgoingLight *= 0.9 + smoothstep(0.08, 0.16, min(weave, crossWeave)) * 0.12;
+          float parquetJoint = 1.0 - smoothstep(0.0, 0.055, min(weave, crossWeave));
+          float parquetGrain = sin((vLocal.x + vLocal.y) * 72.0) * 0.018;
+          outgoingLight *= 1.01 + parquetGrain - parquetJoint * 0.16;
         } else if (vPattern > 3.5 && vPattern < 4.5) {
           vec2 grout = min(fract(vLocal * vec2(2.0, 3.0)), 1.0 - fract(vLocal * vec2(2.0, 3.0)));
-          outgoingLight *= 1.0 - (1.0 - smoothstep(0.0, 0.06, min(grout.x, grout.y))) * 0.18;
+          float clay = terrainNoise(vWorldPos.xz * 7.0) - 0.5;
+          outgoingLight *= 1.0 + clay * 0.09
+            - (1.0 - smoothstep(0.0, 0.06, min(grout.x, grout.y))) * 0.2;
         } else if (vPattern > 4.5 && vPattern < 5.5) {
           float stripe = 0.5 + 0.5 * cos(vLocal.x * 12.56637);
           outgoingLight *= mix(0.84, 1.08, stripe);
@@ -313,6 +334,32 @@ function terrainMaterial() {
           float frame = 1.0 - smoothstep(0.035, 0.075, min(edge.x, edge.y));
           float rail = 1.0 - smoothstep(0.0, 0.035, abs(vLocal.y - 0.38));
           outgoingLight *= 1.0 - max(frame, rail) * 0.2;
+        } else if (vPattern > 7.5 && vPattern < 8.5) {
+          float grassPatch = terrainNoise(vWorldPos.xz * 2.7);
+          float grassTuft = terrainNoise(vWorldPos.xz * 15.0);
+          float blade = sin(vWorldPos.x * 53.0 + vWorldPos.z * 31.0) * 0.012;
+          outgoingLight *= 0.89 + grassPatch * 0.17 + grassTuft * 0.055 + blade;
+        } else if (vPattern > 8.5 && vPattern < 9.5) {
+          float concreteMottle = terrainNoise(vWorldPos.xz * 8.0) - 0.5;
+          float aggregate = terrainHash(floor(vWorldPos.xz * 38.0));
+          float pebble = smoothstep(0.91, 0.98, aggregate);
+          outgoingLight *= 0.98 + concreteMottle * 0.07 - pebble * 0.09;
+        } else if (vPattern > 9.5 && vPattern < 10.5) {
+          float sandDrift = sin(vWorldPos.x * 11.0 + vWorldPos.z * 3.2
+            + terrainNoise(vWorldPos.xz * 2.0) * 3.0);
+          float sandGrain = terrainHash(floor(vWorldPos.xz * 42.0)) - 0.5;
+          outgoingLight *= 0.975 + sandDrift * 0.035 + sandGrain * 0.035;
+        } else if (vPattern > 10.5 && vPattern < 11.5) {
+          vec2 tileCell = min(fract(vLocal * 2.0), 1.0 - fract(vLocal * 2.0));
+          float tileGrout = 1.0 - smoothstep(0.0, 0.055, min(tileCell.x, tileCell.y));
+          float glaze = terrainNoise(vWorldPos.xz * 9.0) - 0.5;
+          outgoingLight *= 1.015 + glaze * 0.045 - tileGrout * 0.2;
+        } else if (vPattern > 11.5 && vPattern < 12.5) {
+          float warp = 0.5 + 0.5 * sin(vWorldPos.x * 72.0);
+          float weft = 0.5 + 0.5 * sin(vWorldPos.z * 72.0);
+          float diamond = abs(fract((vWorldPos.x + vWorldPos.z) * 2.0) - 0.5);
+          outgoingLight *= 0.9 + (warp + weft) * 0.045
+            + smoothstep(0.18, 0.28, diamond) * 0.055;
         }
 
         // Natural shoreline. The interpolated proximity removes the hard
@@ -343,6 +390,6 @@ function terrainMaterial() {
 
         #include <opaque_fragment>`);
   };
-    m.customProgramCacheKey = () => 'terrain-shoreline-water-patterns-v3';
+  m.customProgramCacheKey = () => 'terrain-shoreline-water-patterns-v4';
   return m;
 }

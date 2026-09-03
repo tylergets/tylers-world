@@ -1,212 +1,218 @@
-/**
- * The working desk for Town Hall's two map-facing offices.
- *
- * The panel owns selection and presentation only. Game owns approval and
- * mutation, keeping DOM events from becoming a second authority on terrain or
- * animal membership. The Mayor remains an ordinary conversation because civic
- * matters are words and investments, not a map operation.
- */
-
+/** Town Hall desk controller. Planner painting remains wholly imperative. */
 import { ANIMAL_TYPES } from '../world/animalTypes.js';
+import { CELL, objectType } from '../world/objectTypes.js';
 import { placeBake } from './minimap.js';
 
-const PLANNER_TOOLS = [
-  ['grass', 'Grass', '#93d466'],
-  ['concrete', 'Road', '#d8d3c6'],
-  ['sand', 'Sand', '#f0e0b2'],
-  ['water', 'Water', '#4ea3dd'],
-  ['restore', 'Original', '#9aa0a6'],
+const ELEVATION_BAKES = new WeakMap();
+
+/** A transparent low-to-high colour wash used only by the planning map. */
+function elevationBake(world) {
+  const cached = ELEVATION_BAKES.get(world);
+  if (cached) return cached;
+  let min = Infinity, max = -Infinity;
+  for (const elevation of world.elevation) {
+    min = Math.min(min, elevation); max = Math.max(max, elevation);
+  }
+  const canvas = document.createElement('canvas');
+  canvas.width = world.width; canvas.height = world.height;
+  const ctx = canvas.getContext('2d'), image = ctx.createImageData(world.width, world.height);
+  const span = Math.max(1, max - min);
+  for (let i = 0; i < world.elevation.length; i++) {
+    const t = (world.elevation[i] - min) / span;
+    image.data[i * 4] = 40 + 215 * t;
+    image.data[i * 4 + 1] = 82 + 118 * t;
+    image.data[i * 4 + 2] = 150 - 75 * t;
+    image.data[i * 4 + 3] = 72;
+  }
+  ctx.putImageData(image, 0, 0);
+  const result = { canvas, min, max };
+  ELEVATION_BAKES.set(world, result);
+  return result;
+}
+
+export const PLANNER_TOOLS = [
+  ['grass', 'Grass', '#93d466'], ['concrete', 'Road', '#d8d3c6'],
+  ['sand', 'Sand', '#f0e0b2'], ['water', 'Water', '#4ea3dd'],
+  ['restore', 'Original', '#9aa0a6'], ['move', 'Move building', '#f2c14e'],
+  ['rotate', 'Rotate building', '#7fd4a8'],
 ];
 
 export class TownHallOffice {
-  constructor(root, { onTerrain, onPopulation, onCheat, onClose }) {
-    this.onTerrain = onTerrain;
-    this.onPopulation = onPopulation;
-    this.onCheat = onCheat;
-    this.onClose = onClose;
-    this.context = null;
-    this.tool = 'grass';
-    this.brush = 1;
-    this._painting = false;
-
-    const el = this.el = document.createElement('div');
-    el.className = 'town-office';
-    el.hidden = true;
-    el.innerHTML = `
-      <section class="to-card" role="dialog" aria-modal="false" aria-labelledby="to-title">
-        <header class="to-head">
-          <div><div class="to-kicker">Town Hall</div><h2 id="to-title"></h2></div>
-          <button class="to-close" type="button">Close</button>
-        </header>
-        <div class="to-body"></div>
-        <footer class="to-foot">Changes take effect immediately and are kept with this town. <b>Esc</b> closes the desk.</footer>
-      </section>`;
-    root.append(el);
-    this.title = el.querySelector('#to-title');
-    this.body = el.querySelector('.to-body');
-    this.foot = el.querySelector('.to-foot');
-    el.querySelector('.to-close').addEventListener('click', () => this.close());
-  }
-
-  get open() { return !this.el.hidden; }
-
-  show(office, context) {
-    this.context = context;
-    this.el.dataset.office = office;
-    this.el.hidden = false;
-    if (office === 'planner') this.#planner();
-    else if (office === 'wildlife') this.#wildlife();
-    else this.#cheats();
-  }
-
-  close() {
-    const wasOpen = !this.el.hidden;
-    this.el.hidden = true;
-    this.context = null;
-    this._painting = false;
-    if (wasOpen) this.onClose?.();
-  }
-
-  #planner() {
-    const { world } = this.context;
-    this.title.textContent = 'The Urban Planner';
-    this.body.innerHTML = `
-      <div class="to-intro"><b>Shape ${world.meta.name}.</b> Choose a surface, then paint the map. Buildings, doors, gardens, and civic posts are protected.</div>
-      <div class="to-planner">
-        <div class="to-tools" role="toolbar" aria-label="Map surfaces">
-          ${PLANNER_TOOLS.map(([id, label, color]) => `<button type="button" data-tool="${id}" style="--swatch:${color}"><i></i>${label}</button>`).join('')}
-          <div class="to-tool-label">Brush</div>
-          <div class="to-brushes" role="group" aria-label="Brush size">
-            <button type="button" data-brush="1">1×</button>
-            <button type="button" data-brush="2">2×</button>
-            <button type="button" data-brush="3">3×</button>
-          </div>
-        </div>
-        <div class="to-map-wrap"><canvas class="to-map" aria-label="Editable town map"></canvas></div>
-        <div class="to-status" aria-live="polite">Select a surface and paint.</div>
-      </div>`;
-    this.canvas = this.body.querySelector('.to-map');
-    this.status = this.body.querySelector('.to-status');
-    for (const button of this.body.querySelectorAll('[data-tool]')) {
-      button.addEventListener('click', () => { this.tool = button.dataset.tool; this.#selectTool(); });
-    }
-    for (const button of this.body.querySelectorAll('[data-brush]')) {
-      button.addEventListener('click', () => { this.brush = Number(button.dataset.brush); this.#selectTool(); });
-    }
-    this.#selectTool();
-    this.#drawMap();
-
-    const paint = (event) => {
-      if (!this._painting && event.type === 'pointermove') return;
-      const rect = this.canvas.getBoundingClientRect();
+  constructor(_root, { onTerrain, onBuildingValidate, onBuildingMove, onPopulation, onCheat, onClose }) {
+    this.onTerrain = onTerrain; this.onBuildingValidate = onBuildingValidate;
+    this.onBuildingMove = onBuildingMove; this.onPopulation = onPopulation;
+    this.onCheat = onCheat; this.onClose = onClose;
+    this.context = null; this.office = null; this.open = false;
+    this.tool = 'grass'; this.brush = 1; this._painting = false; this._moving = null;
+    this.canvas = null; this.status = null; this.version = 0;
+    this._paint = (event) => {
+      if ((!this._painting && event.type === 'pointermove') || !this.canvas || !this.context) return;
+      const { world } = this.context, rect = this.canvas.getBoundingClientRect();
       const x = Math.floor((event.clientX - rect.left) * world.width / rect.width);
       const z = Math.floor((event.clientY - rect.top) * world.height / rect.height);
-      const radius = this.brush - 1;
-      const tiles = [];
-      for (let dz = -radius; dz <= radius; dz++) {
-        for (let dx = -radius; dx <= radius; dx++) {
-          if (dx * dx + dz * dz <= radius * radius) tiles.push([x + dx, z + dz]);
-        }
+      const radius = this.brush - 1, tiles = [];
+      for (let dz = -radius; dz <= radius; dz++) for (let dx = -radius; dx <= radius; dx++) {
+        if (dx * dx + dz * dz <= radius * radius) tiles.push([x + dx, z + dz]);
       }
       const result = this.onTerrain({ ...this.context, tiles, surface: this.tool });
-      this.status.textContent = result.message;
-      if (result.ok) this.#drawMap();
+      if (this.status) this.status.textContent = result.message;
+      if (result.ok) this.drawMap();
     };
-    this.canvas.addEventListener('pointerdown', (event) => {
-      this._painting = true;
-      this.canvas.setPointerCapture(event.pointerId);
-      paint(event);
-    });
-    this.canvas.addEventListener('pointermove', paint);
-    const stop = () => { this._painting = false; };
-    this.canvas.addEventListener('pointerup', stop);
-    this.canvas.addEventListener('pointercancel', stop);
+    this._down = (event) => {
+      if (this.tool === 'move' || this.tool === 'rotate') {
+        const [x, z] = this.#point(event);
+        const obj = this.context?.world.objectAt(x, z);
+        if (!obj || objectType(obj.type).category !== 'building') {
+          if (this.status) this.status.textContent = 'Select a building first.';
+          return;
+        }
+        this._moving = {
+          id: obj.id,
+          offset: [x - obj.tile[0], z - obj.tile[1]],
+          tile: [...obj.tile],
+          rotation: this.tool === 'rotate' ? (obj.rotation + 90) % 360 : obj.rotation,
+          drag: this.tool === 'move',
+        };
+        this.#validatePreview();
+        this.canvas?.setPointerCapture(event.pointerId);
+        this.drawMap();
+        return;
+      }
+      this._painting = true; this.canvas?.setPointerCapture(event.pointerId); this._paint(event);
+    };
+    this._move = (event) => {
+      if (!this._moving) { this._paint(event); return; }
+      if (!this._moving.drag) return;
+      const [x, z] = this.#point(event);
+      this._moving.tile = [x - this._moving.offset[0], z - this._moving.offset[1]];
+      this.#validatePreview();
+      this.drawMap();
+    };
+    this._stop = () => {
+      this._painting = false;
+      if (!this._moving) return;
+      const move = this._moving;
+      this._moving = null;
+      const result = this.onBuildingMove({
+        ...this.context, id: move.id, tile: move.tile, rotation: move.rotation,
+      });
+      if (this.status) this.status.textContent = result.message;
+      this.drawMap();
+    };
+    this._cancel = () => { this._painting = false; this._moving = null; this.drawMap(); };
   }
-
-  #selectTool() {
-    for (const button of this.body.querySelectorAll('[data-tool]')) {
-      button.classList.toggle('selected', button.dataset.tool === this.tool);
-    }
-    for (const button of this.body.querySelectorAll('[data-brush]')) {
-      button.classList.toggle('selected', Number(button.dataset.brush) === this.brush);
-    }
+  changed() { this.version++; }
+  show(office, context) {
+    this.context = context; this.office = office; this.open = true; this.message = null; this.changed();
   }
-
-  #drawMap() {
+  close() {
+    const wasOpen = this.open;
+    this.open = false; this.context = null; this.office = null;
+    this._painting = false; this._moving = null; this.changed();
+    if (wasOpen) this.onClose?.();
+  }
+  setTool(tool) { this.tool = tool; this._moving = null; this.changed(); this.drawMap(); }
+  setBrush(brush) { this.brush = brush; this.changed(); }
+  attachStatus = (node) => { this.status = node; };
+  attachCanvas = (canvas) => {
+    if (this.canvas === canvas) return;
+    if (this.canvas) {
+      this.canvas.removeEventListener('pointerdown', this._down);
+      this.canvas.removeEventListener('pointermove', this._move);
+      this.canvas.removeEventListener('pointerup', this._stop);
+      this.canvas.removeEventListener('pointercancel', this._cancel);
+    }
+    this.canvas = canvas; this._painting = false; this._moving = null;
+    if (!canvas) return;
+    canvas.addEventListener('pointerdown', this._down);
+    canvas.addEventListener('pointermove', this._move);
+    canvas.addEventListener('pointerup', this._stop);
+    canvas.addEventListener('pointercancel', this._cancel);
+    this.drawMap();
+  };
+  drawMap() {
+    if (!this.canvas || !this.context || this.office !== 'planner') return;
     const { world } = this.context;
-    const availableW = Math.max(420, innerWidth - 210);
-    const availableH = Math.max(320, innerHeight - 185);
-    const scale = Math.max(3, Math.min(14,
-      Math.floor(Math.min(availableW / world.width, availableH / world.height))));
-    this.canvas.width = world.width * scale;
-    this.canvas.height = world.height * scale;
-    const ctx = this.canvas.getContext('2d');
-    ctx.imageSmoothingEnabled = false;
+    const scale = Math.max(3, Math.min(14, Math.floor(Math.min(
+      Math.max(420, innerWidth - 210) / world.width, Math.max(320, innerHeight - 185) / world.height))));
+    this.canvas.width = world.width * scale; this.canvas.height = world.height * scale;
+    const ctx = this.canvas.getContext('2d'); ctx.imageSmoothingEnabled = false;
     ctx.drawImage(placeBake(world), 0, 0, this.canvas.width, this.canvas.height);
+    ctx.drawImage(elevationBake(world).canvas, 0, 0, this.canvas.width, this.canvas.height);
+
+    // Terrace edges get a dark keyline and a pale centre so they remain clear
+    // over grass, roads, water, and roofs alike.
+    ctx.beginPath();
+    for (let z = 0; z < world.height; z++) for (let x = 1; x < world.width; x++) {
+      if (world.elevationAt(x - 1, z) === world.elevationAt(x, z)) continue;
+      ctx.moveTo(x * scale, z * scale); ctx.lineTo(x * scale, (z + 1) * scale);
+    }
+    for (let z = 1; z < world.height; z++) for (let x = 0; x < world.width; x++) {
+      if (world.elevationAt(x, z - 1) === world.elevationAt(x, z)) continue;
+      ctx.moveTo(x * scale, z * scale); ctx.lineTo((x + 1) * scale, z * scale);
+    }
+    ctx.strokeStyle = 'rgba(5,7,10,.8)'; ctx.lineWidth = Math.max(2, scale * .34); ctx.stroke();
+    ctx.strokeStyle = 'rgba(255,226,153,.9)'; ctx.lineWidth = Math.max(1, scale * .1); ctx.stroke();
     if (scale >= 6) {
-      ctx.strokeStyle = 'rgba(9,13,19,.13)';
-      ctx.lineWidth = 1;
-      ctx.beginPath();
+      ctx.strokeStyle = 'rgba(9,13,19,.13)'; ctx.lineWidth = 1; ctx.beginPath();
       for (let x = 1; x < world.width; x++) { ctx.moveTo(x * scale, 0); ctx.lineTo(x * scale, this.canvas.height); }
       for (let z = 1; z < world.height; z++) { ctx.moveTo(0, z * scale); ctx.lineTo(this.canvas.width, z * scale); }
       ctx.stroke();
     }
+    if (this._moving) {
+      const obj = world.objectById(this._moving.id);
+      if (!obj) return;
+      const [x, z] = this._moving.tile;
+      const shape = this._moving.shape ?? obj.shape;
+      const valid = this._moving.valid;
+      ctx.fillStyle = valid ? 'rgba(92,224,146,.36)' : 'rgba(255,91,91,.4)';
+      for (let dz = 0; dz < shape.d; dz++) for (let dx = 0; dx < shape.w; dx++) {
+        ctx.fillRect((x + dx) * scale, (z + dz) * scale, scale, scale);
+        if (shape.mask[dz][dx] !== CELL.DOOR) continue;
+        ctx.fillStyle = valid ? '#d8ffe6' : '#ffd2d2';
+        ctx.fillRect((x + dx + .25) * scale, (z + dz + .25) * scale, scale * .5, scale * .5);
+        ctx.fillStyle = valid ? 'rgba(92,224,146,.36)' : 'rgba(255,91,91,.4)';
+      }
+      ctx.strokeStyle = valid ? '#5ce092' : '#ff5b5b'; ctx.lineWidth = Math.max(2, scale * .2);
+      ctx.strokeRect(x * scale + 1, z * scale + 1, shape.w * scale - 2, shape.d * scale - 2);
+    }
   }
-
-  #wildlife() {
-    const { world, fauna, edits } = this.context;
-    this.title.textContent = 'Fish & Wildlife';
-    const rows = Object.entries(ANIMAL_TYPES).map(([id, type]) => {
+  #point(event) {
+    const rect = this.canvas.getBoundingClientRect(), { world } = this.context;
+    return [Math.floor((event.clientX - rect.left) * world.width / rect.width),
+      Math.floor((event.clientY - rect.top) * world.height / rect.height)];
+  }
+  #validatePreview() {
+    const move = this._moving;
+    if (!move) return;
+    const result = this.onBuildingValidate({
+      ...this.context, id: move.id, tile: move.tile, rotation: move.rotation,
+    });
+    move.valid = result.ok;
+    move.shape = result.shape;
+    if (this.status) this.status.textContent = result.message;
+  }
+  elevationRange() {
+    if (!this.context) return { min: 0, max: 0 };
+    const { min, max } = elevationBake(this.context.world);
+    return { min, max };
+  }
+  speciesRows() {
+    if (!this.context) return [];
+    const { fauna, edits } = this.context;
+    return Object.entries(ANIMAL_TYPES).map(([id, type]) => {
       const count = fauna.count(id);
-      const managed = edits.wildlife.has(id);
-      const target = edits.wildlife.get(id) ?? count;
-      return `<div class="to-species" data-species="${id}">
-        <div class="to-species-name"><b>${type.label}</b><span>${type.swims ? 'Ponds & waterways' : 'Town habitat'} · ${count} present${managed ? ' · managed' : ''}</span></div>
-        <button type="button" data-step="-1" aria-label="Remove one ${type.label}">−</button>
-        <output title="Population target">${target}</output>
-        <button type="button" data-step="1" aria-label="Add one ${type.label}">+</button>
-      </div>`;
-    }).join('');
-    this.body.innerHTML = `
-      <div class="to-intro"><b>Set healthy populations for ${world.meta.name}.</b> Stock ponds or release and bait wildlife. Managed counts recover to this level after each dawn.</div>
-      <div class="to-wildlife">${rows}</div>
-      <div class="to-status" aria-live="polite">Choose a species to adjust its population.</div>`;
-    this.status = this.body.querySelector('.to-status');
-    for (const button of this.body.querySelectorAll('[data-step]')) {
-      button.addEventListener('click', () => {
-        const row = button.closest('[data-species]');
-        const type = row.dataset.species;
-        const target = (edits.wildlife.get(type) ?? fauna.count(type)) + Number(button.dataset.step);
-        const result = this.onPopulation({ ...this.context, type, target });
-        if (result.ok) this.#wildlife();
-        this.status.textContent = result.message;
-      });
-    }
+      return { id, type, count, managed: edits.wildlife.has(id), target: edits.wildlife.get(id) ?? count };
+    });
   }
-
-  #cheats() {
-    const cheats = this.context.cheats;
-    this.title.textContent = 'Office of Cheats';
-    const toggle = (key, title, detail) => `<button type="button" class="to-cheat ${cheats[key] ? 'active' : ''}" data-cheat="${key}">
-      <span><b>${title}</b><small>${detail}</small></span><strong>${cheats[key] ? 'ON' : 'OFF'}</strong></button>`;
-    this.body.innerHTML = `
-      <div class="to-intro"><b>Rules are optional in this office.</b> Toggle persistent cheats or issue one-time grants for this save.</div>
-      <div class="to-cheats">
-        ${toggle('money', 'Unlimited money', 'Purchases and investments cost no coin.')}
-        ${toggle('ammo', 'Unlimited shot', 'Guns fire without ammunition in the bag.')}
-        ${toggle('invulnerable', 'No damage', 'Hostile shots still land, but remove no hearts.')}
-        <button type="button" class="to-cheat" data-action="tools"><span><b>Give every tool</b><small>Add every missing tool the bag can hold.</small></span><strong>GRANT</strong></button>
-        <button type="button" class="to-cheat" data-action="heal"><span><b>Restore health</b><small>Refill every heart immediately.</small></span><strong>HEAL</strong></button>
-        <button type="button" class="to-cheat" data-action="house"><span><b>Max out home</b><small>Approve all three stories without payment.</small></span><strong>BUILD</strong></button>
-      </div>
-      <div class="to-status" aria-live="polite">The Office of Cheats accepts no responsibility for consequences.</div>`;
-    this.status = this.body.querySelector('.to-status');
-    for (const button of this.body.querySelectorAll('[data-cheat],[data-action]')) {
-      button.addEventListener('click', () => {
-        const result = this.onCheat({ key: button.dataset.cheat, action: button.dataset.action });
-        this.#cheats();
-        this.status.textContent = result.message;
-      });
-    }
+  population(type, step) {
+    const { fauna, edits } = this.context;
+    const target = (edits.wildlife.get(type) ?? fauna.count(type)) + step;
+    const result = this.onPopulation({ ...this.context, type, target });
+    this.message = result.message; this.changed();
+  }
+  cheat(key, action) {
+    const result = this.onCheat({ key, action });
+    this.message = result.message; this.changed();
   }
 }
