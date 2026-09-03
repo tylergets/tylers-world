@@ -256,19 +256,7 @@ function terrainMaterial() {
         varying float vWater;
         varying float vShore;
         varying float vPattern;
-        varying vec3 vWorldPos;
-
-        float terrainHash(vec2 p) {
-          return fract(sin(dot(p, vec2(127.1, 311.7))) * 43758.5453);
-        }
-
-        float terrainNoise(vec2 p) {
-          vec2 i = floor(p);
-          vec2 f = fract(p);
-          f = f * f * (3.0 - 2.0 * f);
-          return mix(mix(terrainHash(i), terrainHash(i + vec2(1.0, 0.0)), f.x),
-            mix(terrainHash(i + vec2(0.0, 1.0)), terrainHash(i + vec2(1.0)), f.x), f.y);
-        }`)
+        varying vec3 vWorldPos;`)
       .replace('#include <begin_vertex>', `#include <begin_vertex>
         vLocal = aLocal;
         vWater = aWater;
@@ -287,7 +275,19 @@ function terrainMaterial() {
         varying float vWater;
         varying float vShore;
         varying float vPattern;
-        varying vec3 vWorldPos;`)
+        varying vec3 vWorldPos;
+
+        float terrainHash(vec2 p) {
+          return fract(sin(dot(p, vec2(127.1, 311.7))) * 43758.5453);
+        }
+
+        float terrainNoise(vec2 p) {
+          vec2 i = floor(p);
+          vec2 f = fract(p);
+          f = f * f * (3.0 - 2.0 * f);
+          return mix(mix(terrainHash(i), terrainHash(i + vec2(1.0, 0.0)), f.x),
+            mix(terrainHash(i + vec2(0.0, 1.0)), terrainHash(i + vec2(1.0)), f.x), f.y);
+        }`)
       .replace('#include <opaque_fragment>', `
         ${WATER_FRAGMENT}
 
