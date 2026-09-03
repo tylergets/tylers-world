@@ -189,6 +189,282 @@ export const NPC_TYPES = {
       pants: 0x2e3135, shoe: 0x24211e, hair: 0x49352a, eye: 0x211d1a,
     },
   },
+
+  'folk.curator': {
+    ...FOLK,
+    voice: { pitch: 1.02, rate: 22, timbre: 'triangle' },
+    label: 'Museum Curator',
+    palette: {
+      skin: 0xd9a273, shirt: 0x5b406e, apron: null, apronDark: null,
+      pants: 0x34364a, shoe: 0x302a35, shoeTrim: 0xb79558,
+      hair: 0x2e2620, eye: 0x2a2320,
+    },
+    outfit: {
+      vest: 0x846a91,
+      vestTrim: 0xb79558,
+      tie: 0xc9a85f,
+      badge: 0xd8c27a,
+      glasses: { frame: 0x47394f, lens: 0xb9d9dc, round: true },
+    },
+  },
+
+  // -- town hall -----------------------------------------------------------
+  // Civic staff get silhouettes as well as palettes. The details are consumed
+  // by NpcView; keeping them on the type means every appearance still comes
+  // from the same registry as ordinary villagers' clothes.
+  'folk.planner': {
+    ...FOLK,
+    voice: { pitch: 1.08, rate: 23, timbre: 'triangle' },
+    label: 'Urban Planner',
+    palette: {
+      skin: 0xe8b489, shirt: 0x3c4453, apron: null, apronDark: null,
+      pants: 0x5c6874, shoe: 0x2c323d, shoeTrim: 0x8f969c,
+      hair: 0x3a2a20, eye: 0x2a2320,
+    },
+    outfit: {
+      pinstripes: 0xb8c0c8,
+      tie: 0x4a8fa8,
+      pencil: 0xe0a339,
+      glasses: { frame: 0x39434d, lens: 0xb9d9dc, round: false },
+    },
+  },
+
+  'folk.warden': {
+    ...FOLK,
+    voice: { pitch: 0.9, rate: 21, timbre: 'sawtooth' },
+    label: 'Fish & Wildlife Warden',
+    palette: {
+      skin: 0xf0c39b, shirt: 0xc4a478, apron: null, apronDark: null,
+      pants: 0x6b7a40, shoe: 0x6b4a30, shoeTrim: 0xb08d3f,
+      hair: 0xc06a3f, eye: 0x2a2320,
+    },
+    outfit: {
+      vest: 0x3f5a40,
+      vestTrim: 0x2d412e,
+      badge: 0xd8b45e,
+      hat: {
+        cloth: 0x4f7a4a, clothHi: 0x669660, band: 0xb08d3f,
+        brim: 0.39, crown: 0.19,
+      },
+    },
+  },
+
+  'folk.tsa': {
+    ...FOLK,
+    voice: { pitch: 0.92, rate: 22, timbre: 'square' },
+    label: 'TSA Police Officer',
+    palette: {
+      skin: 0xd9a57d, shirt: 0x5f7f9d, apron: null, apronDark: null,
+      pants: 0x25384b, shoe: 0x202832, shoeTrim: 0x66798a,
+      hair: 0x3c2c24, eye: 0x25211f,
+    },
+    outfit: {
+      vest: 0x243748,
+      vestTrim: 0x182632,
+      badge: 0xd8b45e,
+      tie: 0x1d2d3c,
+      hat: {
+        cloth: 0x304b63, clothHi: 0x486a84, band: 0x172633,
+        brim: 0.36, crown: 0.16,
+      },
+    },
+  },
+
+  'folk.doctor': {
+    ...FOLK,
+    voice: { pitch: 1.02, rate: 21, timbre: 'triangle' },
+    label: 'Doctor',
+    palette: {
+      skin: 0xc98f6f, shirt: 0xf7f8f5, apron: null, apronDark: null,
+      pants: 0x455d68, shoe: 0x29343b, shoeTrim: 0x71838b,
+      hair: 0x50352a, eye: 0x292321,
+    },
+    outfit: {
+      vest: 0xf4f7f5,
+      vestTrim: 0xcbd9d6,
+      tie: 0x3c7f88,
+      badge: 0x4ba2a8,
+      glasses: { frame: 0x3c4b52, lens: 0xcce5e8, round: true },
+    },
+  },
+
+  'folk.mayor': {
+    ...FOLK,
+    voice: { pitch: 0.96, rate: 22, timbre: 'square' },
+    label: 'Mayor',
+    palette: {
+      skin: 0xf3c9a2, shirt: 0x26344f, apron: null, apronDark: null,
+      pants: 0x202d4d, shoe: 0x7a2f3f, shoeTrim: 0xb08d3f,
+      hair: 0x8a5a2b, eye: 0x2a2320,
+    },
+    outfit: {
+      lapels: 0xe8dcc0,
+      sash: 0x9c3f4a,
+      badge: 0xcea43e,
+      hat: {
+        cloth: 0x222b4a, clothHi: 0x2a355c, band: 0xcea43e,
+        brim: 0.33, crown: 0.34,
+      },
+    },
+  },
+
+  'folk.secretary': {
+    ...FOLK,
+    voice: { pitch: 1.08, rate: 25, timbre: 'triangle' },
+    label: 'Secretary',
+    palette: {
+      skin: 0xd9a273, shirt: 0xd8e1e5, apron: null, apronDark: null,
+      pants: 0x33495b, shoe: 0x2b3038, shoeTrim: 0x8f969c,
+      hair: 0x4a3026, eye: 0x2a2320,
+    },
+    outfit: {
+      vest: 0x6f8796,
+      vestTrim: 0x526a78,
+      tie: 0x9c4e58,
+      glasses: { frame: 0x39434d, lens: 0xb9d9dc, round: false },
+    },
+  },
+
+  'folk.exceptions': {
+    ...FOLK,
+    voice: { pitch: 1.28, rate: 28, timbre: 'square' },
+    label: 'Director of Exceptions',
+    palette: {
+      skin: 0xe0b48c, shirt: 0x24262c, apron: null, apronDark: null,
+      pants: 0x1a1b20, shoe: 0x1f2229, shoeTrim: 0x4a5058,
+      hair: 0xb9b3a6, eye: 0x2a2320,
+    },
+    outfit: {
+      panels: [0x8a6ba8, 0x3f9e9a],
+      tabs: [0xd45f2f, 0x9ac44a],
+      glasses: { frame: 0x9aa0a6, lens: 0x8fd4e0, round: false },
+    },
+  },
+
+  // -- the cab's board -----------------------------------------------------
+  // The people of the rooms only the cab reaches. Each is a palette and, where
+  // the room's read needs it, a silhouette -- the same bargain as the civic
+  // staff above. A pit fighter is a red shirt and a champion's sash; a hacker
+  // is a dark hoodie and green lenses; from overhead that is all anyone is.
+
+  'folk.pitfighter': {
+    ...FOLK,
+    // Low and rough, and quick: he talks the way he hits.
+    voice: { pitch: 0.74, rate: 27, timbre: 'sawtooth' },
+    label: 'Pit Fighter',
+    turnRate: 7,
+    walkSpeed: 1.3,
+    pause: [1.2, 4],
+    glance: [1.5, 4],
+    glanceArc: 1.2,
+    palette: {
+      skin: 0xc98e68, shirt: 0x8a2b2b, apron: null, apronDark: null,
+      pants: 0x2b2b2e, shoe: 0x1c1c1c, shoeTrim: 0xd2a53c,
+      hair: 0x1f1a17, eye: 0x211d1a,
+    },
+    outfit: {
+      sash: 0xd2a53c,
+      badge: 0xe8e2d0,
+    },
+  },
+
+  'folk.croupier': {
+    ...FOLK,
+    voice: { pitch: 1.0, rate: 25, timbre: 'triangle' },
+    label: 'Croupier',
+    palette: {
+      skin: 0xe8b489, shirt: 0xf3f1ea, apron: null, apronDark: null,
+      pants: 0x17171c, shoe: 0x101014, shoeTrim: 0x3a3a44,
+      hair: 0x1f1a17, eye: 0x2a2320,
+    },
+    outfit: {
+      vest: 0x1a1a1f,
+      vestTrim: 0x3a3a44,
+      tie: 0xb0263a,
+    },
+  },
+
+  'folk.hacker': {
+    ...FOLK,
+    // Fast and flat. She has typed more than she has spoken.
+    voice: { pitch: 1.1, rate: 32, timbre: 'square' },
+    label: 'Hacker',
+    glance: [3, 9],
+    glanceArc: 0.4,
+    palette: {
+      skin: 0xd9a57d, shirt: 0x1e2a24, apron: null, apronDark: null,
+      pants: 0x24262c, shoe: 0x14161a, shoeTrim: 0x38ff9a,
+      hair: 0x2e2620, eye: 0x25211f,
+    },
+    outfit: {
+      panels: [0x1e2a24, 0x162019],
+      glasses: { frame: 0x1f2229, lens: 0x38ff9a, round: false },
+    },
+  },
+
+  'folk.dj': {
+    ...FOLK,
+    voice: { pitch: 0.9, rate: 29, timbre: 'square' },
+    label: 'DJ',
+    glance: [1.2, 3],
+    glanceArc: 1.3,
+    palette: {
+      skin: 0xc98f6f, shirt: 0xff5cc4, apron: null, apronDark: null,
+      pants: 0x2b2140, shoe: 0xf2f3ee, shoeTrim: 0xff5cc4,
+      hair: 0x3a2a20, eye: 0x2a2320,
+    },
+    outfit: {
+      glasses: { frame: 0x9aa0a6, lens: 0x8fd4e0, round: false },
+      hat: {
+        cloth: 0x2b2140, clothHi: 0x3a2d57, band: 0xff5cc4,
+        brim: 0.32, crown: 0.10,
+      },
+    },
+  },
+
+  'folk.pilot': {
+    ...FOLK,
+    voice: { pitch: 0.86, rate: 21, timbre: 'triangle' },
+    label: 'Pilot',
+    palette: {
+      skin: 0xf0c39b, shirt: 0xf3f1ea, apron: null, apronDark: null,
+      pants: 0x1f2a3d, shoe: 0x14161a, shoeTrim: 0xb08d3f,
+      hair: 0x8a5a2b, eye: 0x2a2320,
+    },
+    outfit: {
+      tie: 0x1f2a3d,
+      badge: 0xd8b45e,
+      glasses: { frame: 0xb08d3f, lens: 0x5c6b52, round: true },
+      hat: {
+        cloth: 0x1f2a3d, clothHi: 0x2c3b55, band: 0xb08d3f,
+        brim: 0.36, crown: 0.16,
+      },
+    },
+  },
+
+  'folk.mystic': {
+    ...FOLK,
+    // Slow, low and soft: every line is delivered like a prophecy.
+    voice: { pitch: 0.82, rate: 17, timbre: 'triangle' },
+    label: 'Mystic',
+    walkSpeed: 0.9,
+    pause: [4, 12],
+    glance: [3, 9],
+    glanceArc: 0.6,
+    // The apron slot is a robe front here, which is what an apron IS from
+    // overhead: a second colour down the middle of the body.
+    palette: {
+      skin: 0xe0b48c, shirt: 0x3b2a5c, apron: 0x5a3f86, apronDark: 0x2b1d45,
+      pants: 0x2b1d45, shoe: 0x1d1430, shoeTrim: 0xc9a227,
+      hair: 0xb9b3a6, eye: 0x2a2320,
+    },
+    outfit: {
+      hat: {
+        cloth: 0x2b1d45, clothHi: 0x3b2a5c, band: 0xc9a227,
+        brim: 0.42, crown: 0.38,
+      },
+    },
+  },
 };
 
 export function npcType(typeId) {

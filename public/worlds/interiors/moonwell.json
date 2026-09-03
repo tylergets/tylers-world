@@ -1,0 +1,705 @@
+{
+  "format": "tw.world",
+  "version": 1,
+  "kind": "interior",
+  "kits": [
+    "kits/moonwell.kit.json",
+    "kits/turnip-catalog.kit.json"
+  ],
+  "meta": {
+    "id": "moonwell.sanctum",
+    "name": "The Moonwell",
+    "note": "An occult sanctum around a glowing well that tells fortunes and trades pebbles for shells. Floating crystals, a brass orrery, and two cats who know more than they say."
+  },
+  "grid": {
+    "width": 24,
+    "height": 24,
+    "tileSize": 1
+  },
+  "ambience": {
+    "music": "furniture",
+    "sky": "#070312",
+    "sun": 0.35,
+    "hemi": 1.6,
+    "hemiSky": "#8f6cff"
+  },
+  "layers": {
+    "surface": {
+      "palette": {
+        "#": "wall",
+        "m": "floor.marble",
+        "r": "rug"
+      },
+      "data": [
+        "########################",
+        "#mmmmmmmmmmmmmmmmmmmmmm#",
+        "#mmmmmmmmmmmmmmmmmmmmmm#",
+        "#mmmmmmmmmmmmmmmmmmmmmm#",
+        "#mmmmmmmmmmmmmmmmmmmmmm#",
+        "#mmmmmmmmmmmmmmmmmmmmmm#",
+        "#mmmmmmmmmmmmmmmmmmmmmm#",
+        "#mmmmmmmmmmmmmmmmmmmmmm#",
+        "#mmmmmmmmrrrrrrmmmmmmmm#",
+        "#mmmmmmmmrrrrrrmmmmmmmm#",
+        "#mmmmmmmmrrrrrrmmmmmmmm#",
+        "#mmmmmmmmrrrrrrmmmmmmmm#",
+        "#mmmmmmmmrrrrrrmmmmmmmm#",
+        "#mmmmmmmmrrrrrrmmmmmmmm#",
+        "#mmmmmmmmmmmmmmmmmmmmmm#",
+        "#mmmmmmmmmmmmmmmmmmmmmm#",
+        "#mmmmmmmmmmmmmmmmmmmmmm#",
+        "#mmmmmmmmmmmmmmmmmmmmmm#",
+        "#mmmmmmmmmmmmmmmmmmmmmm#",
+        "#mmmmmmmmmmmmmmmmmmmmmm#",
+        "#mmmmmmmmmmmmmmmmmmmmmm#",
+        "#mmmmmmmmmmmmmmmmmmmmmm#",
+        "#mmmmmmmmmmmmmmmmmmmmmm#",
+        "###########mm###########"
+      ]
+    },
+    "elevation": {
+      "palette": {
+        "0": "0",
+        "4": "4"
+      },
+      "data": [
+        "444444444444444444444444",
+        "400000000000000000000004",
+        "400000000000000000000004",
+        "400000000000000000000004",
+        "400000000000000000000004",
+        "400000000000000000000004",
+        "400000000000000000000004",
+        "400000000000000000000004",
+        "400000000000000000000004",
+        "400000000000000000000004",
+        "400000000000000000000004",
+        "400000000000000000000004",
+        "400000000000000000000004",
+        "400000000000000000000004",
+        "400000000000000000000004",
+        "400000000000000000000004",
+        "400000000000000000000004",
+        "400000000000000000000004",
+        "400000000000000000000004",
+        "400000000000000000000004",
+        "400000000000000000000004",
+        "400000000000000000000004",
+        "400000000000000000000004",
+        "444444444440044444444444"
+      ]
+    },
+    "flags": {
+      "palette": {
+        ".": "none"
+      },
+      "data": [
+        "........................",
+        "........................",
+        "........................",
+        "........................",
+        "........................",
+        "........................",
+        "........................",
+        "........................",
+        "........................",
+        "........................",
+        "........................",
+        "........................",
+        "........................",
+        "........................",
+        "........................",
+        "........................",
+        "........................",
+        "........................",
+        "........................",
+        "........................",
+        "........................",
+        "........................",
+        "........................",
+        "........................"
+      ]
+    }
+  },
+  "objects": [
+    {
+      "id": "well",
+      "type": "fixture.moon.well",
+      "tile": [
+        11,
+        10
+      ]
+    },
+    {
+      "id": "crystal.1",
+      "type": "fixture.moon.crystal",
+      "tile": [
+        4,
+        4
+      ]
+    },
+    {
+      "id": "crystal.2",
+      "type": "fixture.moon.crystal",
+      "tile": [
+        19,
+        4
+      ]
+    },
+    {
+      "id": "crystal.3",
+      "type": "fixture.moon.crystal",
+      "tile": [
+        4,
+        17
+      ]
+    },
+    {
+      "id": "crystal.4",
+      "type": "fixture.moon.crystal",
+      "tile": [
+        19,
+        17
+      ]
+    },
+    {
+      "id": "orrery",
+      "type": "fixture.moon.orrery",
+      "tile": [
+        16,
+        2
+      ]
+    },
+    {
+      "id": "telescope",
+      "type": "fixture.moon.telescope",
+      "tile": [
+        3,
+        2
+      ]
+    },
+    {
+      "id": "pillar.1",
+      "type": "fixture.moon.pillar",
+      "tile": [
+        8,
+        6
+      ]
+    },
+    {
+      "id": "pillar.2",
+      "type": "fixture.moon.pillar",
+      "tile": [
+        15,
+        6
+      ]
+    },
+    {
+      "id": "pillar.3",
+      "type": "fixture.moon.pillar",
+      "tile": [
+        8,
+        15
+      ]
+    },
+    {
+      "id": "pillar.4",
+      "type": "fixture.moon.pillar",
+      "tile": [
+        15,
+        15
+      ]
+    },
+    {
+      "id": "candles.1",
+      "type": "fixture.moon.candles",
+      "tile": [
+        11,
+        7
+      ]
+    },
+    {
+      "id": "candles.2",
+      "type": "fixture.moon.candles",
+      "tile": [
+        12,
+        14
+      ]
+    },
+    {
+      "id": "candles.3",
+      "type": "fixture.moon.candles",
+      "tile": [
+        8,
+        10
+      ]
+    },
+    {
+      "id": "candles.4",
+      "type": "fixture.moon.candles",
+      "tile": [
+        15,
+        11
+      ]
+    },
+    {
+      "id": "altar",
+      "type": "fixture.moon.altar",
+      "tile": [
+        10,
+        19
+      ]
+    },
+    {
+      "id": "books.1",
+      "type": "fixture.moon.bookstack",
+      "tile": [
+        2,
+        20
+      ]
+    },
+    {
+      "id": "books.2",
+      "type": "fixture.moon.bookstack",
+      "tile": [
+        21,
+        20
+      ]
+    },
+    {
+      "id": "books.3",
+      "type": "fixture.moon.bookstack",
+      "tile": [
+        2,
+        8
+      ]
+    },
+    {
+      "id": "books.4",
+      "type": "fixture.moon.bookstack",
+      "tile": [
+        21,
+        13
+      ]
+    },
+    {
+      "id": "shelf",
+      "type": "furn.shelf",
+      "tile": [
+        6,
+        21
+      ],
+      "props": {
+        "label": "Grimoires"
+      }
+    },
+    {
+      "id": "sign",
+      "type": "furn.construction-sign",
+      "tile": [
+        17,
+        21
+      ],
+      "props": {
+        "label": "WHAT YOU GIVE THE WELL, THE WELL REMEMBERS"
+      }
+    }
+  ],
+  "npcs": [
+    {
+      "id": "moon.hex",
+      "type": "folk.mystic",
+      "tile": [
+        11,
+        18
+      ],
+      "facing": "south",
+      "props": {
+        "name": "Hex Morrow",
+        "title": "Keeper of the Well",
+        "hair": "white"
+      },
+      "shop": {
+        "name": "The Keeper's Altar",
+        "markup": 1.5,
+        "buyRate": 0.6,
+        "takes": [
+          "item.stone",
+          "item.shell",
+          "item.flower",
+          "item.dried-flower",
+          "item.mushroom",
+          "kititem.moon-crystal",
+          "kititem.star-chart",
+          "kititem.floating-crystal",
+          "kititem.candle-ring",
+          "kititem.rune-pillar"
+        ],
+        "stock": [
+          {
+            "type": "kititem.star-chart",
+            "count": null,
+            "always": true
+          },
+          {
+            "type": "kititem.moon-crystal",
+            "count": 3
+          },
+          {
+            "type": "kititem.floating-crystal",
+            "count": 2
+          },
+          {
+            "type": "kititem.candle-ring",
+            "count": 4
+          },
+          {
+            "type": "kititem.rune-pillar",
+            "count": 2
+          },
+          {
+            "type": "seed.flower",
+            "count": null
+          },
+          {
+            "type": "item.dried-flower",
+            "count": 5
+          }
+        ]
+      },
+      "dialog": {
+        "start": "open",
+        "nodes": {
+          "open": {
+            "branch": [
+              {
+                "when": {
+                  "not": {
+                    "flag": "met"
+                  }
+                },
+                "to": "hello"
+              },
+              {
+                "when": {
+                  "hurt": true
+                },
+                "to": "hurtHello"
+              },
+              {
+                "to": "menu"
+              }
+            ]
+          },
+          "hello": {
+            "text": [
+              "You found the well. Or the well found you. The distinction matters less than you would think.",
+              "Hex Morrow. I keep it. It keeps me. We have an arrangement."
+            ],
+            "do": {
+              "set": "met"
+            },
+            "then": "menu"
+          },
+          "hurtHello": {
+            "text": "You are hurt. The well saw it before I did.",
+            "then": "menu"
+          },
+          "menu": {
+            "text": "What do you seek?",
+            "choices": [
+              {
+                "text": "Show me the altar.",
+                "do": {
+                  "shop": true
+                },
+                "to": "after"
+              },
+              {
+                "text": "A draught from the well. (35 coins)",
+                "when": {
+                  "hurt": true,
+                  "coins": 35
+                },
+                "do": [
+                  {
+                    "coins": -35
+                  },
+                  {
+                    "heal": true
+                  }
+                ],
+                "to": "draught"
+              },
+              {
+                "text": "What is the well?",
+                "to": "well"
+              },
+              {
+                "text": "What do the cats want?",
+                "to": "cats"
+              },
+              {
+                "text": "Nothing tonight.",
+                "to": "end"
+              }
+            ]
+          },
+          "after": {
+            "text": "Carry them carefully. The crystals do not like being dropped and they hold that sort of thing against you.",
+            "then": "end"
+          },
+          "draught": {
+            "text": "Drink. It tastes of cold stone and something older. There. Whole again.",
+            "then": "end"
+          },
+          "well": {
+            "text": [
+              "Peer in and it tells you something true. Drop a pebble in and sometimes it gives a shell back. Nobody knows where the shells come from.",
+              "I know. I am not telling."
+            ],
+            "then": "menu"
+          },
+          "cats": {
+            "text": "Everything. They want everything. That is what a cat is.",
+            "then": "menu"
+          }
+        },
+        "greetings": {
+          "acquaintance": [
+            "The well mentioned you. It mentions everyone. It was, for once, specific.",
+            "A crystal came back on its own. It was not one I sold you. It was one I sold somebody who is no longer around to ask.",
+            "Ambrose has the orrery three days slow and the cats three days ahead. Between them, the sanctum is roughly on time.",
+            "Nyx has been practising being Keeper. She practises on the cats. The cats are not impressed, which is a good start."
+          ],
+          "friend": [
+            "The well told Nyx she would be Keeper. Then it told the cat. Then it told me to sell you the star chart. I am obeying only the last.",
+            "You drop pebbles in like you mean it. Most people drop them like a coin in a hat. The well can tell.",
+            "Ambrose thinks you have a lucky star. I told him you have a shovel and a habit of using it. He wrote it down.",
+            "The candle rings keep going out when you are near the door. Ask me what that means and I will charge you."
+          ],
+          "close": [
+            "I will tell you where the shells come from one day. Not this one. But you are on the list, and the list is short.",
+            "The cats sat by the door before you came in. They do not do that for Nyx. Do not tell Nyx.",
+            "Sit by the well. It is warm, and I have stopped pretending that has nothing to do with who is in the room."
+          ]
+        }
+      }
+    },
+    {
+      "id": "moon.ambrose",
+      "type": "folk.mystic",
+      "tile": [
+        6,
+        12
+      ],
+      "facing": "east",
+      "props": {
+        "name": "Brother Ambrose",
+        "title": "Star-Reader",
+        "roam": 4,
+        "voice": {
+          "pitch": 0.76,
+          "rate": 15,
+          "timbre": "triangle"
+        }
+      },
+      "dialog": {
+        "start": "open",
+        "nodes": {
+          "open": {
+            "branch": [
+              {
+                "when": {
+                  "has": {
+                    "type": "item.stone",
+                    "count": 1
+                  }
+                },
+                "to": "stone"
+              },
+              {
+                "to": "hello"
+              }
+            ]
+          },
+          "stone": {
+            "text": "You carry a pebble. Good. The well prefers them to promises. Drop one in.",
+            "then": "end"
+          },
+          "hello": {
+            "text": [
+              "The orrery is three days slow. The sky is not. One of them is wrong and I have my suspicions.",
+              "Bring a pebble next time. The well is very literal about payment."
+            ],
+            "then": "end"
+          }
+        },
+        "greetings": {
+          "acquaintance": [
+            "The orrery has gained a day. Or the sky has lost one. I am recording both possibilities.",
+            "Hex says I mutter at the telescope. I say the telescope started it.",
+            "The candles by the west pillar burn faster than the others. I have no theory. I have a note.",
+            "There is a pebble by the far bookstack. I left it. It seemed to want leaving."
+          ],
+          "friend": [
+            "You do not ask what the stars say about you. That is why I tell you things.",
+            "Nyx moved my star charts. Nyx says the cat did it. The cat has never denied anything, which is not the same.",
+            "I read a good omen over the well after you left last time. I did not tell Hex. She sells those.",
+            "The orrery finally agreed with the sky for an hour. I was so unsettled I sat down."
+          ],
+          "close": [
+            "Ah. The chart is quieter when you are in the room. I have stopped asking why.",
+            "Sit by the telescope with me a while. Nothing needs saying.",
+            "I put your name on the chart, in pencil, where the two slow planets meet. Do not ask which two."
+          ]
+        }
+      }
+    },
+    {
+      "id": "moon.nyx",
+      "type": "folk.villager",
+      "tile": [
+        17,
+        12
+      ],
+      "facing": "west",
+      "props": {
+        "name": "Nyx",
+        "title": "Apprentice",
+        "roam": 3,
+        "voice": {
+          "pitch": 1.25,
+          "rate": 27,
+          "timbre": "triangle"
+        },
+        "hair": "black"
+      },
+      "dialog": {
+        "start": "hello",
+        "nodes": {
+          "hello": {
+            "text": [
+              "Do not tell Hex, but the well told me I would be Keeper one day. Then it told the cat the same thing.",
+              "I am fairly sure I can beat the cat."
+            ],
+            "choices": [
+              {
+                "text": "What do the crystals do?",
+                "to": "crystals"
+              },
+              {
+                "text": "Good luck with the cat.",
+                "to": "end"
+              }
+            ]
+          },
+          "crystals": {
+            "text": "Float. Glow. Hum in B flat when the moon is up. Hex sells them, but they come back on their own after a while. She says that is a feature.",
+            "then": "end"
+          }
+        },
+        "greetings": {
+          "acquaintance": [
+            "The cat is on the altar again. I am not allowed to move the cat. Nobody has said I cannot glare.",
+            "I am polishing crystals. They hum louder when they are clean, which Hex says is not a thing, but hold one and see.",
+            "Hex has me copying the grimoire again. Same page. I think it is a test. I think I am failing it.",
+            "Do not drop pebbles by the pillars. The well only counts the ones that reach the water. I checked."
+          ],
+          "friend": [
+            "The cat looked at me for a full minute and then washed. I think that was a threat.",
+            "I asked the well about you. It said something rude in a very nice voice.",
+            "Hex let me light the candles alone. All of them. I only set fire to one book and it was a boring one.",
+            "Brother Ambrose says the orrery is slow. I think Brother Ambrose is slow. Do not tell him I said that either."
+          ],
+          "close": [
+            "You are back. Good. Between you and me, the cat is winning this week.",
+            "When I am Keeper you get to come in the side door. I have decided.",
+            "Hex says an apprentice should not have favourites. Hex has two cats. Hex can talk."
+          ]
+        }
+      }
+    }
+  ],
+  "animals": [
+    {
+      "id": "moon.cat.1",
+      "type": "cat",
+      "tile": [
+        4,
+        20
+      ],
+      "props": {
+        "range": 5
+      }
+    },
+    {
+      "id": "moon.cat.2",
+      "type": "cat",
+      "tile": [
+        19,
+        19
+      ],
+      "props": {
+        "range": 5
+      }
+    }
+  ],
+  "items": [
+    {
+      "id": "loose.stone.1",
+      "type": "item.stone",
+      "tile": [
+        7,
+        20
+      ]
+    },
+    {
+      "id": "loose.stone.2",
+      "type": "item.stone",
+      "tile": [
+        18,
+        8
+      ]
+    },
+    {
+      "id": "loose.crystal",
+      "type": "kititem.moon-crystal",
+      "tile": [
+        20,
+        6
+      ]
+    },
+    {
+      "id": "loose.shell",
+      "type": "item.shell",
+      "tile": [
+        5,
+        14
+      ]
+    }
+  ],
+  "exits": [
+    {
+      "tile": [
+        11,
+        23
+      ],
+      "label": "Cab stand"
+    },
+    {
+      "tile": [
+        12,
+        23
+      ],
+      "label": "Cab stand"
+    }
+  ],
+  "spawn": {
+    "tile": [
+      11,
+      22
+    ],
+    "facing": "north"
+  }
+}

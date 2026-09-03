@@ -7,94 +7,160 @@
     "name": "Card Cellar",
     "note": "A low room, a green table, and a game that pays in real coin."
   },
-  "grid": {"width":21,"height":17,"tileSize":1},
-  "ambience": {"music":"home","sky":"#171a20","sun":0.35,"hemi":1.8,"hemiSky":"#e8c98f"},
+  "grid": {"width":15,"height":13,"tileSize":1},
+  "ambience": {"music":"home","sky":"#120e0c","sun":0.2,"hemi":1.55,"hemiSky":"#e6ad72"},
   "layers": {
     "surface": {
       "palette": {"#":"wall.stripe","d":"floor.wood.dark","r":"rug"},
       "data": [
-        "#####################",
-        "#ddddddddddddddddddd#",
-        "#ddddddddddddddddddd#",
-        "#ddddddddddddddddddd#",
-        "#ddddddddddddddddddd#",
-        "#ddddddrrrrrrrdddddd#",
-        "#ddddddrrrrrrrdddddd#",
-        "#ddddddrrrrrrrdddddd#",
-        "#ddddddrrrrrrrdddddd#",
-        "#ddddddrrrrrrrdddddd#",
-        "#ddddddrrrrrrrdddddd#",
-        "#ddddddddddddddddddd#",
-        "#ddddddddddddddddddd#",
-        "#ddddddddddddddddddd#",
-        "#ddddddddddddddddddd#",
-        "#ddddddddddddddddddd#",
-        "##########dd#########"
+        "###############",
+        "#ddddddddddddd#",
+        "#dddrrrrrrrddd#",
+        "#dddrrrrrrrddd#",
+        "#dddrrrrrrrddd#",
+        "#dddrrrrrrrddd#",
+        "#dddrrrrrrrddd#",
+        "#dddrrrrrrrddd#",
+        "#ddddddddddddd#",
+        "#ddddddddddddd#",
+        "#ddddddddddddd#",
+        "#ddddddddddddd#",
+        "#######dd######"
       ]
     },
     "elevation": {
       "palette": {"0":"0","4":"4"},
       "data": [
-        "444444444444444444444",
-        "400000000000000000004",
-        "400000000000000000004",
-        "400000000000000000004",
-        "400000000000000000004",
-        "400000000000000000004",
-        "400000000000000000004",
-        "400000000000000000004",
-        "400000000000000000004",
-        "400000000000000000004",
-        "400000000000000000004",
-        "400000000000000000004",
-        "400000000000000000004",
-        "400000000000000000004",
-        "400000000000000000004",
-        "400000000000000000004",
-        "444444444400444444444"
+        "444444444444444",
+        "400000000000004",
+        "400000000000004",
+        "400000000000004",
+        "400000000000004",
+        "400000000000004",
+        "400000000000004",
+        "400000000000004",
+        "400000000000004",
+        "400000000000004",
+        "400000000000004",
+        "400000000000004",
+        "444444400444444"
       ]
     },
     "flags": {
       "palette": {".":"none"},
       "data": [
-        ".....................",".....................",".....................",
-        ".....................",".....................",".....................",
-        ".....................",".....................",".....................",
-        ".....................",".....................",".....................",
-        ".....................",".....................",".....................",
-        ".....................","....................."
+        "...............","...............","...............","...............",
+        "...............","...............","...............","...............",
+        "...............","...............","...............","...............",
+        "..............."
       ]
     }
   },
+  "architecture": {
+    "apronDepth": 1,
+    "groups": [{
+      "id":"upstairs","landingColumns":[9,10],"parts":[
+        {"primitive":"box","at":[10.0,-0.375,13.5],"size":[2.08,0.65,0.9],"color":"#4f3527"},
+        {"primitive":"box","at":[9.15,-0.025,13.5],"size":[0.38,0.05,0.9],"color":"#805a39"},
+        {"primitive":"box","at":[9.49,0.025,13.5],"size":[0.38,0.15,0.9],"color":"#8a6242"},
+        {"primitive":"box","at":[9.83,0.075,13.5],"size":[0.38,0.25,0.9],"color":"#805a39"},
+        {"primitive":"box","at":[10.17,0.125,13.5],"size":[0.38,0.35,0.9],"color":"#8a6242"},
+        {"primitive":"box","at":[10.51,0.175,13.5],"size":[0.38,0.45,0.9],"color":"#805a39"},
+        {"primitive":"box","at":[10.85,0.225,13.5],"size":[0.38,0.55,0.9],"color":"#8a6242"},
+        {"primitive":"box","at":[9.05,0.25,13.05],"size":[0.08,0.50,0.08],"color":"#4f3527"},
+        {"primitive":"box","at":[9.05,0.25,13.95],"size":[0.08,0.50,0.08],"color":"#4f3527"},
+        {"primitive":"box","at":[10.98,0.75,13.05],"size":[0.08,0.50,0.08],"color":"#4f3527"},
+        {"primitive":"box","at":[10.98,0.75,13.95],"size":[0.08,0.50,0.08],"color":"#4f3527"},
+        {"primitive":"box","at":[10.015,0.75,13.05],"size":[2.08,0.08,0.08],"rotation":[0,0,14.5],"color":"#4f3527"},
+        {"primitive":"box","at":[10.015,0.75,13.95],"size":[2.08,0.08,0.08],"rotation":[0,0,14.5],"color":"#4f3527"}
+      ]
+    }]
+  },
   "objects": [
-    {"id":"poker.table","type":"furn.pokertable","tile":[9,7]},
-    {"id":"poker.chair.n","type":"furn.chair","tile":[9,5]},
-    {"id":"poker.chair.w","type":"furn.chair","tile":[7,8]},
-    {"id":"poker.chair.e","type":"furn.chair","tile":[11,8]},
-    {"id":"poker.chair.s","type":"furn.chair","tile":[10,10]},
-    {"id":"cellar.sign","type":"furn.sign.poker","tile":[2,2],"props":{"label":"HOLD'EM NIGHT"}},
-    {"id":"cellar.crate.a","type":"furn.crate","tile":[2,13]},
-    {"id":"cellar.crate.b","type":"furn.crate","tile":[3,13]},
-    {"id":"cellar.crate.c","type":"furn.crate","tile":[17,13]},
-    {"id":"cellar.shelf","type":"furn.shelf","tile":[16,2]}
+    {"id":"poker.table","type":"furn.pokertable","tile":[6,3]},
+    {"id":"poker.chair.n","type":"furn.chair","tile":[7,1],"rotation":180},
+    {"id":"poker.chair.w","type":"furn.chair","tile":[4,4],"rotation":90},
+    {"id":"poker.chair.e","type":"furn.chair","tile":[10,4],"rotation":270},
+    {"id":"poker.chair.s","type":"furn.chair","tile":[7,6]},
+    {"id":"cellar.sign","type":"furn.sign.poker","tile":[1,1],"props":{"label":"HOLD'EM NIGHT"}},
+    {"id":"cellar.shelf","type":"furn.shelf","tile":[11,1]},
+    {"id":"cellar.plant.w","type":"furn.plant","tile":[1,7]},
+    {"id":"cellar.plant.e","type":"furn.plant","tile":[12,7]},
+    {"id":"cellar.crate.a","type":"furn.crate","tile":[1,9]},
+    {"id":"cellar.crate.b","type":"furn.crate","tile":[2,9]},
+    {"id":"cellar.crate.c","type":"furn.crate","tile":[12,9]}
   ],
   "npcs": [
     {
-      "id":"museum.marrow","type":"folk.villager","tile":[10,4],"facing":"south",
+      "id":"museum.marrow","type":"folk.villager","tile":[7,2],"facing":"south",
       "props":{"name":"Marrow","title":"Cellar Dealer","pokerSeat":{"loose":0.3,"aggr":0.35,"bluff":0.06},"voice":{"pitch":0.78,"rate":19,"timbre":"sawtooth"}},
-      "dialog":{"start":"hello","nodes":{"hello":{"text":"Five and ten blinds. The cards are honest even when the players are not.","choices":[{"text":"Deal me in.","do":[{"poker":true}],"to":"end"},{"text":"Maybe later.","to":"end"}]}}}
+      "dialog":{"start":"hello","nodes":{"hello":{"text":"Five and ten blinds. The cards are honest even when the players are not.","choices":[{"text":"Deal me in.","do":[{"poker":true}],"to":"end"},{"text":"Maybe later.","to":"end"}]}},"greetings":{
+        "acquaintance":[
+          "Chair is free. Chips are on the shelf. The deck has been shuffled by me, which means it has been shuffled.",
+          "Mind the step coming down. It has taken more coin off people than the table has.",
+          "The curator thinks this is archival storage. The archive is the deck. I keep it in order.",
+          "Vesper is up. Dilly is down. Both of them will tell you the opposite."
+        ],
+        "friend":[
+          "You are the only one who tips the dealer. The other two think I do this for the company.",
+          "Dilly asked me to warn you off. That is the surest sign somebody at this table is scared of you.",
+          "I do not say much at the table. Do not take it as a tell. I am the same at funerals.",
+          "There is a crate of good bottles in the corner. The house does not drink. The house's friends might."
+        ],
+        "close":[
+          "Sit. I dealt you in before you reached the bottom step.",
+          "You have worn a groove in that chair. I am not having it fixed.",
+          "I do not play favourites. I say that so the others hear it."
+        ]
+      }}
     },
     {
-      "id":"museum.dilly","type":"folk.villager","tile":[6,8],"facing":"east",
+      "id":"museum.dilly","type":"folk.villager","tile":[5,4],"facing":"east",
       "props":{"name":"Dilly","title":"Cellar Regular","pokerSeat":{"loose":0.75,"aggr":0.45,"bluff":0.18},"voice":{"pitch":1.16,"rate":25,"timbre":"triangle"}},
-      "dialog":{"start":"hello","nodes":{"hello":{"text":"I call more hands than Marrow thinks wise. Sit down and prove him right.","choices":[{"text":"Deal me in.","do":[{"poker":true}],"to":"end"},{"text":"Not tonight.","to":"end"}]}}}
+      "dialog":{"start":"hello","nodes":{"hello":{"text":"I call more hands than Marrow thinks wise. Sit down and prove him right.","choices":[{"text":"Deal me in.","do":[{"poker":true}],"to":"end"},{"text":"Not tonight.","to":"end"}]}},"greetings":{
+        "acquaintance":[
+          "Marrow says I should fold more. I say folding is just losing slowly. Sit down.",
+          "I saw seven-two off-suit last hand and called anyway. It hit. Nobody is speaking to me.",
+          "The curator came down once. She folded before the flop and went back upstairs. Smart woman.",
+          "Vesper bets big and I call big. It is a system. Mostly it is a system for Vesper."
+        ],
+        "friend":[
+          "My chip stack is a sad little hill again. You are welcome to pity it or add to it.",
+          "I told Marrow you were coming. He rearranged the chairs so I could not sit next to you. Rude.",
+          "Stop looking at my cards. I am not hiding them, that is different, but stop.",
+          "I have a new tell. Marrow says it is that I call everything. I say that is a strategy, not a tell."
+        ],
+        "close":[
+          "There is my favourite person to lose to. Sit, sit.",
+          "I kept your chair. I sat in it, but I kept it.",
+          "If you ever fold against me I will take it personally. You know that."
+        ]
+      }}
     },
     {
-      "id":"museum.vesper","type":"folk.villager","tile":[13,8],"facing":"west",
+      "id":"museum.vesper","type":"folk.villager","tile":[9,4],"facing":"west",
       "props":{"name":"Vesper","title":"Cellar Regular","pokerSeat":{"loose":0.5,"aggr":0.8,"bluff":0.14},"voice":{"pitch":0.94,"rate":22,"timbre":"square"}},
-      "dialog":{"start":"hello","nodes":{"hello":{"text":"Coin only gets interesting once it reaches the middle of the table.","choices":[{"text":"Deal me in.","do":[{"poker":true}],"to":"end"},{"text":"I will keep mine.","to":"end"}]}}}
+      "dialog":{"start":"hello","nodes":{"hello":{"text":"Coin only gets interesting once it reaches the middle of the table.","choices":[{"text":"Deal me in.","do":[{"poker":true}],"to":"end"},{"text":"I will keep mine.","to":"end"}]}},"greetings":{
+        "acquaintance":[
+          "The chips are stacked. The chair is empty. The rest is a formality.",
+          "Dilly calls, I raise, Marrow watches. You would be the variable.",
+          "Upstairs they keep fish in glass. Down here we keep coin in the middle of the felt. I prefer it.",
+          "Bring what you can afford to leave on the table. Anything else stays in your pocket where it is useless."
+        ],
+        "friend":[
+          "You raised into me last time. Nobody at this table does that. I have been thinking about it since.",
+          "Dilly will tell you I am reckless. I am exact. There is a difference and it is about forty coin a sitting.",
+          "Marrow reshuffled twice when you sat down last time. He respects nothing, so that was something.",
+          "I do not chat at the table. Off the table, briefly, you will do."
+        ],
+        "close":[
+          "Good. The table was too easy without you.",
+          "Sit where you always sit. I have stopped pretending I do not want you there.",
+          "You are the only one I would stake. Do not tell the others. Do not make me regret it."
+        ]
+      }}
     }
   ],
-  "exits": [{"tile":[10,16]},{"tile":[11,16]}],
-  "spawn": {"tile":[10,15],"facing":"north"}
+  "exits": [{"tile":[10,13],"label":"Upstairs"}],
+  "spawn": {"tile":[8,13],"facing":"north"}
 }

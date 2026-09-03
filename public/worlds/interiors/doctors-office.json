@@ -1,0 +1,98 @@
+{
+  "format": "tw.world",
+  "version": 1,
+  "kind": "interior",
+  "kits": ["kits/turnip-catalog.kit.json"],
+  "meta": { "id": "business.clinic.interior", "name": "Hospital & Pharmacy", "note": "A shared medical building with a waiting room, examination bay, and pharmacy counter." },
+  "grid": { "width": 14, "height": 11, "tileSize": 1 },
+  "ambience": { "music": "home", "sun": 0.95, "hemi": 2.5, "hemiSky": "#e8f5f1" },
+  "layers": {
+    "surface": {
+      "palette": { "#": "wall.marble", "t": "floor.tile", "r": "rug" },
+      "data": [
+        "##############",
+        "#tttttttttttt#",
+        "#tttttttttttt#",
+        "#tttttttttttt#",
+        "#tttttttttttt#",
+        "#trrrrrrrrrrt#",
+        "#trrrrrrrrrrt#",
+        "#trrrrrrrrrrt#",
+        "#tttttttttttt#",
+        "#tttttttttttt#",
+        "######tt######"
+      ]
+    },
+    "elevation": {
+      "palette": { "0": "0", "4": "4" },
+      "data": [
+        "44444444444444",
+        "40000000000004",
+        "40000000000004",
+        "40000000000004",
+        "40000000000004",
+        "40000000000004",
+        "40000000000004",
+        "40000000000004",
+        "40000000000004",
+        "40000000000004",
+        "44444400444444"
+      ]
+    }
+  },
+  "objects": [
+    { "id": "doctor.desk", "type": "furn.counter", "tile": [1, 2], "props": { "label": "Reception" } },
+    { "id": "doctor.exam-bed", "type": "furn.bed", "tile": [9, 2], "rotation": 90 },
+    { "id": "doctor.medicine", "type": "fixture.medicine-cabinet", "tile": [12, 1] },
+    { "id": "doctor.chair.1", "type": "furn.chair", "tile": [2, 6] },
+    { "id": "doctor.chair.2", "type": "furn.chair", "tile": [4, 6] },
+    { "id": "doctor.chair.3", "type": "furn.chair", "tile": [6, 6] },
+    { "id": "doctor.plant", "type": "furn.plant", "tile": [1, 8] },
+    { "id": "doctor.screen", "type": "fixture.glazed-screen", "tile": [9, 5], "rotation": 90 },
+    { "id": "pharmacy.counter", "type": "furn.counter", "tile": [8, 8], "props": { "label": "Pharmacy" } },
+    { "id": "pharmacy.chest", "type": "fixture.apothecary-chest", "tile": [11, 6] }
+  ],
+  "npcs": [
+    {
+      "id": "doctor.meridian", "type": "folk.doctor", "tile": [2, 1], "facing": "south",
+      "props": { "name": "Dr. Meridian", "title": "Town Doctor", "noSmallTalk": true, "roam": 1 },
+      "dialog": { "start": "triage", "nodes": {
+        "triage": { "text": "Let me have a look. Treatment is forty coin when treatment is needed.", "choices": [
+          { "text": "Treat me - 40 coin.", "when": { "all": [{ "hurt": true }, { "coins": 40 }] }, "do": [{ "coins": -40 }, { "heal": true }], "to": "treated" },
+          { "text": "I need treatment but cannot pay.", "when": { "all": [{ "hurt": true }, { "not": { "coins": 40 } }] }, "to": "short" },
+          { "text": "How am I doing?", "when": { "hurt": false }, "to": "healthy" },
+          { "text": "Not today.", "to": "end" }
+        ] },
+        "treated": { "text": "There. Back to full health. Try not to test the result immediately.", "then": "end" },
+        "short": { "text": "Rest at home tonight. Sleep still does good work when the purse cannot.", "then": "end" },
+        "healthy": { "text": "Nothing missing and nothing bent. That is the best appointment I have had all day.", "then": "end" }
+      } }
+    },
+    {
+      "id": "keep.remedy", "type": "folk.shopkeep", "tile": [9, 7], "facing": "south",
+      "props": { "name": "Remedy", "title": "Pharmacist", "noSmallTalk": true },
+      "shop": {
+        "hours": { "open": 8, "close": 20 },
+        "name": "Remedy's Pharmacy",
+        "markup": 1.7,
+        "buyRate": 0.65,
+        "stock": [
+          { "type": "item.cress", "count": null },
+          { "type": "item.mushroom", "count": 8 },
+          { "type": "item.dried-flower", "count": 6 },
+          { "type": "item.flower", "count": 8 },
+          { "type": "item.apple", "count": 10 }
+        ]
+      },
+      "dialog": { "start": "hello", "nodes": { "hello": {
+        "text": "The doctor handles injuries. I handle field remedies, dried plants, and everything with a careful label.",
+        "choices": [
+          { "text": "Show me the pharmacy shelves.", "do": [{ "shop": true }], "to": "end" },
+          { "text": "I am only looking.", "to": "end" }
+        ]
+      } } }
+    }
+  ],
+  "exits": [{ "tile": [6, 10] }, { "tile": [7, 10] }],
+  "spawn": { "tile": [6, 9], "facing": "north" }
+}

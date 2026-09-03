@@ -7,6 +7,7 @@ export class MailboxView {
     this.mail = null;
     this.at = 0;
     this.message = '';
+    this.document = false;
     const el = this.el = document.createElement('div');
     el.className = 'mailbox-screen';
     el.hidden = true;
@@ -26,6 +27,9 @@ export class MailboxView {
     root.append(el);
     this.list = el.querySelector('.mailbox-list');
     this.letter = el.querySelector('.letter');
+    this.layout = el.querySelector('.mailbox-layout');
+    this.title = el.querySelector('#mailbox-title');
+    this.mark = el.querySelector('.mailbox-mark');
     el.querySelector('.modal-x').addEventListener('click', () => this.close());
     this.list.addEventListener('click', (event) => {
       const row = event.target.closest('[data-letter]');
@@ -42,10 +46,33 @@ export class MailboxView {
   get open() { return !this.el.hidden; }
 
   show(mail) {
+    this.document = false;
     this.mail = mail;
+    this.title.textContent = 'Mailbox';
+    this.mark.innerHTML = '&#9993;';
+    this.layout.classList.remove('single');
     const unread = mail.letters.findIndex((letter) => !letter.read);
     this.at = unread < 0 ? 0 : unread;
     this.message = '';
+    this.el.hidden = false;
+    this.draw();
+  }
+
+  /** Show one civic notice in the letter presentation, without a mailbox list. */
+  showDocument(document) {
+    this.document = true;
+    this.mail = {
+      letters: [{
+        id: 'document', subject: document.subject, from: document.from, body: document.body,
+        read: true, attachments: [], claimed: true,
+      }],
+      read: () => {},
+    };
+    this.at = 0;
+    this.message = '';
+    this.title.textContent = document.title;
+    this.mark.textContent = '\u00a7';
+    this.layout.classList.add('single');
     this.el.hidden = false;
     this.draw();
   }
@@ -62,6 +89,7 @@ export class MailboxView {
   }
 
   claim() {
+    if (this.document) return;
     const letter = this.mail?.letters[this.at];
     if (!letter) return;
     const result = this.onClaim?.(letter.id);

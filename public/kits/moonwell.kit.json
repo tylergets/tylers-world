@@ -1,0 +1,277 @@
+{
+  "format": "tw.kit",
+  "version": 1,
+  "meta": { "id": "moonwell", "name": "The Moonwell" },
+
+  "types": {
+    "fixture.moon.well": {
+      "kind": "object",
+      "label": "The Moonwell",
+      "footprint": { "w": 2, "d": 2 },
+      "height": 1.1,
+      "squash": 0.36,
+      "palette": {
+        "stone": "#4b4a6a", "stoneHi": "#6b6a8e", "rune": "#8f6cff", "water": "#3a2a8a",
+        "glow": "#b39cff", "glowHi": "#e8ddff", "moss": "#3f6a58"
+      },
+      "parts": [
+        { "prim": "cyl", "at": [0, 0.08, 0], "size": [1.96, 0.16, 1.96], "color": "stone" },
+        { "prim": "cyl", "at": [0, 0.45, 0], "size": [1.8, 0.6, 1.8], "color": "stoneHi" },
+        { "prim": "cyl", "at": [0, 0.78, 0], "size": [1.86, 0.08, 1.86], "color": "stone" },
+        { "prim": "box", "at": [0.7, 0.5, 0.5], "size": [0.3, 0.2, 0.2], "color": "moss" },
+        { "prim": "box", "at": [-0.6, 0.35, -0.6], "size": [0.25, 0.25, 0.2], "color": "moss" },
+        { "prim": "cyl", "at": [0, 0.7, 0], "size": [1.4, 0.06, 1.4], "color": "water",
+          "anim": { "bob": { "amp": 0.02, "rate": 0.35 } } },
+        { "prim": "cyl", "at": [0, 0.74, 0], "size": [1.0, 0.03, 1.0], "color": "glow",
+          "anim": { "pulse": { "amp": 0.18, "rate": 0.5, "phase": 0.0 } } },
+        { "prim": "cyl", "at": [0, 0.76, 0], "size": [0.5, 0.02, 0.5], "color": "glowHi",
+          "anim": { "pulse": { "amp": 0.4, "rate": 0.5, "phase": 0.5 } } },
+        { "prim": "box", "at": [0, 0.83, 0.9], "size": [0.5, 0.03, 0.06], "color": "rune",
+          "anim": { "pulse": { "amp": 0.3, "rate": 0.8, "phase": 0.0 } } },
+        { "prim": "box", "at": [0, 0.83, -0.9], "size": [0.5, 0.03, 0.06], "color": "rune",
+          "anim": { "pulse": { "amp": 0.3, "rate": 0.8, "phase": 0.25 } } },
+        { "prim": "box", "at": [0.9, 0.83, 0], "size": [0.06, 0.03, 0.5], "color": "rune",
+          "anim": { "pulse": { "amp": 0.3, "rate": 0.8, "phase": 0.5 } } },
+        { "prim": "box", "at": [-0.9, 0.83, 0], "size": [0.06, 0.03, 0.5], "color": "rune",
+          "anim": { "pulse": { "amp": 0.3, "rate": 0.8, "phase": 0.75 } } },
+        { "prim": "blob", "at": [0.3, 1.0, -0.2], "size": [0.08, 0.08, 0.08], "color": "glowHi",
+          "anim": { "bob": { "amp": 0.12, "rate": 0.4, "phase": 0.0 } } },
+        { "prim": "blob", "at": [-0.35, 0.95, 0.25], "size": [0.06, 0.06, 0.06], "color": "glowHi",
+          "anim": { "bob": { "amp": 0.15, "rate": 0.3, "phase": 0.5 } } }
+      ],
+      "state": { "gazed": 0 },
+      "interact": { "label": "Peer into the well", "run": "moonwell-well.js" }
+    },
+
+    "fixture.moon.crystal": {
+      "kind": "object",
+      "label": "Floating Crystal",
+      "footprint": { "w": 1, "d": 1 },
+      "height": 1.7,
+      "squash": 0.3,
+      "palette": { "stone": "#4b4a6a", "rune": "#8f6cff", "crystal": "#b39cff", "crystalHi": "#e8ddff" },
+      "parts": [
+        { "prim": "cyl", "at": [0, 0.06, 0], "size": [0.7, 0.12, 0.7], "color": "stone" },
+        { "prim": "cyl", "at": [0, 0.13, 0], "size": [0.5, 0.02, 0.5], "color": "rune",
+          "anim": { "pulse": { "amp": 0.25, "rate": 0.6 } } },
+        { "prim": "cone", "at": [0, 1.0, 0], "size": [0.34, 0.5, 0.34], "color": "crystal",
+          "anim": { "bob": { "amp": 0.08, "rate": 0.45 }, "spin": { "rate": 0.2 } } },
+        { "prim": "cone", "at": [0, 0.7, 0], "size": [0.34, 0.5, 0.34], "rot": [180, 0, 0], "color": "crystal",
+          "anim": { "bob": { "amp": 0.08, "rate": 0.45 }, "spin": { "rate": 0.2 } } },
+        { "prim": "box", "at": [0, 0.85, 0], "size": [0.12, 0.3, 0.12], "color": "crystalHi",
+          "anim": { "bob": { "amp": 0.08, "rate": 0.45 }, "pulse": { "amp": 0.4, "rate": 1.4 } } },
+        { "prim": "blob", "at": [0.3, 1.2, 0.1], "size": [0.05, 0.05, 0.05], "color": "crystalHi",
+          "anim": { "bob": { "amp": 0.2, "rate": 0.3, "phase": 0.3 } } },
+        { "prim": "blob", "at": [-0.25, 0.5, -0.2], "size": [0.05, 0.05, 0.05], "color": "crystalHi",
+          "anim": { "bob": { "amp": 0.2, "rate": 0.35, "phase": 0.7 } } }
+      ]
+    },
+
+    "fixture.moon.orrery": {
+      "kind": "object",
+      "label": "Celestial Orrery",
+      "footprint": { "w": 2, "d": 2 },
+      "height": 2.3,
+      "squash": 0.34,
+      "palette": { "stone": "#4b4a6a", "brass": "#c9a227", "brassLo": "#8a6d16", "sun": "#ffd36a", "moon": "#e8ddff", "planet": "#3f86bd", "red": "#c0392b" },
+      "parts": [
+        { "prim": "cyl", "at": [0, 0.15, 0], "size": [1.4, 0.3, 1.4], "color": "stone" },
+        { "prim": "cyl", "at": [0, 0.8, 0], "size": [0.14, 1.0, 0.14], "color": "brassLo" },
+        { "prim": "blob", "at": [0, 1.45, 0], "size": [0.4, 0.4, 0.4], "color": "sun",
+          "anim": { "pulse": { "amp": 0.1, "rate": 0.7 } } },
+        { "prim": "cyl", "at": [0, 1.45, 0], "size": [1.9, 0.03, 1.9], "color": "brass",
+          "anim": { "spin": { "rate": 0.08 } } },
+        { "prim": "box", "at": [0, 1.45, 0], "size": [1.9, 0.04, 0.04], "color": "brass",
+          "anim": { "spin": { "rate": 0.08 } } },
+        { "prim": "blob", "at": [0, 1.45, 0], "size": [0.14, 0.14, 0.14], "color": "planet" },
+        { "prim": "cyl", "at": [0, 1.6, 0], "size": [1.3, 0.03, 1.3], "rot": [12, 0, 0], "color": "brass",
+          "anim": { "spin": { "rate": -0.14 } } },
+        { "prim": "cyl", "at": [0, 1.3, 0], "size": [1.5, 0.03, 1.5], "rot": [-20, 0, 8], "color": "brassLo",
+          "anim": { "spin": { "rate": 0.21 } } },
+        { "prim": "box", "at": [0, 1.75, 0], "size": [1.2, 0.06, 0.06], "color": "brass",
+          "anim": { "spin": { "rate": 0.3 } } },
+        { "prim": "blob", "at": [0, 1.75, 0], "size": [0.1, 0.1, 0.1], "color": "moon" },
+        { "prim": "box", "at": [0, 1.15, 0], "size": [1.4, 0.05, 0.05], "rot": [0, 50, 0], "color": "brass",
+          "anim": { "spin": { "rate": -0.45 } } },
+        { "prim": "blob", "at": [0, 1.15, 0], "size": [0.08, 0.08, 0.08], "color": "red" },
+        { "prim": "pyr", "at": [0, 2.15, 0], "size": [0.2, 0.3, 0.2], "color": "brass" }
+      ]
+    },
+
+    "fixture.moon.candles": {
+      "kind": "object",
+      "label": "Candle Ring",
+      "footprint": { "w": 1, "d": 1, "mask": ["."] },
+      "height": 0.4,
+      "squash": 1.0,
+      "palette": { "wax": "#e8ddff", "wick": "#2a2320", "flame": "#ffd36a", "flameHi": "#fff3c4", "rune": "#8f6cff" },
+      "parts": [
+        { "prim": "cyl", "at": [0, 0.01, 0], "size": [0.9, 0.02, 0.9], "color": "rune",
+          "anim": { "pulse": { "amp": 0.06, "rate": 0.5 } } },
+        { "prim": "cyl", "at": [0.32, 0.1, 0], "size": [0.08, 0.2, 0.08], "color": "wax" },
+        { "prim": "cyl", "at": [-0.32, 0.08, 0], "size": [0.08, 0.16, 0.08], "color": "wax" },
+        { "prim": "cyl", "at": [0, 0.12, 0.32], "size": [0.08, 0.24, 0.08], "color": "wax" },
+        { "prim": "cyl", "at": [0, 0.07, -0.32], "size": [0.08, 0.14, 0.08], "color": "wax" },
+        { "prim": "cone", "at": [0.32, 0.26, 0], "size": [0.05, 0.12, 0.05], "color": "flame",
+          "anim": { "pulse": { "amp": 0.4, "rate": 2.8, "phase": 0.0 } } },
+        { "prim": "cone", "at": [-0.32, 0.22, 0], "size": [0.05, 0.12, 0.05], "color": "flame",
+          "anim": { "pulse": { "amp": 0.4, "rate": 2.3, "phase": 0.3 } } },
+        { "prim": "cone", "at": [0, 0.3, 0.32], "size": [0.05, 0.12, 0.05], "color": "flameHi",
+          "anim": { "pulse": { "amp": 0.4, "rate": 3.1, "phase": 0.6 } } },
+        { "prim": "cone", "at": [0, 0.2, -0.32], "size": [0.05, 0.12, 0.05], "color": "flame",
+          "anim": { "pulse": { "amp": 0.4, "rate": 2.6, "phase": 0.9 } } }
+      ]
+    },
+
+    "fixture.moon.altar": {
+      "kind": "object",
+      "label": "Altar",
+      "footprint": { "w": 3, "d": 1, "mask": ["###"] },
+      "height": 1.2,
+      "squash": 0.34,
+      "palette": { "stone": "#4b4a6a", "stoneHi": "#6b6a8e", "cloth": "#3b2a5c", "gold": "#c9a227", "glow": "#b39cff", "book": "#5a3f2c", "page": "#e8ddff" },
+      "parts": [
+        { "prim": "box", "at": [0, 0.45, 0], "size": [2.8, 0.9, 0.9], "color": "stone" },
+        { "prim": "box", "at": [0, 0.93, 0], "size": [2.9, 0.06, 1.0], "color": "stoneHi" },
+        { "prim": "box", "at": [0, 0.6, 0.46], "size": [2.2, 0.7, 0.02], "color": "cloth" },
+        { "prim": "box", "at": [0, 0.6, 0.47], "size": [0.4, 0.4, 0.01], "color": "gold" },
+        { "prim": "box", "at": [-0.9, 1.0, 0], "size": [0.5, 0.08, 0.36], "color": "book" },
+        { "prim": "box", "at": [-0.9, 1.05, 0], "size": [0.46, 0.02, 0.32], "color": "page" },
+        { "prim": "blob", "at": [0.8, 1.12, 0], "size": [0.3, 0.3, 0.3], "color": "glow",
+          "anim": { "pulse": { "amp": 0.15, "rate": 0.6 } } },
+        { "prim": "cyl", "at": [0.8, 0.97, 0], "size": [0.3, 0.04, 0.3], "color": "gold" },
+        { "prim": "cyl", "at": [0.1, 1.08, 0.1], "size": [0.05, 0.22, 0.05], "color": "page" },
+        { "prim": "cone", "at": [0.1, 1.24, 0.1], "size": [0.04, 0.1, 0.04], "color": "gold",
+          "anim": { "pulse": { "amp": 0.4, "rate": 2.5 } } }
+      ]
+    },
+
+    "fixture.moon.telescope": {
+      "kind": "object",
+      "label": "Brass Telescope",
+      "footprint": { "w": 1, "d": 1 },
+      "height": 1.9,
+      "squash": 0.3,
+      "palette": { "wood": "#5a3f2c", "brass": "#c9a227", "brassLo": "#8a6d16", "lens": "#b39cff" },
+      "parts": [
+        { "prim": "cyl", "at": [-0.25, 0.55, -0.15], "size": [0.05, 1.1, 0.05], "rot": [15, 0, 20], "color": "wood" },
+        { "prim": "cyl", "at": [0.25, 0.55, -0.15], "size": [0.05, 1.1, 0.05], "rot": [15, 0, -20], "color": "wood" },
+        { "prim": "cyl", "at": [0, 0.55, 0.25], "size": [0.05, 1.1, 0.05], "rot": [-22, 0, 0], "color": "wood" },
+        { "prim": "blob", "at": [0, 1.1, 0], "size": [0.2, 0.2, 0.2], "color": "brassLo" },
+        { "prim": "cyl", "at": [0, 1.35, -0.2], "size": [0.16, 1.3, 0.16], "rot": [-50, 0, 0], "color": "brass" },
+        { "prim": "cyl", "at": [0, 1.75, -0.55], "size": [0.2, 0.2, 0.2], "rot": [-50, 0, 0], "color": "brassLo" },
+        { "prim": "cyl", "at": [0, 1.82, -0.6], "size": [0.17, 0.02, 0.17], "rot": [-50, 0, 0], "color": "lens" }
+      ]
+    },
+
+    "fixture.moon.pillar": {
+      "kind": "object",
+      "label": "Rune Pillar",
+      "footprint": { "w": 1, "d": 1 },
+      "height": 2.5,
+      "squash": 0.3,
+      "palette": { "stone": "#4b4a6a", "stoneHi": "#6b6a8e", "rune": "#8f6cff", "runeHi": "#e8ddff" },
+      "parts": [
+        { "prim": "box", "at": [0, 0.15, 0], "size": [0.9, 0.3, 0.9], "color": "stone" },
+        { "prim": "box", "at": [0, 1.3, 0], "size": [0.6, 2.0, 0.6], "color": "stoneHi" },
+        { "prim": "box", "at": [0, 2.4, 0], "size": [0.8, 0.2, 0.8], "color": "stone" },
+        { "prim": "box", "at": [0, 1.6, 0.31], "size": [0.2, 0.3, 0.02], "color": "rune",
+          "anim": { "pulse": { "amp": 0.3, "rate": 0.7, "phase": 0.0 } } },
+        { "prim": "box", "at": [0, 1.1, 0.31], "size": [0.25, 0.08, 0.02], "color": "rune",
+          "anim": { "pulse": { "amp": 0.3, "rate": 0.7, "phase": 0.3 } } },
+        { "prim": "box", "at": [0, 0.7, 0.31], "size": [0.12, 0.25, 0.02], "color": "runeHi",
+          "anim": { "pulse": { "amp": 0.5, "rate": 1.1, "phase": 0.6 } } },
+        { "prim": "box", "at": [0.31, 1.4, 0], "size": [0.02, 0.4, 0.15], "color": "rune",
+          "anim": { "pulse": { "amp": 0.3, "rate": 0.9, "phase": 0.5 } } },
+        { "prim": "box", "at": [-0.31, 1.0, 0], "size": [0.02, 0.3, 0.2], "color": "rune",
+          "anim": { "pulse": { "amp": 0.3, "rate": 0.8, "phase": 0.8 } } }
+      ]
+    },
+
+    "fixture.moon.bookstack": {
+      "kind": "object",
+      "label": "Grimoire Stack",
+      "footprint": { "w": 1, "d": 1 },
+      "height": 0.9,
+      "squash": 0.4,
+      "palette": { "a": "#5a3f2c", "b": "#3b2a5c", "c": "#8a1f3a", "d": "#3f6a58", "page": "#e8ddff", "gold": "#c9a227" },
+      "parts": [
+        { "prim": "box", "at": [0, 0.08, 0], "size": [0.6, 0.16, 0.44], "color": "a" },
+        { "prim": "box", "at": [0.03, 0.24, 0.02], "size": [0.54, 0.16, 0.4], "rot": [0, 12, 0], "color": "b" },
+        { "prim": "box", "at": [-0.02, 0.4, -0.02], "size": [0.5, 0.16, 0.38], "rot": [0, -8, 0], "color": "c" },
+        { "prim": "box", "at": [0.02, 0.55, 0.0], "size": [0.46, 0.14, 0.34], "rot": [0, 20, 0], "color": "d" },
+        { "prim": "box", "at": [0.02, 0.66, 0.0], "size": [0.42, 0.08, 0.3], "rot": [0, 20, 0], "color": "page" },
+        { "prim": "box", "at": [0, 0.75, 0], "size": [0.3, 0.1, 0.22], "rot": [0, -30, 0], "color": "a" },
+        { "prim": "box", "at": [0.16, 0.75, 0], "size": [0.02, 0.1, 0.22], "rot": [0, -30, 0], "color": "gold" }
+      ]
+    },
+
+    "kititem.moon-crystal": {
+      "kind": "item",
+      "label": "Moon Crystal",
+      "value": 150,
+      "stack": 5,
+      "height": 0.28,
+      "swatch": "#b39cff",
+      "palette": { "crystal": "#b39cff", "crystalHi": "#e8ddff", "base": "#4b4a6a" },
+      "parts": [
+        { "prim": "blob", "at": [0, 0.03, 0], "size": [0.24, 0.06, 0.22], "color": "base" },
+        { "prim": "cone", "at": [0, 0.17, 0], "size": [0.14, 0.28, 0.14], "color": "crystal" },
+        { "prim": "cone", "at": [0.1, 0.12, 0.06], "size": [0.08, 0.18, 0.08], "rot": [0, 0, -25], "color": "crystalHi" },
+        { "prim": "cone", "at": [-0.09, 0.1, -0.05], "size": [0.07, 0.14, 0.07], "rot": [15, 0, 25], "color": "crystal" }
+      ]
+    },
+
+    "kititem.star-chart": {
+      "kind": "item",
+      "label": "Star Chart",
+      "value": 80,
+      "stack": 3,
+      "height": 0.1,
+      "swatch": "#3b2a5c",
+      "palette": { "paper": "#3b2a5c", "paperHi": "#4b3a70", "star": "#e8ddff", "gold": "#c9a227" },
+      "parts": [
+        { "prim": "box", "at": [0, 0.02, 0], "size": [0.4, 0.03, 0.3], "color": "paper" },
+        { "prim": "cyl", "at": [0, 0.045, 0], "size": [0.2, 0.01, 0.2], "color": "paperHi" },
+        { "prim": "box", "at": [-0.12, 0.045, 0.08], "size": [0.02, 0.01, 0.02], "color": "star" },
+        { "prim": "box", "at": [0.08, 0.045, -0.06], "size": [0.02, 0.01, 0.02], "color": "star" },
+        { "prim": "box", "at": [0.14, 0.045, 0.1], "size": [0.02, 0.01, 0.02], "color": "star" },
+        { "prim": "box", "at": [-0.04, 0.045, -0.1], "size": [0.02, 0.01, 0.02], "color": "star" },
+        { "prim": "box", "at": [0, 0.045, 0], "size": [0.1, 0.01, 0.01], "rot": [0, 30, 0], "color": "gold" }
+      ]
+    },
+
+    "kititem.floating-crystal": {
+      "kind": "item",
+      "label": "Floating Crystal (flat-pack)",
+      "value": 600,
+      "stack": 1,
+      "height": 0.18,
+      "swatch": "#8f6cff",
+      "furniture": "fixture.moon.crystal",
+      "palette": { "wrap": "#d9c7a4", "wrapHi": "#eee1c7", "strap": "#8a6242", "mark": "#8f6cff" }
+    },
+
+    "kititem.candle-ring": {
+      "kind": "item",
+      "label": "Candle Ring (flat-pack)",
+      "value": 220,
+      "stack": 1,
+      "height": 0.18,
+      "swatch": "#ffd36a",
+      "furniture": "fixture.moon.candles",
+      "palette": { "wrap": "#d9c7a4", "wrapHi": "#eee1c7", "strap": "#8a6242", "mark": "#ffd36a" }
+    },
+
+    "kititem.rune-pillar": {
+      "kind": "item",
+      "label": "Rune Pillar (flat-pack)",
+      "value": 800,
+      "stack": 1,
+      "height": 0.18,
+      "swatch": "#4b4a6a",
+      "furniture": "fixture.moon.pillar",
+      "palette": { "wrap": "#d9c7a4", "wrapHi": "#eee1c7", "strap": "#8a6242", "mark": "#4b4a6a" }
+    }
+  }
+}

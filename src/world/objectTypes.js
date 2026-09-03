@@ -118,31 +118,29 @@ export const OBJECT_TYPES = {
     category: 'building', label: 'Home',
     footprint: withDoor(4, 3, 1), height: 3.0,
     squash: 0.3,
-    palette: { wall: 0xf2e6cb, roof: 0xd4614f, roofDark: 0xb44f3f, trim: 0x8a6242, door: 0x8a5a3c, window: 0x9fd4e8 },
+    palette: { wall: 0xf2e6cb, foundation: 0xa79a84, roof: 0xd4614f, roofDark: 0x9f4037, trim: 0xf8f0dc, accent: 0x9d6248, door: 0x7e4d36, handle: 0xd8b45e, window: 0x8fcce3, muntin: 0xfaf4e7, chimney: 0x8d6a58 },
   },
-  // The neighbours' houses. All three are the `home` mesh builder and differ
-  // only in footprint and paint, which is the whole point of splitting a type
-  // registry from a mesh library: four houses that read as four different
-  // people's houses cost three entries here and not one line of geometry.
+  // The neighbours' houses share one structural builder, which branches into
+  // cottage, cabin and bungalow details while retaining one footprint contract.
   // (props.js sizes the walls from the footprint, so a 3-wide cottage is a
   // 3-wide cottage rather than a 4-wide one with its corners hanging out.)
   'building.cottage': {
     category: 'building', label: 'Cottage',
     footprint: withDoor(3, 3, 1), height: 2.8,
     squash: 0.3,
-    palette: { wall: 0xe8ead2, roof: 0x6f9c74, roofDark: 0x577d5c, trim: 0x7d6248, door: 0x6b4a30, window: 0x9fd4e8 },
+    palette: { wall: 0xe8ead2, foundation: 0xa69f88, roof: 0x6f9c74, roofDark: 0x4d7253, trim: 0xfff4d7, accent: 0x9a7050, door: 0x6b4a30, handle: 0xd8b45e, window: 0x91cfe0, muntin: 0xf8f0d8, chimney: 0x8c6d5b, flower: 0xc96572, flowerHi: 0xf0c54f },
   },
   'building.cabin': {
     category: 'building', label: 'Cabin',
     footprint: withDoor(4, 3, 2), height: 2.9,
     squash: 0.3,
-    palette: { wall: 0xb98d5f, roof: 0x6b5a4a, roofDark: 0x53463a, trim: 0x4f4034, door: 0x3f342a, window: 0xbfe0ea },
+    palette: { wall: 0xb98d5f, foundation: 0x675747, roof: 0x6b5a4a, roofDark: 0x41372f, trim: 0x4f4034, accent: 0x765537, door: 0x3f342a, handle: 0xc79b4d, window: 0xaed8e5, muntin: 0x5c4635, chimney: 0x655246 },
   },
   'building.bungalow': {
     category: 'building', label: 'Bungalow',
     footprint: withDoor(5, 3, 2), height: 3.0,
     squash: 0.3,
-    palette: { wall: 0xd8e3ec, roof: 0xc98a52, roofDark: 0xa76f41, trim: 0x8a6242, door: 0x7a4f38, window: 0x9fd4e8 },
+    palette: { wall: 0xd8e3ec, foundation: 0x9ca8ad, roof: 0xc98a52, roofDark: 0x965d35, trim: 0xf3eee2, accent: 0x62839a, door: 0x6d493b, handle: 0xd8b45e, window: 0x8fcbe3, muntin: 0xf8f4ea, chimney: 0x897064 },
   },
 
   'building.store': {
@@ -151,17 +149,32 @@ export const OBJECT_TYPES = {
     squash: 0.3,
     palette: { wall: 0xf7ecd6, roof: 0x4f93c9, roofDark: 0x3d7cad, trim: 0x7d6248, door: 0x6b4a30, window: 0x9fd4e8, awning: 0xe8b84b, sign: 0x315f84, signText: 0xfff2c9 },
   },
+  'building.internet-cafe': {
+    category: 'building', label: 'Internet Cafe',
+    footprint: withDoor(5, 4, 2), height: 3.9,
+    squash: 0.3,
+    palette: { wall: 0x28343f, wallHi: 0x40515e, roof: 0x17222b, trim: 0x72d8c0, door: 0x314f62, window: 0x65b8d0, sign: 0x14212a, signText: 0x8ff5d7, metal: 0xa5b3bc },
+  },
+  'building.clinic': {
+    category: 'building', label: 'Clinic & Pharmacy',
+    footprint: withDoor(5, 4, 2), height: 4.1,
+    squash: 0.3,
+    palette: { wall: 0xe8efed, wallHi: 0xf8fbfa, roof: 0x78949a, trim: 0x53747c, door: 0x497080, window: 0x9fd4df, sign: 0x365b65, signText: 0xf3faf7, cross: 0xc94f56, pharmacy: 0x4d9b71 },
+  },
+  'building.office': {
+    category: 'building', label: 'Employment Office',
+    footprint: withDoor(5, 4, 2), height: 3.8,
+    squash: 0.3,
+    palette: { wall: 0xe7dfcf, roof: 0x526b78, roofDark: 0x3d515c, trim: 0x765d49, door: 0x604737, window: 0xa8d5df, awning: 0x9c4e58, sign: 0x334d5b, signText: 0xffedbd },
+  },
   'building.furniture': {
     category: 'building', label: 'Furniture Shop',
     footprint: withDoor(5, 4, 2), height: 3.7,
     squash: 0.3,
     palette: { wall: 0xf2e6cb, roof: 0x6f9c74, roofDark: 0x577d5c, trim: 0x7d6248, door: 0x6b4a30, window: 0x9fd4e8, awning: 0xd98b63, sign: 0x416c49, signText: 0xfff2c9 },
   },
-  // The third shop, and the third paint job on the same shell. Same footprint
-  // and same height as the other two, because what makes a town read as a town
-  // is a row of buildings the same size with different colours on them -- and
-  // because a shop the player can pick out from the far side of the plaza by
-  // its awning is a shop they can find again.
+  // All shops retain one footprint and doorway contract, while props.js gives
+  // each trade its own silhouette. Layout and portal math stay identical.
   'building.clothier': {
     category: 'building', label: 'Clothes Shop',
     footprint: withDoor(5, 4, 2), height: 3.7,
@@ -173,6 +186,24 @@ export const OBJECT_TYPES = {
     footprint: withDoor(9, 6, 4), height: 5.2,
     squash: 0.3,
     palette: { wall: 0xeee2c8, roof: 0x55758a, roofDark: 0x3e596b, trim: 0x8a6242, door: 0x70452f, window: 0xa9d8e5, sign: 0x31556c, signText: 0xfff2c9 },
+  },
+  'civic.noticeboard': {
+    category: 'fixture', label: 'Public Notice Board',
+    footprint: solid(3, 1), height: 1.85,
+    squash: 0.34,
+    palette: {
+      frame: 0x6b4a30, cork: 0x9a7048, header: 0x31556c, headerText: 0xfff2c9,
+      paper: 0xf2ead4, paperAlt: 0xe4dbc2, ink: 0x4b463d, red: 0xb84d45, blue: 0x3f7890,
+    },
+    interact: {
+      label: 'Read',
+      document: {
+        title: 'Public Notice Board',
+        subject: 'Current Town Notices',
+        from: 'Office of the Town Clerk',
+        body: "PUBLIC BUSINESS\nKeep the front steps clear during office hours.\n\nFISH & WILDLIFE\nCurrent population counts are available from the warden inside.\n\nTOWN IMPROVEMENTS\nProposals and funding requests may be filed with the mayor.\n\nOFFICE OF EXCEPTIONS\nExceptions require an unreasonable amount of paperwork. This is intentional.",
+      },
+    },
   },
   // The second civic building. Stone rather than clapboard, because a museum
   // is the one building in town that is supposed to outlast the town -- and a
@@ -214,7 +245,7 @@ export const OBJECT_TYPES = {
     { seat: 0xb07a4a, back: 0x8a6242 }, 'sit'),
   'furn.shelf': furniture('Bookcase', 2, 1, 1.9,
     { body: 0x8a6242, back: 0x6b4a30, book: [0xb4544e, 0x4f8a6a, 0xd8a840, 0x5878ab] }, 'store'),
-  'furn.counter': furniture('Counter', 4, 1, 1.05,
+  'furn.counter': furniture('Counter', 4, 1, 0.8,
     { body: 0xd9c7a4, top: 0x8a6242, panel: 0xc4ae87 }),
   'furn.stove': furniture('Stove', 2, 1, 1.0,
     { body: 0xe6e1d6, top: 0x565c63, dial: 0xb4544e, oven: 0x3f454b }, 'warm'),
@@ -222,12 +253,6 @@ export const OBJECT_TYPES = {
     { pot: 0xb2705a, soil: 0x5a4433, leaf: 0x4f9e3f, leafHi: 0x63b84e }),
   'furn.crate': furniture('Crate', 1, 1, 0.8,
     { body: 0xc09a5f, edge: 0x8a6242 }, 'store'),
-  'furn.stairs': {
-    category: 'furniture', label: 'Stairs',
-    footprint: { w: 2, d: 3, mask: ['##', '##', '+.'] },
-    height: 1.5, squash: 0.34,
-    palette: { tread: 0xb78654, riser: 0x805a39, rail: 0x68462f },
-  },
   'furn.construction-sign': furniture('Under Construction', 3, 1, 1.8,
     { board: 0xe2b74f, edge: 0x6b4a30, text: 0x3f342a }),
   'furn.sign.planning': furniture('Urban Planner', 3, 1, 1.8,
@@ -244,10 +269,11 @@ export const OBJECT_TYPES = {
     { board: 0x6f8f4a, edge: 0x3c4f28, text: 0xf2f6d8 }),
   'furn.sign.poker': furniture('Card Cellar', 3, 1, 1.8,
     { board: 0x8f3f4f, edge: 0x4f2028, text: 0xf6d8a8 }),
-  // The cellar's centrepiece: an ordinary table wearing the felt. Same
-  // builder, greener paint -- see render/props.js on why that costs nothing.
-  'furn.pokertable': furniture('Card Table', 2, 2, 0.8,
-    { top: 0x2f7a52, leg: 0x4f3a28, cloth: 0x256344 }),
+  'furn.pokertable': furniture('Poker Table', 3, 2, 0.9, {
+    rail: 0x4a2d20, felt: 0x246548, feltLine: 0xd8c987, leg: 0x35251d,
+    card: 0xf5efdf, cardRed: 0xa83f42, cardBack: 0x315b84,
+    chipRed: 0xc94e4e, chipBlue: 0x3f70aa, chipGold: 0xd4aa42, cup: 0x17191b,
+  }, 'lean'),
 
   // ----------------------------------------------------------------- yard --
   'yard.mailbox': {

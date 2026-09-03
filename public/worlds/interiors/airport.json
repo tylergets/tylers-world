@@ -1,0 +1,259 @@
+{
+  "format": "tw.world",
+  "version": 1,
+  "kind": "interior",
+  "kits": ["kits/airport.kit.json", "kits/turnip-catalog.kit.json"],
+  "meta": {
+    "id": "airport.terminal",
+    "name": "Municipal Airport",
+    "note": "A broad terminal with a security checkpoint, moving concourse walkway, and six departure gates."
+  },
+  "grid": { "width": 40, "height": 48, "tileSize": 1 },
+  "ambience": { "music": "home", "sun": 1.05, "hemi": 2.4, "hemiSky": "#dcecff" },
+  "layers": {
+    "surface": {
+      "palette": { "#": "wall.marble", "t": "floor.tile", "r": "rug", "c": "floor.checker" },
+      "data": [
+        "########################################",
+        "#ttttttttttttttttrrrrrrtttttttttttttttt#",
+        "#ttttttttttttttttrrrrrrtttttttttttttttt#",
+        "#ttttttttttttttttrrrrrrtttttttttttttttt#",
+        "#ttttttttttttttttrrrrrrtttttttttttttttt#",
+        "#ttttttttttttttttrrrrrrtttttttttttttttt#",
+        "#ttttttttttttttttrrrrrrtttttttttttttttt#",
+        "#ttttttttttttttttrrrrrrtttttttttttttttt#",
+        "#ttttttttttttttttrrrrrrtttttttttttttttt#",
+        "#ttttttttttttttttrrrrrrtttttttttttttttt#",
+        "#ttttttttttttttttrrrrrrtttttttttttttttt#",
+        "#ttttttttttttttttrrrrrrtttttttttttttttt#",
+        "#ttttttttttttttttrrrrrrtttttttttttttttt#",
+        "#ttttttttttttttttrrrrrrtttttttttttttttt#",
+        "#ttttttttttttttttrrrrrrtttttttttttttttt#",
+        "#ttttttttttttttttrrrrrrtttttttttttttttt#",
+        "#ttttttttttttttttrrrrrrtttttttttttttttt#",
+        "#ttttttttttttttttrrrrrrtttttttttttttttt#",
+        "#ttttttttttttttttrrrrrrtttttttttttttttt#",
+        "#ttttttttttttttttrrrrrrtttttttttttttttt#",
+        "#ttttttttttttttttrrrrrrtttttttttttttttt#",
+        "#ttttttttttttttttrrrrrrtttttttttttttttt#",
+        "#ttttttttttttttttrrrrrrtttttttttttttttt#",
+        "#ttttttttttttttttrrrrrrtttttttttttttttt#",
+        "#ttttttttttttttttrrrrrrtttttttttttttttt#",
+        "#ttttttttttttttttrrrrrrtttttttttttttttt#",
+        "#ttttttttttttttttrrrrrrtttttttttttttttt#",
+        "#ttttttttttttttttrrrrrrtttttttttttttttt#",
+        "#ttttttttttttttttrrrrrrtttttttttttttttt#",
+        "#ttttttttttttttttrrrrrrtttttttttttttttt#",
+        "#ttttttttttttttttrrrrrrtttttttttttttttt#",
+        "#ttttttttttttttttrrrrrrtttttttttttttttt#",
+        "#ttttttttttttttttrrrrrrtttttttttttttttt#",
+        "#ttttttttttttttttrrrrrrtttttttttttttttt#",
+        "#ttttttttttttttttrrrrrrtttttttttttttttt#",
+        "#ttttttttttttttttrrrrrrtttttttttttttttt#",
+        "#ttttttttttttttttrrrrrrtttttttttttttttt#",
+        "#ccccccccccccccccrrrrrrcccccccccccccccc#",
+        "#ccccccccccccccccrrrrrrcccccccccccccccc#",
+        "#ccccccccccccccccrrrrrrcccccccccccccccc#",
+        "#ccccccccccccccccrrrrrrcccccccccccccccc#",
+        "#ccccccccccccccccrrrrrrcccccccccccccccc#",
+        "#ccccccccccccccccrrrrrrcccccccccccccccc#",
+        "#ttttttttttttttttrrrrrrtttttttttttttttt#",
+        "#ttttttttttttttttrrrrrrtttttttttttttttt#",
+        "#ttttttttttttttttrrrrrrtttttttttttttttt#",
+        "#ttttttttttttttttrrrrrrtttttttttttttttt#",
+        "###################tt###################"
+      ]
+    },
+    "elevation": {
+      "palette": { "0": "0", "4": "4" },
+      "data": [
+        "4444444444444444444444444444444444444444",
+        "4000000000000000000000000000000000000004",
+        "4000000000000000000000000000000000000004",
+        "4000000000000000000000000000000000000004",
+        "4000000000000000000000000000000000000004",
+        "4000000000000000000000000000000000000004",
+        "4000000000000000000000000000000000000004",
+        "4000000000000000000000000000000000000004",
+        "4000000000000000000000000000000000000004",
+        "4000000000000000000000000000000000000004",
+        "4000000000000000000000000000000000000004",
+        "4000000000000000000000000000000000000004",
+        "4000000000000000000000000000000000000004",
+        "4000000000000000000000000000000000000004",
+        "4000000000000000000000000000000000000004",
+        "4000000000000000000000000000000000000004",
+        "4000000000000000000000000000000000000004",
+        "4000000000000000000000000000000000000004",
+        "4000000000000000000000000000000000000004",
+        "4000000000000000000000000000000000000004",
+        "4000000000000000000000000000000000000004",
+        "4000000000000000000000000000000000000004",
+        "4000000000000000000000000000000000000004",
+        "4000000000000000000000000000000000000004",
+        "4000000000000000000000000000000000000004",
+        "4000000000000000000000000000000000000004",
+        "4000000000000000000000000000000000000004",
+        "4000000000000000000000000000000000000004",
+        "4000000000000000000000000000000000000004",
+        "4000000000000000000000000000000000000004",
+        "4000000000000000000000000000000000000004",
+        "4000000000000000000000000000000000000004",
+        "4000000000000000000000000000000000000004",
+        "4000000000000000000000000000000000000004",
+        "4000000000000000000000000000000000000004",
+        "4000000000000000000000000000000000000004",
+        "4000000000000000000000000000000000000004",
+        "4000000000000000000000000000000000000004",
+        "4000000000000000000000000000000000000004",
+        "4000000000000000000000000000000000000004",
+        "4000000000000000000000000000000000000004",
+        "4000000000000000000000000000000000000004",
+        "4000000000000000000000000000000000000004",
+        "4000000000000000000000000000000000000004",
+        "4000000000000000000000000000000000000004",
+        "4000000000000000000000000000000000000004",
+        "4000000000000000000000000000000000000004",
+        "4444444444444444444004444444444444444444"
+      ]
+    }
+  },
+  "objects": [
+    { "id": "departures.board", "type": "fixture.airport.flight-board", "tile": [28, 45], "rotation": 180 },
+    { "id": "terminal.clock", "type": "fixture.station-clock", "tile": [5, 45], "rotation": 180 },
+    { "id": "tsa.divider.w", "type": "fixture.airport.terminal-divider", "tile": [1, 36] },
+    { "id": "tsa.divider.e", "type": "fixture.airport.terminal-divider", "tile": [25, 36] },
+    { "id": "tsa.belt.w", "type": "fixture.airport.baggage-belt", "tile": [5, 40] },
+    { "id": "tsa.belt.e", "type": "fixture.airport.baggage-belt", "tile": [31, 40] },
+    { "id": "tsa.arch.w", "type": "fixture.airport.security-arch", "tile": [15, 40] },
+    { "id": "tsa.arch.c", "type": "fixture.airport.security-arch", "tile": [19, 40] },
+    { "id": "tsa.arch.e", "type": "fixture.airport.security-arch", "tile": [23, 40] },
+    { "id": "tsa.desk", "type": "furn.counter", "tile": [11, 38], "props": { "label": "TSA Checkpoint" } },
+    { "id": "queue.w1", "type": "fixture.airport.stanchion", "tile": [12, 43] },
+    { "id": "queue.w2", "type": "fixture.airport.stanchion", "tile": [15, 43] },
+    { "id": "queue.w3", "type": "fixture.airport.stanchion", "tile": [12, 45] },
+    { "id": "queue.w4", "type": "fixture.airport.stanchion", "tile": [15, 45] },
+    { "id": "queue.e1", "type": "fixture.airport.stanchion", "tile": [23, 43] },
+    { "id": "queue.e2", "type": "fixture.airport.stanchion", "tile": [26, 43] },
+    { "id": "queue.e3", "type": "fixture.airport.stanchion", "tile": [23, 45] },
+    { "id": "queue.e4", "type": "fixture.airport.stanchion", "tile": [26, 45] },
+
+    { "id": "walkway.s", "type": "fixture.airport.walkway", "tile": [19, 14] },
+    { "id": "walkway.c", "type": "fixture.airport.walkway", "tile": [19, 8] },
+    { "id": "walkway.n", "type": "fixture.airport.walkway", "tile": [19, 2] },
+    { "id": "walkway.entry", "type": "fixture.airport.walkway", "tile": [19, 32] },
+    { "id": "walkway.lower", "type": "fixture.airport.walkway", "tile": [19, 26] },
+    { "id": "walkway.middle", "type": "fixture.airport.walkway", "tile": [19, 20] },
+
+    { "id": "gate.a1.sign", "type": "furn.construction-sign", "tile": [2, 2], "props": { "label": "GATE A1" } },
+    { "id": "gate.a1.podium", "type": "fixture.airport.gate-podium", "tile": [4, 5] },
+    { "id": "gate.a1.seat.1", "type": "fixture.hall-bench", "tile": [8, 3] },
+    { "id": "gate.a1.seat.2", "type": "fixture.hall-bench", "tile": [11, 3] },
+    { "id": "gate.a1.seat.3", "type": "fixture.hall-bench", "tile": [8, 6] },
+    { "id": "gate.a1.seat.4", "type": "fixture.hall-bench", "tile": [11, 6] },
+
+    { "id": "gate.b1.sign", "type": "furn.construction-sign", "tile": [35, 2], "props": { "label": "GATE B1" } },
+    { "id": "gate.b1.podium", "type": "fixture.airport.gate-podium", "tile": [34, 5], "rotation": 180 },
+    { "id": "gate.b1.seat.1", "type": "fixture.hall-bench", "tile": [27, 3] },
+    { "id": "gate.b1.seat.2", "type": "fixture.hall-bench", "tile": [30, 3] },
+    { "id": "gate.b1.seat.3", "type": "fixture.hall-bench", "tile": [27, 6] },
+    { "id": "gate.b1.seat.4", "type": "fixture.hall-bench", "tile": [30, 6] },
+
+    { "id": "gate.a2.sign", "type": "furn.construction-sign", "tile": [2, 15], "props": { "label": "GATE A2" } },
+    { "id": "gate.a2.podium", "type": "fixture.airport.gate-podium", "tile": [4, 19] },
+    { "id": "gate.a2.seat.1", "type": "fixture.hall-bench", "tile": [8, 16] },
+    { "id": "gate.a2.seat.2", "type": "fixture.hall-bench", "tile": [11, 16] },
+    { "id": "gate.a2.seat.3", "type": "fixture.hall-bench", "tile": [8, 19] },
+    { "id": "gate.a2.seat.4", "type": "fixture.hall-bench", "tile": [11, 19] },
+
+    { "id": "gate.b2.sign", "type": "furn.construction-sign", "tile": [35, 15], "props": { "label": "GATE B2" } },
+    { "id": "gate.b2.podium", "type": "fixture.airport.gate-podium", "tile": [34, 19], "rotation": 180 },
+    { "id": "gate.b2.seat.1", "type": "fixture.hall-bench", "tile": [27, 16] },
+    { "id": "gate.b2.seat.2", "type": "fixture.hall-bench", "tile": [30, 16] },
+    { "id": "gate.b2.seat.3", "type": "fixture.hall-bench", "tile": [27, 19] },
+    { "id": "gate.b2.seat.4", "type": "fixture.hall-bench", "tile": [30, 19] },
+
+    { "id": "gate.a3.sign", "type": "furn.construction-sign", "tile": [2, 28], "props": { "label": "GATE A3" } },
+    { "id": "gate.a3.podium", "type": "fixture.airport.gate-podium", "tile": [4, 32] },
+    { "id": "gate.a3.seat.1", "type": "fixture.hall-bench", "tile": [8, 29] },
+    { "id": "gate.a3.seat.2", "type": "fixture.hall-bench", "tile": [11, 29] },
+
+    { "id": "gate.b3.sign", "type": "furn.construction-sign", "tile": [35, 28], "props": { "label": "GATE B3" } },
+    { "id": "gate.b3.podium", "type": "fixture.airport.gate-podium", "tile": [34, 32], "rotation": 180 },
+    { "id": "gate.b3.seat.1", "type": "fixture.hall-bench", "tile": [27, 29] },
+    { "id": "gate.b3.seat.2", "type": "fixture.hall-bench", "tile": [30, 29] },
+
+    { "id": "concourse.plant.w", "type": "furn.plant", "tile": [16, 25] },
+    { "id": "concourse.plant.e", "type": "furn.plant", "tile": [23, 25] }
+  ],
+  "npcs": [
+    {
+      "id": "airport.tsa.lead", "type": "folk.tsa", "tile": [12, 39], "facing": "south",
+      "props": { "name": "Agent Rook", "title": "TSA Police", "noSmallTalk": true, "roam": 1, "armedSecurity": true },
+      "dialog": { "start": "hello", "nodes": { "hello": { "text": "Shoes can stay on. Tools, fish, turnips, and suspiciously heavy furniture go in a tray.", "then": "end" } } }
+    },
+    {
+      "id": "airport.tsa.east", "type": "folk.tsa", "tile": [27, 39], "facing": "south",
+      "props": { "name": "Agent Vale", "title": "TSA Police", "noSmallTalk": true, "roam": 1, "armedSecurity": true },
+      "dialog": { "start": "hello", "nodes": { "hello": { "text": "Walk through the scanner one at a time. The green light means you are probably not a rake.", "then": "end" } } }
+    },
+    {
+      "id": "airport.gate.a1", "type": "folk.villager", "tile": [5, 5], "facing": "west",
+      "props": { "name": "June", "title": "Gate A1 Agent", "noSmallTalk": true, "roam": 1 },
+      "dialog": { "start": "hello", "nodes": { "hello": { "text": "Gate A1 is boarding by row, then by patience, then by whoever has stopped listening.", "then": "end" } } }
+    },
+    {
+      "id": "airport.gate.b1", "type": "folk.villager", "tile": [33, 5], "facing": "east",
+      "props": { "name": "Orin", "title": "Gate B1 Agent", "noSmallTalk": true, "roam": 1 },
+      "dialog": { "start": "hello", "nodes": { "hello": { "text": "B1 is on time. This is airport language for nothing has happened yet.", "then": "end" } } }
+    },
+    {
+      "id": "airport.gate.a2", "type": "folk.villager", "tile": [5, 19], "facing": "west",
+      "props": { "name": "Mica", "title": "Gate A2 Agent", "noSmallTalk": true, "roam": 1 },
+      "dialog": { "start": "hello", "nodes": { "hello": { "text": "A2 leaves after the weather decides whether it approves of aviation.", "then": "end" } } }
+    },
+    {
+      "id": "airport.gate.b2", "type": "folk.villager", "tile": [33, 19], "facing": "east",
+      "props": { "name": "Pella", "title": "Gate B2 Agent", "noSmallTalk": true, "roam": 1 },
+      "dialog": { "start": "hello", "nodes": { "hello": { "text": "The moving walkway is for moving. Standing is permitted only with conviction.", "then": "end" } } }
+    },
+    {
+      "id": "airport.gate.a3", "type": "folk.villager", "tile": [5, 32], "facing": "west",
+      "props": { "name": "Sol", "title": "Gate A3 Agent", "noSmallTalk": true, "roam": 1 },
+      "dialog": { "start": "hello", "nodes": { "hello": { "text": "A3 is the last gate down. If you can still see security, you have not walked far enough.", "then": "end" } } }
+    },
+    {
+      "id": "airport.gate.b3", "type": "folk.villager", "tile": [33, 32], "facing": "east",
+      "props": { "name": "Cairn", "title": "Gate B3 Agent", "noSmallTalk": true, "roam": 1 },
+      "dialog": { "start": "hello", "nodes": { "hello": { "text": "B3 boards when the aircraft arrives, which is less circular than it sounds.", "then": "end" } } }
+    },
+    {
+      "id": "airport.traveler", "type": "folk.villager", "tile": [17, 25], "facing": "south",
+      "props": { "name": "Tern", "title": "Frequent Flyer", "roam": 5 },
+      "dialog": { "start": "hello", "nodes": { "hello": { "text": "I arrived early enough to become part of the terminal furniture.", "then": "end" } }, "greetings": {
+        "acquaintance": [
+          "Gate A2 is still deciding. I have moved benches three times so it feels like progress.",
+          "The moving walkway goes north. I take it. Then I walk back. It is the only round trip in this building.",
+          "Agent Rook made me take a turnip out of my bag. It has its own tray now. It is doing better than I am.",
+          "The board says on time. I have learned to read that as a mood, not a fact."
+        ],
+        "friend": [
+          "You are the only person here who is not waiting for anything. I find that very restful to stand next to.",
+          "June let me board and then unboard. I count as a drill, apparently. Glad to be useful.",
+          "I have a favourite bench now. B3, second from the wall. If you see somebody on it, that is a stranger.",
+          "Pella made me stand on the walkway with conviction. I did. It went the same speed."
+        ],
+        "close": [
+          "There you are. Sit. The gate is not going anywhere and neither am I.",
+          "I told Cairn you were my ride. It is not true and I would like it to be.",
+          "Nobody visits an airport. You visit me. I have noticed the difference."
+        ]
+      } }
+    }
+  ],
+  "exits": [
+    { "tile": [19, 47], "label": "Taxi stand" },
+    { "tile": [20, 47], "label": "Taxi stand" }
+  ],
+  "spawn": { "tile": [19, 46], "facing": "north" }
+}

@@ -1,0 +1,768 @@
+{
+  "format": "tw.world",
+  "version": 1,
+  "kind": "interior",
+  "kits": [
+    "kits/casino.kit.json",
+    "kits/turnip-catalog.kit.json"
+  ],
+  "meta": {
+    "id": "casino.lucky-seven",
+    "name": "The Lucky Seven",
+    "note": "A neon casino: a hold'em table with three regulars, four slot machines that pool their jackpots, and a roulette wheel that only takes red."
+  },
+  "grid": {
+    "width": 28,
+    "height": 22,
+    "tileSize": 1
+  },
+  "ambience": {
+    "music": "clothier",
+    "sky": "#0b0612",
+    "sun": 0.6,
+    "hemi": 1.6,
+    "hemiSky": "#ff5cc4"
+  },
+  "layers": {
+    "surface": {
+      "palette": {
+        "#": "wall.marble",
+        "c": "floor.checker",
+        "r": "rug"
+      },
+      "data": [
+        "############################",
+        "#cccccccccccccccccccccccccc#",
+        "#cccccccccccccccccccccccccc#",
+        "#cccrrrrrrrcccccccccccccccc#",
+        "#cccrrrrrrrcccccccccccccccc#",
+        "#cccrrrrrrrcccccccccccccccc#",
+        "#cccrrrrrrrcccccccccccccccc#",
+        "#cccrrrrrrrcccccccccccccccc#",
+        "#cccrrrrrrrcccccrrrrrrccccc#",
+        "#cccccccccccccccrrrrrrccccc#",
+        "#cccccccccccccccrrrrrrccccc#",
+        "#cccccccccccccccrrrrrrccccc#",
+        "#cccccccccccccccccccccccccc#",
+        "#cccccccccccccccccccccccccc#",
+        "#cccccccccccccccccccccccccc#",
+        "#cccccccccccccccccccccccccc#",
+        "#cccccccccccccccccccccccccc#",
+        "#cccccccccccrrrrccccccccccc#",
+        "#cccccccccccrrrrccccccccccc#",
+        "#cccccccccccrrrrccccccccccc#",
+        "#cccccccccccrrrrccccccccccc#",
+        "#############rr#############"
+      ]
+    },
+    "elevation": {
+      "palette": {
+        "0": "0",
+        "4": "4"
+      },
+      "data": [
+        "4444444444444444444444444444",
+        "4000000000000000000000000004",
+        "4000000000000000000000000004",
+        "4000000000000000000000000004",
+        "4000000000000000000000000004",
+        "4000000000000000000000000004",
+        "4000000000000000000000000004",
+        "4000000000000000000000000004",
+        "4000000000000000000000000004",
+        "4000000000000000000000000004",
+        "4000000000000000000000000004",
+        "4000000000000000000000000004",
+        "4000000000000000000000000004",
+        "4000000000000000000000000004",
+        "4000000000000000000000000004",
+        "4000000000000000000000000004",
+        "4000000000000000000000000004",
+        "4000000000000000000000000004",
+        "4000000000000000000000000004",
+        "4000000000000000000000000004",
+        "4000000000000000000000000004",
+        "4444444444444004444444444444"
+      ]
+    },
+    "flags": {
+      "palette": {
+        ".": "none"
+      },
+      "data": [
+        "............................",
+        "............................",
+        "............................",
+        "............................",
+        "............................",
+        "............................",
+        "............................",
+        "............................",
+        "............................",
+        "............................",
+        "............................",
+        "............................",
+        "............................",
+        "............................",
+        "............................",
+        "............................",
+        "............................",
+        "............................",
+        "............................",
+        "............................",
+        "............................",
+        "............................"
+      ]
+    }
+  },
+  "objects": [
+    {
+      "id": "poker.table",
+      "type": "furn.pokertable",
+      "tile": [
+        5,
+        5
+      ]
+    },
+    {
+      "id": "neon.w",
+      "type": "fixture.casino.neon-seven",
+      "tile": [
+        2,
+        1
+      ]
+    },
+    {
+      "id": "neon.e",
+      "type": "fixture.casino.neon-seven",
+      "tile": [
+        24,
+        1
+      ]
+    },
+    {
+      "id": "cage",
+      "type": "fixture.casino.cage",
+      "tile": [
+        12,
+        2
+      ]
+    },
+    {
+      "id": "slot.1",
+      "type": "fixture.casino.slot",
+      "tile": [
+        26,
+        4
+      ]
+    },
+    {
+      "id": "slot.2",
+      "type": "fixture.casino.slot",
+      "tile": [
+        26,
+        6
+      ]
+    },
+    {
+      "id": "slot.3",
+      "type": "fixture.casino.slot",
+      "tile": [
+        26,
+        8
+      ]
+    },
+    {
+      "id": "slot.4",
+      "type": "fixture.casino.slot",
+      "tile": [
+        26,
+        10
+      ]
+    },
+    {
+      "id": "roulette",
+      "type": "fixture.casino.roulette",
+      "tile": [
+        17,
+        9
+      ]
+    },
+    {
+      "id": "chandelier.1",
+      "type": "fixture.casino.chandelier",
+      "tile": [
+        9,
+        12
+      ]
+    },
+    {
+      "id": "chandelier.2",
+      "type": "fixture.casino.chandelier",
+      "tile": [
+        19,
+        4
+      ]
+    },
+    {
+      "id": "chandelier.3",
+      "type": "fixture.casino.chandelier",
+      "tile": [
+        13,
+        15
+      ]
+    },
+    {
+      "id": "rope.w",
+      "type": "fixture.casino.rope",
+      "tile": [
+        9,
+        18
+      ]
+    },
+    {
+      "id": "rope.e",
+      "type": "fixture.casino.rope",
+      "tile": [
+        17,
+        18
+      ]
+    },
+    {
+      "id": "stage",
+      "type": "fixture.casino.stage",
+      "tile": [
+        21,
+        20
+      ]
+    },
+    {
+      "id": "bench.1",
+      "type": "fixture.hall-bench",
+      "tile": [
+        3,
+        13
+      ]
+    },
+    {
+      "id": "bench.2",
+      "type": "fixture.hall-bench",
+      "tile": [
+        3,
+        16
+      ]
+    },
+    {
+      "id": "plant.1",
+      "type": "furn.plant",
+      "tile": [
+        1,
+        1
+      ]
+    },
+    {
+      "id": "plant.2",
+      "type": "furn.plant",
+      "tile": [
+        26,
+        1
+      ]
+    },
+    {
+      "id": "plant.3",
+      "type": "furn.plant",
+      "tile": [
+        1,
+        20
+      ]
+    },
+    {
+      "id": "plant.4",
+      "type": "furn.plant",
+      "tile": [
+        26,
+        16
+      ]
+    },
+    {
+      "id": "sign",
+      "type": "furn.construction-sign",
+      "tile": [
+        22,
+        13
+      ],
+      "props": {
+        "label": "THE HOUSE ALWAYS WINS (EVENTUALLY)"
+      }
+    }
+  ],
+  "npcs": [
+    {
+      "id": "casino.sable",
+      "type": "folk.croupier",
+      "tile": [
+        4,
+        4
+      ],
+      "facing": "south",
+      "props": {
+        "name": "Sable",
+        "title": "Croupier",
+        "noSmallTalk": true,
+        "roam": 1
+      },
+      "dialog": {
+        "start": "open",
+        "nodes": {
+          "open": {
+            "branch": [
+              {
+                "when": {
+                  "not": {
+                    "flag": "met"
+                  }
+                },
+                "to": "hello"
+              },
+              {
+                "to": "menu"
+              }
+            ]
+          },
+          "hello": {
+            "text": [
+              "Welcome to the Seven. Five and ten blinds at this table, red only at the wheel, and the slots pool their jackpots.",
+              "I deal. I do not advise. Sit if you like."
+            ],
+            "do": {
+              "set": "met"
+            },
+            "then": "menu"
+          },
+          "menu": {
+            "text": "Cards?",
+            "choices": [
+              {
+                "text": "Deal me in.",
+                "do": [
+                  {
+                    "poker": true
+                  }
+                ],
+                "to": "end"
+              },
+              {
+                "text": "Tell me about the players.",
+                "to": "players"
+              },
+              {
+                "text": "Not yet.",
+                "to": "end"
+              }
+            ]
+          },
+          "players": {
+            "text": [
+              "Ace bets like the cards owe him money. The Baroness folds until she does not, and then you are done. Fingers bluffs, and knows you know, and does it anyway.",
+              "None of them go home. That is the whole trick of the place."
+            ],
+            "then": "menu"
+          }
+        }
+      }
+    },
+    {
+      "id": "casino.ace",
+      "type": "folk.villager",
+      "tile": [
+        4,
+        7
+      ],
+      "facing": "north",
+      "props": {
+        "name": "Ace Mahoney",
+        "title": "Card Sharp",
+        "pokerSeat": {
+          "loose": 0.4,
+          "aggr": 0.75,
+          "bluff": 0.2
+        },
+        "voice": {
+          "pitch": 0.88,
+          "rate": 26,
+          "timbre": "sawtooth"
+        },
+        "noSmallTalk": true
+      },
+      "dialog": {
+        "start": "hello",
+        "nodes": {
+          "hello": {
+            "text": "Sit. Lose. It is faster if you skip the part where you think you will not.",
+            "choices": [
+              {
+                "text": "Deal me in.",
+                "do": [
+                  {
+                    "poker": true
+                  }
+                ],
+                "to": "end"
+              },
+              {
+                "text": "Not against you.",
+                "to": "end"
+              }
+            ]
+          }
+        }
+      }
+    },
+    {
+      "id": "casino.baroness",
+      "type": "folk.villager",
+      "tile": [
+        8,
+        5
+      ],
+      "facing": "west",
+      "props": {
+        "name": "Baroness Ottoline",
+        "title": "Old Money",
+        "pokerSeat": {
+          "loose": 0.18,
+          "aggr": 0.3,
+          "bluff": 0.04
+        },
+        "voice": {
+          "pitch": 1,
+          "rate": 18,
+          "timbre": "triangle"
+        },
+        "noSmallTalk": true
+      },
+      "dialog": {
+        "start": "hello",
+        "nodes": {
+          "hello": {
+            "text": "I fold nine hands in ten. The tenth pays for the villa. Shall we?",
+            "choices": [
+              {
+                "text": "Deal me in.",
+                "do": [
+                  {
+                    "poker": true
+                  }
+                ],
+                "to": "end"
+              },
+              {
+                "text": "Another time, Baroness.",
+                "to": "end"
+              }
+            ]
+          }
+        }
+      }
+    },
+    {
+      "id": "casino.fingers",
+      "type": "folk.villager",
+      "tile": [
+        3,
+        6
+      ],
+      "facing": "east",
+      "props": {
+        "name": "Fingers",
+        "title": "Regular",
+        "pokerSeat": {
+          "loose": 0.8,
+          "aggr": 0.5,
+          "bluff": 0.28
+        },
+        "voice": {
+          "pitch": 1.2,
+          "rate": 30,
+          "timbre": "square"
+        },
+        "noSmallTalk": true
+      },
+      "dialog": {
+        "start": "hello",
+        "nodes": {
+          "hello": {
+            "text": "I am bluffing right now. Or am I. Sit down and we can find out together.",
+            "choices": [
+              {
+                "text": "Deal me in.",
+                "do": [
+                  {
+                    "poker": true
+                  }
+                ],
+                "to": "end"
+              },
+              {
+                "text": "I will pass.",
+                "to": "end"
+              }
+            ]
+          }
+        }
+      }
+    },
+    {
+      "id": "casino.mint",
+      "type": "folk.shopkeep",
+      "tile": [
+        13,
+        1
+      ],
+      "facing": "south",
+      "props": {
+        "name": "Mint",
+        "title": "Cashier",
+        "voice": {
+          "pitch": 1.1,
+          "rate": 27,
+          "timbre": "triangle"
+        }
+      },
+      "shop": {
+        "name": "The Cage",
+        "markup": 1.2,
+        "buyRate": 0.7,
+        "takes": [
+          "kititem.gold-chip",
+          "kititem.lucky-dice",
+          "kititem.neon-seven",
+          "kititem.slot-machine",
+          "wear.glasses.mirror",
+          "wear.hat.top"
+        ],
+        "stock": [
+          {
+            "type": "kititem.gold-chip",
+            "count": null,
+            "always": true
+          },
+          {
+            "type": "kititem.lucky-dice",
+            "count": 5
+          },
+          {
+            "type": "kititem.neon-seven",
+            "count": 1
+          },
+          {
+            "type": "kititem.slot-machine",
+            "count": 1
+          },
+          {
+            "type": "wear.glasses.mirror",
+            "count": 2
+          },
+          {
+            "type": "wear.hat.top",
+            "count": 1
+          }
+        ]
+      },
+      "dialog": {
+        "start": "menu",
+        "nodes": {
+          "menu": {
+            "text": "Chips, dice, souvenirs. The slot machine in the window is for sale if you have the coins and the floor space.",
+            "choices": [
+              {
+                "text": "Open the cage.",
+                "do": {
+                  "shop": true
+                },
+                "to": "after"
+              },
+              {
+                "text": "Just looking.",
+                "to": "end"
+              }
+            ]
+          },
+          "after": {
+            "text": "Come back when you are rich. Or poor. Either way we have something for you.",
+            "then": "end"
+          }
+        },
+        "greetings": {
+          "acquaintance": [
+            "Cage is open. Everything in it is counted, and I know which of it is yours.",
+            "The wheel took red again. It only takes red. The regulars still bet black and call it a system.",
+            "Velvet is on her second first set. Tip her before the cage, it is easier on the maths.",
+            "Slot machine in the window is still for sale. Somebody offered me a horse for it. I do not know where he would keep the machine."
+          ],
+          "friend": [
+            "Brick says you came in without the iron. I put a chip in the drawer with your name on it, and no, you cannot have it.",
+            "Ace asked if you were coming. Fingers asked if you were coming. The Baroness did not ask, which means she already knew.",
+            "You are up. I can tell from the walk. Down walks straight to the cage, up walks the long way round the wheel.",
+            "The jackpots pool. Four machines, one pot, and the pot has your name on it in pencil, which is how I keep all the names."
+          ],
+          "close": [
+            "Cash out with me last. Everyone else in here wants your chips. I just want you to leave with some.",
+            "The Baroness asked me to feed her. Brick's rule, so I said you would. If she asks, that is my fault.",
+            "I counted the drawer twice and it came out right. That happens when you are in. I am not saying it is you."
+          ]
+        }
+      }
+    },
+    {
+      "id": "casino.brick",
+      "type": "folk.pitfighter",
+      "tile": [
+        16,
+        19
+      ],
+      "facing": "south",
+      "props": {
+        "name": "Brick",
+        "title": "Door",
+        "noSmallTalk": true,
+        "roam": 1,
+        "armedSecurity": true,
+        "alertLine": "Brick saw the gun. \"House rules. No iron on the floor.\"",
+        "voice": {
+          "pitch": 0.66,
+          "rate": 16,
+          "timbre": "sawtooth"
+        }
+      },
+      "dialog": {
+        "start": "hello",
+        "nodes": {
+          "hello": {
+            "text": "No guns on the floor. No feeding the Baroness. Have a nice night.",
+            "then": "end"
+          }
+        }
+      }
+    },
+    {
+      "id": "casino.velvet",
+      "type": "folk.dj",
+      "tile": [
+        22,
+        19
+      ],
+      "facing": "north",
+      "props": {
+        "name": "Velvet",
+        "title": "Lounge Singer",
+        "roam": 3,
+        "voice": {
+          "pitch": 1.05,
+          "rate": 20,
+          "timbre": "triangle"
+        }
+      },
+      "dialog": {
+        "start": "hello",
+        "nodes": {
+          "hello": {
+            "text": [
+              "Second set is at nine. First set was also at nine. Time is soft in here, darling.",
+              "Tip the band. There is no band. Tip me."
+            ],
+            "choices": [
+              {
+                "text": "Here. (10 coins)",
+                "when": {
+                  "coins": 10
+                },
+                "do": {
+                  "coins": -10
+                },
+                "to": "tipped"
+              },
+              {
+                "text": "Sing something.",
+                "to": "sing"
+              },
+              {
+                "text": "Later.",
+                "to": "end"
+              }
+            ]
+          },
+          "tipped": {
+            "text": "A gentleman. Or a gambler who is up. Same thing, in here.",
+            "then": "end"
+          },
+          "sing": {
+            "text": "\"Red... then black... then red again...\" That one is about the wheel. All of them are about the wheel.",
+            "then": "end"
+          }
+        },
+        "greetings": {
+          "acquaintance": [
+            "The band is tuning up. There is still no band. I have started tuning myself.",
+            "Between sets, darling. There is always a between. That is the trick of the room.",
+            "The chandelier over the stage flickers on the high notes. Mint says it is the wiring. I say it is applause.",
+            "Brick asked me for a request. I sang the one about the wheel. He said that is all of them. He is not wrong."
+          ],
+          "friend": [
+            "You tip like somebody who is up. I have learned not to ask which.",
+            "The Baroness folds through every number I sing. Ace bets through them. You are the only one who sits still through them.",
+            "I wrote a new song. It is about the slots. It came out about the wheel again. Everything does, in here.",
+            "Sable says I flat the last note on purpose. I do. It keeps the gamblers from feeling too lucky."
+          ],
+          "close": [
+            "There is my front row. One seat, always full.",
+            "I sang the good one before you came in. I will sing it again. Time is soft.",
+            "Come sit on the edge of the stage. Nobody else is allowed. Brick knows."
+          ]
+        }
+      }
+    }
+  ],
+  "animals": [],
+  "items": [
+    {
+      "id": "loose.chip",
+      "type": "kititem.gold-chip",
+      "tile": [
+        10,
+        14
+      ]
+    },
+    {
+      "id": "loose.dice",
+      "type": "kititem.lucky-dice",
+      "tile": [
+        23,
+        15
+      ]
+    }
+  ],
+  "exits": [
+    {
+      "tile": [
+        13,
+        21
+      ],
+      "label": "Cab stand"
+    },
+    {
+      "tile": [
+        14,
+        21
+      ],
+      "label": "Cab stand"
+    }
+  ],
+  "spawn": {
+    "tile": [
+      13,
+      20
+    ],
+    "facing": "north"
+  }
+}

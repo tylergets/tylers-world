@@ -2,6 +2,7 @@
   "format": "tw.world",
   "version": 1,
   "kind": "interior",
+  "kits": ["kits/turnip-catalog.kit.json"],
   "meta": {
     "id": "store.staithe.interior",
     "name": "The Staithe",
@@ -32,9 +33,9 @@
         "#ttttttttttt#",
         "#ttttttttttt#",
         "#tttwwwwwttt#",
-        "#wwwwwwwwwww#",
-        "#wwwwrrrwwww#",
-        "#wwwwrrrwwww#",
+        "#tttwwwwwttt#",
+        "#tttwwwwwttt#",
+        "#tttwwwwwttt#",
         "#wwwwwwwwwww#",
         "#wwwwwwwwwww#",
         "######tt#####"
@@ -97,7 +98,7 @@
   "objects": [
     {
       "id": "shelf.a",
-      "type": "furn.shelf",
+      "type": "fixture.joiners-bench",
       "tile": [
         1,
         1
@@ -130,7 +131,7 @@
     },
     {
       "id": "shelf.d",
-      "type": "furn.shelf",
+      "type": "fixture.open-shelving",
       "tile": [
         10,
         1
@@ -152,9 +153,9 @@
     },
     {
       "id": "stove",
-      "type": "furn.stove",
+      "type": "fixture.storm-lantern-stand",
       "tile": [
-        9,
+        11,
         3
       ],
       "props": {
@@ -163,34 +164,34 @@
     },
     {
       "id": "chair.loafers",
-      "type": "furn.chair",
+      "type": "fixture.workbench",
       "tile": [
-        11,
-        4
+        1,
+        5
       ]
     },
     {
       "id": "crate.west",
-      "type": "furn.crate",
+      "type": "fixture.packing-crate",
       "tile": [
         1,
-        6
+        7
       ]
     },
     {
       "id": "crate.east",
-      "type": "furn.crate",
+      "type": "fixture.packing-crate",
       "tile": [
         11,
-        6
+        7
       ]
     },
     {
       "id": "crate.door",
-      "type": "furn.crate",
+      "type": "furn.chair",
       "tile": [
-        1,
-        8
+        9,
+        7
       ]
     },
     {
@@ -224,6 +225,8 @@
           "item.stick",
           "item.flower",
           "item.mushroom",
+          "item.turnip",
+          "item.cress",
           "tool.axe",
           "tool.shovel",
           "tool.gun",
@@ -236,6 +239,8 @@
           "tool.map",
           "tool.camera",
           "tool.machinegun",
+          "tool.machine-gun",
+          "item.bullets",
           "tool.rod",
           "item.trout",
           "item.carp"
@@ -313,6 +318,15 @@
             "type": "tool.machinegun",
             "count": 1,
             "price": 1350
+          },
+          {
+            "type": "tool.machine-gun",
+            "count": 1,
+            "price": 3600
+          },
+          {
+            "type": "item.bullets",
+            "count": null
           }
         ]
       },
@@ -377,6 +391,25 @@
           "bye": {
             "text": "Boards, mind. Not the shortcut."
           }
+        },
+        "greetings": {
+          "acquaintance": [
+            "Boards are in. Nails are in. Reed has had the thatch off half the village so I expect to sell both.",
+            "Marsh brought eel baskets to trade. They smell of what they are for. They are hanging out the back until they do not.",
+            "You came by the boards. Good. Meg finds the ones who do not, eventually, and she charges.",
+            "Stone is up. Stone is always up. The fen eats hard standing and I sell the fen its dinner."
+          ],
+          "friend": [
+            "Tarn came over to borrow a hammer. Neighbour, more or less. Borrower, entirely.",
+            "You have dripped on my floor so many times I have started to think of it as your side of the shop.",
+            "I saw you take the shortcut. I saw you come back for the boards. I am not gloating, I am stocking.",
+            "Marigold you brought me went in the window. Only colour in Sedgewater that is not brown or green or wet."
+          ],
+          "close": [
+            "Do not bother wiping. I have given up on the floor and I have very nearly given up on you.",
+            "The corner by the boards is the dry one. It is yours while you are in.",
+            "Marsh asked if you were family. I said near enough that you pay the family price, which is the same price."
+          ]
         }
       }
     }

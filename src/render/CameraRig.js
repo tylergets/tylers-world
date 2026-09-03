@@ -46,7 +46,9 @@ const DEG = Math.PI / 180;
 export class CameraRig {
   constructor(aspect = 1) {
     this.fov = 46;
+    this.firstPersonFov = 70;
     this.near = 0.5;
+    this.firstPersonNear = 0.05;
     this.far = 400;
 
     // View endpoints.
@@ -87,9 +89,26 @@ export class CameraRig {
    * @param {number} t     morph amount, already eased by the caller
    * @param {THREE.Vector3} pivot  point both views orbit (the player's feet)
    */
-  update(t, pivot) {
+  update(t, pivot, firstPerson = false, lookPitch = 0) {
     this.t = t;
     this.pivot.copy(pivot);
+
+    if (firstPerson) {
+      this.dist = 0;
+      this._euler.set(lookPitch, this.yaw, 0, 'YXZ');
+      this.camera.quaternion.setFromEuler(this._euler);
+      this.camera.position.copy(pivot);
+      this.camera.updateMatrixWorld();
+
+      this._srcPersp.fov = this.firstPersonFov;
+      this._srcPersp.aspect = this.aspect;
+      this._srcPersp.near = this.firstPersonNear;
+      this._srcPersp.far = this.far;
+      this._srcPersp.updateProjectionMatrix();
+      this.camera.projectionMatrix.copy(this._srcPersp.projectionMatrix);
+      this.camera.projectionMatrixInverse.copy(this.camera.projectionMatrix).invert();
+      return;
+    }
 
     const pitch = THREE.MathUtils.lerp(this.pitch3d, this.pitch2d, t);
     const dist = THREE.MathUtils.lerp(this.dist3d, this.dist2d, t);

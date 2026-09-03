@@ -31,7 +31,7 @@
 
 import { audioContext } from './context.js';
 
-/** One second of white noise, built once and re-pointed at by every shot. */
+/** A short white-noise buffer, built once and reused by every airsoft pop. */
 let noise = null;
 
 function context() {
@@ -48,13 +48,7 @@ function noiseBuffer(ac) {
 }
 
 /**
- * A gunshot: a filtered noise crack over a low thump.
- *
- * Two voices, because one is not enough to read as a gun. The noise carries
- * the CRACK and is swept hard downward by a lowpass, which is what makes it a
- * report rather than a hiss; the sine underneath carries the BODY, and without
- * it the shot sounds like a stick breaking. Both decay exponentially and fast,
- * because a tail is what a room adds and this game has no room model.
+ * An airsoft gun's short mechanical pop: bright noise with a tiny springy body.
  */
 export function shot(gain = 0.3) {
   const ac = context();
@@ -63,6 +57,39 @@ export function shot(gain = 0.3) {
     if (ac.state === 'suspended') ac.resume();
     const t = ac.currentTime;
 
+    const crack = ac.createBufferSource();
+    crack.buffer = noiseBuffer(ac);
+    const lp = ac.createBiquadFilter();
+    lp.type = 'lowpass';
+    lp.frequency.setValueAtTime(5200, t);
+    lp.frequency.exponentialRampToValueAtTime(1200, t + 0.045);
+    const cg = ac.createGain();
+    cg.gain.setValueAtTime(gain * 0.55, t);
+    cg.gain.exponentialRampToValueAtTime(0.0001, t + 0.055);
+    crack.connect(lp).connect(cg).connect(ac.destination);
+    crack.start(t);
+    crack.stop(t + 0.06);
+
+    const body = ac.createOscillator();
+    body.type = 'triangle';
+    body.frequency.setValueAtTime(720, t);
+    body.frequency.exponentialRampToValueAtTime(280, t + 0.055);
+    const bg = ac.createGain();
+    bg.gain.setValueAtTime(gain * 0.18, t);
+    bg.gain.exponentialRampToValueAtTime(0.0001, t + 0.065);
+    body.connect(bg).connect(ac.destination);
+    body.start(t);
+    body.stop(t + 0.07);
+  } catch { /* silence is an acceptable outcome; a crash is not */ }
+}
+
+/** A conventional firearm report, kept separate from the short airsoft pop. */
+export function gunshot(gain = 0.3) {
+  const ac = context();
+  if (!ac) return;
+  try {
+    if (ac.state === 'suspended') ac.resume();
+    const t = ac.currentTime;
     const crack = ac.createBufferSource();
     crack.buffer = noiseBuffer(ac);
     const lp = ac.createBiquadFilter();

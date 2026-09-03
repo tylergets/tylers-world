@@ -147,8 +147,8 @@ export class Player {
    *
    * One line, and it is the same line every animal runs: see body.js.
    */
-  move(dt, vx, vz) {
-    return sweep(this.world, this, dt, vx, vz);
+  move(dt, vx, vz, bodies = null) {
+    return sweep(this.world, this, dt, vx, vz, bodies, true);
   }
 
   /** The tile the player is facing, which is what interactions reach for. */

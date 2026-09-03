@@ -8,6 +8,7 @@
   "types": {
     "fixture.cider-cask": {
       "kind": "object",
+      "use": "store",
       "label": "Coppervale Cider Cask",
       "footprint": { "w": 1, "d": 1 },
       "height": 0.85,

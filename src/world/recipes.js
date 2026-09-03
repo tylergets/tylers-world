@@ -25,7 +25,12 @@ const TOWN_HALL = { label: 'Town Hall', interior: 'worlds/interiors/town-hall.js
 const MUSEUM = { label: 'Museum', interior: 'worlds/interiors/museum.json' };
 
 function addTownHall(d, x, z, allow = ['g', 'c'], radius = 20, level = '0') {
-  return d.placeNear('town.hall', 'building.townhall', x, z, allow, radius, TOWN_HALL, level);
+  const hall = d.placeNear('town.hall', 'building.townhall', x, z, allow, radius, TOWN_HALL, level);
+  // Recipes expand their grids twofold before returning. Half the hall's
+  // authored depth therefore lands this board one final tile row beyond its
+  // south wall, left of the doorway and inside the scenery reservation.
+  d.place('town.noticeboard', 'civic.noticeboard', hall[0], hall[1] + 3);
+  return hall;
 }
 
 /** Place the other civic building near Town Hall and join their front walks. */
@@ -56,30 +61,16 @@ const NEIGHBOR_DOOR_X = {
   'building.bungalow': 2,
 };
 
-const NEIGHBOR_HOME = {
-  cottage: ['building.cottage', 'Cottage'],
-  cabin: ['building.cabin', 'Cabin'],
-  bungalow: ['building.bungalow', 'Bungalow'],
-};
-
-function neighbor(id, name, title, style, tile, extra = {}) {
-  const [type, home] = NEIGHBOR_HOME[style];
-  let hash = 0;
-  for (const char of id) hash = (hash * 31 + char.charCodeAt(0)) >>> 0;
-  return {
-    id, name, title, type, home, tile,
-    voice: {
-      pitch: 0.78 + (hash % 40) / 100,
-      rate: 19 + (hash % 7),
-      timbre: ['sine', 'triangle', 'square', 'sawtooth'][hash % 4],
-    },
-    greeting: `${name}. Around here I am the ${title.toLowerCase()}.`,
-    again: `${title} work does not finish itself.`,
-    ...extra,
-  };
-}
-
-/** Add owned homes before scenery is scattered, then join each doorstep to town. */
+/**
+ * Add owned homes before scenery is scattered, then join each doorstep to town.
+ *
+ * Each spec is one person and their house, and EVERY LINE THEY SAY IS IN THE
+ * SPEC: `hello` (the introduction, said once), `again` (what they are up to,
+ * said on every later visit) and `greetings` (per-tier hellos, see
+ * world/dialog.js). There is deliberately no template sentence stitched onto
+ * any of them -- the lime burner and the hedge binder do not say the same
+ * thing about their own front door.
+ */
 function addNeighbors(d, specs, connect) {
   return specs.map((spec) => {
     const house = d.placeNear(
@@ -105,11 +96,18 @@ function addNeighbors(d, specs, connect) {
       facing: 'south',
       props: { name: spec.name, title: spec.title, roam: 5, voice: spec.voice },
       dialog: {
-        start: 'hello',
+        start: 'open',
         nodes: {
-          hello: { text: `${spec.greeting} That's my place behind me. Come say hello before you let yourself in.`, then: 'again' },
+          open: {
+            branch: [
+              { when: { not: { flag: 'met' } }, to: 'hello' },
+              { to: 'again' },
+            ],
+          },
+          hello: { text: spec.hello, do: { set: 'met' } },
           again: { text: spec.again },
         },
+        greetings: spec.greetings,
       },
     });
     return house;
@@ -217,14 +215,58 @@ export function meadowbrook({
     {
       id: 'lark', name: 'Lark', title: 'Hedge Binder', home: 'Cabin', type: 'building.cabin',
       tile: [cx - 18, cz + 7], allow: ['g', 's'], voice: { pitch: 1.12, rate: 22, timbre: 'triangle' },
-      greeting: 'Lark. I keep the west hedges from swallowing the lane.',
+      hello: [
+        'Lark. Hedge binder. Every hedge on the west side of this island wants to be a wood, and I am what talks it out of it, with a billhook.',
+        'The cabin is mine, the one with the hazel rods leant against it. Knock, or call, or hum at the door -- anything but coming through it the way the hedge does.',
+      ],
       again: 'The hedge is winning today, but only by inches.', road: [cx - 10, cz + 12],
+      greetings: {
+        acquaintance: [
+          'Laid twelve yards this morning and the lane has widened by a foot. That is a good day in my trade.',
+          'Hazel is up on the bluff and I am down here wanting it. Nothing in this trade is ever where the hedge is.',
+          'Mind the billhook. It is leant on the gatepost because it is sulking, and so am I.',
+          'Blackthorn got me across the knuckles. The hedge fights back. That is why it is a trade and not a hobby.',
+        ],
+        friend: [
+          'You went along the west lane yesterday without getting scratched. I did that. You are welcome.',
+          'Bramble wants his hedge laid and wants it to still flower. I have told him which he can have. He is thinking.',
+          'You came past whistling. The birds in the hedge answered you. They do not answer me, and I house them.',
+          'Grab a rod. No, that one. If you are going to stand there, you can hold something.',
+        ],
+        close: [
+          'Good. Come and look at this pleach. Nobody else on the island would care.',
+          'I left a gap in the hedge by the pond. It is for you. Nobody else uses that way.',
+          'Walk the lane with me. It is a lane because of me, and today I want to show it off.',
+        ],
+      },
     },
     {
       id: 'juniper', name: 'Juniper', title: 'Orchard Keeper', home: 'Bungalow', type: 'building.bungalow',
       tile: [cx + 16, cz + 15], allow: ['g', 's'], voice: { pitch: 0.91, rate: 20, timbre: 'sine' },
-      greeting: 'Juniper. The young fruit trees east of the square are mine to worry over.',
-      again: 'No blossom yet. Ask me again after warmer rain.', road: [cx + 12, cz + 14],
+      hello: [
+        'Juniper. The young fruit trees east of the square are mine -- I planted them, I staked them, and now I stand about waiting for them to decide.',
+        'The bungalow behind me is where I sleep when the trees let me. Say something at the door before you go through it. The trees get a warning, and so should I.',
+      ],
+      again: 'No blossom yet. It will come after warmer rain, or it will not, and I will be standing here either way.', road: [cx + 12, cz + 14],
+      greetings: {
+        acquaintance: [
+          'Two of the young pears have put out leaf. The third is thinking about it. I do not rush a tree.',
+          'I have been out with the stakes. The wind off the beach leans everything east and I lean it back.',
+          'Wasps have found the windfalls. I am leaving them. Somebody should get the fruit and it was never going to be me this year.',
+          'The graft on the end tree has taken. Do not touch it. Do not even look at it hard.',
+        ],
+        friend: [
+          'You walked through the orchard yesterday and stepped over the roots. I noticed. The trees noticed.',
+          'Bramble says a tree is a slow vegetable. I have not spoken to him since and it has been a restful week.',
+          'I saved you an apple off the old tree by your house. Well. I saved it from Pim, which is the same thing.',
+          'The blossom is coming. I can feel it in the bark. You may think that is nonsense and you may keep it to yourself.',
+        ],
+        close: [
+          'Come and stand under the pear with me. It is doing nothing. It is lovely.',
+          'First fruit off the young trees is yours. That was decided a while ago.',
+          'Lean on the fence. It is what it is for. Talk or do not.',
+        ],
+      },
     },
   ], (door, spec) => d.pathL(...door, ...spec.road, { level: '0' }));
 
@@ -372,6 +414,25 @@ export function meadowbrook({
         },
         bye: { text: 'Right you are.' },
       },
+      greetings: {
+        acquaintance: [
+          'Afternoon. Or it was when I started standing here. I have lost track and I am not going to go looking for it.',
+          'The chickens have moved on to the fountain. I told them there was nothing in it. They did not believe me either.',
+          'Nothing has happened on the square since you were last across it. I checked. I am still checking.',
+          'Marla had her blinds down till ten this morning. I do not know what that means and I have decided to find out.',
+        ],
+        friend: [
+          'There you go, walking about again. I would join you but somebody has to keep this bit of paving from wandering off.',
+          'Tobin came out of his house today. Twice. I am telling you because you are the only one who would count that as news.',
+          'I saved you a spot. It is this spot. There is not much of a view but I know all of it by heart.',
+          'The cat sat on my foot for an hour. I let it. We are neither of us going anywhere.',
+        ],
+        close: [
+          'You. Good. Stand there a minute and be nobody with me.',
+          'Eleven years I have said that gate goes somewhere yet. You are the first thing to come through it that did.',
+          'I have nothing to tell you and I am going to tell you all of it. It will take a while.',
+        ],
+      },
     },
   });
 
@@ -507,6 +568,25 @@ export function meadowbrook({
         },
         bye: { text: 'Mind the beds on your way past.' },
       },
+      greetings: {
+        acquaintance: [
+          'Hold on, let me get my hands out of the soil before I say anything I would have to stand behind.',
+          'Slugs have been at the lettuce. I have been at the slugs. We are about even, which is the usual arrangement.',
+          'The frame wants airing and the rack wants turning, so you have caught me between two jobs that both think they are first.',
+          'Mind where you put your feet. That row is sown, and it does not look like it yet.',
+        ],
+        friend: [
+          'The beans have gone up a hand since Tuesday. I would take the credit but the rain was here first.',
+          'Wren came past and told me the tide. I told her the beans. Neither of us wanted the news and both of us gave it.',
+          'You have soil under your nails. Do not wash it off on my account, it means you have been somewhere real.',
+          'Something new has come up in the shady corner. Do not tell Tobin, he will want to measure it.',
+        ],
+        close: [
+          'Come round the back. The good stuff is round the back.',
+          'I put a row in for you. Do not ask what. You will know when it comes up.',
+          'Hands in. Go on. The bed by the glass wants thinning and I have been saving it.',
+        ],
+      },
     },
   });
 
@@ -626,6 +706,25 @@ export function meadowbrook({
           then: 'menu',
         },
         bye: { text: 'Aye. Watch the current.' },
+      },
+      greetings: {
+        acquaintance: [
+          "Tide's on the turn. You have about an hour of dry sand and then you have not.",
+          "Line's been out since first light. Nothing on it yet, and nothing is a perfectly good answer from the sea.",
+          'Wind has gone round to the east. That is not a complaint, that is a forecast, and it is free.',
+          'Shells are thin on the south beach this week. The sea is keeping them. It does that.',
+        ],
+        friend: [
+          'You walk that sand like you were born on it. You were not. But you are learning where it is soft.',
+          'Bramble told me the tide this morning. Told me. I let him, because he looked pleased.',
+          'The boat is still upside down. Do not look at her like that, she can tell.',
+          'Do not tread on the net. It is drying, and it is the only thing I own that is.',
+        ],
+        close: [
+          "Come down to the water's edge. The sea is doing something and I want somebody to see it with me.",
+          'You were out on the water yesterday. I saw. You held her nose into it. Good.',
+          'Mug on the ledge. Not the one by the bait barrel. I should not have to say that but I have said it before.',
+        ],
       },
     },
   });
@@ -762,6 +861,25 @@ export function meadowbrook({
           then: 'menu',
         },
         bye: { text: 'Right. Mind the step.' },
+      },
+      greetings: {
+        acquaintance: [
+          'Hm. One moment. There is a spring in this and if I look up it will leave.',
+          'A hinge from the store, a pan with a hole and a chair nobody will own up to. That is the morning\'s pile.',
+          'I have been out looking for straight timber. There is none. Trees here grow the way they like, and I respect it, and it is a nuisance.',
+          'You are standing where I put the solder. It is not on you. I checked.',
+        ],
+        friend: [
+          'The orrery has a tick in it. It did not have one last week. I am choosing to think of it as a voice.',
+          'Bramble brought me a trowel with the handle off and stood over me while I fixed it. Would not sit. There is nowhere to sit.',
+          'You have the look of somebody carrying something broken. If you are, I have the afternoon.',
+          'Pim says you are round here more than I leave the house. That is true and it is not a high bar.',
+        ],
+        close: [
+          'Sit on the crate. The heavy one. You know which.',
+          'I put a second chair in the back room. It is not for anyone. It is just there now.',
+          "Hm. Good, it's you. Hold this end and do not let go when it gets warm.",
+        ],
       },
     },
   });
@@ -945,20 +1063,86 @@ export function sourwood({
     {
       id: 'alder', name: 'Alder', title: 'Creek Reader', home: 'Cottage', type: 'building.cottage',
       tile: [Math.round(creek(18)) - 8, 18], voice: { pitch: 0.8, rate: 19, timbre: 'sawtooth' },
-      greeting: 'Alder. I read the creek by what it leaves on the gravel.',
+      hello: [
+        'Alder. I read the creek. What it drops on the gravel bar tells you what the rain did up in the head before the rain has finished doing it.',
+        'The cottage behind me is mine. It is the last one before the holler shuts. Give me a word at the door first -- the creek never does, and I am tired of being surprised.',
+      ],
       again: 'Water is low. The stones are saying so plainly.',
+      greetings: {
+        acquaintance: [
+          'Fresh sand on the upper bar. Rain in the head last night, and none down here. The creek tells it before anyone.',
+          'The top ford is running higher than it looks. I have told Hollis. He has told the ford.',
+          'Crows are down on the gravel this morning. Something washed out of the head. I have not gone to see what.',
+          'The water is the colour of tea. That is the pines. It is not a bad sign, it is just what it is.',
+        ],
+        friend: [
+          'You crossed at the top ford yesterday. I saw the prints. You went in at the shallow side, which nobody does the first year.',
+          'Fern wants the creek to bring her willow. I want it to bring me sand. It brings us both leaves and thinks that is funny.',
+          'I have been up the head as far as it goes. There is nothing. There is a spring in a rock and the whole holler comes out of it.',
+          'Come down on the bar a minute. There is a stone I want to show you that was not here last week.',
+        ],
+        close: [
+          'Wet feet. Good. You have been in it.',
+          'Nothing moved on the bar overnight. I sat up for it. I am telling you because you are the only one who would not laugh.',
+          'Come to the water. I will show you what it is saying today.',
+        ],
+      },
     },
     {
       id: 'fern', name: 'Fern', title: 'Basket Maker', home: 'Cabin', type: 'building.cabin',
       tile: [Math.round(creek(50)) - 9, 50], voice: { pitch: 1.17, rate: 23, timbre: 'triangle' },
-      greeting: 'Fern. Every useful basket in the holler starts as a wet switch in my yard.',
-      again: 'The willow is soaking. Tomorrow it will listen.',
+      hello: [
+        'Fern. Baskets. Every one in this holler that holds anything worth holding started as a wet willow switch in my yard, and I bent it.',
+        'That cabin behind me is where I sleep among the rods. The door is not latched, but I would like to hear you at it before I see you through it.',
+      ],
+      again: 'The willow is soaking. Tomorrow it will bend without complaint.',
+      greetings: {
+        acquaintance: [
+          'Willow is cut and in the trough. Three days in the creek and it will go round a corner without splitting. Less and it argues.',
+          'I have a basket on the go for the store. It is going to be square. The willow does not want to be square.',
+          'Ducks have been in my soaking trough again. I do not mind. The willow does not mind. The ducks are pleased.',
+          'Fingers are raw today. That is the trade. You cannot bind a rod with gloves on and you cannot bind it forever without.',
+        ],
+        friend: [
+          'You brought me sticks last time and one of them was willow. You did not know that. I did.',
+          'Alder came down to tell me the creek was low. I could see it was low. I let him tell me, he needed to.',
+          'Hollis wants a basket for the ford stones. A basket. For stones. I am making it because I like a challenge and I like Hollis.',
+          'Stand on the dry side of the yard, by the bundle. Do not mind the smell. It is the creek, on purpose.',
+        ],
+        close: [
+          'I have started one for you. It is small and it is wrong and I am starting it again.',
+          'Hands. Give me your hands a moment. No -- I want to see if they would do this. They would.',
+          'Come round the yard. You can hold the rod ends while I bind and neither of us has to say anything.',
+        ],
+      },
     },
     {
       id: 'hollis', name: 'Hollis', title: 'Ford Tender', home: 'Bungalow', type: 'building.bungalow',
       tile: [Math.round(creek(72)) - 9, 72], voice: { pitch: 0.96, rate: 25, timbre: 'square' },
-      greeting: 'Hollis. I reset the ford after every hard rain.',
+      hello: [
+        'Hollis. I tend the fords. Every hard rain the creek moves the stones, and every morning after, I put them back where a foot expects them.',
+        'That bungalow is mine, the last house before the mouth. Stop at the door and say so. A ford you can just walk over. A house you cannot, not mine.',
+      ],
       again: 'The crossing is sound enough if you place your feet.',
+      greetings: {
+        acquaintance: [
+          'Lower ford is set. Moved four stones this morning and the fourth was the one that mattered. It always is.',
+          'Rain up the head last night. Alder will say so with more words. The ford said so with a stone gone.',
+          'A cart went over the bottom crossing and rocked the big flat one loose. I have had words with the cart.',
+          'Water is over the tops of the ford stones today. Not by much. Enough that I am standing here rather than there.',
+        ],
+        friend: [
+          'You crossed dry yesterday. Both feet. I do not get thanked for that and I do not need it, but I saw.',
+          'Fern is making me a basket for stones. I did not ask her to stop and I did not ask her to start. That is Fern.',
+          'There is a cart-track by the bottom ford that does not go on to the gate. I have been looking at it all morning.',
+          'Stand on the bank with me. The ford will not move while we are watching it. It waits until I am indoors.',
+        ],
+        close: [
+          'Right. You are here. Help me lift the flat one.',
+          'The ford held through last night\'s rain. First time in nine years. I wanted to tell somebody and you were the somebody.',
+          'Boots off if you are coming in. Not for the floor. For the feet.',
+        ],
+      },
     },
   ], (door) => d.pathL(...door, Math.round(creek(door[1] + 1)) + 4, door[1] + 1, { level: '0' }));
 
@@ -1138,14 +1322,58 @@ export function tidewrack({
     {
       id: 'coral', name: 'Coral', title: 'Net Mender', home: 'Cottage', type: 'building.cottage',
       tile: [cx - out(0.42), cz - out(0.42)], allow: ['g', 's'], voice: { pitch: 1.15, rate: 24, timbre: 'triangle' },
-      greeting: 'Coral. Nets come to me after the sea has finished arguing with them.',
+      hello: [
+        'Coral. I mend nets. The sea tears them, the fishers bring them to me, and I sit on that step and argue the holes closed one knot at a time.',
+        'The cottage behind me is mine, and so is the net across the doorway. Speak up before you push through it. It is not there to keep you out, it is there so I hear you coming.',
+      ],
       again: "This knot will hold. The next one is the sea's concern.",
+      greetings: {
+        acquaintance: [
+          "Marnie's cast net came in with a hole the size of a dog. I asked what did it. She says the sea. The sea does not bite like that.",
+          'Twine is the wrong colour today. The sea does not care and the fish do not care and I will finish it anyway.',
+          'Sat on the step since first light, mending. Cold hands are fine. Cold hands and wet twine is the trade.',
+          'Otto brought me a net he found on the far sand. Not one of ours. I have mended it anyway. It seemed rude not to.',
+        ],
+        friend: [
+          'You walked past yesterday and did not stand on the net laid out on the grass. Not many people manage that.',
+          'Marnie watches me from her window and I mend her nets. That is a fair trade and neither of us has ever said so.',
+          'There is a knot I cannot get right. I have been at it since Tuesday. Do not look at it. It knows.',
+          'I have a shuttle spare. It is on the step. You could learn. I am not saying you should. I am saying it is on the step.',
+        ],
+        close: [
+          'Come and sit on the step. There is room now. I moved the twine.',
+          'You have a hole in your sleeve. Give it here. I have the needle threaded anyway.',
+          "Marnie's net is done, so I have nothing in my hands. Stay while that lasts.",
+        ],
+      },
     },
     {
       id: 'selkie', name: 'Selkie', title: 'Shell Lime Burner', home: 'Cabin', type: 'building.cabin',
       tile: [cx + out(0.40), cz + out(0.42)], allow: ['g', 's'], voice: { pitch: 0.87, rate: 21, timbre: 'sine' },
-      greeting: 'Selkie. I burn broken shell into lime and keep the whole ring whitewashed.',
+      hello: [
+        'Selkie. I burn shell. Broken ones, off the tide line, into the kiln and out the other side as lime -- and every white wall on this ring is my doing.',
+        'The cabin behind me is mine, and the kiln beside it is hotter than it looks. Sing out at the door before you come in. I hear better than I see, once the kiln is lit.',
+      ],
       again: 'Stand upwind of the kiln. That advice is free.',
+      greetings: {
+        acquaintance: [
+          'Kiln is lit. You will have smelt it round at the store. Everybody does. Nobody complains, because they all want white walls.',
+          'Crows walk the tide line ahead of me and take the shells I want. We have not come to an arrangement.',
+          "Limewashed the store's south wall this morning. Watch your sleeve on it till tomorrow. It comes off on everything.",
+          'The kiln has gone cold and I am sorting the burnt from the unburnt. It is a job for fingers and I am short of fingers.',
+        ],
+        friend: [
+          'You went past the kiln on the downwind side yesterday. I did tell you. Your coat has told you since.',
+          'Otto wants his landing posts limed. Otto wants a great many things and says so slowly. I will do them.',
+          'Marnie says she can see my smoke from her chair. She can see everything from that chair. I lit it early to give her something.',
+          'Bring me shells if you find them. Broken ones. Whole ones go to the post at the landing, and Otto counts.',
+        ],
+        close: [
+          'Come by the kiln. It is banked. You will be warm and I will be quiet.',
+          'I have a pot of wash put by for your walls. Whenever you want. It does not go off.',
+          'Hands black again. I would take yours but you would not thank me. Stay a minute anyway.',
+        ],
+      },
     },
   ], (door) => {
     const a = Math.atan2(door[1] - cz, door[0] - cx);
@@ -1278,6 +1506,25 @@ export function tidewrack({
         },
         bye: { text: 'Aye. Mind the rope.' },
       },
+      greetings: {
+        acquaintance: [
+          'Watch your step. That plank is sound and the one next to it is having a think.',
+          'Rope wants coiling and the hull wants patching. The hull is louder. I am doing the rope.',
+          'Tide has brought in a bit of somebody else\'s boat. Not mine. I have counted mine.',
+          'The post at the head of the landing has a new shell on it. Not from me. I like not knowing whose.',
+        ],
+        friend: [
+          'Marnie says I tied a granny knot on the mooring line last Thursday. It was Wednesday. I am not going to correct her.',
+          'You went round the ring the other way this time. I saw you come in from the east. It is not shorter. I did tell you.',
+          'There is a hull under that tarpaulin I said I had finished. Do not lift it. I have not.',
+          'Tar on my hands, so I will not shake yours. You are welcome to the smell, though. It is the smell of things not sinking.',
+        ],
+        close: [
+          'Come and hold this. No, it is not going anywhere. That is the point of holding it.',
+          'I have kept this landing dry for fourteen years and this is the first year I have had somebody to say that to.',
+          'Sit on the bollard. The rope will wait. It is very good at waiting.',
+        ],
+      },
     },
   });
 
@@ -1397,6 +1644,25 @@ export function tidewrack({
         },
         bye: { text: 'Mind the tide line.' },
       },
+      greetings: {
+        acquaintance: [
+          'Sea side this morning. The lagoon had nothing to say and the sea had too much, as usual.',
+          'I saw you come round the north arm. Through the glass. Do not look like that, it is what the glass is for.',
+          'There is a new thing on the shelf from the far sand. A bottle. Nothing in it. There never is.',
+          'Wind off the lagoon and spray off the sea, both at once. Ten steps apart. I have told you about the ten steps.',
+        ],
+        friend: [
+          'Otto has been at that same hull for a week. I have watched him from the chair. It is better than the sea some days.',
+          'I saw you skip a stone across the lagoon. Six. From here it looked like six. If it was seven, tell me and I will believe you.',
+          'That boat on the far side has moved. Nobody has mentioned it. You are not going to be the one to make me.',
+          'You are the only person on this ring who walks the whole of it without complaining. I count that as a character.',
+        ],
+        close: [
+          'The glass is pointed at nothing this morning. It is your turn to tell me something.',
+          'The far sand gave up a good one for you. Top shelf. Do not ask which. You will know it.',
+          'I was going to walk out to the sea. I will wait, if you are coming.',
+        ],
+      },
     },
   });
 
@@ -1496,6 +1762,25 @@ export function tidewrack({
           then: 'menu',
         },
         bye: { text: 'Go careful on the way down.' },
+      },
+      greetings: {
+        acquaintance: [
+          'Up again. The dune grass has held through the wind, which is all I ask of it and all it gives.',
+          'There is a thing growing by the ramp I did not plant. Salt-sown. I am watching it and it is watching the sea.',
+          'Rabbits have been at the sea holly. They are welcome. It is the only thing up here with an opinion about them.',
+          'You can see the weather coming for an hour before it gets here. I have had my hour, and it is coming.',
+        ],
+        friend: [
+          "I went down for flour and came back up in half the time. I am not telling you why. It was Otto's rope talk.",
+          'The samphire is up. Do not tell Marnie, she will send somebody for it and it will be you.',
+          'You stand at the edge the way I did the first year. Looking for the shape of it. It does not get any less round.',
+          'Lie back in the grass if you like. The sand is warm on the south face and cold on the north, and that is the whole of the dune.',
+        ],
+        close: [
+          'I left the view alone for you. Same as ever. Take your time with it.',
+          'Wind has dropped. That is the sound of nothing, up here, and I wanted you to hear it.',
+          'The salt bush by the ramp has flowered. I think it did it because you kept walking past.',
+        ],
       },
     },
   });
@@ -1652,20 +1937,86 @@ export function thistledown({
     {
       id: 'heather', name: 'Heather', title: 'Wool Carder', home: 'Cottage', type: 'building.cottage',
       tile: [road + 6, 17], voice: { pitch: 1.08, rate: 21, timbre: 'triangle' },
-      greeting: 'Heather. I card the burrs and weather out of downland wool.',
+      hello: [
+        "Heather. I card wool. It comes down off the benches full of burrs and weather, and it leaves my yard clean enough for Nan's loom to bother with.",
+        'That cottage behind me is mine and the yard is full of fleece. Give the door a word before you open it. The wind gets in without asking, and I would like one thing in this gap that does not.',
+      ],
       again: 'Clean fleece first, clever work second.',
+      greetings: {
+        acquaintance: [
+          "Four fleeces in from Nan's flock and every one of them has been through a thorn. I am pulling the bench out of them a burr at a time.",
+          'Cards are set and the wind is down. That is the only weather in this trade worth a word.',
+          'Thistle seed in the fleece again. It floats in off the benches and I comb it out and it floats back. We keep each other in work.',
+          'There is grease on my hands and it is not coming off. It is lanolin. It is the best thing about the job and the worst.',
+        ],
+        friend: [
+          'Nan says my rolags are too tight. Nan says that every year and every year she weaves them. I have stopped answering.',
+          'You came down the road with thistledown in your hair yesterday. I nearly carded you.',
+          'Gale wants a fleece for his bench. A fleece. For sitting on. Stone-cold and he calls it a bench. I am sending him one.',
+          'Dell counted you in at eight this morning. He tells me. I did not ask. That is what living by the gate is.',
+        ],
+        close: [
+          'Come in the yard. Mind where you tread, it is all fleece, and it is soft on purpose.',
+          'Feel that. That is what a bench-full of thorns comes out as, if you are patient.',
+          'I have kept the softest of the clip back. Not for Nan. I am telling you so you know why.',
+        ],
+      },
     },
     {
       id: 'gale', name: 'Gale', title: 'Milestone Cutter', home: 'Cabin', type: 'building.cabin',
       tile: [road - 10, 42], voice: { pitch: 0.78, rate: 20, timbre: 'square' },
-      greeting: 'Gale. I cut the stones that tell travellers how much farther they regret coming.',
+      hello: [
+        'Gale. I cut milestones. Every marker between the two mouths of this gap has my chisel on it, and every one of them tells the truth, more or less.',
+        'The cabin behind me is mine, the one with the chippings up to the door. Stop at the sill and speak. A stone stands where it is put until it is moved, and so should a visitor.',
+      ],
       again: 'The next marker says twelve. It does not say twelve what.',
+      greetings: {
+        acquaintance: [
+          'Fourteen letters cut and the chisel wants an edge. I would rather cut a stone than sharpen one, and that is my whole character.',
+          'There is a new marker going in at the south mouth. It will say six. Six is a lie, but a kind one.',
+          'Grit in my eye. Chippings. Do not look at me. I will look at you when it stops watering.',
+          'Stone from the west bench splits clean and stone from the east does not. That is all anyone needs to know about this gap.',
+        ],
+        friend: [
+          'Rook asked me for a stone with nothing cut on it. I gave him one. Easiest job of the year and the hardest to charge for.',
+          'You read the marker by the tarn out loud as you passed. I heard you from here. Nobody reads them. They just believe them.',
+          'Heather is sending me a fleece to sit on. I did not ask. I am going to sit on it and say nothing, which is the same as thanks.',
+          'Dell says I cut the numbers too small for a man on a cart to read. Dell has never been on a cart. I have told him so.',
+        ],
+        close: [
+          'Your name is cut in the offcut behind the door. I had the letters left over. It does not mean anything. It is just there.',
+          'That block by the door was a milestone. Now it is a seat. Things change what they are for.',
+          'Hands. Look. Chipped to the bone and I would not swap them. You are one of about three people I would tell that.',
+        ],
+      },
     },
     {
       id: 'briar', name: 'Briar', title: 'Goatherd', home: 'Bungalow', type: 'building.bungalow',
       tile: [road + 6, 68], voice: { pitch: 0.99, rate: 24, timbre: 'sawtooth' },
-      greeting: 'Briar. The goats know every path through the gap and approve of none.',
+      hello: [
+        'Briar. Goatherd. The goats are on the east bench when they are anywhere, and they know every path through this gap better than the road does.',
+        'The bungalow behind me is mine, and the goats think it is theirs. Give a shout at the door before you go in. If I am not there, one of them is, and it will not be pleased.',
+      ],
       again: 'If one follows you, it was already planning to.',
+      greetings: {
+        acquaintance: [
+          'Lost one up the east bench this morning. Found her on the roof of the store. Do not ask how. I have stopped asking.',
+          'The billy has eaten the gate rope again. I have tied a new one. He has looked at it.',
+          'Three kids born on the bench overnight. All standing. Goats do not waste time on being born.',
+          'Wind up the gap and the goats have gone to ground under the thorn. They are wiser than me and they know it.',
+        ],
+        friend: [
+          'One of them followed you down the road yesterday. I let her. She came back with an opinion about you and it was not bad.',
+          'Nan says a goat ate her washing. It did not. It ate half of it. I am being accurate.',
+          'Dell counts the goats through the gate. Every time. There are seven. He counts them every time.',
+          'You smell of sheep. I am not judging. I am saying the goats will, and they judge.',
+        ],
+        close: [
+          'Come up the bench with me. The kids are out and I want you to see them before they get sensible.',
+          'The old nanny lay down by your feet last time. She does not do that. I have thought about it since.',
+          'Stand still. The billy is behind you, and he likes you, which is worse.',
+        ],
+      },
     },
   ], (door) => d.pathL(...door, road, door[1] + 1, { level: '0' }));
 
@@ -1787,6 +2138,25 @@ export function thistledown({
           then: 'menu',
         },
         bye: { text: 'Right you are. Down and to your left.' },
+      },
+      greetings: {
+        acquaintance: [
+          'Stopping again. I have that down. I do not need to write it.',
+          'Two carts through this morning, one each way. Neither of them stopped. That is a normal day and I am reporting it as one.',
+          'Gale of wind down from the top. Not Gale the man. He is where he always is, hitting a stone.',
+          'Nobody through since dawn but a dog, and the dog did not stop to give its name.',
+        ],
+        friend: [
+          'You went up the west trail yesterday and came down the east. I am not asking why. I am saying I saw both ends of it.',
+          'Nan asked after you. I told her the time you came through, to the minute. She did not need it. She had it.',
+          'A man came up the road this morning and I did not know him. Then he turned out to be Rook, with a hat on. I am not over it.',
+          'The gate has stood here forty years. I have leant on it for most of them. Lean on it. It does not mind.',
+        ],
+        close: [
+          'There you are. I had you down for about now.',
+          'Nobody through all day. Just the wind, and you. That is my kind of day.',
+          'Stand this side of the gate with me. It is the better side. I have checked.',
+        ],
       },
     },
   });
@@ -1914,6 +2284,25 @@ export function thistledown({
           text: 'Mind the gate on your way through. Dell will have counted you.',
         },
       },
+      greetings: {
+        acquaintance: [
+          'Sheep are all where I left them, and so am I. That is a morning, duck.',
+          'There is one ewe up the bench who will not come down for anybody. She is the one I like best.',
+          'Loom has had four rows off me this week. Four. I am not proud of that and I am not sorry either.',
+          'The fire has not gone out since the wet year, and it is not going out today. That is the one thing I promise this gap.',
+        ],
+        friend: [
+          'You came down the west trail without spooking the flock. I saw from the door. Not many manage it and none of them are Dell.',
+          'Somebody has been throwing my shuttle. The number has gone up by three. I said I would know and I know.',
+          'Thistledown is up on the bench and I want it for cushions. Dell fetches it if I pay. You might fetch it if I ask.',
+          'I made too much bread. I always make too much bread. It is a habit from when there was somebody to eat the other half.',
+        ],
+        close: [
+          'In you come, duck. The chair is warm. I sat in it so it would be.',
+          'My sister came up and left before you got here. You are the better visit. Do not tell her.',
+          'There is a bit of blanket done. I want you to feel it. Not to look at it. To feel it.',
+        ],
+      },
     },
   });
 
@@ -2014,6 +2403,25 @@ export function thistledown({
           then: 'menu',
         },
         bye: { text: 'Aye. Quietly.' },
+      },
+      greetings: {
+        acquaintance: [
+          'Quietly. It is a slow morning and I want to keep it.',
+          'Nothing on the line. Nothing off the bottom. That is as it should be.',
+          'The rain ring on the tarn this morning was the first of the year. You missed it. Most do.',
+          'Rabbits at the rim. They are not afraid of me. I sit still enough to be a rock.',
+        ],
+        friend: [
+          'You sat here yesterday without saying anything for a good while. I have been thinking about it since. It was well done.',
+          'Nan sent bread up with you last time. Eat the next one yourself. She feeds me in town and it takes an hour.',
+          'Something rose out by the far rim at dusk. Bigger than I thought. I have not told anyone else and I am not going to.',
+          'The flat stone you skimmed went eight. Eight. I have not managed eight in twenty years.',
+        ],
+        close: [
+          'Sit. The other side of the rod, where the sun is. I kept it for you.',
+          'It is going to rain. Stay for it. Nobody ever stays for it.',
+          'Ah. Not a word. I will tell you if it moves.',
+        ],
       },
     },
   });
@@ -2171,20 +2579,95 @@ export function rimrock({
     {
       id: 'mesa', name: 'Mesa', title: 'Rain Jar Keeper', home: 'Cottage', type: 'building.cottage',
       tile: [cx - 19, cz + 2], allow: ['g', 's'], voice: { pitch: 1.04, rate: 22, timbre: 'sine' },
-      greeting: 'Mesa. I keep rain by the jar because the sky seldom keeps appointments.',
-      again: 'Three jars full. That counts as a wet season here.', road: [cx - 12, cz + 8],
+      hello: [
+        'Mesa. I keep rain in jars, because the sky seldom keeps an appointment and a jar always does.',
+        'The cottage behind me is where the jars live. Knock first; a jar that has been startled has usually been dropped.',
+      ],
+      again: 'Three jars full since you were last by. That counts as a wet season here.', road: [cx - 12, cz + 8],
+      greetings: {
+        acquaintance: [
+          'Dry morning. They mostly are. I have been out counting the jars again, which does not change the number.',
+          'If you hear thunder, tell me before you tell anyone. I have lids to get off.',
+          'Wash is sand today, same as yesterday. I keep looking anyway. It is a kind of exercise.',
+          'The goats have found the overflow trough. I am not going to fight a goat over a cupful.',
+        ],
+        friend: [
+          'Bly counted rain for the week and I set out every jar I own. Bly was wrong. I am not speaking to the weather.',
+          'Sora keeps asking for a jar of the clean stuff for her still. I keep saying no and she keeps asking nicer.',
+          [
+            'Somebody left a lid off overnight. A quarter of a jar gone to the air.',
+            'It was me. I am telling you so I do not have to tell anyone else.',
+          ],
+          'You are the only one who looks at the sky when I do. Everyone else looks at me.',
+        ],
+        close: [
+          'Come and sit by the full one. It is cool in a way nothing else on this rock is.',
+          'Jar six has a crack. I have not decided to be upset about it. Help me not decide.',
+          'If it ever rains properly I want you standing here when it does. That is all.',
+        ],
+      },
     },
     {
       id: 'flint', name: 'Flint', title: 'Slickrock Polisher', home: 'Cabin', type: 'building.cabin',
       tile: [cx + 16, cz + 15], allow: ['g', 's'], voice: { pitch: 0.76, rate: 19, timbre: 'square' },
-      greeting: 'Flint. I polish stone until it admits the sky was there first.',
-      again: 'That shine is honest work, not water.', road: [cx + 10, cz + 10],
+      hello: [
+        'Flint. I polish slickrock. Rub it long enough and it gives up a shine that looks like water and is not.',
+        'The cabin is mine and its polished floor is the point of it. Shout from the step before you come in; one boot of grit undoes a week.',
+      ],
+      again: 'That shine on the step is a month of my arm. It is not wet, whatever it looks like.', road: [cx + 10, cz + 10],
+      greetings: {
+        acquaintance: [
+          'Rubbing down a slab for the town hall step. They want it to look wet. They will get what the rock gives.',
+          'My hands are grey to the wrist and it does not wash off. Do not shake them if you value your sleeves.',
+          'There is a piece on the bench that took the sun this morning like a pool. I have stopped work to look at it.',
+          'Rim is loose again on this side. Any stone you find lying about, that is where it came from.',
+        ],
+        friend: [
+          'Bly wants a cairn stone polished. I said a cairn is meant to be seen from a distance, not admired up close. Bly went quiet.',
+          'Sora says the shine smells of juniper because I use her oil for the finish. I say it smells of work. We are both right.',
+          [
+            'Somebody took a polished offcut off my step last week. Did not ask.',
+            'If it was you, it was a good choice. If it was a goat, I want it back.',
+          ],
+          'You walked round the floor and not across it. That is the first thing I look for in a person.',
+        ],
+        close: [
+          'Come in and take the good chair. It is the only thing in there I have not polished.',
+          'Finished the slab. It is a mirror with a grain in it and I wanted you to see it before the grit does.',
+          'Hands are too sore to work today. Sit on the step with me and we will watch the stone do nothing.',
+        ],
+      },
     },
     {
       id: 'sora', name: 'Sora', title: 'Juniper Distiller', home: 'Bungalow', type: 'building.bungalow',
       tile: [cx + 15, cz - 1], allow: ['g', 's'], voice: { pitch: 1.21, rate: 25, timbre: 'triangle' },
-      greeting: 'Sora. I make bitter oil from the juniper that survives the rim.',
-      again: 'A drop is medicine. Two drops are a lesson.', road: [cx + 8, cz + 8],
+      hello: [
+        'Sora. I distil the juniper that clings to the rim. It comes out as an oil, bitter enough to cure most things and to teach the rest.',
+        'The bungalow behind me is where the still lives. Call out before you come in; it is hot in there and the stuff in the pot does not like surprises.',
+      ],
+      again: 'A drop is medicine. Two drops are a lesson. I keep saying it and people keep learning.', road: [cx + 8, cz + 8],
+      greetings: {
+        acquaintance: [
+          'The still has been going since first light. If you smell it on me, that is why. It gets in the hair.',
+          'Cut a bough off the crooked tree on the north rim this morning. The wind has been shaping it for me for years.',
+          'Mind the crows. They like the mash and they do not like sharing the yard.',
+          'Grey haze off the basin again. Good for nothing but the juniper, which likes to be left alone.',
+        ],
+        friend: [
+          'Flint has taken to using my oil on his floor. It shines beautifully and the whole cabin smells like a cough cure.',
+          'Mesa will not sell me a clean jar of rain for the still. I have asked six ways. I am working on a seventh.',
+          [
+            'Somebody bought a whole bottle last week and put two drops in a stew.',
+            'They came back for an explanation. I gave them a bit of bread and no refund.',
+          ],
+          'You do not screw your face up when you smell the yard any more. It took Pike a decade.',
+        ],
+        close: [
+          'Sit in the yard. The still is talking to itself and I like an ear that is not mine.',
+          'I kept back the first cut of the year. It is the clean one. It is yours, and do not thank me.',
+          'Slow day, fire low. Stop a while and help me not work.',
+        ],
+      },
     },
   ], (door, spec) => d.pathL(...door, ...spec.road, { level: '0' }));
 
@@ -2257,6 +2740,28 @@ export function rimrock({
         after: { text: 'Weather still coming. It always is.', then: 'menu' },
         bye: { text: 'Mind the edge.' },
       },
+      greetings: {
+        acquaintance: [
+          'Cloud in the west. Two days off, maybe three. You can put your coat away for now.',
+          'Stand where the rock is dry. The lip crumbles a little every year and I would rather it did not take you.',
+          'Came to look down, did you. Most do the once and then they look anywhere else.',
+          'Two crows and no wind since sunrise. I have written it down. It will mean something later or it will not.',
+        ],
+        friend: [
+          'Somebody knocked my cairn over in the night. Goats, I think, though a goat has never once admitted anything.',
+          'You have a way of standing at the lip that does not make me nervous. It took Wend twenty years to learn that.',
+          [
+            'I told Pike there was rain coming and he laughed and oiled every hinge in the house.',
+            'It rained. He has not said a word about it and neither have I.',
+          ],
+          'The shadow of the rock is on the far side of the basin already. I lose the whole afternoon watching it cross.',
+        ],
+        close: [
+          'Sit down a while. The edge keeps, and so does the weather, mostly.',
+          'I saved you the flat stone. It holds the sun until after dark.',
+          'Quiet day. Nothing coming. I do not get many and I am glad it is you I get to waste one on.',
+        ],
+      },
     },
   });
 
@@ -2308,6 +2813,28 @@ export function rimrock({
           then: 'menu',
         },
         bye: { text: 'Go on, then.' },
+      },
+      greetings: {
+        acquaintance: [
+          'Mind the goats on the apron. They eat anything I plant and they look at me while they do it.',
+          'You made the cut again. It is no shorter the second time, whatever people say.',
+          'Hauled water from the seep this morning. Two buckets up, and about one and a half arrived.',
+          'The wind has been at the beds all night. Anything still standing has earned its place.',
+        ],
+        friend: [
+          'Pike says gardening up here is a hobby with a spade. He can say that when his squash come in.',
+          'I had a whole row of something green yesterday. Today I have a whole row of goat. You are better company.',
+          [
+            'Bly sent word there was rain coming. I put every pot out on the apron.',
+            'Nothing yet. If it comes I will look wise, and if not I will bring the pots back in after dark.',
+          ],
+          'You are the only one who climbs up here and does not ask why I bother. I have noticed.',
+        ],
+        close: [
+          'There you are. I kept a bucket back so you would not have to fetch.',
+          'Rock holds the night cold a bit longer this week. Come and see what it has done for the cracks.',
+          'Nothing to show you today. Stand out of the wind with me anyway.',
+        ],
       },
     },
   });
@@ -2385,6 +2912,28 @@ export function rimrock({
           then: 'menu',
         },
         bye: { text: 'Right you are.' },
+      },
+      greetings: {
+        acquaintance: [
+          'Grit in the hinge again. Every door on this rock sings the same note and I know all the words.',
+          'Boots. Stamp them there, not here. I am not saying it twice.',
+          'Axle off the store cart on the bench. Third one this year. The road wants the blame and I want the road.',
+          'You have sand on your collar. Everybody does. It is how I know you have been outside.',
+        ],
+        friend: [
+          'Wend brought me a trowel with the handle gone. I asked what it did. She said it grew things. It does not, now.',
+          'Slow week. Nothing has broken that I did not break myself, and I am not paying me.',
+          [
+            'The sifter drum wants a new stave and I have been putting it off.',
+            'You can stand there and watch me put it off, if you like. Company helps.',
+          ],
+          'You shut the inner door last time without being told. I noticed, and I do not notice much on purpose.',
+        ],
+        close: [
+          'Go on through. Porch is swept, floor is not, same as always.',
+          'Fetched a pebble out of the sifter that was worth something. Kept it for you. Do not ask why.',
+          'Wind is up. Sit inside with me till it has done, and we will say nothing much.',
+        ],
       },
     },
   });
@@ -2618,14 +3167,64 @@ export function ashkettle({
     {
       id: 'ember', name: 'Ember', title: 'Ash Glazier', home: 'Cottage', type: 'building.cottage',
       tile: at(4.65, 0.60), allow: ['g', 'c', 's'], voice: { pitch: 1.14, rate: 23, timbre: 'triangle' },
-      greeting: 'Ember. Kettle ash makes green glass if you keep the heat patient.',
-      again: 'The bubbles are part of it. Perfect glass belongs elsewhere.',
+      hello: [
+        'Ember. I make glass out of kettle ash. It comes out green, if you keep the heat patient, and something else if you do not.',
+        'That is my cottage, with a furnace in the back that does not like a door opened unannounced. Say my name from the path and I will come and let you in.',
+      ],
+      again: 'Bubbles again in the last batch. They are part of it. Perfect glass belongs elsewhere.',
+      greetings: {
+        acquaintance: [
+          'Furnace has been up since before light. If I look grey it is not weather, it is the raw stuff.',
+          'Got a green off the beach ash this morning that I have been chasing for a year. It will not do it twice.',
+          'Mind the crate on the step. There is nothing in it but the cullet, and cullet is sharper than it looks.',
+          'Wind is down the bowl today. It pushes the flame flat and I have to coax it back up. Long day.',
+        ],
+        friend: [
+          'Basalt wants a window for the bakehouse and he wants it clear. I told him clear is for people with better ash and worse bread.',
+          'Tally brought me a bucket off the top bench to try. It went black. I have not told her. You are not to either.',
+          [
+            'A bottle cracked in the annealing overnight. I heard it from bed.',
+            'It is like hearing a coin fall down a well. You know exactly what it cost.',
+          ],
+          'You are the one person who has looked at a bubble in my glass and not said "shame". I keep thinking of it.',
+        ],
+        close: [
+          'Come and sit by the furnace. It is the warmest chair on the floor and it is yours.',
+          'Pulled a green cup off the pipe this morning that came out right. First of the season. I put it on your side of the shelf.',
+          'Letting the fire go down today. Sit with me while it does. It is the only quiet the trade allows.',
+        ],
+      },
     },
     {
       id: 'basalt', name: 'Basalt', title: 'Warm-Stone Baker', home: 'Cabin', type: 'building.cabin',
       tile: at(5.45, 0.59), allow: ['g', 'c', 's'], voice: { pitch: 0.73, rate: 20, timbre: 'square' },
-      greeting: 'Basalt. I bake on stone the ground warms for nothing.',
-      again: 'The loaf is ready when the crust sounds hollow.',
+      hello: [
+        'Basalt. I bake on a slab the ground keeps warm for nothing. Bread does not know the difference and neither do I, most days.',
+        'That cabin is mine, and the oven is most of it. Give the door a rap and wait for the answer; a loaf spoils if the heat gets a fright.',
+      ],
+      again: 'Loaf is in. It is ready when the crust sounds hollow, and not a moment before.',
+      greetings: {
+        acquaintance: [
+          'Slab is warmer than yesterday. The ground does that. I set the loaves by it and I am never asked why.',
+          'Flour on everything, me included. Do not lean on the post.',
+          'Four loaves out and three of them right. The fourth is for me. That is the arrangement.',
+          'The crows know when the door opens. If you hear a lot of wings, that is my morning going.',
+        ],
+        friend: [
+          'Ember says my crust would be better with a proper window to see it by. I say I bake by sound and she is welcome to bake by glass.',
+          'Ro will not take bread on the quay because the damp gets it. So I take it down and eat it at him.',
+          [
+            'Ground went cold under the oven one night last week. First time in years.',
+            'I sat up with it like a sick animal. It came back before dawn. We do not talk about it.',
+          ],
+          'You take the heel of the loaf without being asked. That is the sign of a person raised properly.',
+        ],
+        close: [
+          'Heel of the loaf is on the slab and it is yours. Sit down while it is still warm.',
+          'Kneading day. You can talk and I can grunt, and by the end we will have a loaf between us.',
+          'Nothing in the oven and nothing needing doing. Come and sit on the warm step and waste an hour with me.',
+        ],
+      },
     },
   ], (door) => {
     const [rx, rz] = at(Math.atan2(door[1] - cz, door[0] - cx), ring);
@@ -2705,6 +3304,28 @@ export function ashkettle({
         after: { text: 'Round again, is it.', then: 'menu' },
         bye: { text: 'Mind the warm patches.' },
       },
+      greetings: {
+        acquaintance: [
+          'Lake is steaming this morning. It does that when it is cold up top. Do not read anything into it.',
+          'Somebody tried the water again yesterday. I did not see who. I heard the noise they made.',
+          'Duck went in up to the neck and came out looking pleased. Ducks are wrong about most things.',
+          'Keep to the dry ash along here. The soft patches are warm underneath and warm is where it gives.',
+        ],
+        friend: [
+          'Tally sent down a note saying the benches are better than the floor. I sent back a stone. Skipped it eleven.',
+          'Vesper is due a visit and it is the whole way round and my knees have opinions. You could go instead.',
+          [
+            'The lake was flat as a plate at dawn. Not a ripple anywhere on it.',
+            'I sat and did not throw anything for an hour. Felt like a betrayal.',
+          ],
+          'You look at the water the way I do. Sideways, like it might do something. It will not, but keep looking.',
+        ],
+        close: [
+          'Bring a stone and sit down. We can not speak for as long as you like.',
+          'Warm patch just here, and it is mine, and I am letting you have half.',
+          'Best skim of the year this morning. Nobody saw it. Now you know, and that will do.',
+        ],
+      },
     },
   });
 
@@ -2756,6 +3377,28 @@ export function ashkettle({
           then: 'menu',
         },
         bye: { text: 'Go steady on the steps.' },
+      },
+      greetings: {
+        acquaintance: [
+          'Sheep are on the second bench again. They do not use the ramps. I have watched and I still do not know how.',
+          'Cinder holds the heat till noon. Put a hand on the wall and you will feel yesterday in it.',
+          'Count the steps on the trail if you want; I make it a different number every time.',
+          'Nothing rooted on the top bench this week. Nothing rooted on it last week either. I am keeping a list.',
+        ],
+        friend: [
+          'Ro sent up a stone with "floor" written on it. I put it on the wall and it is doing better than most of the plants.',
+          'Talked a fern into the third bench this spring. It came up, looked around, and went back in. I understand it.',
+          [
+            'I walked the whole rim yesterday. Same wall the whole way, same drop, same lake.',
+            'Nobody else does it. I think that is the mistake.',
+          ],
+          'You have started going steady on the steps without me saying it. Took the crows longer.',
+        ],
+        close: [
+          'Come and sit on the warm side of the wall. I saved the best stone.',
+          'Two mushrooms up by the trail and I did not pick them. They are yours if you want the walk.',
+          'Cloud sitting in the bowl today and nothing to see. Sit anyway. It is warmer up here than it looks.',
+        ],
       },
     },
   });
@@ -2844,6 +3487,28 @@ export function ashkettle({
           then: 'menu',
         },
         bye: { text: 'Round you go.' },
+      },
+      greetings: {
+        acquaintance: [
+          'Round again. It is the same distance from the other end; people only think it is longer coming this way.',
+          'Fire is in. It is always in. If it is ever out, look for me on the far shore and worry a little.',
+          'Lit the lamp last night and left the shutter up. Nobody answered. That is not a complaint.',
+          'I can see the whole town from this step and none of it can see me. I like that arrangement better than you would think.',
+        ],
+        friend: [
+          'Ro came round on Tuesday. Complained from the quay to the door and back. I counted it as a visit.',
+          'Somebody across the water had a light on till late. It was not a signal. I watched it like one anyway.',
+          [
+            'The round room has a draught now. I have walked it three times and cannot find where.',
+            'I would rather have a corner than a draught, which is a thing I did not think I would say.',
+          ],
+          'I have stopped lighting the lamp on nights I think you will be over. That is not a thing I have told anybody.',
+        ],
+        close: [
+          'Fire is in and the good side of it is yours. Go and sit.',
+          'I lit the lamp last night. Long, short, long. Then I remembered you would be along in the morning anyway.',
+          'Nothing has happened over here since I saw you last. Come in and have none of it with me.',
+        ],
       },
     },
   });
@@ -3041,14 +3706,64 @@ export function sedgewater({
     {
       id: 'reed', name: 'Reed', title: 'Thatch Layer', home: 'Cottage', type: 'building.cottage',
       tile: at(0.98, 0.48), allow: ['g', 's'], voice: { pitch: 0.94, rate: 21, timbre: 'sine' },
-      greeting: 'Reed. I cut thatch where the sedge grows straight and quiet.',
-      again: 'Dry stems above, wet roots below. Keep them that way.', walk: [0.98, 0.48],
+      hello: [
+        'Reed. I lay thatch. I cut sedge where it grows straight and quiet, and I put it on roofs where it does the same.',
+        'The cottage behind me is mine and its roof is my best work. Sing out from the boards before you try the door; I am usually up on it.',
+      ],
+      again: 'Dry stems above, wet roots below. That is the whole of thatching, and the whole of the fen. Keep them that way.', walk: [0.98, 0.48],
+      greetings: {
+        acquaintance: [
+          'Cutting on the north bank this week. The sedge stands straighter where the wind cannot get at it.',
+          'Ridge on the store wants doing before the winter. I have said so twice. Nobody hears a thatcher until it drips.',
+          'Leave the bundles where they lean. They are drying and a dropped bundle is a wet bundle.',
+          'Rain came sideways last night. Good test. Roof passed. I did not sleep for listening to it pass.',
+        ],
+        friend: [
+          'Quill cuts reed by the armful and calls it a trade. I cut it by the acre and call it a Tuesday.',
+          'Marsh wants offcuts for his baskets and asks by leaving a basket on my step. I have started leaving it full. Neither of us has said a word.',
+          [
+            'Fell through my own ladder yesterday. Third rung. Landed in the soft.',
+            'Nothing hurt but the ladder, and I am not telling Meg, because she said that ladder would go.',
+          ],
+          'You look up at a roof before you look at the door. I like a person who does that.',
+        ],
+        close: [
+          'Come in under it. Best-thatched roof in the fen and I would rather you were dry under it than anybody.',
+          'Kept a bundle of the straight stuff back. Not for a roof. For you to see what straight looks like.',
+          'No cutting today, water is too high. Come under the eaves with me and listen to the roof not leak.',
+        ],
+      },
     },
     {
       id: 'marsh', name: 'Marsh', title: 'Eel Basket Weaver', home: 'Cabin', type: 'building.cabin',
       tile: at(2.23, 0.48), allow: ['g', 's'], voice: { pitch: 0.81, rate: 19, timbre: 'sawtooth' },
-      greeting: 'Marsh. I weave traps with openings an eel understands too late.',
-      again: 'Nothing in the basket yet. That is how waiting looks.', walk: [2.23, 0.48],
+      hello: [
+        'Marsh. I weave eel baskets. The trick is the mouth: an eel goes in easy and works out the rest too late.',
+        'That cabin is mine, willow soaking in every tub of it. Knock and wait to be let in; an eel goes in without asking, and look where it gets the eel.',
+      ],
+      again: 'Nothing in the baskets yet this morning. That is how waiting looks; it is most of the trade.', walk: [2.23, 0.48],
+      greetings: {
+        acquaintance: [
+          'Willow is soaking. It has to be soft as string before it will bend round the mouth. Give it a day.',
+          'Two baskets down in the west channel since dark. If they come up empty the water is too warm, not the basket.',
+          'Watch the tubs by the door. It is only water, but it is cold water and a lot of it.',
+          'Eels run when the moon is thin. I do not know why. I have stopped asking and started weaving.',
+        ],
+        friend: [
+          'Reed will not sell me offcuts, so I leave a basket on his step, and it comes back full. Neither of us has admitted anything.',
+          'Quill hides his thin reed from me now. I know where. I am letting him think it works.',
+          [
+            'Had an eel work its way back out of the mouth last night. First one in years.',
+            'Sat and looked at that basket a long time. It has been unpicked and it is going to be a better basket.',
+          ],
+          'You pick a basket up by the middle, not the mouth. Somebody taught you or you worked it out. Either does.',
+        ],
+        close: [
+          'Come and sit by the tubs. I am at the slow part and it is better with company.',
+          'Smoked the best of the catch. Kept the tail end for you, which is the good end, whatever people say.',
+          'Baskets are all down and there is nothing to do but wait. Wait with me.',
+        ],
+      },
     },
   ], (door, spec) => {
     const [wx, wz] = at(...spec.walk);
@@ -3130,6 +3845,28 @@ export function sedgewater({
         },
         after: { text: 'Long way round again?', then: 'menu' },
         bye: { text: 'Boards, mind.' },
+      },
+      greetings: {
+        acquaintance: [
+          'Water is up a hand since Sunday. The far plank will be under by dinner. Go round.',
+          'Board by the second spur has gone soft. I have marked it with a reed. Trust the reed.',
+          'Ducks have gone west, which means the wind is coming east. That is all the weather I do.',
+          'Stood up here all morning and watched three people take the wrong spur. None of them were you. Good.',
+        ],
+        friend: [
+          'Tarn asked me to mark a short cut to his door. I told him the fen has already marked it and it says no.',
+          'Quill wants planks out to that hut of his. I said the walk is what makes it his. He did not laugh.',
+          [
+            'Forty years and I put a foot in it yesterday. Right up to the knee.',
+            'Nobody saw. I am telling you so that at least one person knows I am not proud.',
+          ],
+          'You take the long way even when the water is down. I have started thinking of you as one of the sensible ones.',
+        ],
+        close: [
+          'Sit with me on the rise. You can see every spur from here and none of them need us.',
+          'I have kept the dry seat by the staithe post for you. It is the only one there is.',
+          'Nothing needs mending today. Stand here a while and we will both pretend that is normal.',
+        ],
       },
     },
   });
@@ -3222,6 +3959,28 @@ export function sedgewater({
         },
         bye: { text: 'Go careful off the boards.' },
       },
+      greetings: {
+        acquaintance: [
+          'Cut a stand of reed by the second channel this morning. Straight as pencils. It is a good year for it.',
+          'Bundles on the step want turning. If you step over them rather than on them, we will get on.',
+          'Water is sitting an inch under the floor. Floor knows it. I know it. We are all fine.',
+          'You came the whole way out on a wet day. Nobody sees that but the herons, and the herons and I have noticed.',
+        ],
+        friend: [
+          'Meg says I should have planks out here. I say once there are planks, there will be people, and then where will I be.',
+          'Marsh wants my thin reed for his baskets and he does not want to pay reed prices. I have started hiding the good stuff.',
+          [
+            'The trap came up with a pike in it. A real one, not the man.',
+            'Ate it. Told nobody. It was the best thing to happen all week and I am sharing it with you.',
+          ],
+          'You lift the trap without being told. That is worth more to me than half the people who know my name.',
+        ],
+        close: [
+          'Dry corner is swept and the step is yours. Come up and sit.',
+          'Marigolds are out on the bank. I left the best ones for you. They will not last.',
+          'Rain on the reed roof today and nothing to do under it. Come and listen to it with me.',
+        ],
+      },
     },
   });
 
@@ -3270,6 +4029,28 @@ export function sedgewater({
           then: 'menu',
         },
         bye: { text: 'Aye. Mind the soft bits.' },
+      },
+      greetings: {
+        acquaintance: [
+          'Saw your smoke before I saw you. Out here that counts as a visit.',
+          'Been laying stone on the soft bit by my gate. It sinks. I lay more. That is the whole job.',
+          'Quarter of an hour, door to door, and the water still took the short way before I did.',
+          'Ducks on the channel between us this morning. Five. I am telling you because there is nobody else to tell.',
+        ],
+        friend: [
+          'Meg will not mark me a short cut. I asked twice. Second time she just pointed at the water.',
+          'Went to the Staithe and took the wrong spur. Twenty years here. Do not tell Meg, she will only be pleased.',
+          [
+            'Roof leaked over the bed last night. I moved the bed.',
+            'This morning I moved it back. If the roof wants to argue it knows where I am.',
+          ],
+          'A quarter of an hour used to feel like a long way to a neighbour. It has stopped feeling like that lately.',
+        ],
+        close: [
+          'Come in out of the wet. Door sticks. Everything sticks, it is a fen.',
+          'Kept a dry stone for you to sit on. It is the only one with nothing growing on it.',
+          'Walk over in the rain and there is a mug on the hook that has stopped being mine.',
+        ],
       },
     },
   });
@@ -3443,20 +4224,95 @@ export function bellrock({
     {
       id: 'kelp', name: 'Kelp', title: 'Rope Walker', home: 'Cottage', type: 'building.cottage',
       tile: [road - 23, townRow(0.72)], voice: { pitch: 0.86, rate: 22, timbre: 'sawtooth' },
-      greeting: 'Kelp. I stretch new rope between the road posts until it forgets how to kink.',
-      again: 'Step over the line, not on it.', lane: road - 16,
+      hello: [
+        'Kelp. I walk rope. Lay it out between the posts along the road and stretch it until it forgets it was ever coiled.',
+        'That cottage is mine, and there is usually a line off its door. Shout before you come up the path; a loaded rope does not care whose ankle it finds.',
+      ],
+      again: 'Line is out between the posts. Step over it, not on it; it has a week of stretch in it and I would rather keep that.', lane: road - 16,
+      greetings: {
+        acquaintance: [
+          'Salt gets into new rope and makes it lazy. That is why I walk it up here and not down at the quay.',
+          'Doss wants three fathoms by Friday. He will get it Saturday. Rope does not read calendars.',
+          'Mind the far post. I have a line off it that is under so much strain it hums when the wind is right.',
+          'Hands are raw from the tarred stuff. Nod, and I will nod back, and we will call that shaking hands.',
+        ],
+        friend: [
+          "Morrow wants a bell rope soft enough to pull with a child's hand and strong enough to hang a bell from. I told him to pick.",
+          'Chalk marked one of my posts white. Said it was so nobody walked into the line in the fog. Nobody has since. I am annoyed that it worked.',
+          [
+            'A line went yesterday. Snapped under stretch, the whole length of the road.',
+            'Sound like a shot. Every gull on the coast went up. Nobody hurt but my pride and the rope.',
+          ],
+          'You walk along the line, not across it. First person on this road who did that without being told.',
+        ],
+        close: [
+          'Nothing under strain today. Come and sit on the coil, it is the softest seat on the road.',
+          'Made you a short piece with a proper eye in it. Do not ask what for. Everybody needs one eventually.',
+          'Fog is down and the posts have gone. Sit in the door with me till they come back.',
+        ],
+      },
     },
     {
       id: 'chalk', name: 'Chalk', title: 'Wall Limner', home: 'Cabin', type: 'building.cabin',
       tile: [road + 20, townRow(0.72)], voice: { pitch: 1.18, rate: 24, timbre: 'triangle' },
-      greeting: 'Chalk. I mark boats, walls, and anything else expected to be found in fog.',
-      again: 'White first. Color after the weather agrees.', lane: road + 15,
+      hello: [
+        'Chalk. I limewash walls and mark boats. If a thing has to be found in fog, I am the one who makes it white enough to find.',
+        'That cabin is mine. Call out from the road before you come in; I will be up a ladder with a brush, and I would rather see you than drip on you.',
+      ],
+      again: 'White first. Colour after, once the weather has agreed to it. It has not agreed yet.', lane: road + 15,
+      greetings: {
+        acquaintance: [
+          'Fog this morning and every white mark on the coast earned its keep. I stood on the road and counted them.',
+          'Lime on my hands, lime in my hair. If I go grey early it will be work, not worry.',
+          'Doing the quay wall again. Salt eats white faster than it eats anything.',
+          'Mind the pail by the step. It is wash, and it will take the colour out of your boots and then your boots.',
+        ],
+        friend: [
+          'Kelp says my white post ruins the look of the road. Nobody has walked into his rope since. He knows that.',
+          'Sennen wants the road side of his house done in something cheerful. I said white, then wait. He said he has been waiting. I said good.',
+          [
+            'A boat came in last night and the skipper said he found the slip by my mark on the wall.',
+            'Best thing anyone has said to me all year and he did not know he was saying it.',
+          ],
+          'You look at a wall and see whether it needs doing. Most people see a wall. I have got fond of you for it.',
+        ],
+        close: [
+          'Ladder is down and the pail is lidded. Come and sit on the step, it dried an hour ago.',
+          'Put a small white mark on your mailbox post when you were out. Now they can find you in fog too. Do not thank me.',
+          'Weather has not agreed to anything today, so nothing gets colour. Stop a while. It is rare, me with clean hands.',
+        ],
+      },
     },
     {
       id: 'morrow', name: 'Morrow', title: 'Bell Caster', home: 'Bungalow', type: 'building.bungalow',
       tile: [road - 21, townRow(0.28)], voice: { pitch: 0.7, rate: 18, timbre: 'square' },
-      greeting: 'Morrow. I cast small bells for doors too far inland to hear the rock.',
-      again: 'A clear note needs room around it.', lane: road - 14,
+      hello: [
+        'Morrow. I cast bells. Small ones, for doors and gates too far inland to hear the rock and too proud to say so.',
+        'That bungalow is mine, and when the mould is open I do not hear the door. Ring the little one on the post and wait; that is what it is for.',
+      ],
+      again: 'A clear note needs room around it. So does the pouring. Give the yard a wide berth today.', lane: road - 14,
+      greetings: {
+        acquaintance: [
+          'Poured at dawn. The bronze is still talking in the mould and I will not know for a day what it said.',
+          'Listen. That is the rock, out on the water. Every bell I make is trying to be that and not one has managed.',
+          'Ash pit is warm. Keep the boots off it. I say it to everyone, and most of them learn once.',
+          'The wind carries the rock further on a cold day. Good for me. I sit and take notes on it.',
+        ],
+        friend: [
+          "Sennen's bell is mine. He tells everyone he timed the echo with a candle. He did. I held the candle.",
+          'Kelp will not make me a rope that is both soft and strong. Says I have to pick. I have been picking for a year.',
+          [
+            'Cracked a bell on the cooling yesterday. Heard it go from the yard.',
+            'A cracked bell has a note. It is a sad note, and it is honest, and I hung it up anyway.',
+          ],
+          'You stop and listen when the rock sounds. Most people here have stopped hearing it. I would rather they had not.',
+        ],
+        close: [
+          'Come and sit by the pit. It is warm and there is a bell cooling that will be worth the wait.',
+          'Cast a little one for your door. It is on the bench. It rings true and I did not expect it to.',
+          'No pour today, no fire. Sit in the quiet with me. It is the only day I hear the rock properly.',
+        ],
+      },
     },
   ], (door, spec) => d.pathL(...door, spec.lane, roadZ, { level: '0' }));
 
@@ -3528,6 +4384,28 @@ export function bellrock({
         after: { text: 'Tide still doing what it likes.', then: 'menu' },
         bye: { text: 'Mind the weed on the slip.' },
       },
+      greetings: {
+        acquaintance: [
+          'Tide is on the turn. You can hear the bell rock clearer when it is; the water gets out of the way of the sound.',
+          'Slip is green today. Walk it like it hates you and you will keep your feet.',
+          'Boats are in early. Nothing out there but weather and it was not the kind you fish in.',
+          "Gulls are working something off the point. Could be fish. Could be Nell's sheep gone in. Both have happened.",
+        ],
+        friend: [
+          'Nell sent down a note saying the wind is worse up there. I sent back a wet one saying the sea is wetter down here.',
+          'Sennen keeps wanting me to come and stand in his front room and listen. I told him I can hear the bell fine from here, thank you.',
+          [
+            'Came in on the bell last night, fog right down, no light at all.',
+            'You count between the notes and steer by the counting. Nobody taught me that. The rock did.',
+          ],
+          'You walk the slip like a local now. Weed and all. The sea has stopped trying you out and I have as well.',
+        ],
+        close: [
+          'Bell is ringing plain this morning. Sit on the wall and listen to it with me.',
+          'Kept a crab back from the pot. It is in the bucket with your name on the lid, more or less.',
+          'Boats are out and I am not. Nobody else knows what to say to that. Sit down and say nothing with me.',
+        ],
+      },
     },
   });
 
@@ -3579,6 +4457,28 @@ export function bellrock({
           then: 'menu',
         },
         bye: { text: 'Shut the gate behind you.' },
+      },
+      greetings: {
+        acquaintance: [
+          'Gate on the top step is off its hinge again. Lift it, do not push it, and it will forgive you.',
+          'Wind is up from the sea. I can smell salt on the sheep and they do not care for it either.',
+          'Cropped short up here this week. You can see the chalk through the grass where the sheep have been at it.',
+          'Sheep are in the far corner where the pines break the wind. Sheep know everything I know about weather and more.',
+        ],
+        friend: [
+          'Doss sent up a wet note about the sea. I have pinned it to the gate to dry. It will take a week.',
+          'Sennen thinks he lives in the middle of the town. He lives in the middle of an argument and he built the house there on purpose.',
+          [
+            'Walked north yesterday until the sheep stopped being mine.',
+            'Then I walked back. It was further than I thought and it did not stop. It never does.',
+          ],
+          'You do not go on about the view. Everybody else stands here and says "oh". You look at the field. I have noticed.',
+        ],
+        close: [
+          'Sit in the lee of the wall. The sheep will come and look at you. Let them.',
+          'Left the gate on the latch for you. I have never done that for anyone, and the sheep have noticed.',
+          'Wind has dropped and there is nothing to do but be up here. Be up here with me.',
+        ],
       },
     },
   });
@@ -3668,6 +4568,28 @@ export function bellrock({
           then: 'menu',
         },
         bye: { text: 'Go on, then.' },
+      },
+      greetings: {
+        acquaintance: [
+          'Halfway row. You can see both ends from the step and neither end will look back.',
+          'Wind off the sea on the front and wind off the hill on the back. I am the only house in the town that gets both.',
+          'Rang the bell at noon and both halves stopped. It is the only time in the day they agree on anything.',
+          'Swept the boards and washed the flags and neither half of the town has noticed either.',
+        ],
+        friend: [
+          'Nell says the sea is loud tonight. Doss says the hill is quiet. They said it at the same time, from either end of my window.',
+          'Painted the road side of the house. Chalk says it needs another coat before the weather. The weather has not been asked.',
+          [
+            'Somebody told me to pick a side once. I said I had. I said the middle.',
+            'They walked off up the hill. Then they came back down again. That is my point, and nobody gets it.',
+          ],
+          'You come in one door and out the other. Nobody else uses both. I have started to think you understand the house.',
+        ],
+        close: [
+          'Good chair is in the middle, obviously. Come in whichever door you like and sit in it.',
+          'Bell rope is down for you. Give it a pull and then come and watch the town stop.',
+          'Quiet day, both ends. Sit on the step between them with me and enjoy nobody arguing.',
+        ],
       },
     },
   });

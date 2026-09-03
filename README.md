@@ -15,7 +15,7 @@ them, and none of them are common, so what is living on a hillside is part of
 how you tell one world from another.
 
 **Controls** — `WASD` / arrows to move, `Shift` to run (3D only), `Tab` or `V` to
-switch view. `E` picks things up and talks to people; in a conversation, `↑↓`
+switch view. `E` picks things up, talks to people, and tends planted beds; in a conversation, `↑↓`
 picks a line, `←→` switches between buying and selling, `Esc` walks away, and
 `M` cycles the NPC voice (babble / spoken / off). `Q` puts down what you are
 holding; inside your house, a furniture flat-pack is assembled on clear floor
@@ -103,13 +103,20 @@ cannot walk out. Six of them: sea, ridges, a cliff you are on top of, a rim with
 no mouth, standing water, and — on a coast — sea one way and farmland the other.
 See `src/world/forms.js`.
 
-**You start with an axe and a shovel**, and both work on the tile you are facing.
+**You start with an axe, a shovel, and climate-appropriate seeds**, and tools work on the tile you are facing.
 Three swings of the axe fells a tree, which drops its wood where it stood and
 leaves a stump; the shovel grubs the stump out, opens a hole in grass or sand,
 turns up whatever was buried there, and fills the hole back in. A hole is solid
 ground gone missing — you cannot walk through one, and neither can a chicken —
 so it is a wall you can dig and un-dig. Both tools are ordinary items: sell them,
 drop them, or buy another over any shop counter.
+
+To farm, dig a bed in grass with the shovel, select a seed packet, and press `E`
+while facing the hole. Crops grow across dawns according to the local climate and
+weather, visibly passing through sprouting, growing, and ready stages. Press `E`
+on a ready crop to harvest it; the bed remains open for the next sowing. General
+stores buy the produce their own climate can grow. Sand can still be dug for
+buried finds, but it cannot support crops.
 
 **Every other tool is bought.** A shop's rack is where the rest of the verbs
 come from, and each one is an ordinary item that takes a slot: a **pickaxe**

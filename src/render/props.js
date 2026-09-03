@@ -139,6 +139,74 @@ function rock(c, scale) {
 
 // -------------------------------------------------------------- buildings --
 
+const roofColorCache = new Map();
+
+function roofTileColor(color, row, column, face = 0) {
+  const shades = [0.92, 0.97, 1.02, 0.95, 1.0];
+  const shade = shades[Math.abs(row * 3 + column * 7 + face * 11) % shades.length];
+  const key = `${color}:${shade}`;
+  let result = roofColorCache.get(key);
+  if (result === undefined) {
+    result = new THREE.Color(color).multiplyScalar(shade).getHex();
+    roofColorCache.set(key, result);
+  }
+  return result;
+}
+
+function roofPoint(a, b, c, d, u, v) {
+  const iu = 1 - u, iv = 1 - v;
+  return [
+    a[0] * iu * iv + b[0] * u * iv + c[0] * u * v + d[0] * iu * v,
+    a[1] * iu * iv + b[1] * u * iv + c[1] * u * v + d[1] * iu * v,
+    a[2] * iu * iv + b[2] * u * iv + c[2] * u * v + d[2] * iu * v,
+  ];
+}
+
+/** Split one roof plane into staggered, subtly varied shingle cells. */
+function roofPlane(c, a, b, d, e, color, columns, rows, face = 0) {
+  for (let row = 0; row < rows; row++) {
+    const v0 = row / rows, v1 = (row + 1) / rows;
+    const offset = row % 2 ? 0.5 : 0;
+    for (let column = -1; column <= columns; column++) {
+      const u0 = Math.max(0, (column + offset) / columns);
+      const u1 = Math.min(1, (column + 1 + offset) / columns);
+      if (u1 <= u0) continue;
+      c.quad(
+        roofPoint(a, b, d, e, u0, v0), roofPoint(a, b, d, e, u1, v0),
+        roofPoint(a, b, d, e, u1, v1), roofPoint(a, b, d, e, u0, v1),
+        roofTileColor(color, row, column, face),
+      );
+    }
+  }
+}
+
+/** Four shingled slopes matching THREE's four-segment cone primitive. */
+function pyramidRoof(c, x, y, z, sx, sy, sz, ry, color) {
+  // A slightly inset solid shell gives the shingle planes a visible edge and
+  // underside instead of leaving a one-sided paper pyramid at low angles.
+  c.add(PYR, trs(x, y - 0.07, z, 0, ry, 0, sx * 0.97, sy, sz * 0.97),
+    roofTileColor(color, 3, 2));
+  const matrix = trs(x, y, z, 0, ry, 0, sx, sy, sz);
+  const transform = (point) => {
+    const v = new THREE.Vector3(...point).applyMatrix4(matrix);
+    return [v.x, v.y, v.z];
+  };
+  const apex = transform([0, 0.5, 0]);
+  const base = [
+    transform([0, -0.5, 1]), transform([1, -0.5, 0]),
+    transform([0, -0.5, -1]), transform([-1, -0.5, 0]),
+  ];
+  const rows = Math.max(2, Math.ceil(Math.hypot(Math.max(sx, sz), sy) / 0.45));
+  const columns = Math.max(3, Math.ceil(Math.hypot(sx, sz) / 0.55));
+
+  for (let face = 0; face < 4; face++) {
+    const left = base[face], right = base[(face + 1) % 4];
+    // Degenerate at the apex by design; each later row widens toward the eave.
+    roofPlane(c, apex, apex, right, left, color, columns, rows, face);
+  }
+  c.quad(base[3], base[2], base[1], base[0], roofTileColor(color, 0, 0));
+}
+
 /**
  * Gable roof: two sloped planes plus the triangular ends that close them.
  *
@@ -150,68 +218,135 @@ function rock(c, scale) {
 function gableRoof(c, w, d, eaveY, rise, overhang, color, dark) {
   const hw = w / 2 + overhang, hd = d / 2 + overhang;
   const ridge = eaveY + rise;
+  const pitch = Math.atan2(rise, hd);
+  const slope = Math.hypot(hd, rise);
+  const thickness = 0.18;
+  const centerY = eaveY + rise / 2 - 0.075;
+  // Solid rafters beneath the shingle skin make both eaves and gable edges
+  // retain depth when viewed side-on or from below the roof line.
+  c.add(BOX, trs(0, centerY, -hd / 2, -pitch, 0, 0,
+    hw * 2, thickness, slope + 0.08), dark);
+  c.add(BOX, trs(0, centerY, hd / 2, pitch, 0, 0,
+    hw * 2, thickness, slope + 0.08), dark);
+  const columns = Math.max(4, Math.ceil((hw * 2) / 0.6));
+  const rows = Math.max(3, Math.ceil(Math.hypot(hd, rise) / 0.42));
   // North slope: ridge edge first, so the face normal comes out +y.
-  c.quad([-hw, ridge, 0], [hw, ridge, 0], [hw, eaveY, -hd], [-hw, eaveY, -hd], color);
+  roofPlane(c, [-hw, ridge, 0], [hw, ridge, 0], [hw, eaveY, -hd], [-hw, eaveY, -hd],
+    color, columns, rows);
   // South slope: eave edge first, same reason.
-  c.quad([-hw, eaveY, hd], [hw, eaveY, hd], [hw, ridge, 0], [-hw, ridge, 0], dark);
+  roofPlane(c, [-hw, eaveY, hd], [hw, eaveY, hd], [hw, ridge, 0], [-hw, ridge, 0],
+    dark, columns, rows, 1);
   // Gable ends. Each faces outward along its own axis, so they wind oppositely.
   const gw = w / 2;
   c.quad([-gw, eaveY, -d / 2], [-gw, eaveY, d / 2], [-gw, ridge, 0], [-gw, ridge, 0], dark);
   c.quad([gw, ridge, 0], [gw, eaveY, d / 2], [gw, eaveY, -d / 2], [gw, ridge, 0], color);
 }
 
-/**
- * A house: four walls, a gable roof, a door on the south face and a chimney.
- *
- * SIZED FROM THE FOOTPRINT, not from constants. Every house in the world uses
- * this one builder and they are not all the same size (see the cottage and the
- * bungalow in objectTypes.js), so hard-coding 3.5 x 2.4 would give a 3-wide
- * cottage the walls of a 4-wide one -- a building visibly narrower than the
- * tiles it blocks, which is the sort of mismatch you only notice by walking
- * into thin air. The half-tile inset is what keeps neighbouring buildings from
- * touching, and the windows are placed relative to the door rather than at
- * fixed offsets so they stay on the wall in every width.
- */
+function houseFrontWindow(c, x, y, face, zf, p, flowerBox = false) {
+  const frame = p.muntin ?? p.trim;
+  c.box(x, y, face + 0.055 * zf, 0.62, 0.68, 0.1, p.trim);
+  c.box(x, y, face + 0.115 * zf, 0.48, 0.54, 0.045, p.window);
+  c.box(x, y, face + 0.145 * zf, 0.045, 0.54, 0.025, frame);
+  c.box(x, y, face + 0.145 * zf, 0.48, 0.045, 0.025, frame);
+  c.box(x, y - 0.38, face + 0.15 * zf, 0.7, 0.09, 0.17, p.accent ?? p.trim);
+  if (!flowerBox) return;
+  for (const offset of [-0.2, 0, 0.2]) {
+    c.add(BLOB, trs(x + offset, y - 0.26, face + 0.22 * zf,
+      0, 0, 0, 0.09, 0.12, 0.09), offset ? p.flower : p.flowerHi);
+  }
+}
+
+function houseSideWindow(c, side, y, p) {
+  const frame = p.muntin ?? p.trim;
+  c.box(side, y, 0, 0.1, 0.64, 0.7, p.trim);
+  c.box(side + Math.sign(side) * 0.06, y, 0, 0.045, 0.5, 0.56, p.window);
+  c.box(side + Math.sign(side) * 0.09, y, 0, 0.025, 0.5, 0.045, frame);
+  c.box(side + Math.sign(side) * 0.09, y, 0, 0.025, 0.045, 0.56, frame);
+}
+
+function houseDoor(c, x, face, zf, p) {
+  c.box(x, 0.53, face + 0.055 * zf, 0.82, 1.06, 0.12, p.trim);
+  c.box(x, 0.51, face + 0.13 * zf, 0.64, 0.94, 0.06, p.door);
+  c.box(x, 0.62, face + 0.17 * zf, 0.42, 0.38, 0.025, p.accent ?? p.trim);
+  c.box(x, 0.29, face + 0.17 * zf, 0.42, 0.18, 0.025, p.roofDark);
+  c.box(x + 0.2, 0.52, face + 0.205 * zf, 0.055, 0.055, 0.04, p.handle ?? p.foundation);
+  c.box(x, 0.055, face + 0.25 * zf, 0.86, 0.11, 0.34, p.foundation ?? p.trim);
+}
+
+/** Detailed shared shell with type-specific residential character. */
 function home(c) {
   const p = c.pal;
   const fw = c.type.footprint.w, fd = c.type.footprint.d;
   const W = fw - 0.5, D = fd - 0.6, levelH = 1.35;
   const stories = c.obj.props?.playerHome ? (c.houseStories ?? 1) : 1;
   const wallH = levelH * stories;
-  c.box(0, wallH / 2, 0, W, wallH, D, p.wall);
-  gableRoof(c, W, D, wallH, 1.0, 0.28, p.roof, p.roofDark);
+  const style = c.obj.type;
+  const cabin = style === 'building.cabin';
+  const cottage = style === 'building.cottage';
+  const bungalow = style === 'building.bungalow';
+  const foundation = p.foundation ?? p.trim;
+  const corner = cabin ? 0.2 : 0.13;
 
-  // Door on the south face, matching the type's declared door cell.
+  c.box(0, 0.14, 0, W + 0.14, 0.28, D + 0.14, foundation);
+  c.box(0, wallH / 2 + 0.16, 0, W, wallH - 0.16, D, p.wall);
+  for (const x of [-W / 2 + corner / 2, W / 2 - corner / 2]) {
+    for (const z of [-D / 2 + corner / 2, D / 2 - corner / 2]) {
+      c.box(x, wallH / 2 + 0.16, z, corner, wallH - 0.12, corner, p.trim);
+    }
+  }
+  for (let level = 1; level < stories; level++) {
+    c.box(0, level * levelH, D / 2 + 0.045, W, 0.1, 0.09, p.accent ?? p.trim);
+    c.box(0, level * levelH, -D / 2 - 0.045, W, 0.1, 0.09, p.accent ?? p.trim);
+  }
+  if (cabin) {
+    for (const y of [0.45, 0.88, 1.31]) {
+      c.box(0, y, D / 2 + 0.045, W - 0.25, 0.09, 0.09, p.accent);
+      c.box(0, y, -D / 2 - 0.045, W - 0.25, 0.09, 0.09, p.accent);
+    }
+  }
+
+  gableRoof(c, W, D, wallH, bungalow ? 0.78 : 1.0, 0.3, p.roof, p.roofDark);
+  c.box(0, wallH + (bungalow ? 0.8 : 1.02), 0, W + 0.35, 0.11, 0.13, p.roofDark);
+  c.box(0, wallH + 0.03, D / 2 + 0.29, W + 0.5, 0.13, 0.11, p.trim);
+  c.box(0, wallH + 0.03, -D / 2 - 0.29, W + 0.5, 0.13, 0.11, p.trim);
+
   const [dx, dz] = c.type.door;
   const doorX = dx + 0.5 - fw / 2, doorZ = dz + 0.5 - fd / 2;
-  const zf = Math.sign(doorZ) || 1;
-  c.box(doorX, 0.42, (D / 2) * zf + 0.03 * zf, 0.52, 0.84, 0.06, p.door);
-  c.box(doorX, 0.88, (D / 2) * zf + 0.05 * zf, 0.1, 0.1, 0.06, p.trim);
+  const zf = Math.sign(doorZ) || 1, face = D / 2 * zf;
+  houseDoor(c, doorX, face, zf, p);
 
-  // One window course per usable floor. Only the ground course has a door.
+  const groundWindows = Array.from({ length: fw }, (_, x) => x + 0.5 - fw / 2)
+    .filter((_, x) => x !== dx);
   for (let level = 0; level < stories; level++) {
-    const y = 0.85 + level * levelH;
-    for (const side of [-1, 1]) {
-      const wx = doorX + side * 1.05;
-      if (Math.abs(wx) > W / 2 - 0.35) continue;
-      c.box(wx, y, (D / 2) * zf + 0.03 * zf, 0.44, 0.44, 0.06, p.window);
-      c.box(wx, y, (D / 2) * zf + 0.05 * zf, 0.5, 0.06, 0.04, p.trim);
-    }
-    c.box(-W / 2 - 0.02, y, 0, 0.05, 0.4, 0.5, p.window);
-    c.box(W / 2 + 0.02, y, 0, 0.05, 0.4, 0.5, p.window);
+    const y = 0.82 + level * levelH;
+    const windows = level && groundWindows.length > 2
+      ? [groundWindows[0], groundWindows.at(-1)] : groundWindows;
+    for (const x of windows) houseFrontWindow(c, x, y, face, zf, p, cottage && level === 0);
+    houseSideWindow(c, -W / 2 - 0.035, y, p);
+    houseSideWindow(c, W / 2 + 0.035, y, p);
   }
-  // Chimney, so the roofline isn't a bare wedge from above.
-  c.box(W * 0.3, wallH + 0.85, -D * 0.22, 0.3, 0.75, 0.3, p.trim);
-}
 
-function stairs(c) {
-  const p = c.pal;
-  for (let i = 0; i < 6; i++) {
-    const h = 0.18 + i * 0.18;
-    c.box(0, h / 2, 0.95 - i * 0.34, 1.55, h, 0.34, p.tread);
-    c.box(0, h - 0.04, 0.95 - i * 0.34, 1.62, 0.08, 0.38, p.riser);
+  if (bungalow) {
+    c.add(BOX, trs(doorX, 1.35, face + 0.28 * zf,
+      0.1 * zf, 0, 0, 1.75, 0.12, 0.62), p.roofDark);
+    for (const x of [doorX - 0.72, doorX + 0.72]) {
+      c.box(x, 0.68, face + 0.48 * zf, 0.1, 1.28, 0.1, p.trim);
+    }
   }
-  for (const x of [-0.84, 0.84]) c.box(x, 0.75, 0, 0.08, 1.5, 2.2, p.rail, -0.43);
+
+  // Upper-story homes get roof furniture that remains legible in map view.
+  if (stories > 1) {
+    const dormers = stories > 2 ? [-W * 0.25, W * 0.25] : [0];
+    for (const x of dormers) {
+      c.box(x, wallH + 0.48, D * 0.19 * zf, 0.68, 0.62, 0.58, p.wall);
+      c.box(x, wallH + 0.52, D * 0.49 * zf, 0.42, 0.34, 0.05, p.window);
+      pyramidRoof(c, x, wallH + 0.91, D * 0.19 * zf, 0.58, 0.38, 0.58, Math.PI / 4, p.roofDark);
+    }
+  }
+
+  const chimneyX = W * 0.3;
+  c.box(chimneyX, wallH + 0.72, -D * 0.22, cabin ? 0.4 : 0.32, 0.9, cabin ? 0.4 : 0.32, p.chimney ?? p.trim);
+  c.box(chimneyX, wallH + 1.19, -D * 0.22, cabin ? 0.48 : 0.4, 0.12, cabin ? 0.48 : 0.4, p.roofDark);
 }
 
 // A small block alphabet keeps shop names in the same merged geometry as the
@@ -252,8 +387,11 @@ function signLines(label) {
 function shopSign(c, face, zf, centerX, label, color, centerY = 2.05, maxWidth = 3.35) {
   const lines = signLines(label);
   const maxCells = Math.max(...lines.map((line) => line.length * 4 - 1));
-  const unit = Math.min(lines.length === 1 ? 0.09 : 0.058, maxWidth / maxCells);
-  const textH = lines.length * 5 * unit + (lines.length - 1) * unit * 1.5;
+  const textRows = lines.length * 5 + (lines.length - 1) * 1.5;
+  // Store panels are 0.6 units tall. Width-only sizing let two-line names grow
+  // past that panel and paint their second line across the roof below it.
+  const unit = Math.min(0.09, maxWidth / maxCells, 0.48 / textRows);
+  const textH = textRows * unit;
   const top = centerY + textH / 2;
   const z = face + 0.235 * zf;
 
@@ -278,7 +416,7 @@ function shopSign(c, face, zf, centerX, label, color, centerY = 2.05, maxWidth =
   }
 }
 
-function store(c) {
+function generalStore(c) {
   const p = c.pal;
   const W = 4.5, D = 3.3, wallH = 1.8;
   c.box(0, 0.1, 0, W + 0.16, 0.2, D + 0.16, p.trim);
@@ -289,13 +427,13 @@ function store(c) {
   // Hipped pyramid roof: reads as a distinct diamond from directly overhead,
   // which is what separates the store from the house on the 2D map.
   const r = Math.hypot(W / 2 + 0.3, D / 2 + 0.3);
-  c.add(PYR, trs(0, wallH + 0.62, 0, 0, Math.PI / 4, 0, r, 1.25, r), p.roof);
+  pyramidRoof(c, 0, wallH + 0.62, 0, r, 1.25, r, Math.PI / 4, p.roof);
   c.box(0, wallH + 0.05, 0, W + 0.5, 0.16, D + 0.5, p.roofDark);
   // A glazed cupola gives the broad roof a silhouette and a little depth from above.
   c.box(0, 2.63, 0, 0.72, 0.45, 0.72, p.trim);
   for (const x of [-1, 1]) c.box(x * 0.365, 2.65, 0, 0.025, 0.22, 0.42, p.window);
   for (const z of [-1, 1]) c.box(0, 2.65, z * 0.365, 0.42, 0.22, 0.025, p.window);
-  c.add(PYR, trs(0, 2.98, 0, 0, Math.PI / 4, 0, 0.72, 0.42, 0.72), p.roofDark);
+  pyramidRoof(c, 0, 2.98, 0, 0.72, 0.42, 0.72, Math.PI / 4, p.roofDark);
   c.box(0, 3.25, 0, 0.05, 0.5, 0.05, p.trim);
 
   const [dx, dz] = c.type.door;
@@ -326,11 +464,148 @@ function store(c) {
   }
   for (const x of [-1.98, 1.98]) c.box(x, 0.66, face + 0.73 * zf, 0.055, 1.28, 0.055, p.trim);
 
-  // Framed, named signboard. The actual lettering is merged into the prop batch.
-  c.box(doorX, 2.05, face + 0.11 * zf, 4.02, 0.82, 0.13, p.trim);
-  c.box(doorX, 2.05, face + 0.185 * zf, 3.72, 0.6, 0.055, p.sign);
-  for (const x of [doorX - 1.7, doorX + 1.7]) c.box(x, 1.69, face + 0.08 * zf, 0.08, 0.42, 0.08, p.trim);
-  shopSign(c, face, zf, doorX, c.obj.props?.label ?? c.type.label, p.signText);
+  // Keep the sign beyond the hipped roof's eave. When nested inside that depth,
+  // the roof occludes individual glyph quads at oblique camera angles.
+  const signFace = face + 0.34 * zf;
+  c.box(doorX, 2.05, signFace, 4.02, 0.82, 0.13, p.trim);
+  c.box(doorX, 2.05, signFace + 0.075 * zf, 3.72, 0.6, 0.055, p.sign);
+  for (const x of [doorX - 1.7, doorX + 1.7]) c.box(x, 1.69, face + 0.27 * zf, 0.08, 0.42, 0.08, p.trim);
+  shopSign(c, face + 0.22 * zf, zf, doorX,
+    c.obj.props?.label ?? c.type.label, p.signText);
+}
+
+function internetCafe(c) {
+  const p = c.pal, W = 4.5, D = 3.3, H = 2.25;
+  c.box(0, 0.1, 0, W + 0.18, 0.2, D + 0.18, p.trim);
+  c.box(0, H / 2 + 0.1, 0, W, H, D, p.wall);
+  c.box(0, H + 0.15, 0, W + 0.28, 0.3, D + 0.28, p.roof);
+  for (const x of [-2.12, 2.12]) c.box(x, H + 0.42, 0, 0.12, 0.55, D + 0.18, p.wallHi);
+
+  const [dx, dz] = c.type.door;
+  const doorX = dx + 0.5 - c.type.footprint.w / 2;
+  const zf = Math.sign(dz + 0.5 - c.type.footprint.d / 2) || 1;
+  const face = D / 2 * zf;
+  c.box(doorX, 0.72, face + 0.07 * zf, 0.88, 1.44, 0.12, p.trim);
+  c.box(doorX, 0.68, face + 0.14 * zf, 0.66, 1.26, 0.06, p.door);
+  for (const wx of [doorX - 1.48, doorX + 1.48]) {
+    c.box(wx, 1.0, face + 0.08 * zf, 1.12, 1.18, 0.12, p.wallHi);
+    c.box(wx, 1.0, face + 0.15 * zf, 0.92, 0.98, 0.05, p.window);
+    c.box(wx, 1.0, face + 0.18 * zf, 0.05, 0.98, 0.025, p.trim);
+  }
+  c.box(0, 1.91, face + 0.13 * zf, 4.04, 0.52, 0.1, p.sign);
+  shopSign(c, face + 0.09 * zf, zf, 0, c.obj.props?.label ?? c.type.label,
+    p.signText, 1.91, 3.72);
+
+  // Rooftop aerial and signal bars make the silhouette readable from overhead.
+  c.box(0, 3.05, 0, 0.09, 1.5, 0.09, p.metal);
+  for (let i = 0; i < 3; i++) {
+    c.box(0, 2.72 + i * 0.32, 0, 1.35 - i * 0.34, 0.08, 0.08, p.trim);
+  }
+  c.box(0, 3.84, 0, 0.22, 0.18, 0.22, p.trim);
+}
+
+function clinic(c) {
+  const p = c.pal, W = 4.5, D = 3.3, H = 2.35;
+  c.box(0, 0.1, 0, W + 0.18, 0.2, D + 0.18, p.trim);
+  c.box(0, H / 2 + 0.1, 0, W, H, D, p.wall);
+  c.box(0, H + 0.15, 0, W + 0.35, 0.3, D + 0.35, p.roof);
+  c.box(0, H + 0.38, 0, W - 0.35, 0.18, D - 0.35, p.wallHi);
+
+  const [dx, dz] = c.type.door;
+  const doorX = dx + 0.5 - c.type.footprint.w / 2;
+  const zf = Math.sign(dz + 0.5 - c.type.footprint.d / 2) || 1;
+  const face = D / 2 * zf;
+  c.box(doorX, 0.74, face + 0.07 * zf, 0.94, 1.48, 0.12, p.trim);
+  c.box(doorX, 0.7, face + 0.14 * zf, 0.7, 1.3, 0.06, p.door);
+  for (const wx of [doorX - 1.48, doorX + 1.48]) {
+    c.box(wx, 0.98, face + 0.08 * zf, 1.15, 1.05, 0.11, p.trim);
+    c.box(wx, 0.98, face + 0.15 * zf, 0.95, 0.85, 0.05, p.window);
+  }
+  c.box(-1.12, 1.55, face + 0.2 * zf, 1.6, 0.12, 0.05, p.cross);
+  c.box(1.12, 1.55, face + 0.2 * zf, 1.6, 0.12, 0.05, p.pharmacy);
+  c.box(0, 2.08, face + 0.17 * zf, 3.8, 0.46, 0.1, p.sign);
+  shopSign(c, face + 0.13 * zf, zf, 0, c.obj.props?.label ?? c.type.label,
+    p.signText, 2.08, 3.52);
+
+  // A raised medical cross is distinct from the cafe's aerial and every shop roof.
+  c.box(0, 3.25, 0, 0.34, 1.25, 0.24, p.cross);
+  c.box(0, 3.25, 0, 1.25, 0.34, 0.24, p.cross);
+  c.box(0, 2.68, 0, 0.58, 0.18, 0.58, p.trim);
+}
+
+function furnitureStore(c) {
+  const p = c.pal;
+  const W = 4.5, D = 3.3, wallH = 2.05;
+  c.box(0, 0.12, 0, W + 0.18, 0.24, D + 0.18, p.trim);
+  c.box(0, wallH / 2 + 0.12, 0, W, wallH, D, p.wall);
+  gableRoof(c, W, D, wallH + 0.12, 1.05, 0.34, p.roof, p.roofDark);
+
+  // Heavy timber framing makes this read as a workshop from every side.
+  for (const x of [-2.05, 0, 2.05]) c.box(x, 1.12, D / 2 + 0.07, 0.16, 2.0, 0.14, p.trim);
+  c.box(0, 2.02, D / 2 + 0.07, 4.25, 0.16, 0.14, p.trim);
+  for (const x of [-1.02, 1.02]) {
+    c.add(BOX, trs(x, 1.12, D / 2 + 0.075, 0, 0, x < 0 ? 0.68 : -0.68, 0.13, 2.35, 0.12), p.trim);
+  }
+
+  const [dx, dz] = c.type.door;
+  const doorX = dx + 0.5 - c.type.footprint.w / 2;
+  const doorZ = dz + 0.5 - c.type.footprint.d / 2;
+  const zf = Math.sign(doorZ) || 1, face = D / 2 * zf;
+  c.box(doorX, 0.73, face + 0.08 * zf, 0.9, 1.46, 0.12, p.trim);
+  c.box(doorX, 0.7, face + 0.15 * zf, 0.68, 1.28, 0.06, p.door);
+
+  // One broad showroom window and one timber loading door.
+  c.box(-1.38, 0.92, face + 0.08 * zf, 1.12, 1.05, 0.12, p.trim);
+  c.box(-1.38, 0.92, face + 0.15 * zf, 0.9, 0.83, 0.055, p.window);
+  c.box(1.42, 0.78, face + 0.09 * zf, 1.15, 1.45, 0.12, p.trim);
+  c.box(1.42, 0.78, face + 0.16 * zf, 0.93, 1.23, 0.055, p.door);
+  for (const x of [1.15, 1.69]) c.box(x, 0.78, face + 0.2 * zf, 0.06, 1.16, 0.03, p.trim);
+
+  // A simple timber loading canopy instead of the general store's striped awning.
+  c.add(BOX, trs(0, 1.65, face + 0.47 * zf, 0.12 * zf, 0, 0, 4.15, 0.13, 0.95), p.roofDark);
+  for (const x of [-1.9, 1.9]) c.box(x, 0.78, face + 0.84 * zf, 0.1, 1.48, 0.1, p.trim);
+
+  c.box(0, 2.32, face + 0.42 * zf, 3.65, 0.58, 0.12, p.sign);
+  shopSign(c, face + 0.3 * zf, zf, 0,
+    c.obj.props?.label ?? c.type.label, p.signText, 2.32, 3.35);
+}
+
+function clothierStore(c) {
+  const p = c.pal;
+  const W = 4.3, D = 3.15, face = D / 2;
+  c.box(0, 0.12, 0, W + 0.2, 0.24, D + 0.2, p.trim);
+  c.box(0, 1.08, 0, W, 1.92, D, p.wall);
+  c.box(0, 2.03, 0, W + 0.12, 0.18, D + 0.12, p.roofDark);
+
+  // A stepped false front hides the shallow roof and gives the boutique a
+  // tall, narrow street face unlike either roofed shop.
+  c.box(0, 2.25, face + 0.03, 4.5, 0.62, 0.18, p.wall);
+  c.box(0, 2.67, face + 0.03, 3.45, 0.3, 0.18, p.wall);
+  c.box(0, 2.91, face + 0.03, 2.25, 0.22, 0.18, p.wall);
+  for (const x of [-2.12, -1.05, 1.05, 2.12]) c.box(x, 1.35, face + 0.1, 0.14, 2.55, 0.16, p.trim);
+  c.box(0, 3.05, face + 0.1, 2.45, 0.12, 0.16, p.trim);
+
+  const [dx, dz] = c.type.door;
+  const doorX = dx + 0.5 - c.type.footprint.w / 2;
+  const doorZ = dz + 0.5 - c.type.footprint.d / 2;
+  const zf = Math.sign(doorZ) || 1;
+  const front = D / 2 * zf;
+  c.box(doorX, 0.72, front + 0.12 * zf, 0.88, 1.44, 0.13, p.trim);
+  c.box(doorX, 0.69, front + 0.2 * zf, 0.66, 1.25, 0.06, p.door);
+  c.box(doorX, 1.02, front + 0.24 * zf, 0.44, 0.48, 0.03, p.window);
+
+  // Projecting glass bays with their own fabric shades.
+  for (const x of [-1.42, 1.42]) {
+    c.box(x, 0.82, front + 0.25 * zf, 1.02, 1.12, 0.45, p.trim);
+    c.box(x, 0.84, front + 0.5 * zf, 0.82, 0.88, 0.055, p.window);
+    for (const sx of [-1, 1]) c.box(x + sx * 0.45, 0.84, front + 0.28 * zf, 0.055, 0.88, 0.35, p.window);
+    c.add(BOX, trs(x, 1.51, front + 0.48 * zf, 0.16 * zf, 0, 0, 1.22, 0.1, 0.62), p.awning);
+    c.box(x, 1.37, front + 0.78 * zf, 1.16, 0.18, 0.06, p.awning);
+  }
+
+  c.box(0, 2.48, front + 0.15 * zf, 3.2, 0.54, 0.1, p.sign);
+  shopSign(c, front + 0.025 * zf, zf, 0,
+    c.obj.props?.label ?? c.type.label, p.signText, 2.48, 2.9);
 }
 
 function townHall(c) {
@@ -357,7 +632,7 @@ function townHall(c) {
   c.box(0, 4.45, 0, 1.15, 0.72, 1.15, p.trim);
   for (const x of [-0.42, 0.42]) c.box(x, 4.46, 0, 0.04, 0.4, 0.7, p.window);
   for (const z of [-0.42, 0.42]) c.box(0, 4.46, z, 0.7, 0.4, 0.04, p.window);
-  c.add(PYR, trs(0, 5.08, 0, 0, Math.PI / 4, 0, 1.0, 0.55, 1.0), p.roofDark);
+  pyramidRoof(c, 0, 5.08, 0, 1.0, 0.55, 1.0, Math.PI / 4, p.roofDark);
 }
 
 /**
@@ -385,7 +660,7 @@ function museum(c) {
     c.add(CYL, trs(x, wallH / 2 + 0.3, face + 0.55, 0, 0, 0, 0.13, wallH - 0.2, 0.13), p.column);
   }
   c.box(0, wallH + 0.28, face + 0.5, 3.4, 0.3, 1.4, p.stone);
-  c.add(PYR, trs(0, wallH + 0.62, face + 0.5, 0, 0, 0, 1.75, 0.45, 0.8), p.roofDark);
+  pyramidRoof(c, 0, wallH + 0.62, face + 0.5, 1.75, 0.45, 0.8, 0, p.roofDark);
 
   // Door and flanking windows.
   c.box(0, 1.15, face + 0.05, 1.1, 1.7, 0.12, p.trim);
@@ -396,9 +671,10 @@ function museum(c) {
     c.box(x, 1.5, face + 0.16, 0.055, 0.92, 0.025, p.trim);
   }
 
-  // The name over the porch.
-  c.box(0, wallH + 0.62, face + 0.16, 3.1, 0.5, 0.08, p.sign);
-  shopSign(c, face, 1, 0, c.obj.props?.label ?? c.type.label, p.signText, wallH + 0.62, 2.8);
+  // The name over the porch, above the porch roof's apex.
+  const signY = wallH + 1.15;
+  c.box(0, signY, face + 0.16, 3.1, 0.5, 0.08, p.sign);
+  shopSign(c, face, 1, 0, c.obj.props?.label ?? c.type.label, p.signText, signY, 2.8);
 
   // A low glass lantern along the ridge: the skylight over the fish room.
   c.box(0, wallH + 1.78, -0.4, 2.2, 0.34, 0.9, p.trim);
@@ -410,7 +686,28 @@ function constructionSign(c) {
   c.box(0, 1.05, 0, 2.8, 1.15, 0.14, p.edge);
   c.box(0, 1.05, 0.08, 2.55, 0.9, 0.06, p.board);
   for (const x of [-1.05, 1.05]) c.box(x, 0.42, -0.03, 0.12, 0.84, 0.12, p.edge);
-  shopSign(c, -0.16, 1, 0, c.obj.props?.label ?? c.type.label, p.text, 1.05, 2.25);
+  shopSign(c, -0.1, 1, 0, c.obj.props?.label ?? c.type.label, p.text, 1.05, 2.25);
+}
+
+function noticeBoard(c) {
+  const p = c.pal;
+  for (const x of [-1.05, 1.05]) c.box(x, 0.52, -0.03, 0.12, 1.04, 0.12, p.frame);
+  c.box(0, 1.15, 0, 2.8, 1.4, 0.14, p.frame);
+  c.box(0, 1.15, 0.08, 2.55, 1.15, 0.055, p.cork);
+
+  // The title owns a separate header strip. Lettering across pinned papers was
+  // what made the old embedded board look like corrupted text.
+  c.box(0, 1.57, 0.12, 2.35, 0.3, 0.04, p.header);
+  shopSign(c, -0.09, 1, 0, 'NOTICE', p.headerText, 1.57, 1.65);
+
+  c.box(-0.63, 1.04, 0.13, 0.82, 0.62, 0.025, p.paper, -0.04);
+  c.box(0.5, 1.0, 0.13, 0.92, 0.54, 0.025, p.paperAlt, 0.05);
+  for (const [x, y, w] of [[-0.63, 1.13, 0.53], [-0.63, 1.02, 0.58], [-0.63, 0.91, 0.42],
+    [0.5, 1.08, 0.62], [0.5, 0.97, 0.68], [0.5, 0.86, 0.48]]) {
+    c.box(x, y, 0.149, w, 0.025, 0.012, p.ink);
+  }
+  c.box(-0.95, 1.31, 0.16, 0.07, 0.07, 0.025, p.red);
+  c.box(0.14, 1.23, 0.16, 0.07, 0.07, 0.025, p.blue);
 }
 
 function gate(c) {
@@ -456,6 +753,42 @@ function table(c) {
   c.box(0, top + 0.12, 0, W - 0.34, 0.05, D - 0.34, p.cloth);
 }
 
+/** The cellar table, including the game left laid out between hands. */
+function pokerTable(c) {
+  const p = c.pal;
+  const top = 0.7;
+
+  // Oval padded rail and inset felt on a broad pedestal.
+  c.add(CYL, trs(0, 0.12, 0, 0, 0, 0, 0.72, 0.24, 0.46), p.leg);
+  c.box(0, 0.4, 0, 0.42, 0.62, 0.34, p.leg);
+  c.add(CYL, trs(0, top, 0, 0, 0, 0, 1.4, 0.16, 0.9), p.rail);
+  c.add(CYL, trs(0, top + 0.1, 0, 0, 0, 0, 1.22, 0.08, 0.71), p.felt);
+  c.add(CYL, trs(0, top + 0.145, 0, 0, 0, 0, 0.82, 0.012, 0.43), p.feltLine);
+  c.add(CYL, trs(0, top + 0.155, 0, 0, 0, 0, 0.78, 0.014, 0.39), p.felt);
+
+  // Community cards, deck and dealer button.
+  for (let i = 0; i < 5; i++) {
+    const color = i === 1 || i === 4 ? p.cardRed : p.card;
+    c.box(-0.48 + i * 0.24, top + 0.18, 0, 0.18, 0.018, 0.27, color, -0.04 + i * 0.02);
+  }
+  c.box(-0.78, top + 0.19, -0.12, 0.22, 0.05, 0.31, p.cardBack, 0.08);
+  c.add(CYL, trs(0.79, top + 0.19, 0.1, 0, 0, 0, 0.09, 0.035, 0.09), p.card);
+
+  const stacks = [
+    [-0.48, -0.43, p.chipRed, 3], [0.48, -0.43, p.chipBlue, 5],
+    [-0.48, 0.43, p.chipGold, 4], [0.48, 0.43, p.chipRed, 2],
+  ];
+  for (const [x, z, color, count] of stacks) {
+    for (let i = 0; i < count; i++) {
+      c.add(CYL, trs(x, top + 0.18 + i * 0.025, z, 0, 0, 0, 0.065, 0.022, 0.065), color);
+    }
+  }
+
+  for (const [x, z] of [[-0.86, -0.48], [0.86, -0.48], [-0.86, 0.48], [0.86, 0.48]]) {
+    c.add(CYL, trs(x, top + 0.17, z, 0, 0, 0, 0.11, 0.018, 0.11), p.cup);
+  }
+}
+
 function chair(c) {
   const p = c.pal;
   for (const sx of [-1, 1]) for (const sz of [-1, 1]) {
@@ -489,12 +822,54 @@ function shelf(c) {
 
 function counter(c) {
   const p = c.pal;
-  const W = 3.8, D = 0.85, H = 0.92;
+  const W = 3.8, D = 0.85, H = 0.68;
   c.box(0, H / 2, 0, W, H, D, p.body);
   c.box(0, H + 0.06, 0, W + 0.16, 0.12, D + 0.16, p.top);      // overhanging worktop
   // Recessed panels along the customer side, so it is not one flat slab.
   for (let i = 0; i < 4; i++) {
     c.box(-W / 2 + 0.55 + i * 0.9, H / 2, D / 2 + 0.01, 0.66, H - 0.28, 0.04, p.panel);
+  }
+
+  const office = c.obj.props?.office;
+  const deskY = H + 0.135;
+  if (office === 'planner') {
+    // Survey map, scale ruler, pencil and two rolled plans.
+    c.box(-0.35, deskY, 0.02, 1.25, 0.025, 0.55, 0xdce7e5, -0.08);
+    for (const x of [-0.68, -0.4, -0.12]) c.box(x, deskY + 0.016, 0.02, 0.018, 0.025, 0.5, 0x6d9daf);
+    c.box(-0.36, deskY + 0.018, 0.15, 1.08, 0.025, 0.025, 0x6d9daf, -0.08);
+    c.box(0.45, deskY + 0.04, -0.16, 0.72, 0.055, 0.08, 0xd8b45e, 0.12);
+    c.add(CYL, trs(1.08, deskY + 0.08, -0.08, 0, 0, Math.PI / 2, 0.075, 0.62, 0.075), 0xe9e0c8);
+    c.add(CYL, trs(1.18, deskY + 0.08, 0.13, 0, 0, Math.PI / 2, 0.065, 0.52, 0.065), 0xb8d3dc);
+  } else if (office === 'wildlife') {
+    // Open field guide, specimen jars and a brass ranger badge.
+    c.box(-0.35, deskY + 0.03, 0, 0.62, 0.055, 0.5, 0xe9dfbe, -0.12);
+    c.box(0.27, deskY + 0.03, 0, 0.62, 0.055, 0.5, 0xe9dfbe, 0.12);
+    c.box(-0.05, deskY + 0.065, 0, 0.04, 0.035, 0.48, 0x6b4a30);
+    for (const [x, color] of [[0.88, 0x7ea9a2], [1.28, 0x91b5c0]]) {
+      c.add(CYL, trs(x, deskY + 0.18, 0.02, 0, 0, 0, 0.14, 0.34, 0.14), color);
+      c.add(CYL, trs(x, deskY + 0.365, 0.02, 0, 0, 0, 0.15, 0.035, 0.15), 0x5b6545);
+      c.add(BLOB, trs(x, deskY + 0.17, 0.03, 0, 0, 0, 0.07, 0.06, 0.07), 0x506b3d);
+    }
+    c.add(PYR, trs(-0.92, deskY + 0.055, 0.04, 0, 0, Math.PI / 4, 0.12, 0.04, 0.12), 0xd8b45e);
+  } else if (office === 'mayor') {
+    // Signed papers, civic seal, gavel and a small call bell.
+    c.box(-0.62, deskY + 0.02, 0.02, 0.78, 0.04, 0.52, 0xf2ead4, -0.08);
+    c.add(CYL, trs(-0.45, deskY + 0.055, 0.04, 0, 0, 0, 0.14, 0.035, 0.14), 0x9c3f4a);
+    c.add(CYL, trs(0.33, deskY + 0.1, 0.02, 0, 0, Math.PI / 2, 0.055, 0.72, 0.055), 0x70452e);
+    c.add(CYL, trs(0.7, deskY + 0.13, 0.02, 0, 0, 0, 0.12, 0.27, 0.12), 0x8a5638);
+    c.add(BLOB, trs(1.28, deskY + 0.12, 0.02, 0, 0, 0, 0.18, 0.12, 0.18), 0xd8b45e);
+    c.add(CYL, trs(1.28, deskY + 0.23, 0.02, 0, 0, 0, 0.045, 0.09, 0.045), 0xf1d477);
+  } else if (office === 'cheats') {
+    // The expected paperwork, followed by controls no municipal desk should have.
+    for (let i = 0; i < 3; i++) {
+      c.box(-0.75 + i * 0.06, deskY + 0.025 + i * 0.025, 0.03 - i * 0.025,
+        0.75, 0.025, 0.5, i === 1 ? 0xded5ed : 0xeee8da, -0.08 + i * 0.04);
+    }
+    c.box(0.35, deskY + 0.045, 0.02, 0.52, 0.08, 0.42, 0x3c4453);
+    c.add(CYL, trs(0.35, deskY + 0.24, 0.02, 0, 0, -0.55, 0.04, 0.38, 0.04), 0x9aa0a6);
+    c.add(BLOB, trs(0.45, deskY + 0.39, 0.02, 0, 0, 0, 0.09, 0.09, 0.09), 0x9ac44a);
+    c.add(CYL, trs(1.22, deskY + 0.06, 0.02, 0, 0, 0, 0.23, 0.08, 0.23), 0x252832);
+    c.add(CYL, trs(1.22, deskY + 0.13, 0.02, 0, 0, 0, 0.14, 0.1, 0.14), 0xd84b45);
   }
 }
 
@@ -650,10 +1025,14 @@ const BUILDERS = {
   'building.cottage': home,
   'building.cabin': home,
   'building.bungalow': home,
-  'building.store': store,
-  'building.furniture': store,
-  'building.clothier': store,
+  'building.store': generalStore,
+  'building.internet-cafe': internetCafe,
+  'building.clinic': clinic,
+  'building.office': generalStore,
+  'building.furniture': furnitureStore,
+  'building.clothier': clothierStore,
   'building.townhall': townHall,
+  'civic.noticeboard': noticeBoard,
   'building.museum': museum,
   'building.gate': gate,
   'vehicle.cab': cab,
@@ -665,7 +1044,6 @@ const BUILDERS = {
   'furn.stove': stove,
   'furn.plant': plant,
   'furn.crate': crate,
-  'furn.stairs': stairs,
   'furn.construction-sign': constructionSign,
   'furn.sign.planning': constructionSign,
   'furn.sign.wildlife': constructionSign,
@@ -674,7 +1052,7 @@ const BUILDERS = {
   'furn.sign.fish': constructionSign,
   'furn.sign.game': constructionSign,
   'furn.sign.poker': constructionSign,
-  'furn.pokertable': table,
+  'furn.pokertable': pokerTable,
   'yard.mailbox': mailbox,
   'yard.fence': fence,
   'yard.ladder': ladder,
@@ -823,6 +1201,8 @@ export function buildProps(world) {
 
   for (const obj of world.objects) {
     const type = objectType(obj.type);
+    const required = obj.props?.requiresHouseStories;
+    if (required && world.houseStories !== null && world.houseStories < required) continue;
     // A kit type has no entry in BUILDERS and never will -- its shape is in its
     // file. Everything after this line treats the two identically.
     const build = BUILDERS[obj.type] ?? (type.staticParts ? kitParts : null);

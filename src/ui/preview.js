@@ -47,6 +47,7 @@
 
 import * as THREE from 'three';
 import { makeRng, range } from '../core/rng.js';
+import { animalModel as getAnimalModel } from '../render/AnimalBatch.js';
 import { trs } from '../render/geo.js';
 import { PRIM_GEO, drawProp } from '../render/props.js';
 import { OBJECT_TYPES } from '../world/objectTypes.js';
@@ -121,6 +122,7 @@ function tint(color, k) {
  * primitives rather than letting anyone build their own.
  */
 const RINGS = new WeakMap();
+const COLORED_RINGS = new WeakMap();
 
 function rings(geom) {
   const hit = RINGS.get(geom);
@@ -152,6 +154,43 @@ function rings(geom) {
     .map((run) => ({ n: run.n, ring: faceRing(run.pts, run.n) }))
     .filter((face) => face.ring.length >= 3);
   RINGS.set(geom, out);
+  return out;
+}
+
+/** Faces from merged model geometry, retaining each part's vertex colour. */
+function coloredRings(geom) {
+  const hit = COLORED_RINGS.get(geom);
+  if (hit) return hit;
+
+  const g = geom.index ? geom.toNonIndexed() : geom;
+  const pos = g.attributes.position, color = g.attributes.color;
+  const a = new THREE.Vector3(), b = new THREE.Vector3(), c = new THREE.Vector3();
+  const ab = new THREE.Vector3(), ac = new THREE.Vector3(), n = new THREE.Vector3();
+  const runs = [];
+  for (let i = 0; i < pos.count; i += 3) {
+    a.fromBufferAttribute(pos, i);
+    b.fromBufferAttribute(pos, i + 1);
+    c.fromBufferAttribute(pos, i + 2);
+    n.crossVectors(ab.subVectors(b, a), ac.subVectors(c, a));
+    if (n.lengthSq() < 1e-12) continue;
+    n.normalize();
+    const hex = color
+      ? (Math.round(color.getX(i) * 255) << 16)
+        | (Math.round(color.getY(i) * 255) << 8)
+        | Math.round(color.getZ(i) * 255)
+      : 0x9aa0a6;
+    const last = runs[runs.length - 1];
+    const run = last && last.color === hex && last.n.dot(n) > 0.9995
+      ? last : { n: n.clone(), color: hex, pts: [] };
+    if (run !== last) runs.push(run);
+    run.pts.push(a.clone(), b.clone(), c.clone());
+  }
+  if (g !== geom) g.dispose();
+
+  const out = runs
+    .map((run) => ({ n: run.n, color: run.color, ring: faceRing(run.pts, run.n) }))
+    .filter((face) => face.ring.length >= 3);
+  COLORED_RINGS.set(geom, out);
   return out;
 }
 
@@ -235,6 +274,18 @@ class Sketch {
         n: face.n.clone().applyMatrix3(this._m3).normalize(),
         pts: face.ring.map((p) => p.clone().applyMatrix4(local)),
         color: color ?? 0x9aa0a6,
+      });
+    }
+    return this;
+  }
+
+  addColored(geom, local) {
+    this._m3.getNormalMatrix(local);
+    for (const face of coloredRings(geom)) {
+      this.faces.push({
+        n: face.n.clone().applyMatrix3(this._m3).normalize(),
+        pts: face.ring.map((p) => p.clone().applyMatrix4(local)),
+        color: face.color,
       });
     }
     return this;
@@ -346,6 +397,7 @@ function paint(faces) {
  * the old entries fall off with the old types.
  */
 const CACHE = new WeakMap();
+const ANIMAL_CACHE = new WeakMap();
 
 /**
  * A rendering of what a shop row is actually selling, or null.
@@ -373,6 +425,25 @@ export function itemModel(type) {
     svg = null;
   }
   CACHE.set(type, svg);
+  return svg;
+}
+
+/** A species picture projected from the same geometry used in the world. */
+export function animalPreview(typeId, type) {
+  if (!type) return null;
+  if (ANIMAL_CACHE.has(type)) return ANIMAL_CACHE.get(type);
+  let svg = null;
+  try {
+    const model = getAnimalModel(typeId);
+    const sketch = new Sketch(type, `animal-preview:${typeId}`);
+    sketch.addColored(model.body, new THREE.Matrix4());
+    sketch.addColored(model.head,
+      new THREE.Matrix4().makeTranslation(0, model.neckY, model.neckZ));
+    svg = paint(sketch.faces);
+  } catch {
+    svg = null;
+  }
+  ANIMAL_CACHE.set(type, svg);
   return svg;
 }
 

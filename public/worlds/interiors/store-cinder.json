@@ -2,6 +2,7 @@
   "format": "tw.world",
   "version": 1,
   "kind": "interior",
+  "kits": ["kits/turnip-catalog.kit.json"],
   "meta": {
     "id": "store.cinder.interior",
     "name": "The Cinder Shop",
@@ -31,10 +32,10 @@
         "#############",
         "#ttttttttttt#",
         "#ttttttttttt#",
-        "#tttwwwwwttt#",
-        "#wwwwwwwwwww#",
-        "#wwwwrrrwwww#",
-        "#wwwwrrrwwww#",
+        "#tttwwwwtttt#",
+        "#tttwwwwtttt#",
+        "#wwwwwwwwrrr#",
+        "#wwwwwwwwrrr#",
         "#wwwwwwwwwww#",
         "#wwwwwwwwwww#",
         "######tt#####"
@@ -97,7 +98,7 @@
   "objects": [
     {
       "id": "shelf.a",
-      "type": "furn.shelf",
+      "type": "fixture.workbench",
       "tile": [
         1,
         1
@@ -130,7 +131,7 @@
     },
     {
       "id": "shelf.d",
-      "type": "furn.shelf",
+      "type": "fixture.tool-chest",
       "tile": [
         10,
         1
@@ -152,10 +153,10 @@
     },
     {
       "id": "stove",
-      "type": "furn.stove",
+      "type": "fixture.anvil-and-block",
       "tile": [
-        9,
-        3
+        8,
+        4
       ],
       "props": {
         "label": "Range"
@@ -163,15 +164,15 @@
     },
     {
       "id": "chair.loafers",
-      "type": "furn.chair",
+      "type": "fixture.bellows-stand",
       "tile": [
-        11,
+        10,
         4
       ]
     },
     {
       "id": "crate.west",
-      "type": "furn.crate",
+      "type": "fixture.packing-crate",
       "tile": [
         1,
         6
@@ -179,7 +180,7 @@
     },
     {
       "id": "crate.east",
-      "type": "furn.crate",
+      "type": "fixture.brazier",
       "tile": [
         11,
         6
@@ -187,7 +188,7 @@
     },
     {
       "id": "crate.door",
-      "type": "furn.crate",
+      "type": "fixture.packing-crate",
       "tile": [
         1,
         8
@@ -195,10 +196,10 @@
     },
     {
       "id": "plant",
-      "type": "furn.plant",
+      "type": "furn.chair",
       "tile": [
-        11,
-        8
+        9,
+        7
       ]
     }
   ],
@@ -224,6 +225,9 @@
           "item.stone",
           "item.stick",
           "item.mushroom",
+          "item.turnip",
+          "item.flower",
+          "item.pumpkin",
           "tool.axe",
           "tool.shovel",
           "tool.gun",
@@ -236,6 +240,8 @@
           "tool.map",
           "tool.camera",
           "tool.machinegun",
+          "tool.machine-gun",
+          "item.bullets",
           "tool.rod",
           "item.trout",
           "item.carp"
@@ -314,6 +320,15 @@
             "type": "tool.machinegun",
             "count": 1,
             "price": 1350
+          },
+          {
+            "type": "tool.machine-gun",
+            "count": 1,
+            "price": 3600
+          },
+          {
+            "type": "item.bullets",
+            "count": null
           }
         ]
       },
@@ -378,6 +393,25 @@
           "bye": {
             "text": "Mind the step. It is warm."
           }
+        },
+        "greetings": {
+          "acquaintance": [
+            "New stock came round the ring on somebody's back. You can tell which shelf by the sweat on the labels.",
+            "Basalt sends the bread over warm. It is the one thing in here I did not price for the carrying.",
+            "The sticks are dry. Everything in Ashkettle is dry, but these are dry the useful way.",
+            "Tally was in from the terraces for seed. Told her the pumpkin lot came from the far side and she bought it anyway."
+          ],
+          "friend": [
+            "Ro says the water is fine. Ro always says the water is fine. I sell apples, which I can vouch for.",
+            "You have been picking off the warm ground again. I can smell it. Leave those on the far side with Vesper.",
+            "Ember wants glaze from me. I want customers from her. Neither of us is getting rich on the deal.",
+            "If you are looking for the best shop in the bowl, it is still not here. I have made peace with that."
+          ],
+          "close": [
+            "Sit on the crate by the step. It is the warm one. I keep it for you.",
+            "I carried the apples round the ring myself this time. Do not ask what that does to a man's knees.",
+            "Doorstop stone is yours if you want it. You have paid for it several times over."
+          ]
         }
       }
     }

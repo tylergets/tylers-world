@@ -19,7 +19,8 @@ const _v = new THREE.Vector3();
 export class GeoBuilder {
   constructor() {
     this.pos = []; this.norm = []; this.col = [];
-    this.local = []; this.baseY = []; this.water = []; this.shore = []; this.pattern = [];
+    this.local = []; this.baseY = []; this.water = []; this.shore = []; this.finish = [];
+    this.edgeTint = []; this.edgeMix = []; this.edgeWear = [];
     this.index = [];
     /** key -> { start, count, baseY }: which vertices belong to which thing. */
     this.spans = new Map();
@@ -76,7 +77,10 @@ export class GeoBuilder {
       this.baseY.push(baseY);
       this.water.push(0);
       this.shore.push(0);
-      this.pattern.push(0);
+      this.finish.push(0);
+      this.edgeTint.push(1, 1, 1);
+      this.edgeMix.push(0);
+      this.edgeWear.push(0);
     }
     for (let i = 0; i < p.count; i++) this.index.push(start + i);
     if (g !== geometry) g.dispose();
@@ -88,9 +92,12 @@ export class GeoBuilder {
    * `locals` are per-corner tile UVs, used by the terrain grid-line shader;
    * `shades` are per-corner colour multipliers, used for corner AO. `shore`
    * carries per-corner proximity to a sand/water boundary for terrain only.
+   * Edge tint/mix/wear are parallel per-corner arrays produced by Terrain's
+   * neighbourhood resolver; neutral defaults keep walls and props unaffected.
    */
   addQuad(a, b, c, d, color, {
-    locals, baseY = 0, water = 0, shore, pattern = 0, normal, shades,
+    locals, baseY = 0, water = 0, shore, finish = 0, normal, shades,
+    edgeTint, edgeMix, edgeWear,
   } = {}) {
     const nrm = normal ?? computeNormal(a, b, c);
     const col = new THREE.Color(color);
@@ -105,13 +112,17 @@ export class GeoBuilder {
       this.baseY.push(baseY);
       this.water.push(water);
       this.shore.push(shore?.[i] ?? 0);
-      this.pattern.push(pattern);
+      this.finish.push(finish);
+      const tint = edgeTint?.[i] ?? [1, 1, 1];
+      this.edgeTint.push(tint[0], tint[1], tint[2]);
+      this.edgeMix.push(edgeMix?.[i] ?? 0);
+      this.edgeWear.push(edgeWear?.[i] ?? 0);
     }
     this.index.push(start, start + 1, start + 2, start, start + 2, start + 3);
     return this;
   }
 
-  build({ shore = false, patterns = false } = {}) {
+  build({ shore = false, finishes = false, surfaceTransitions = false } = {}) {
     const g = new THREE.BufferGeometry();
     g.setAttribute('position', new THREE.Float32BufferAttribute(this.pos, 3));
     g.setAttribute('normal', new THREE.Float32BufferAttribute(this.norm, 3));
@@ -122,7 +133,12 @@ export class GeoBuilder {
     // Only Terrain's material consumes this. Keeping it off prop geometries
     // avoids paying a permanent GPU attribute for a temporary builder feature.
     if (shore) g.setAttribute('aShore', new THREE.Float32BufferAttribute(this.shore, 1));
-    if (patterns) g.setAttribute('aPattern', new THREE.Float32BufferAttribute(this.pattern, 1));
+    if (finishes) g.setAttribute('aFinish', new THREE.Float32BufferAttribute(this.finish, 1));
+    if (surfaceTransitions) {
+      g.setAttribute('aEdgeTint', new THREE.Float32BufferAttribute(this.edgeTint, 3));
+      g.setAttribute('aEdgeMix', new THREE.Float32BufferAttribute(this.edgeMix, 1));
+      g.setAttribute('aEdgeWear', new THREE.Float32BufferAttribute(this.edgeWear, 1));
+    }
     g.setIndex(this.index);
     g.computeBoundingSphere();
     // Rides on the geometry rather than being returned alongside it, because

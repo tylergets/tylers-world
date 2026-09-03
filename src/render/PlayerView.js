@@ -67,6 +67,7 @@ import { hairColorOf, skinColorOf, eyeColorOf } from '../sim/Identity.js';
 const BOX = new THREE.BoxGeometry(1, 1, 1);
 const BLOB = new THREE.IcosahedronGeometry(1, 2);
 const CYL = new THREE.CylinderGeometry(1, 1, 1, 10);
+const GLASSES_RIM = new THREE.TorusGeometry(1, 0.13, 4, 12);
 /** The torso's taper. Hoisted because the torso is rebuilt on a change of shirt. */
 const TORSO = new THREE.CylinderGeometry(0.19, 0.155, 1, 12);
 
@@ -136,23 +137,33 @@ function hatParts(b, type) {
 }
 
 /**
- * Two lenses and a bridge, and deliberately no temples.
+ * Two open rims and a bridge, and deliberately no temples.
  *
  * The arms of a pair of glasses run back along a head that is 0.245 wide here,
  * so they are either buried in it or standing off it -- and at the size a face
  * is ever drawn they would be two pixels of frame bought with a clipping bug.
- * Two dark discs and a bar between them read as sunglasses from any distance
- * this game puts the camera at.
+ * Open centres keep the lenses transparent without putting the whole
+ * vertex-coloured character into the transparent render pass.
  */
 function glassesParts(b, type) {
   const p = type.palette;
   const { lens, round } = type.wear;
-  const face = round ? CYL : BOX;
   for (const side of [-1, 1]) {
     const x = side * LENS_X;
-    b.addGeometry(CYL, trs(x, LENS_Y, LENS_Z, Math.PI / 2, 0, 0, lens * 1.65, 0.018, lens * 1.65), p.frame);
-    b.addGeometry(face, trs(x, LENS_Y, LENS_Z + 0.012, Math.PI / 2, 0, 0,
-      lens * 2.8, 0.014, lens * 2.6), p.lens);
+    if (round) {
+      b.addGeometry(GLASSES_RIM, trs(x, LENS_Y, LENS_Z + 0.012, 0, 0, 0,
+        lens * 1.48, lens * 1.38, lens * 1.48), p.frame);
+    } else {
+      const w = lens * 2.8, h = lens * 2.6, rim = 0.014;
+      for (const sy of [-1, 1]) {
+        b.addGeometry(BOX, trs(x, LENS_Y + sy * h / 2, LENS_Z + 0.012,
+          0, 0, 0, w + rim, rim, 0.018), p.frame);
+      }
+      for (const sx of [-1, 1]) {
+        b.addGeometry(BOX, trs(x + sx * w / 2, LENS_Y, LENS_Z + 0.012,
+          0, 0, 0, rim, h, 0.018), p.frame);
+      }
+    }
   }
   b.addGeometry(BOX, trs(0, LENS_Y, LENS_Z + 0.006, 0, 0, 0, 0.07, 0.018, 0.03), p.frame);
 }
@@ -544,6 +555,18 @@ const HOLD = {
         dur: 0.16,
         keys: [
           { t: 0.25, p: [0.075, 0.198, 0.03], d: [-0.13, 0.07, 0.99], l: 0.195, lean: -0.04, look: -0.02 },
+        ],
+      },
+    },
+  },
+  'tool.machine-gun': {
+    lying: true, yaw: 0.20, roll: -Math.PI / 2, grip: [-0.03, 0.045, 0], scale: 1.25,
+    rest: { p: [0.09, 0.19, 0.06], d: [-0.14, -0.02, 0.99], l: 0.20, lean: 0.02 },
+    acts: {
+      shoot: {
+        dur: 0.2,
+        keys: [
+          { t: 0.25, p: [0.065, 0.205, 0.02], d: [-0.12, 0.1, 0.99], l: 0.195, lean: -0.08, look: -0.04 },
         ],
       },
     },

@@ -8,7 +8,7 @@ const ELEVATION_BAKES = new WeakMap();
 /** A transparent low-to-high colour wash used only by the planning map. */
 function elevationBake(world) {
   const cached = ELEVATION_BAKES.get(world);
-  if (cached) return cached;
+  if (cached && cached.canvas.width === world.width && cached.canvas.height === world.height) return cached;
   let min = Infinity, max = -Infinity;
   for (const elevation of world.elevation) {
     min = Math.min(min, elevation); max = Math.max(max, elevation);
@@ -33,14 +33,23 @@ function elevationBake(world) {
 export const PLANNER_TOOLS = [
   ['grass', 'Grass', '#93d466'], ['concrete', 'Road', '#d8d3c6'],
   ['sand', 'Sand', '#f0e0b2'], ['water', 'Water', '#4ea3dd'],
+  ['tree.oak', 'Oak', '#4f9e3f'], ['tree.pine', 'Pine', '#2f7a4a'],
+  ['tree.palm', 'Palm', '#74c96b'], ['rock.small', 'Rock', '#9aa0a6'],
+  ['rock.large', 'Boulder', '#70777d'], ['remove-landscape', 'Remove', '#d96b63'],
   ['restore', 'Original', '#9aa0a6'], ['move', 'Move building', '#f2c14e'],
   ['rotate', 'Rotate building', '#7fd4a8'],
 ];
 
+export const PLANNER_POINT_TOOLS = new Set([
+  'tree.oak', 'tree.pine', 'tree.palm', 'rock.small', 'rock.large', 'remove-landscape',
+]);
+
 export class TownHallOffice {
-  constructor(_root, { onTerrain, onBuildingValidate, onBuildingMove, onPopulation, onCheat, onClose }) {
+  constructor(_root, { onTerrain, onLandscape, onBuildingValidate, onBuildingMove, onPopulation, onRecruit, onExpand, onDismissWorker, onSupplyWorker, onCheat, onClose }) {
     this.onTerrain = onTerrain; this.onBuildingValidate = onBuildingValidate;
-    this.onBuildingMove = onBuildingMove; this.onPopulation = onPopulation;
+    this.onLandscape = onLandscape; this.onBuildingMove = onBuildingMove; this.onPopulation = onPopulation;
+    this.onRecruit = onRecruit; this.onExpand = onExpand;
+    this.onDismissWorker = onDismissWorker; this.onSupplyWorker = onSupplyWorker;
     this.onCheat = onCheat; this.onClose = onClose;
     this.context = null; this.office = null; this.open = false;
     this.tool = 'grass'; this.brush = 1; this._painting = false; this._moving = null;
@@ -59,6 +68,17 @@ export class TownHallOffice {
       if (result.ok) this.drawMap();
     };
     this._down = (event) => {
+      if (PLANNER_POINT_TOOLS.has(this.tool)) {
+        const tile = this.#point(event);
+        const result = this.onLandscape({
+          ...this.context, tile,
+          type: this.tool === 'remove-landscape' ? null : this.tool,
+          remove: this.tool === 'remove-landscape',
+        });
+        if (this.status) this.status.textContent = result.message;
+        if (result.ok) this.drawMap();
+        return;
+      }
       if (this.tool === 'move' || this.tool === 'rotate') {
         const [x, z] = this.#point(event);
         const obj = this.context?.world.objectAt(x, z);
@@ -209,6 +229,27 @@ export class TownHallOffice {
     const { fauna, edits } = this.context;
     const target = (edits.wildlife.get(type) ?? fauna.count(type)) + step;
     const result = this.onPopulation({ ...this.context, type, target });
+    this.message = result.message; this.changed();
+  }
+  recruit(id) {
+    const result = this.onRecruit({ ...this.context, id });
+    this.message = result.message; this.changed();
+  }
+  expand(direction) {
+    const result = this.onExpand({ ...this.context, direction });
+    if (result.ok) ELEVATION_BAKES.delete(this.context.world);
+    this.message = result.message; this.changed();
+  }
+  workerRows() {
+    if (!this.context?.workers) return [];
+    return this.context.workers.reports(this.context.resolveNpc);
+  }
+  dismissWorker(id) {
+    const result = this.onDismissWorker(id);
+    this.message = result.message; this.changed();
+  }
+  supplyWorker(id, count) {
+    const result = this.onSupplyWorker(id, count);
     this.message = result.message; this.changed();
   }
   cheat(key, action) {

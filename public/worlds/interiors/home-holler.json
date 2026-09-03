@@ -78,6 +78,24 @@
         ]
       }
   },
+  "architecture": {"groups":[{
+    "id":"upstairs","requiresHouseStories":2,"landingColumns":[10,11,12],
+    "portal":{"tile":[10,15],"to":"worlds/interiors/home-upper-2.json","label":"Upstairs","facing":"east"},
+    "parts":[
+      {"primitive":"box","at":[10.45,-0.025,15.125],"size":[0.38,0.05,1.64],"color":"#805a39"},
+      {"primitive":"box","at":[10.79,0.025,15.125],"size":[0.38,0.15,1.64],"color":"#8a6242"},
+      {"primitive":"box","at":[11.13,0.075,15.125],"size":[0.38,0.25,1.64],"color":"#805a39"},
+      {"primitive":"box","at":[11.47,0.125,15.125],"size":[0.38,0.35,1.64],"color":"#8a6242"},
+      {"primitive":"box","at":[11.81,0.175,15.125],"size":[0.38,0.45,1.64],"color":"#805a39"},
+      {"primitive":"box","at":[12.15,0.225,15.125],"size":[0.38,0.55,1.64],"color":"#8a6242"},
+      {"primitive":"box","at":[10.35,0.25,14.305],"size":[0.08,0.50,0.08],"color":"#4f3527"},
+      {"primitive":"box","at":[10.35,0.25,15.945],"size":[0.08,0.50,0.08],"color":"#4f3527"},
+      {"primitive":"box","at":[12.28,0.75,14.305],"size":[0.08,0.50,0.08],"color":"#4f3527"},
+      {"primitive":"box","at":[12.28,0.75,15.945],"size":[0.08,0.50,0.08],"color":"#4f3527"},
+      {"primitive":"box","at":[11.315,0.75,14.305],"size":[2.08,0.08,0.08],"rotation":[0,0,14.5],"color":"#4f3527"},
+      {"primitive":"box","at":[11.315,0.75,15.945],"size":[2.08,0.08,0.08],"rotation":[0,0,14.5],"color":"#4f3527"}
+    ]
+  }]},
   "objects": [
     {"id":"hearth.cold","type":"fixture.coldhearth","tile":[1,1],"props":{"label":"Cold Hearth"}},
     {"id":"range.old","type":"furn.stove","tile":[13,1],"props":{"label":"The Old Range"}},
@@ -85,8 +103,7 @@
     {"id":"chair.fallen","type":"furn.chair","tile":[2,8],"rotation":270},
     {"id":"table","type":"furn.table","tile":[3,8]},
     {"id":"shelf.books","type":"furn.shelf","tile":[10,12],"props":{"label":"Bookcase"}},
-    {"id":"crate","type":"furn.crate","tile":[1,12]},
-    {"id":"stairs.up","type":"furn.stairs","tile":[10,6],"props":{"label":"Upstairs","interior":"worlds/interiors/home-upper-2.json","requiresHouseStories":2}}
+    {"id":"crate","type":"furn.crate","tile":[1,12]}
   ],
   "items": [
     {"id":"stick.kindling","type":"item.stick","tile":[8,2]},
@@ -98,5 +115,5 @@
     {"tile":[8,13]},
     {"tile":[9,13]}
   ],
-  "spawn": {"tile":[9,12],"facing":"north"}
+  "spawn": {"tile":[9,16],"facing":"north"}
 }

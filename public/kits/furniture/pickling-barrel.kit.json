@@ -8,6 +8,7 @@
   "types": {
     "fixture.pickling-barrel": {
       "kind": "object",
+      "use": "store",
       "label": "Turnipwood Pickling Barrel",
       "footprint": { "w": 1, "d": 1 },
       "height": 0.93,

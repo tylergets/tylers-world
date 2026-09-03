@@ -116,6 +116,31 @@ export class Inventory {
     return n - left;
   }
 
+  /** Whether one specific slot can accept an entire stack without mutation. */
+  canAddTo(i, typeId, count) {
+    if (!Number.isInteger(i) || i < 0 || i >= this.slots.length
+      || !Number.isInteger(count) || count < 1) return false;
+    const slot = this.slots[i];
+    return (!slot || slot.typeId === typeId)
+      && (slot?.count ?? 0) + count <= itemType(typeId).stack;
+  }
+
+  /**
+   * Add an entire stack to one exact slot, or change nothing.
+   *
+   * Container transfers point at a visible destination. Keeping the capacity
+   * check and mutation together means a failed drop can never consume its
+   * source or silently spill into some other bag slot.
+   */
+  addTo(i, typeId, count) {
+    if (!this.canAddTo(i, typeId, count)) return false;
+    const slot = this.slots[i];
+    if (slot) slot.count += count;
+    else this.slots[i] = { typeId, count };
+    this.version++;
+    return true;
+  }
+
   /**
    * Remove up to `n` from one slot, emptying it when the stack runs out.
    * Returns the type removed and how many, or null if the slot was empty.

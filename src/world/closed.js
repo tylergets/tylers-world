@@ -110,6 +110,26 @@ export function closedFor(npc) {
   return build(voice, npc.shop.name, open, `closed shop ${npc.id}`);
 }
 
+const MEMORIALS = [
+  (name, days) => `Rest in peace ${name}, killed by a lunatic. The shop reopens in ${days}.`,
+  (name, days) => `${name} is dead. Management requests that whoever knows why stop checking the door. Reopening in ${days}.`,
+  (name, days) => `Closed for bereavement, cleaning, and an astonishing amount of paperwork. ${name} will be missed. Reopening in ${days}.`,
+  (name, days) => `Shopkeeper wanted. Previous occupant: ${name}. Cause of vacancy: aggressive customer feedback. Try again in ${days}.`,
+  (name, days) => `In memory of ${name}: merchant, neighbor, and recent argument against selling machine guns. Reopening in ${days}.`,
+];
+
+/** A rotating notice shown when a dead shopkeeper's door is tried. */
+export function memorialFor(name, remainingDays, visit = 0) {
+  const days = `${remainingDays} day${remainingDays === 1 ? '' : 's'}`;
+  const text = MEMORIALS[((visit % MEMORIALS.length) + MEMORIALS.length) % MEMORIALS.length](name, days);
+  return parseDialog({
+    start: 'memorial',
+    nodes: {
+      memorial: { text, choices: [{ text: 'Back away from the door.', to: 'end' }] },
+    },
+  }, `shop memorial ${name}`);
+}
+
 /** All of them at one till, for tools/checkworld.mjs, which walks every one. */
 export function closedScripts() {
   return VOICES.map((voice, i) => build(voice, 'The Shop', '08:00', `closed[${i}]`));

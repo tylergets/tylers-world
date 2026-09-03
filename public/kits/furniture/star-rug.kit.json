@@ -9,7 +9,7 @@
     "fixture.star-rug": {
       "kind": "object",
       "label": "Turnipwood Star Rug",
-      "footprint": { "w": 2, "d": 2 },
+      "footprint": { "w": 2, "d": 2, "mask": ["..", ".."] },
       "height": 0.2,
       "squash": 0.9,
       "palette": {

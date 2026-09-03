@@ -80,11 +80,13 @@ export function findPath(world, [sx, sz], [gx, gz], climbs = false) {
   let best = start;
   let bestH = heuristic(sx, sz, gx, gz);
 
-  for (let expansions = 0; open.size && expansions < MAX_EXPANSIONS; expansions++) {
+  let expansions = 0;
+  while (open.size && expansions < MAX_EXPANSIONS) {
     const cur = open.pop();
     if (cur === goal) return unwind(came, start, goal, w);
     if (closed[cur]) continue;   // a stale duplicate left by a cheaper re-push
     closed[cur] = 1;
+    expansions++;
 
     const cx = cur % w, cz = (cur - cx) / w;
 
@@ -99,10 +101,7 @@ export function findPath(world, [sx, sz], [gx, gz], climbs = false) {
       // The corner rule lives in canOccupy: a diagonal needs BOTH of the
       // orthogonal tiles it squeezes between, so no route ever cuts through
       // the seam where two buildings touch.
-      const ok = isDiagonal(k)
-        ? world.canOccupy(nx, nz, cx, cz, climbs)
-        : world.canStep(cx, cz, nx, nz, climbs);
-      if (!ok) continue;
+      if (!canTraverse(world, cx, cz, nx, nz, climbs)) continue;
       if (next !== goal && world.portalAt(nx, nz)) continue;   // see note 2
 
       const step = (isDiagonal(k) ? DIAG : 1) / world.surfaceAt(nx, nz).speed;
@@ -119,6 +118,49 @@ export function findPath(world, [sx, sz], [gx, gz], climbs = false) {
   }
 
   return best === start ? [] : unwind(came, start, best, w);
+}
+
+/**
+ * Find the cheapest exact route among several acceptable destinations.
+ *
+ * This is intentionally built on `findPath`: object interactions usually have
+ * several adjacent tiles, and choosing the nearest one before checking the map
+ * can select the wrong side of a wall. The returned goal makes an empty route
+ * unambiguous when the walker already occupies an acceptable tile.
+ */
+export function findPathToAny(world, from, goals, climbs = false) {
+  let best = null;
+  for (const goal of goals) {
+    if (!world.inBounds(...goal)) continue;
+    if (from[0] === goal[0] && from[1] === goal[1]) return { route: [], goal, cost: 0 };
+
+    const route = findPath(world, from, goal, climbs);
+    const end = route.at(-1);
+    if (!end || end[0] !== goal[0] || end[1] !== goal[1]) continue;
+
+    const cost = pathCost(world, from, route);
+    if (!best || cost < best.cost) best = { route, goal, cost };
+  }
+  return best;
+}
+
+/** The traversal predicate shared by planning and live route validation. */
+export function canTraverse(world, ax, az, bx, bz, climbs = false) {
+  return ax !== bx && az !== bz
+    ? world.canOccupy(bx, bz, ax, az, climbs)
+    : world.canStep(ax, az, bx, bz, climbs);
+}
+
+/** The same weighted travel cost A* optimises. */
+function pathCost(world, from, route) {
+  let cost = 0;
+  let [ax, az] = from;
+  for (const [bx, bz] of route) {
+    cost += (ax !== bx && az !== bz ? DIAG : 1) / world.surfaceAt(bx, bz).speed;
+    ax = bx;
+    az = bz;
+  }
+  return cost;
 }
 
 /**

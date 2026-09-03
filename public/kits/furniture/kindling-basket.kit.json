@@ -8,6 +8,7 @@
   "types": {
     "fixture.kindling-basket": {
       "kind": "object",
+      "use": "store",
       "label": "Beechbark Kindling Basket",
       "footprint": { "w": 1, "d": 1 },
       "height": 0.35,

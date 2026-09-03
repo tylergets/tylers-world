@@ -8,6 +8,7 @@
   "types": {
     "fixture.salt-tub": {
       "kind": "object",
+      "use": "store",
       "label": "Fenrush Salt Tub",
       "footprint": { "w": 1, "d": 1 },
       "height": 0.52,

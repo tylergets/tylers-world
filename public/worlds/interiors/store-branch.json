@@ -2,6 +2,7 @@
   "format": "tw.world",
   "version": 1,
   "kind": "interior",
+  "kits": ["kits/turnip-catalog.kit.json"],
   "meta": {
     "id": "store.branch.interior",
     "name": "Branch Store",
@@ -31,10 +32,10 @@
         "#############",
         "#ttttttttttt#",
         "#ttttttttttt#",
-        "#wwwwwwwwwww#",
-        "#wwwwwwwwwww#",
-        "#wwwrrrrrwww#",
-        "#wwwrrrrrwww#",
+        "#wwwwwwttttt#",
+        "#wwwwwwttttt#",
+        "#wrrrwwttttt#",
+        "#wrrrwwwwwww#",
         "#wwwwwwwwwww#",
         "#wwwwwwwwwww#",
         "######tt#####"
@@ -97,7 +98,7 @@
   "objects": [
     {
       "id": "shelf.dry",
-      "type": "furn.shelf",
+      "type": "fixture.grain-bin",
       "tile": [
         1,
         1
@@ -110,7 +111,7 @@
       "id": "shelf.hardware",
       "type": "furn.shelf",
       "tile": [
-        4,
+        3,
         1
       ],
       "props": {
@@ -119,9 +120,9 @@
     },
     {
       "id": "shelf.feed",
-      "type": "furn.shelf",
+      "type": "fixture.open-shelving",
       "tile": [
-        7,
+        6,
         1
       ],
       "props": {
@@ -130,7 +131,7 @@
     },
     {
       "id": "shelf.sundries",
-      "type": "furn.shelf",
+      "type": "fixture.tool-chest",
       "tile": [
         10,
         1
@@ -152,9 +153,9 @@
     },
     {
       "id": "stove.pot",
-      "type": "furn.stove",
+      "type": "fixture.weighing-counter",
       "tile": [
-        9,
+        8,
         3
       ],
       "props": {
@@ -163,26 +164,26 @@
     },
     {
       "id": "chair.loafers",
-      "type": "furn.chair",
+      "type": "fixture.pot-belly-stove",
       "tile": [
         11,
-        4
+        5
       ]
     },
     {
       "id": "crate.west",
-      "type": "furn.crate",
+      "type": "fixture.grain-bin",
       "tile": [
         1,
-        6
+        5
       ]
     },
     {
       "id": "crate.east",
-      "type": "furn.crate",
+      "type": "furn.chair",
       "tile": [
-        11,
-        6
+        10,
+        5
       ]
     },
     {
@@ -224,6 +225,8 @@
           "item.stick",
           "item.stone",
           "item.mushroom",
+          "item.turnip",
+          "item.flower",
           "tool.axe",
           "tool.shovel",
           "tool.gun",
@@ -236,6 +239,8 @@
           "tool.map",
           "tool.camera",
           "tool.machinegun",
+          "tool.machine-gun",
+          "item.bullets",
           "tool.rod",
           "item.trout",
           "item.carp"
@@ -313,6 +318,15 @@
             "type": "tool.machinegun",
             "count": 1,
             "price": 1350
+          },
+          {
+            "type": "tool.machine-gun",
+            "count": 1,
+            "price": 3600
+          },
+          {
+            "type": "item.bullets",
+            "count": null
           }
         ]
       },
@@ -377,6 +391,25 @@
           "bye": {
             "text": "Pull the door to behind you, it sticks."
           }
+        },
+        "greetings": {
+          "acquaintance": [
+            "Feed's in, hardware's in, and the dry goods are drier than the sign promises.",
+            "Loafers' chair is free. Whoever was in it went home when I stopped laughing at him.",
+            "If that is fruit in your bag, keep it in your bag. I said it once and I meant it once.",
+            "Somebody bought the shovel. I have ordered another and it will come when the cart comes."
+          ],
+          "friend": [
+            "Fern was in asking after you. I said you paid on time, which from me is a speech.",
+            "I have not been over the ridge in a year. Marla can come to me if she wants a look at my prices.",
+            "You buy more shot than a person needs for mushrooms. I am not asking. I am noticing.",
+            "The door has stuck since I bought the place. I sell hammers. I know how that looks."
+          ],
+          "close": [
+            "Pot's on the stove. Pour your own, my hands are full of feed.",
+            "Take what you need off the shelf and tell me after. I know where you live.",
+            "I kept the last of the apples back for you. Do not tell the shelf, it thinks I have standards."
+          ]
         }
       }
     }

@@ -8,6 +8,7 @@
   "types": {
     "fixture.oak-barrel": {
       "kind": "object",
+      "use": "store",
       "label": "Beechbark Oak Barrel",
       "footprint": { "w": 1, "d": 1 },
       "height": 0.86,

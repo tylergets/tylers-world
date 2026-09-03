@@ -1,10 +1,11 @@
 /** Worlds/saves mutable controller. React owns markup; this owns the busy lock. */
 import { randomSeed, worldName } from '../world/generate.js';
-import { worldChoices, formOf, choiceSource } from './picks.js';
+import { worldChoices, worldChoiceGroups, formOf, choiceSource } from './picks.js';
 
 export class WorldsPanel {
   constructor(_root, { onStart, onLoad, onDelete, onSave }) {
     this.hooks = { onStart, onLoad, onDelete, onSave };
+    this.group = 'established';
     this.choice = worldChoices()[0].id;
     this.seed = randomSeed();
     this.seedText = String(this.seed);
@@ -34,6 +35,13 @@ export class WorldsPanel {
   }
 
   select(choice) { this.choice = choice; this.describe(); }
+  selectGroup(id) {
+    const group = worldChoiceGroups().find((entry) => entry.id === id);
+    if (!group || group.id === this.group) return;
+    this.group = group.id;
+    this.choice = group.choices[0].id;
+    this.describe();
+  }
   reroll() { this.seed = randomSeed(); this.seedText = String(this.seed); this.describe(); }
   setSeed(value) {
     const cleaned = String(value).replace(/\D/g, '').slice(0, 9);

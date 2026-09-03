@@ -8,6 +8,7 @@
   "types": {
     "fixture.tea-caddy-chest": {
       "kind": "object",
+      "use": "store",
       "label": "Turnipwood Tea Caddy Chest",
       "footprint": { "w": 1, "d": 1 },
       "height": 0.42,

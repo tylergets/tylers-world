@@ -8,6 +8,7 @@
   "types": {
     "fixture.trunk": {
       "kind": "object",
+      "use": "store",
       "label": "Inkthorn Trunk",
       "footprint": { "w": 1, "d": 1 },
       "height": 0.88,

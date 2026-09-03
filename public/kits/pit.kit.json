@@ -1,0 +1,264 @@
+{
+  "format": "tw.kit",
+  "version": 1,
+  "meta": { "id": "pit", "name": "The Pit" },
+
+  "types": {
+    "fixture.pit.brazier": {
+      "kind": "object",
+      "label": "Brazier",
+      "footprint": { "w": 1, "d": 1 },
+      "height": 1.55,
+      "squash": 0.36,
+      "palette": {
+        "iron": "#3a3835", "ironHi": "#5c5955", "coal": "#221b18",
+        "ember": "#d9622f", "emberHi": "#f2a13a", "flame": "#ffd36a"
+      },
+      "parts": [
+        { "prim": "cyl", "at": [0, 0.04, 0], "size": [0.44, 0.08, 0.44], "color": "iron" },
+        { "prim": "cyl", "at": [-0.16, 0.5, -0.1], "size": [0.04, 0.92, 0.04], "rot": [0, 0, 12], "color": "ironHi" },
+        { "prim": "cyl", "at": [0.16, 0.5, -0.1], "size": [0.04, 0.92, 0.04], "rot": [0, 0, -12], "color": "ironHi" },
+        { "prim": "cyl", "at": [0, 0.5, 0.18], "size": [0.04, 0.92, 0.04], "rot": [-12, 0, 0], "color": "ironHi" },
+        { "prim": "taper", "at": [0, 1.02, 0], "size": [0.62, 0.26, 0.62], "color": "iron" },
+        { "prim": "cyl", "at": [0, 1.14, 0], "size": [0.5, 0.06, 0.5], "color": "coal" },
+        { "prim": "blob", "at": [0, 1.2, 0], "size": [0.4, 0.14, 0.4], "color": "ember",
+          "anim": { "pulse": { "amp": 0.18, "rate": 0.9, "phase": 0.0 } } },
+        { "prim": "cone", "at": [0, 1.4, 0], "size": [0.26, 0.44, 0.26], "color": "emberHi",
+          "anim": { "pulse": { "amp": 0.34, "rate": 1.7, "phase": 0.25 } } },
+        { "prim": "cone", "at": [0.08, 1.38, -0.06], "size": [0.14, 0.3, 0.14], "color": "flame",
+          "anim": { "pulse": { "amp": 0.4, "rate": 2.3, "phase": 0.6 } } }
+      ]
+    },
+
+    "fixture.pit.cage": {
+      "kind": "object",
+      "label": "Cage Wall",
+      "footprint": { "w": 3, "d": 1, "mask": ["###"] },
+      "height": 2.1,
+      "squash": 0.2,
+      "palette": { "post": "#4a4f55", "mesh": "#7d848b", "rail": "#2b2e32", "tape": "#d2a53c" },
+      "parts": [
+        { "prim": "box", "at": [-1.42, 1.02, 0], "size": [0.1, 2.04, 0.1], "color": "post" },
+        { "prim": "box", "at": [1.42, 1.02, 0], "size": [0.1, 2.04, 0.1], "color": "post" },
+        { "prim": "box", "at": [0, 2.02, 0], "size": [2.96, 0.08, 0.1], "color": "rail" },
+        { "prim": "box", "at": [0, 0.06, 0], "size": [2.96, 0.12, 0.14], "color": "rail" },
+        { "prim": "box", "at": [0, 1.04, 0], "size": [2.86, 1.84, 0.03], "color": "mesh" },
+        { "prim": "box", "at": [-0.95, 1.04, 0.02], "size": [0.03, 1.84, 0.06], "color": "post" },
+        { "prim": "box", "at": [0, 1.04, 0.02], "size": [0.03, 1.84, 0.06], "color": "post" },
+        { "prim": "box", "at": [0.95, 1.04, 0.02], "size": [0.03, 1.84, 0.06], "color": "post" },
+        { "prim": "box", "at": [0, 0.9, 0.03], "size": [2.9, 0.06, 0.02], "color": "tape" }
+      ]
+    },
+
+    "fixture.pit.cage-post": {
+      "kind": "object",
+      "label": "Cage Post",
+      "footprint": { "w": 1, "d": 1 },
+      "height": 2.2,
+      "squash": 0.3,
+      "palette": { "post": "#4a4f55", "cap": "#d2a53c", "rail": "#2b2e32" },
+      "parts": [
+        { "prim": "box", "at": [0, 0.08, 0], "size": [0.5, 0.16, 0.5], "color": "rail" },
+        { "prim": "box", "at": [0, 1.1, 0], "size": [0.16, 2.04, 0.16], "color": "post" },
+        { "prim": "pyr", "at": [0, 2.2, 0], "size": [0.24, 0.16, 0.24], "color": "cap" }
+      ]
+    },
+
+    "fixture.pit.gong": {
+      "kind": "object",
+      "label": "Fight Gong",
+      "footprint": { "w": 2, "d": 1, "mask": ["##"] },
+      "height": 2.3,
+      "squash": 0.22,
+      "palette": {
+        "wood": "#3b2a1e", "woodHi": "#5a3f2c", "brass": "#c9a227",
+        "brassHi": "#f0d060", "brassLo": "#8a6d16", "rope": "#a8875a"
+      },
+      "parts": [
+        { "prim": "box", "at": [-0.8, 1.05, 0], "size": [0.14, 2.1, 0.14], "color": "wood" },
+        { "prim": "box", "at": [0.8, 1.05, 0], "size": [0.14, 2.1, 0.14], "color": "wood" },
+        { "prim": "box", "at": [0, 2.14, 0], "size": [1.9, 0.14, 0.2], "color": "woodHi" },
+        { "prim": "box", "at": [0, 0.07, 0], "size": [1.9, 0.14, 0.4], "color": "wood" },
+        { "prim": "cyl", "at": [-0.32, 1.9, 0], "size": [0.03, 0.34, 0.03], "color": "rope" },
+        { "prim": "cyl", "at": [0.32, 1.9, 0], "size": [0.03, 0.34, 0.03], "color": "rope" },
+        { "prim": "cyl", "at": [0, 1.15, 0], "size": [1.3, 0.08, 1.3], "rot": [90, 0, 0], "color": "brass",
+          "anim": { "pulse": { "amp": 0.015, "rate": 0.6 } } },
+        { "prim": "cyl", "at": [0, 1.15, 0.05], "size": [0.5, 0.06, 0.5], "rot": [90, 0, 0], "color": "brassHi" },
+        { "prim": "cyl", "at": [0, 1.15, 0.08], "size": [0.2, 0.05, 0.2], "rot": [90, 0, 0], "color": "brassLo" }
+      ],
+      "state": { "rung": 0 },
+      "interact": { "label": "Ring the gong", "run": "pit-gong.js" }
+    },
+
+    "fixture.pit.ammo-crate": {
+      "kind": "object",
+      "label": "House BBs",
+      "footprint": { "w": 1, "d": 1 },
+      "height": 0.7,
+      "squash": 0.4,
+      "palette": { "wood": "#6b4a30", "woodHi": "#8a6242", "band": "#3a3835", "bb": "#f2f3ee", "stencil": "#d2a53c" },
+      "parts": [
+        { "prim": "box", "at": [0, 0.28, 0], "size": [0.8, 0.56, 0.8], "color": "wood" },
+        { "prim": "box", "at": [0, 0.28, 0], "size": [0.84, 0.08, 0.84], "color": "band" },
+        { "prim": "box", "at": [0, 0.5, 0], "size": [0.84, 0.05, 0.84], "color": "band" },
+        { "prim": "box", "at": [0, 0.57, 0], "size": [0.7, 0.03, 0.7], "color": "woodHi" },
+        { "prim": "blob", "at": [-0.15, 0.62, 0.1], "size": [0.14, 0.08, 0.14], "color": "bb" },
+        { "prim": "blob", "at": [0.14, 0.62, -0.12], "size": [0.16, 0.09, 0.16], "color": "bb" },
+        { "prim": "blob", "at": [0.05, 0.63, 0.2], "size": [0.1, 0.06, 0.1], "color": "bb" },
+        { "prim": "box", "at": [0, 0.36, 0.41], "size": [0.4, 0.1, 0.02], "color": "stencil" }
+      ],
+      "state": { "grabbed": 0 },
+      "interact": {
+        "label": "Grab a handful of BBs",
+        "when": { "room": { "type": "item.shot", "count": 1 } },
+        "run": "pit-ammo.js"
+      }
+    },
+
+    "fixture.pit.banner": {
+      "kind": "object",
+      "label": "Pit Banner",
+      "footprint": { "w": 2, "d": 1, "mask": ["##"] },
+      "height": 2.5,
+      "squash": 0.2,
+      "palette": { "pole": "#3a3835", "cloth": "#8a1f1f", "clothLo": "#5c1414", "gold": "#d2a53c", "fist": "#e8e2d0" },
+      "parts": [
+        { "prim": "box", "at": [0, 0.06, 0], "size": [1.8, 0.12, 0.3], "color": "pole" },
+        { "prim": "cyl", "at": [0, 1.3, 0], "size": [0.06, 2.5, 0.06], "color": "pole" },
+        { "prim": "box", "at": [0, 2.42, 0], "size": [1.7, 0.06, 0.06], "color": "gold" },
+        { "prim": "box", "at": [0, 1.62, 0.02], "size": [1.5, 1.5, 0.04], "color": "cloth" },
+        { "prim": "pyr", "at": [0, 0.7, 0.02], "size": [1.5, 0.36, 0.04], "rot": [180, 0, 0], "color": "clothLo" },
+        { "prim": "box", "at": [0, 2.3, 0.05], "size": [1.5, 0.08, 0.02], "color": "gold" },
+        { "prim": "box", "at": [0, 1.62, 0.06], "size": [0.42, 0.5, 0.03], "color": "fist" },
+        { "prim": "box", "at": [-0.28, 1.72, 0.06], "size": [0.14, 0.3, 0.03], "color": "fist" },
+        { "prim": "box", "at": [0, 1.2, 0.06], "size": [1.1, 0.08, 0.02], "color": "gold" }
+      ]
+    },
+
+    "fixture.pit.rack": {
+      "kind": "object",
+      "label": "Weapon Rack",
+      "footprint": { "w": 2, "d": 1, "mask": ["##"] },
+      "height": 1.9,
+      "squash": 0.26,
+      "palette": { "wood": "#3b2a1e", "woodHi": "#5a3f2c", "steel": "#c3cad1", "steelHi": "#eff4f8", "grip": "#5a3f2c", "iron": "#4a4f55" },
+      "parts": [
+        { "prim": "box", "at": [0, 0.08, 0], "size": [1.9, 0.16, 0.5], "color": "wood" },
+        { "prim": "box", "at": [-0.85, 0.95, -0.15], "size": [0.12, 1.9, 0.12], "color": "wood" },
+        { "prim": "box", "at": [0.85, 0.95, -0.15], "size": [0.12, 1.9, 0.12], "color": "wood" },
+        { "prim": "box", "at": [0, 1.85, -0.15], "size": [1.9, 0.1, 0.16], "color": "woodHi" },
+        { "prim": "box", "at": [0, 1.2, -0.15], "size": [1.7, 0.08, 0.1], "color": "woodHi" },
+        { "prim": "box", "at": [-0.55, 1.1, -0.05], "size": [0.06, 1.5, 0.03], "rot": [0, 0, 6], "color": "steel" },
+        { "prim": "box", "at": [-0.55, 0.42, -0.05], "size": [0.2, 0.05, 0.05], "color": "iron" },
+        { "prim": "box", "at": [-0.15, 1.05, -0.05], "size": [0.06, 1.4, 0.03], "rot": [0, 0, -4], "color": "steelHi" },
+        { "prim": "box", "at": [-0.15, 0.4, -0.05], "size": [0.2, 0.05, 0.05], "color": "iron" },
+        { "prim": "cyl", "at": [0.3, 1.0, -0.05], "size": [0.05, 1.3, 0.05], "rot": [0, 0, 5], "color": "grip" },
+        { "prim": "box", "at": [0.3, 1.6, -0.05], "size": [0.2, 0.22, 0.14], "color": "iron" },
+        { "prim": "cyl", "at": [0.68, 1.0, -0.05], "size": [0.06, 1.35, 0.06], "rot": [0, 0, -6], "color": "grip" },
+        { "prim": "blob", "at": [0.68, 1.62, -0.05], "size": [0.18, 0.2, 0.18], "color": "steel" }
+      ]
+    },
+
+    "fixture.pit.scoreboard": {
+      "kind": "object",
+      "label": "Tally Board",
+      "footprint": { "w": 3, "d": 1, "mask": ["###"] },
+      "height": 2.2,
+      "squash": 0.2,
+      "palette": { "frame": "#3b2a1e", "board": "#1b1f1c", "chalk": "#e8e2d0", "gold": "#d2a53c", "red": "#c0392b" },
+      "parts": [
+        { "prim": "box", "at": [-1.3, 1.0, 0], "size": [0.12, 2.0, 0.12], "color": "frame" },
+        { "prim": "box", "at": [1.3, 1.0, 0], "size": [0.12, 2.0, 0.12], "color": "frame" },
+        { "prim": "box", "at": [0, 1.35, 0], "size": [2.8, 1.3, 0.1], "color": "frame" },
+        { "prim": "box", "at": [0, 1.35, 0.06], "size": [2.6, 1.1, 0.02], "color": "board" },
+        { "prim": "box", "at": [0, 1.8, 0.08], "size": [1.4, 0.08, 0.02], "color": "gold" },
+        { "prim": "box", "at": [-0.9, 1.5, 0.08], "size": [0.04, 0.3, 0.02], "color": "chalk" },
+        { "prim": "box", "at": [-0.78, 1.5, 0.08], "size": [0.04, 0.3, 0.02], "color": "chalk" },
+        { "prim": "box", "at": [-0.66, 1.5, 0.08], "size": [0.04, 0.3, 0.02], "color": "chalk" },
+        { "prim": "box", "at": [-0.54, 1.5, 0.08], "size": [0.04, 0.3, 0.02], "color": "chalk" },
+        { "prim": "box", "at": [-0.72, 1.5, 0.09], "size": [0.5, 0.04, 0.02], "rot": [0, 0, 20], "color": "red" },
+        { "prim": "box", "at": [0.2, 1.5, 0.08], "size": [0.04, 0.3, 0.02], "color": "chalk" },
+        { "prim": "box", "at": [0.32, 1.5, 0.08], "size": [0.04, 0.3, 0.02], "color": "chalk" },
+        { "prim": "box", "at": [0.9, 1.5, 0.08], "size": [0.04, 0.3, 0.02], "color": "chalk" },
+        { "prim": "box", "at": [-0.5, 1.05, 0.08], "size": [1.6, 0.06, 0.02], "color": "chalk" },
+        { "prim": "box", "at": [0.6, 1.05, 0.08], "size": [0.3, 0.3, 0.02], "color": "red" }
+      ]
+    },
+
+    "fixture.pit.bench": {
+      "kind": "object",
+      "label": "Bleacher Bench",
+      "footprint": { "w": 2, "d": 1, "mask": ["##"] },
+      "height": 0.5,
+      "squash": 0.4,
+      "use": "sit",
+      "palette": { "wood": "#5a3f2c", "woodHi": "#7a5a3f", "iron": "#3a3835" },
+      "parts": [
+        { "prim": "box", "at": [-0.75, 0.2, 0], "size": [0.1, 0.4, 0.5], "color": "iron" },
+        { "prim": "box", "at": [0.75, 0.2, 0], "size": [0.1, 0.4, 0.5], "color": "iron" },
+        { "prim": "box", "at": [0, 0.43, 0], "size": [1.9, 0.08, 0.62], "color": "wood" },
+        { "prim": "box", "at": [0, 0.475, 0], "size": [1.9, 0.02, 0.2], "color": "woodHi" }
+      ]
+    },
+
+    "kititem.champion-belt": {
+      "kind": "item",
+      "label": "Champion's Belt",
+      "value": 1500,
+      "stack": 1,
+      "height": 0.22,
+      "swatch": "#d2a53c",
+      "palette": { "leather": "#3b2a1e", "gold": "#d2a53c", "goldHi": "#f0d060", "gem": "#c0392b", "gemBlue": "#3f86bd" },
+      "parts": [
+        { "prim": "box", "at": [0, 0.08, 0], "size": [0.9, 0.16, 0.08], "color": "leather" },
+        { "prim": "box", "at": [0, 0.11, 0.05], "size": [0.4, 0.28, 0.04], "color": "gold" },
+        { "prim": "cyl", "at": [0, 0.11, 0.075], "size": [0.24, 0.02, 0.24], "rot": [90, 0, 0], "color": "goldHi" },
+        { "prim": "blob", "at": [0, 0.11, 0.09], "size": [0.09, 0.09, 0.03], "color": "gem" },
+        { "prim": "box", "at": [-0.32, 0.09, 0.05], "size": [0.14, 0.14, 0.03], "color": "gold" },
+        { "prim": "box", "at": [0.32, 0.09, 0.05], "size": [0.14, 0.14, 0.03], "color": "gold" },
+        { "prim": "blob", "at": [-0.32, 0.09, 0.07], "size": [0.05, 0.05, 0.02], "color": "gemBlue" },
+        { "prim": "blob", "at": [0.32, 0.09, 0.07], "size": [0.05, 0.05, 0.02], "color": "gemBlue" }
+      ]
+    },
+
+    "kititem.brass-knuckles": {
+      "kind": "item",
+      "label": "Brass Knuckles",
+      "value": 220,
+      "stack": 1,
+      "height": 0.12,
+      "swatch": "#c9a227",
+      "palette": { "brass": "#c9a227", "brassHi": "#f0d060" },
+      "parts": [
+        { "prim": "box", "at": [0, 0.04, 0], "size": [0.34, 0.06, 0.1], "color": "brass" },
+        { "prim": "cyl", "at": [-0.12, 0.09, 0], "size": [0.09, 0.05, 0.09], "color": "brassHi" },
+        { "prim": "cyl", "at": [-0.04, 0.09, 0], "size": [0.09, 0.05, 0.09], "color": "brassHi" },
+        { "prim": "cyl", "at": [0.04, 0.09, 0], "size": [0.09, 0.05, 0.09], "color": "brassHi" },
+        { "prim": "cyl", "at": [0.12, 0.09, 0], "size": [0.09, 0.05, 0.09], "color": "brassHi" }
+      ]
+    },
+
+    "kititem.pit-banner": {
+      "kind": "item",
+      "label": "Pit Banner (flat-pack)",
+      "value": 240,
+      "stack": 1,
+      "height": 0.18,
+      "swatch": "#8a1f1f",
+      "furniture": "fixture.pit.banner",
+      "palette": { "wrap": "#d9c7a4", "wrapHi": "#eee1c7", "strap": "#8a6242", "mark": "#8a1f1f" }
+    },
+
+    "kititem.pit-bench": {
+      "kind": "item",
+      "label": "Bleacher Bench (flat-pack)",
+      "value": 180,
+      "stack": 1,
+      "height": 0.18,
+      "swatch": "#5a3f2c",
+      "badge": "chair",
+      "furniture": "fixture.pit.bench",
+      "palette": { "wrap": "#d9c7a4", "wrapHi": "#eee1c7", "strap": "#8a6242", "mark": "#5a3f2c" }
+    }
+  }
+}

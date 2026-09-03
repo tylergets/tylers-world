@@ -52,12 +52,21 @@ export class Folk {
    * is angry. There is one of him, and which room he is standing in is a fact
    * about him -- see Npc.indoors.
    */
-  admit(npc) {
-    if (this.npcs.includes(npc)) return false;
+  admit(npc, includeDead = false) {
+    if (npc.dead && !includeDead || this.npcs.includes(npc)) return false;
     this.npcs.push(npc);
     npc.grudge = this.friends?.grudgeLevel(npc.id) ?? 0;
     this.version++;
     return true;
+  }
+
+  /** Add a new person to this place's permanent roster. */
+  recruit(spec) {
+    if (!spec?.id || this.own.some((npc) => npc.id === spec.id)) return null;
+    const npc = new Npc(this.world, spec);
+    this.own.push(npc);
+    this.admit(npc);
+    return npc;
   }
 
   release(npc) {
@@ -68,16 +77,26 @@ export class Folk {
     return true;
   }
 
+  /** Apply persistent firearm damage, removing a victim on the fatal hit. */
+  shoot(npc) {
+    if (!npc || npc.dead || !this.npcs.includes(npc)) return null;
+    const killed = npc.hitByBullet();
+    this.version++;
+    return { npc, killed, hitsLeft: Math.max(0, 5 - npc.bulletHits) };
+  }
+
   has(npc) { return this.npcs.includes(npc); }
 
   /** The person with this id, if they are in this room. */
   byId(id) { return this.npcs.find((n) => n.id === id) ?? null; }
 
-  update(dt, clock = null, target = null) {
+  update(dt, clock = null, target = null, workers = null, bodies = null) {
     this.#syncGrudges();
     const claimed = new Set(this.npcs.map((npc) => npc.furnitureId).filter(Boolean));
     for (const npc of this.npcs) {
-      npc.update(dt, this.world, clock, target);
+      if (workers?.has(npc.id)) continue;
+      npc.update(dt, this.world, clock, target, bodies);
+      if (npc.dead) continue;
       const id = npc.considerFurniture(this.world, clock, claimed);
       if (id) claimed.add(id);
     }
@@ -90,7 +109,12 @@ export class Folk {
     return out ?? NOBODY;
   }
 
-  syncClock(clock) { for (const npc of this.npcs) npc.syncClock(clock); }
+  syncClock(clock, shopsAlwaysOpen = false) {
+    for (const npc of this.npcs) {
+      npc.shopAlwaysOpen = shopsAlwaysOpen;
+      npc.syncClock(clock);
+    }
+  }
 
   #syncGrudges() {
     for (const npc of this.npcs) npc.grudge = this.friends?.grudgeLevel(npc.id) ?? 0;
@@ -124,6 +148,22 @@ export class Folk {
       if (d <= bestD) { best = npc; bestD = d; }
     }
     return best;
+  }
+
+  nearestCorpse(x, z, range) {
+    let best = null, bestD = range * range;
+    for (const npc of this.npcs) {
+      if (!npc.dead || npc.corpse?.onBed) continue;
+      const d = (npc.x - x) ** 2 + (npc.z - z) ** 2;
+      if (d <= bestD) { best = npc; bestD = d; }
+    }
+    return best;
+  }
+
+  /** Move town-space actors while leaving residents currently indoors alone. */
+  translate(dx, dz) {
+    for (const npc of this.own) npc.translate(dx, dz, this.world, !npc.indoors);
+    this.version++;
   }
 
   /**

@@ -1,0 +1,260 @@
+{
+  "format": "tw.kit",
+  "version": 1,
+  "meta": { "id": "casino", "name": "The Lucky Seven" },
+
+  "types": {
+    "fixture.casino.slot": {
+      "kind": "object",
+      "label": "Slot Machine",
+      "footprint": { "w": 1, "d": 1 },
+      "height": 1.9,
+      "squash": 0.3,
+      "palette": {
+        "body": "#2a1030", "bodyHi": "#4a1f56", "chrome": "#c9ced4", "screen": "#0d0b14",
+        "reel": "#f3f1ea", "cherry": "#d81e3c", "gold": "#f2c23a", "lever": "#d81e3c", "neon": "#ff5cc4"
+      },
+      "parts": [
+        { "prim": "box", "at": [0, 0.35, 0], "size": [0.76, 0.7, 0.7], "color": "body" },
+        { "prim": "box", "at": [0, 0.72, 0.05], "size": [0.78, 0.06, 0.8], "color": "chrome" },
+        { "prim": "box", "at": [0, 1.15, -0.05], "size": [0.72, 0.8, 0.6], "color": "bodyHi" },
+        { "prim": "box", "at": [0, 1.2, 0.26], "size": [0.6, 0.42, 0.04], "color": "screen" },
+        { "prim": "cyl", "at": [-0.17, 1.2, 0.29], "size": [0.14, 0.03, 0.14], "rot": [90, 0, 0], "color": "reel" },
+        { "prim": "cyl", "at": [0, 1.2, 0.29], "size": [0.14, 0.03, 0.14], "rot": [90, 0, 0], "color": "reel" },
+        { "prim": "cyl", "at": [0.17, 1.2, 0.29], "size": [0.14, 0.03, 0.14], "rot": [90, 0, 0], "color": "reel" },
+        { "prim": "blob", "at": [-0.17, 1.2, 0.31], "size": [0.06, 0.06, 0.02], "color": "cherry" },
+        { "prim": "box", "at": [0, 1.2, 0.31], "size": [0.04, 0.08, 0.02], "color": "gold" },
+        { "prim": "blob", "at": [0.17, 1.2, 0.31], "size": [0.06, 0.06, 0.02], "color": "cherry" },
+        { "prim": "box", "at": [0, 0.84, 0.3], "size": [0.5, 0.05, 0.12], "color": "chrome" },
+        { "prim": "cyl", "at": [0.45, 1.1, 0.05], "size": [0.03, 0.5, 0.03], "rot": [0, 0, -12], "color": "chrome" },
+        { "prim": "blob", "at": [0.5, 1.36, 0.05], "size": [0.1, 0.1, 0.1], "color": "lever" },
+        { "prim": "box", "at": [0, 1.66, -0.05], "size": [0.72, 0.22, 0.5], "color": "body" },
+        { "prim": "box", "at": [0, 1.66, 0.21], "size": [0.6, 0.14, 0.03], "color": "neon",
+          "anim": { "pulse": { "amp": 0.12, "rate": 1.6, "phase": 0.0 } } },
+        { "prim": "blob", "at": [0, 1.84, -0.05], "size": [0.22, 0.14, 0.22], "color": "gold",
+          "anim": { "pulse": { "amp": 0.3, "rate": 2.4, "phase": 0.5 } } }
+      ],
+      "state": { "pool": 60, "pulls": 0 },
+      "interact": {
+        "label": "Pull the lever (10 coins)",
+        "when": { "coins": 10 },
+        "run": "casino-slot.js"
+      }
+    },
+
+    "fixture.casino.roulette": {
+      "kind": "object",
+      "label": "Roulette Table",
+      "footprint": { "w": 3, "d": 2, "mask": ["###", "###"] },
+      "height": 1.05,
+      "squash": 0.34,
+      "palette": {
+        "wood": "#3b2418", "felt": "#0f5a3a", "feltLine": "#e8d9a0", "rim": "#c9a227",
+        "wheel": "#2a1010", "red": "#c0392b", "black": "#151515", "ball": "#f3f1ea"
+      },
+      "parts": [
+        { "prim": "box", "at": [0, 0.4, 0], "size": [2.8, 0.8, 1.8], "color": "wood" },
+        { "prim": "box", "at": [0, 0.82, 0], "size": [2.9, 0.06, 1.9], "color": "rim" },
+        { "prim": "box", "at": [0.45, 0.86, 0], "size": [1.8, 0.03, 1.6], "color": "felt" },
+        { "prim": "box", "at": [0.45, 0.88, 0], "size": [1.6, 0.01, 0.03], "color": "feltLine" },
+        { "prim": "box", "at": [0.45, 0.88, -0.4], "size": [1.6, 0.01, 0.03], "color": "feltLine" },
+        { "prim": "box", "at": [0.45, 0.88, 0.4], "size": [1.6, 0.01, 0.03], "color": "feltLine" },
+        { "prim": "cyl", "at": [-0.85, 0.9, 0], "size": [1.0, 0.1, 1.0], "color": "wood" },
+        { "prim": "cyl", "at": [-0.85, 0.97, 0], "size": [0.86, 0.06, 0.86], "color": "wheel",
+          "anim": { "spin": { "rate": 0.55 } } },
+        { "prim": "box", "at": [-0.85, 1.0, 0], "size": [0.8, 0.02, 0.1], "color": "red",
+          "anim": { "spin": { "rate": 0.55 } } },
+        { "prim": "box", "at": [-0.85, 1.0, 0], "size": [0.1, 0.02, 0.8], "color": "black",
+          "anim": { "spin": { "rate": 0.55 } } },
+        { "prim": "box", "at": [-0.85, 1.0, 0], "size": [0.6, 0.02, 0.06], "rot": [0, 45, 0], "color": "black",
+          "anim": { "spin": { "rate": 0.55 } } },
+        { "prim": "box", "at": [-0.85, 1.0, 0], "size": [0.6, 0.02, 0.06], "rot": [0, -45, 0], "color": "red",
+          "anim": { "spin": { "rate": 0.55 } } },
+        { "prim": "cyl", "at": [-0.85, 1.04, 0], "size": [0.16, 0.06, 0.16], "color": "rim" },
+        { "prim": "blob", "at": [-0.55, 1.03, 0.25], "size": [0.06, 0.06, 0.06], "color": "ball",
+          "anim": { "bob": { "amp": 0.01, "rate": 3 } } }
+      ],
+      "state": { "spins": 0, "streak": 0 },
+      "interact": {
+        "label": "Bet 20 on red",
+        "when": { "coins": 20 },
+        "run": "casino-roulette.js"
+      }
+    },
+
+    "fixture.casino.neon-seven": {
+      "kind": "object",
+      "label": "Neon Seven",
+      "footprint": { "w": 2, "d": 1, "mask": ["##"] },
+      "height": 2.4,
+      "squash": 0.2,
+      "palette": { "frame": "#1a1220", "tube": "#ff5cc4", "tubeHi": "#ffd1ee", "gold": "#f2c23a", "chrome": "#c9ced4" },
+      "parts": [
+        { "prim": "box", "at": [0, 0.06, 0], "size": [1.6, 0.12, 0.4], "color": "frame" },
+        { "prim": "box", "at": [-0.6, 0.9, 0], "size": [0.08, 1.7, 0.08], "color": "chrome" },
+        { "prim": "box", "at": [0.6, 0.9, 0], "size": [0.08, 1.7, 0.08], "color": "chrome" },
+        { "prim": "box", "at": [0, 1.65, 0], "size": [1.5, 1.3, 0.1], "color": "frame" },
+        { "prim": "box", "at": [0, 2.15, 0.07], "size": [0.9, 0.09, 0.03], "color": "tube",
+          "anim": { "pulse": { "amp": 0.08, "rate": 1.1, "phase": 0.0 } } },
+        { "prim": "box", "at": [0.12, 1.62, 0.07], "size": [0.09, 1.0, 0.03], "rot": [0, 0, 18], "color": "tube",
+          "anim": { "pulse": { "amp": 0.08, "rate": 1.1, "phase": 0.15 } } },
+        { "prim": "box", "at": [0, 1.62, 0.09], "size": [0.03, 0.9, 0.02], "rot": [0, 0, 18], "color": "tubeHi",
+          "anim": { "pulse": { "amp": 0.3, "rate": 2.2, "phase": 0.4 } } },
+        { "prim": "box", "at": [-0.5, 1.15, 0.07], "size": [0.14, 0.14, 0.03], "color": "gold",
+          "anim": { "pulse": { "amp": 0.35, "rate": 1.6, "phase": 0.0 } } },
+        { "prim": "box", "at": [-0.5, 2.15, 0.07], "size": [0.14, 0.14, 0.03], "color": "gold",
+          "anim": { "pulse": { "amp": 0.35, "rate": 1.6, "phase": 0.33 } } },
+        { "prim": "box", "at": [0.5, 1.15, 0.07], "size": [0.14, 0.14, 0.03], "color": "gold",
+          "anim": { "pulse": { "amp": 0.35, "rate": 1.6, "phase": 0.66 } } }
+      ]
+    },
+
+    "fixture.casino.cage": {
+      "kind": "object",
+      "label": "Cashier's Cage",
+      "footprint": { "w": 4, "d": 1, "mask": ["####"] },
+      "height": 2.2,
+      "squash": 0.3,
+      "palette": { "wood": "#3b2418", "woodHi": "#5a3a28", "brass": "#c9a227", "bar": "#8a8f96", "sign": "#f2c23a" },
+      "parts": [
+        { "prim": "box", "at": [0, 0.45, 0], "size": [3.9, 0.9, 0.8], "color": "wood" },
+        { "prim": "box", "at": [0, 0.92, 0], "size": [4.0, 0.06, 0.9], "color": "brass" },
+        { "prim": "box", "at": [0, 0.5, 0.41], "size": [3.6, 0.5, 0.02], "color": "woodHi" },
+        { "prim": "box", "at": [-1.9, 1.55, -0.2], "size": [0.1, 1.3, 0.1], "color": "brass" },
+        { "prim": "box", "at": [1.9, 1.55, -0.2], "size": [0.1, 1.3, 0.1], "color": "brass" },
+        { "prim": "box", "at": [0, 2.15, -0.2], "size": [3.9, 0.1, 0.12], "color": "brass" },
+        { "prim": "box", "at": [-1.4, 1.55, -0.2], "size": [0.03, 1.2, 0.03], "color": "bar" },
+        { "prim": "box", "at": [-1.0, 1.55, -0.2], "size": [0.03, 1.2, 0.03], "color": "bar" },
+        { "prim": "box", "at": [-0.6, 1.55, -0.2], "size": [0.03, 1.2, 0.03], "color": "bar" },
+        { "prim": "box", "at": [0.6, 1.55, -0.2], "size": [0.03, 1.2, 0.03], "color": "bar" },
+        { "prim": "box", "at": [1.0, 1.55, -0.2], "size": [0.03, 1.2, 0.03], "color": "bar" },
+        { "prim": "box", "at": [1.4, 1.55, -0.2], "size": [0.03, 1.2, 0.03], "color": "bar" },
+        { "prim": "box", "at": [0, 2.0, -0.13], "size": [1.4, 0.16, 0.03], "color": "sign" }
+      ]
+    },
+
+    "fixture.casino.rope": {
+      "kind": "object",
+      "label": "Velvet Rope",
+      "footprint": { "w": 2, "d": 1, "mask": ["##"] },
+      "height": 1.0,
+      "squash": 0.3,
+      "palette": { "brass": "#c9a227", "base": "#3b2418", "rope": "#8a1f3a" },
+      "parts": [
+        { "prim": "cyl", "at": [-0.7, 0.04, 0], "size": [0.28, 0.08, 0.28], "color": "base" },
+        { "prim": "cyl", "at": [0.7, 0.04, 0], "size": [0.28, 0.08, 0.28], "color": "base" },
+        { "prim": "cyl", "at": [-0.7, 0.5, 0], "size": [0.04, 0.92, 0.04], "color": "brass" },
+        { "prim": "cyl", "at": [0.7, 0.5, 0], "size": [0.04, 0.92, 0.04], "color": "brass" },
+        { "prim": "blob", "at": [-0.7, 0.99, 0], "size": [0.1, 0.1, 0.1], "color": "brass" },
+        { "prim": "blob", "at": [0.7, 0.99, 0], "size": [0.1, 0.1, 0.1], "color": "brass" },
+        { "prim": "cyl", "at": [0, 0.8, 0], "size": [0.06, 1.3, 0.06], "rot": [0, 0, 90], "color": "rope" },
+        { "prim": "blob", "at": [0, 0.76, 0], "size": [0.5, 0.12, 0.08], "color": "rope" }
+      ]
+    },
+
+    "fixture.casino.chandelier": {
+      "kind": "object",
+      "label": "Chandelier",
+      "footprint": { "w": 1, "d": 1, "mask": ["."] },
+      "height": 2.6,
+      "squash": 0.15,
+      "palette": { "chain": "#8a8f96", "gold": "#c9a227", "crystal": "#ffd1ee", "light": "#fff3c4" },
+      "parts": [
+        { "prim": "cyl", "at": [0, 2.4, 0], "size": [0.03, 0.5, 0.03], "color": "chain" },
+        { "prim": "cyl", "at": [0, 2.1, 0], "size": [0.9, 0.06, 0.9], "color": "gold",
+          "anim": { "spin": { "rate": 0.05 } } },
+        { "prim": "cyl", "at": [0, 1.95, 0], "size": [0.6, 0.05, 0.6], "color": "gold",
+          "anim": { "spin": { "rate": 0.05 } } },
+        { "prim": "blob", "at": [0, 2.0, 0], "size": [0.3, 0.3, 0.3], "color": "light",
+          "anim": { "pulse": { "amp": 0.1, "rate": 0.8 } } },
+        { "prim": "cone", "at": [0.35, 1.9, 0.2], "size": [0.08, 0.2, 0.08], "rot": [180, 0, 0], "color": "crystal",
+          "anim": { "bob": { "amp": 0.02, "rate": 0.7, "phase": 0.0 } } },
+        { "prim": "cone", "at": [-0.35, 1.9, -0.2], "size": [0.08, 0.2, 0.08], "rot": [180, 0, 0], "color": "crystal",
+          "anim": { "bob": { "amp": 0.02, "rate": 0.7, "phase": 0.3 } } },
+        { "prim": "cone", "at": [0.3, 1.9, -0.3], "size": [0.08, 0.2, 0.08], "rot": [180, 0, 0], "color": "crystal",
+          "anim": { "bob": { "amp": 0.02, "rate": 0.7, "phase": 0.6 } } },
+        { "prim": "cone", "at": [-0.3, 1.9, 0.3], "size": [0.08, 0.2, 0.08], "rot": [180, 0, 0], "color": "crystal",
+          "anim": { "bob": { "amp": 0.02, "rate": 0.7, "phase": 0.9 } } }
+      ]
+    },
+
+    "fixture.casino.stage": {
+      "kind": "object",
+      "label": "Lounge Stage",
+      "footprint": { "w": 3, "d": 1, "mask": ["###"] },
+      "height": 1.9,
+      "squash": 0.3,
+      "palette": { "wood": "#3b2418", "curtain": "#8a1f3a", "curtainHi": "#b03a58", "gold": "#c9a227", "mic": "#c9ced4", "spot": "#fff3c4" },
+      "parts": [
+        { "prim": "box", "at": [0, 0.2, 0], "size": [2.9, 0.4, 0.9], "color": "wood" },
+        { "prim": "box", "at": [0, 0.41, 0], "size": [2.9, 0.03, 0.9], "color": "gold" },
+        { "prim": "box", "at": [-1.1, 1.15, -0.4], "size": [0.6, 1.5, 0.08], "color": "curtain" },
+        { "prim": "box", "at": [1.1, 1.15, -0.4], "size": [0.6, 1.5, 0.08], "color": "curtain" },
+        { "prim": "box", "at": [0, 1.15, -0.42], "size": [1.6, 1.5, 0.04], "color": "curtainHi" },
+        { "prim": "box", "at": [0, 1.87, -0.4], "size": [2.9, 0.08, 0.14], "color": "gold" },
+        { "prim": "cyl", "at": [0, 0.95, 0.1], "size": [0.02, 1.1, 0.02], "color": "mic" },
+        { "prim": "cyl", "at": [0, 0.45, 0.1], "size": [0.24, 0.04, 0.24], "color": "mic" },
+        { "prim": "blob", "at": [0, 1.52, 0.1], "size": [0.09, 0.12, 0.09], "color": "mic" },
+        { "prim": "cone", "at": [0, 1.3, 0.1], "size": [0.9, 1.0, 0.9], "rot": [180, 0, 0], "color": "spot",
+          "anim": { "pulse": { "amp": 0.06, "rate": 0.5 } } }
+      ]
+    },
+
+    "kititem.gold-chip": {
+      "kind": "item",
+      "label": "Gold Chip",
+      "value": 100,
+      "stack": 20,
+      "height": 0.08,
+      "swatch": "#f2c23a",
+      "palette": { "gold": "#f2c23a", "edge": "#2a1030", "face": "#fff0b0" },
+      "parts": [
+        { "prim": "cyl", "at": [0, 0.03, 0], "size": [0.3, 0.06, 0.3], "color": "gold" },
+        { "prim": "cyl", "at": [0, 0.065, 0], "size": [0.18, 0.01, 0.18], "color": "face" },
+        { "prim": "box", "at": [0.14, 0.03, 0], "size": [0.04, 0.062, 0.1], "color": "edge" },
+        { "prim": "box", "at": [-0.14, 0.03, 0], "size": [0.04, 0.062, 0.1], "color": "edge" },
+        { "prim": "box", "at": [0, 0.03, 0.14], "size": [0.1, 0.062, 0.04], "color": "edge" },
+        { "prim": "box", "at": [0, 0.03, -0.14], "size": [0.1, 0.062, 0.04], "color": "edge" }
+      ]
+    },
+
+    "kititem.lucky-dice": {
+      "kind": "item",
+      "label": "Lucky Dice",
+      "value": 60,
+      "stack": 5,
+      "height": 0.14,
+      "swatch": "#c0392b",
+      "palette": { "die": "#c0392b", "pip": "#f3f1ea" },
+      "parts": [
+        { "prim": "box", "at": [-0.09, 0.07, 0], "size": [0.14, 0.14, 0.14], "rot": [0, 20, 0], "color": "die" },
+        { "prim": "box", "at": [0.1, 0.07, 0.03], "size": [0.14, 0.14, 0.14], "rot": [0, -30, 0], "color": "die" },
+        { "prim": "blob", "at": [-0.09, 0.145, 0], "size": [0.035, 0.015, 0.035], "color": "pip" },
+        { "prim": "blob", "at": [0.06, 0.145, 0.0], "size": [0.03, 0.015, 0.03], "color": "pip" },
+        { "prim": "blob", "at": [0.14, 0.145, 0.06], "size": [0.03, 0.015, 0.03], "color": "pip" }
+      ]
+    },
+
+    "kititem.neon-seven": {
+      "kind": "item",
+      "label": "Neon Seven (flat-pack)",
+      "value": 900,
+      "stack": 1,
+      "height": 0.18,
+      "swatch": "#ff5cc4",
+      "furniture": "fixture.casino.neon-seven",
+      "palette": { "wrap": "#d9c7a4", "wrapHi": "#eee1c7", "strap": "#8a6242", "mark": "#ff5cc4" }
+    },
+
+    "kititem.slot-machine": {
+      "kind": "item",
+      "label": "Slot Machine (flat-pack)",
+      "value": 1200,
+      "stack": 1,
+      "height": 0.18,
+      "swatch": "#4a1f56",
+      "furniture": "fixture.casino.slot",
+      "palette": { "wrap": "#d9c7a4", "wrapHi": "#eee1c7", "strap": "#8a6242", "mark": "#4a1f56" }
+    }
+  }
+}

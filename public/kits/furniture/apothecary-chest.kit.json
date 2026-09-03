@@ -8,6 +8,7 @@
   "types": {
     "fixture.apothecary-chest": {
       "kind": "object",
+      "use": "store",
       "label": "Turnipwood Apothecary Chest",
       "footprint": { "w": 2, "d": 1 },
       "height": 1.27,

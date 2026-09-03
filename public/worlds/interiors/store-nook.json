@@ -2,6 +2,7 @@
   "format": "tw.world",
   "version": 1,
   "kind": "interior",
+  "kits": ["kits/turnip-catalog.kit.json"],
   "meta": {
     "id": "store.nook.interior",
     "name": "General Store",
@@ -38,10 +39,10 @@
         "#wwwwwwwwwwww#",
         "#wwwwwwwwwwww#",
         "#tttttttttttt#",
-        "#tttttttttttt#",
-        "#tttttttttttt#",
-        "#ttttrrrrtttt#",
-        "#ttttrrrrtttt#",
+        "#wwttttttttww#",
+        "#wwttttttttww#",
+        "#wwttrrrrrtww#",
+        "#wwtttrrrttww#",
         "#tttttttttttt#",
         "#tttttttttttt#",
         "######tt######"
@@ -170,9 +171,9 @@
     },
     {
       "id": "table.display",
-      "type": "furn.table",
+      "type": "fixture.display-case",
       "tile": [
-        6,
+        5,
         6
       ],
       "props": {
@@ -181,16 +182,16 @@
     },
     {
       "id": "chair.display",
-      "type": "furn.chair",
+      "type": "fixture.display-column",
       "tile": [
-        5,
-        7
+        9,
+        6
       ],
       "rotation": 90
     },
     {
       "id": "crate.0",
-      "type": "furn.crate",
+      "type": "fixture.grain-bin",
       "tile": [
         2,
         1
@@ -198,7 +199,7 @@
     },
     {
       "id": "crate.1",
-      "type": "furn.crate",
+      "type": "fixture.apple-crate",
       "tile": [
         4,
         1
@@ -206,7 +207,7 @@
     },
     {
       "id": "crate.2",
-      "type": "furn.crate",
+      "type": "fixture.bottle-crate",
       "tile": [
         10,
         1
@@ -332,6 +333,15 @@
             "type": "tool.machinegun",
             "count": 1,
             "price": 1350
+          },
+          {
+            "type": "tool.machine-gun",
+            "count": 1,
+            "price": 3600
+          },
+          {
+            "type": "item.bullets",
+            "count": null
           }
         ]
       },
@@ -479,6 +489,25 @@
           "bye": {
             "text": "Mind the step on your way out."
           }
+        },
+        "greetings": {
+          "acquaintance": [
+            "Juniper's apples are in from the orchard. Bruised ones are cheaper and taste the same, whatever she says.",
+            "Pim has been leaning on my porch post so long I have started charging him rent. He pays in gossip.",
+            "The shell on the shelf is not for sale. Well, it is. Just not at that price to just anyone.",
+            "Tobin fixed the scales. They read heavy now. I have not decided whether that was a favour."
+          ],
+          "friend": [
+            "Wren says you have been down at the shallows with a rod. Shells, I said. Bring me shells. Fish I cannot shelve.",
+            "Bramble wants seed and Lark wants string and neither of them wants to pay before harvest. That is Meadowbrook.",
+            "Half the town thinks I go easy on you. The other half thinks you go easy on me. I like both halves wrong.",
+            "The fellow on the coast road asked who keeps bringing the shells. I told him a rumour. He paid extra for the rumour."
+          ],
+          "close": [
+            "Shelves are yours. Take what you need, we will square it when the coin is round.",
+            "I put an apple aside. It is the one without the bruise. Do not make a fuss.",
+            "You did not trip on the step. Years I have been warning people and you are the first to mind it."
+          ]
         }
       }
     }

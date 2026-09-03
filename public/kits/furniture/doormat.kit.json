@@ -9,7 +9,7 @@
     "fixture.doormat": {
       "kind": "object",
       "label": "Meadowash Doormat",
-      "footprint": { "w": 1, "d": 1 },
+      "footprint": { "w": 1, "d": 1, "mask": ["."] },
       "height": 0.2,
       "squash": 0.9,
       "palette": {

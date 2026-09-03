@@ -2,6 +2,7 @@
   "format": "tw.world",
   "version": 1,
   "kind": "interior",
+  "kits": ["kits/turnip-catalog.kit.json"],
   "meta": {
     "id": "store.wether.interior",
     "name": "The Wether",
@@ -32,9 +33,9 @@
         "#ttttttttttt#",
         "#ttttttttttt#",
         "#wwwwwwwwwww#",
-        "#wwwwwwwwwww#",
-        "#wwrrrrrrrww#",
-        "#wwrrrrrrrww#",
+        "#rrrwwwwrrrr#",
+        "#rrrwwwwrrrr#",
+        "#rrrwwwwrrrr#",
         "#wwwwwwwwwww#",
         "#wwwwwwwwwww#",
         "######tt#####"
@@ -97,7 +98,7 @@
   "objects": [
     {
       "id": "shelf.wool",
-      "type": "furn.shelf",
+      "type": "fixture.floor-loom",
       "tile": [
         1,
         1
@@ -130,7 +131,7 @@
     },
     {
       "id": "shelf.sundries",
-      "type": "furn.shelf",
+      "type": "fixture.open-shelving",
       "tile": [
         10,
         1
@@ -152,7 +153,7 @@
     },
     {
       "id": "stove",
-      "type": "furn.stove",
+      "type": "fixture.pot-belly-stove",
       "tile": [
         9,
         3
@@ -163,15 +164,15 @@
     },
     {
       "id": "chair.by.stove",
-      "type": "furn.chair",
+      "type": "fixture.clothes-airer",
       "tile": [
         11,
-        4
+        5
       ]
     },
     {
       "id": "crate.west",
-      "type": "furn.crate",
+      "type": "fixture.spinning-wheel",
       "tile": [
         1,
         5
@@ -179,10 +180,10 @@
     },
     {
       "id": "crate.east",
-      "type": "furn.crate",
+      "type": "fixture.blanket-chest",
       "tile": [
-        11,
-        7
+        2,
+        6
       ]
     },
     {
@@ -241,6 +242,7 @@
         "takes": [
           "item.flower",
           "item.mushroom",
+          "item.turnip",
           "item.stick",
           "tool.axe",
           "tool.shovel",
@@ -254,6 +256,8 @@
           "tool.map",
           "tool.camera",
           "tool.machinegun",
+          "tool.machine-gun",
+          "item.bullets",
           "tool.rod",
           "item.trout",
           "item.carp"
@@ -336,6 +340,15 @@
             "type": "tool.machinegun",
             "count": 1,
             "price": 1350
+          },
+          {
+            "type": "tool.machine-gun",
+            "count": 1,
+            "price": 3600
+          },
+          {
+            "type": "item.bullets",
+            "count": null
           }
         ]
       },
@@ -411,6 +424,25 @@
           "bye": {
             "text": "Stand by the range as long as you like. Just shut the door."
           }
+        },
+        "greetings": {
+          "acquaintance": [
+            "Heather's fleece came in and the whole shop smells of sheep. That is the smell of a shop doing well up here.",
+            "Briar's goats got at the kindling stack. What they left, I am selling at goat prices.",
+            "Dell let you through the gate, then. He does not let everyone through. He has let me through twice.",
+            "Rook was down off the tarn for apples. Said nothing, paid, went back. That is a good customer."
+          ],
+          "friend": [
+            "Nan asked me if you were staying. I told her the wind has not blown you out yet and it has tried.",
+            "Gale wants a milestone by the door reading how far it is to the sea. I told him nobody in here is going.",
+            "You brought me thistledown by the sack. The wether would have eaten it. I am still deciding whether I miss him more.",
+            "Mushrooms you left were the good ones. I did not tell Heather. She would have wanted the good ones."
+          ],
+          "close": [
+            "Stool by the range is yours. I moved Nan's knitting off it and she can argue with me later.",
+            "The shell on the shelf. You can hold it. Nobody holds it. Put it back where it was.",
+            "He would have liked you, the wether. He liked anyone who stood in the door letting the wind in and did not apologise."
+          ]
         }
       }
     }

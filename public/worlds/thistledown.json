@@ -503,6 +503,7 @@
     {"id":"store.clothier","type":"building.clothier","tile":[70,136],"props":{"label":"Cuff & Collar","interior":"worlds/interiors/store-clothier.json"}},
     {"id":"home.nan","type":"building.cottage","tile":[28,42],"props":{"label":"Nan's Croft","interior":"worlds/interiors/home-nan.json","owner":"folk.nan"}},
     {"id":"town.hall","type":"building.townhall","tile":[28,98],"props":{"label":"Town Hall","interior":"worlds/interiors/town-hall.json"}},
+    {"id":"town.noticeboard","type":"civic.noticeboard","tile":[28,104]},
     {"id":"town.museum","type":"building.museum","tile":[44,86],"props":{"label":"Museum","interior":"worlds/interiors/museum.json"}},
     {"id":"home.heather","type":"building.cottage","tile":[58,30],"props":{"label":"Heather's Cottage","interior":"worlds/interiors/home-heather.json","owner":"folk.heather"}},
     {"id":"home.gale","type":"building.cabin","tile":[28,82],"props":{"label":"Gale's Cabin","interior":"worlds/interiors/home-gale.json","owner":"folk.gale"}},
@@ -752,15 +753,54 @@
         }
       },
       "dialog": {
-        "start": "hello",
+        "start": "open",
         "nodes": {
+          "open": {
+            "branch": [
+              {
+                "when": {
+                  "not": {
+                    "flag": "met"
+                  }
+                },
+                "to": "hello"
+              },
+              {
+                "to": "again"
+              }
+            ]
+          },
           "hello": {
-            "text": "Heather. I card the burrs and weather out of downland wool. That's my place behind me. Come say hello before you let yourself in.",
-            "then": "again"
+            "text": [
+              "Heather. I card wool. It comes down off the benches full of burrs and weather, and it leaves my yard clean enough for Nan's loom to bother with.",
+              "That cottage behind me is mine and the yard is full of fleece. Give the door a word before you open it. The wind gets in without asking, and I would like one thing in this gap that does not."
+            ],
+            "do": {
+              "set": "met"
+            }
           },
           "again": {
             "text": "Clean fleece first, clever work second."
           }
+        },
+        "greetings": {
+          "acquaintance": [
+            "Four fleeces in from Nan's flock and every one of them has been through a thorn. I am pulling the bench out of them a burr at a time.",
+            "Cards are set and the wind is down. That is the only weather in this trade worth a word.",
+            "Thistle seed in the fleece again. It floats in off the benches and I comb it out and it floats back. We keep each other in work.",
+            "There is grease on my hands and it is not coming off. It is lanolin. It is the best thing about the job and the worst."
+          ],
+          "friend": [
+            "Nan says my rolags are too tight. Nan says that every year and every year she weaves them. I have stopped answering.",
+            "You came down the road with thistledown in your hair yesterday. I nearly carded you.",
+            "Gale wants a fleece for his bench. A fleece. For sitting on. Stone-cold and he calls it a bench. I am sending him one.",
+            "Dell counted you in at eight this morning. He tells me. I did not ask. That is what living by the gate is."
+          ],
+          "close": [
+            "Come in the yard. Mind where you tread, it is all fleece, and it is soft on purpose.",
+            "Feel that. That is what a bench-full of thorns comes out as, if you are patient.",
+            "I have kept the softest of the clip back. Not for Nan. I am telling you so you know why."
+          ]
         }
       }
     },
@@ -783,15 +823,54 @@
         }
       },
       "dialog": {
-        "start": "hello",
+        "start": "open",
         "nodes": {
+          "open": {
+            "branch": [
+              {
+                "when": {
+                  "not": {
+                    "flag": "met"
+                  }
+                },
+                "to": "hello"
+              },
+              {
+                "to": "again"
+              }
+            ]
+          },
           "hello": {
-            "text": "Gale. I cut the stones that tell travellers how much farther they regret coming. That's my place behind me. Come say hello before you let yourself in.",
-            "then": "again"
+            "text": [
+              "Gale. I cut milestones. Every marker between the two mouths of this gap has my chisel on it, and every one of them tells the truth, more or less.",
+              "The cabin behind me is mine, the one with the chippings up to the door. Stop at the sill and speak. A stone stands where it is put until it is moved, and so should a visitor."
+            ],
+            "do": {
+              "set": "met"
+            }
           },
           "again": {
             "text": "The next marker says twelve. It does not say twelve what."
           }
+        },
+        "greetings": {
+          "acquaintance": [
+            "Fourteen letters cut and the chisel wants an edge. I would rather cut a stone than sharpen one, and that is my whole character.",
+            "There is a new marker going in at the south mouth. It will say six. Six is a lie, but a kind one.",
+            "Grit in my eye. Chippings. Do not look at me. I will look at you when it stops watering.",
+            "Stone from the west bench splits clean and stone from the east does not. That is all anyone needs to know about this gap."
+          ],
+          "friend": [
+            "Rook asked me for a stone with nothing cut on it. I gave him one. Easiest job of the year and the hardest to charge for.",
+            "You read the marker by the tarn out loud as you passed. I heard you from here. Nobody reads them. They just believe them.",
+            "Heather is sending me a fleece to sit on. I did not ask. I am going to sit on it and say nothing, which is the same as thanks.",
+            "Dell says I cut the numbers too small for a man on a cart to read. Dell has never been on a cart. I have told him so."
+          ],
+          "close": [
+            "Your name is cut in the offcut behind the door. I had the letters left over. It does not mean anything. It is just there.",
+            "That block by the door was a milestone. Now it is a seat. Things change what they are for.",
+            "Hands. Look. Chipped to the bone and I would not swap them. You are one of about three people I would tell that."
+          ]
         }
       }
     },
@@ -814,15 +893,54 @@
         }
       },
       "dialog": {
-        "start": "hello",
+        "start": "open",
         "nodes": {
+          "open": {
+            "branch": [
+              {
+                "when": {
+                  "not": {
+                    "flag": "met"
+                  }
+                },
+                "to": "hello"
+              },
+              {
+                "to": "again"
+              }
+            ]
+          },
           "hello": {
-            "text": "Briar. The goats know every path through the gap and approve of none. That's my place behind me. Come say hello before you let yourself in.",
-            "then": "again"
+            "text": [
+              "Briar. Goatherd. The goats are on the east bench when they are anywhere, and they know every path through this gap better than the road does.",
+              "The bungalow behind me is mine, and the goats think it is theirs. Give a shout at the door before you go in. If I am not there, one of them is, and it will not be pleased."
+            ],
+            "do": {
+              "set": "met"
+            }
           },
           "again": {
             "text": "If one follows you, it was already planning to."
           }
+        },
+        "greetings": {
+          "acquaintance": [
+            "Lost one up the east bench this morning. Found her on the roof of the store. Do not ask how. I have stopped asking.",
+            "The billy has eaten the gate rope again. I have tied a new one. He has looked at it.",
+            "Three kids born on the bench overnight. All standing. Goats do not waste time on being born.",
+            "Wind up the gap and the goats have gone to ground under the thorn. They are wiser than me and they know it."
+          ],
+          "friend": [
+            "One of them followed you down the road yesterday. I let her. She came back with an opinion about you and it was not bad.",
+            "Nan says a goat ate her washing. It did not. It ate half of it. I am being accurate.",
+            "Dell counts the goats through the gate. Every time. There are seven. He counts them every time.",
+            "You smell of sheep. I am not judging. I am saying the goats will, and they judge."
+          ],
+          "close": [
+            "Come up the bench with me. The kids are out and I want you to see them before they get sensible.",
+            "The old nanny lay down by your feet last time. She does not do that. I have thought about it since.",
+            "Stand still. The billy is behind you, and he likes you, which is worse."
+          ]
         }
       }
     },
@@ -992,6 +1110,25 @@
           "bye": {
             "text": "Right you are. Down and to your left."
           }
+        },
+        "greetings": {
+          "acquaintance": [
+            "Stopping again. I have that down. I do not need to write it.",
+            "Two carts through this morning, one each way. Neither of them stopped. That is a normal day and I am reporting it as one.",
+            "Gale of wind down from the top. Not Gale the man. He is where he always is, hitting a stone.",
+            "Nobody through since dawn but a dog, and the dog did not stop to give its name."
+          ],
+          "friend": [
+            "You went up the west trail yesterday and came down the east. I am not asking why. I am saying I saw both ends of it.",
+            "Nan asked after you. I told her the time you came through, to the minute. She did not need it. She had it.",
+            "A man came up the road this morning and I did not know him. Then he turned out to be Rook, with a hat on. I am not over it.",
+            "The gate has stood here forty years. I have leant on it for most of them. Lean on it. It does not mind."
+          ],
+          "close": [
+            "There you are. I had you down for about now.",
+            "Nobody through all day. Just the wind, and you. That is my kind of day.",
+            "Stand this side of the gate with me. It is the better side. I have checked."
+          ]
         }
       }
     },
@@ -1183,6 +1320,25 @@
           "bye": {
             "text": "Mind the gate on your way through. Dell will have counted you."
           }
+        },
+        "greetings": {
+          "acquaintance": [
+            "Sheep are all where I left them, and so am I. That is a morning, duck.",
+            "There is one ewe up the bench who will not come down for anybody. She is the one I like best.",
+            "Loom has had four rows off me this week. Four. I am not proud of that and I am not sorry either.",
+            "The fire has not gone out since the wet year, and it is not going out today. That is the one thing I promise this gap."
+          ],
+          "friend": [
+            "You came down the west trail without spooking the flock. I saw from the door. Not many manage it and none of them are Dell.",
+            "Somebody has been throwing my shuttle. The number has gone up by three. I said I would know and I know.",
+            "Thistledown is up on the bench and I want it for cushions. Dell fetches it if I pay. You might fetch it if I ask.",
+            "I made too much bread. I always make too much bread. It is a habit from when there was somebody to eat the other half."
+          ],
+          "close": [
+            "In you come, duck. The chair is warm. I sat in it so it would be.",
+            "My sister came up and left before you got here. You are the better visit. Do not tell her.",
+            "There is a bit of blanket done. I want you to feel it. Not to look at it. To feel it."
+          ]
         }
       }
     },
@@ -1331,6 +1487,25 @@
           "bye": {
             "text": "Aye. Quietly."
           }
+        },
+        "greetings": {
+          "acquaintance": [
+            "Quietly. It is a slow morning and I want to keep it.",
+            "Nothing on the line. Nothing off the bottom. That is as it should be.",
+            "The rain ring on the tarn this morning was the first of the year. You missed it. Most do.",
+            "Rabbits at the rim. They are not afraid of me. I sit still enough to be a rock."
+          ],
+          "friend": [
+            "You sat here yesterday without saying anything for a good while. I have been thinking about it since. It was well done.",
+            "Nan sent bread up with you last time. Eat the next one yourself. She feeds me in town and it takes an hour.",
+            "Something rose out by the far rim at dusk. Bigger than I thought. I have not told anyone else and I am not going to.",
+            "The flat stone you skimmed went eight. Eight. I have not managed eight in twenty years."
+          ],
+          "close": [
+            "Sit. The other side of the rod, where the sun is. I kept it for you.",
+            "It is going to rain. Stay for it. Nobody ever stays for it.",
+            "Ah. Not a word. I will tell you if it moves."
+          ]
         }
       }
     }

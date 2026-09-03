@@ -117,6 +117,19 @@ export class Ground {
     return this.#put(this.#make(`${this.world.meta.id}.drop.${this._dropped++}`, typeId, [x, z]));
   }
 
+  /** Re-index loose items after growth changes the row stride or origin. */
+  translate(dx, dz) {
+    const items = this.items;
+    this.byTile.clear();
+    for (const item of items) {
+      item.tile[0] += dx; item.tile[1] += dz;
+      item.x += dx; item.z += dz;
+      item.y = this.world.groundHeight(item.x, item.z);
+      this.byTile.set(this.world.idx(...item.tile), item);
+    }
+    this.version++;
+  }
+
   /**
    * What is on the floor, for a save file.
    *

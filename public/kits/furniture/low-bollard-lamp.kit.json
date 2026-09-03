@@ -1,0 +1,54 @@
+{
+  "format": "tw.kit",
+  "version": 1,
+  "meta": {
+    "id": "turnip.low-bollard-lamp",
+    "name": "Sootpine Low Bollard Lamp"
+  },
+  "types": {
+    "fixture.low-bollard-lamp": {
+      "kind": "object",
+      "label": "Sootpine Low Bollard Lamp",
+      "footprint": { "w": 1, "d": 1 },
+      "height": 1.31,
+      "squash": 0.22,
+      "palette": {
+        "woodDark": "#332f2b",
+        "pale": "#dcd8cf",
+        "metal": "#9aa0a6",
+        "accent": "#d8763a",
+        "glass": "#b9cdd6"
+      },
+      "parts": [
+        { "prim": "cyl", "at": [0, 0.06, 0], "size": [0.3, 0.12, 0.3], "color": "metal" },
+        { "prim": "cyl", "at": [0, 0.506, 0], "size": [0.16, 0.903, 0.16], "color": "woodDark" },
+        { "prim": "box", "at": [0, 0.983, 0], "size": [0.252, 0.3, 0.252], "color": "glass" },
+        { "prim": "pyr", "at": [0, 1.213, 0], "size": [0.243, 0.18, 0.243], "color": "accent" },
+        { "prim": "cyl", "at": [0, 0.803, 0], "size": [0.18, 0.06, 0.18], "color": "metal" },
+        { "prim": "blob", "at": [0, 0.983, 0], "size": [0.105, 0.13, 0.105], "color": "pale", "anim": { "pulse": { "amp": 0.12, "rate": 0.7 } } }
+      ],
+      "light": {
+        "color": "#ffd99a",
+        "height": 0.92,
+        "range": 4.5,
+        "intensity": 7
+      }
+    },
+    "kititem.low-bollard-lamp": {
+      "kind": "item",
+      "label": "Sootpine Low Bollard Lamp",
+      "value": 430,
+      "stack": 1,
+      "swatch": "#e18f40",
+      "badge": "crate",
+      "furniture": "fixture.low-bollard-lamp",
+      "site": "outdoors",
+      "palette": {
+        "wrap": "#d9c7a4",
+        "wrapHi": "#eee1c7",
+        "strap": "#8a6242",
+        "mark": "#e18f40"
+      }
+    }
+  }
+}

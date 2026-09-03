@@ -537,6 +537,7 @@
     {"id":"store.furniture","type":"building.furniture","tile":[52,132],"props":{"label":"Turnip & Timber","interior":"worlds/interiors/store-furniture.json"}},
     {"id":"store.clothier","type":"building.clothier","tile":[64,140],"props":{"label":"Cuff & Collar","interior":"worlds/interiors/store-clothier.json"}},
     {"id":"town.hall","type":"building.townhall","tile":[38,84],"props":{"label":"Town Hall","interior":"worlds/interiors/town-hall.json"}},
+    {"id":"town.noticeboard","type":"civic.noticeboard","tile":[38,90]},
     {"id":"town.museum","type":"building.museum","tile":[46,70],"props":{"label":"Museum","interior":"worlds/interiors/museum.json"}},
     {"id":"home.alder","type":"building.cottage","tile":[32,36],"props":{"label":"Alder's Cottage","interior":"worlds/interiors/home-alder.json","owner":"folk.alder"}},
     {"id":"home.fern","type":"building.cabin","tile":[24,118],"props":{"label":"Fern's Cabin","interior":"worlds/interiors/home-fern.json","owner":"folk.fern"}},
@@ -869,15 +870,54 @@
         }
       },
       "dialog": {
-        "start": "hello",
+        "start": "open",
         "nodes": {
+          "open": {
+            "branch": [
+              {
+                "when": {
+                  "not": {
+                    "flag": "met"
+                  }
+                },
+                "to": "hello"
+              },
+              {
+                "to": "again"
+              }
+            ]
+          },
           "hello": {
-            "text": "Alder. I read the creek by what it leaves on the gravel. That's my place behind me. Come say hello before you let yourself in.",
-            "then": "again"
+            "text": [
+              "Alder. I read the creek. What it drops on the gravel bar tells you what the rain did up in the head before the rain has finished doing it.",
+              "The cottage behind me is mine. It is the last one before the holler shuts. Give me a word at the door first -- the creek never does, and I am tired of being surprised."
+            ],
+            "do": {
+              "set": "met"
+            }
           },
           "again": {
             "text": "Water is low. The stones are saying so plainly."
           }
+        },
+        "greetings": {
+          "acquaintance": [
+            "Fresh sand on the upper bar. Rain in the head last night, and none down here. The creek tells it before anyone.",
+            "The top ford is running higher than it looks. I have told Hollis. He has told the ford.",
+            "Crows are down on the gravel this morning. Something washed out of the head. I have not gone to see what.",
+            "The water is the colour of tea. That is the pines. It is not a bad sign, it is just what it is."
+          ],
+          "friend": [
+            "You crossed at the top ford yesterday. I saw the prints. You went in at the shallow side, which nobody does the first year.",
+            "Fern wants the creek to bring her willow. I want it to bring me sand. It brings us both leaves and thinks that is funny.",
+            "I have been up the head as far as it goes. There is nothing. There is a spring in a rock and the whole holler comes out of it.",
+            "Come down on the bar a minute. There is a stone I want to show you that was not here last week."
+          ],
+          "close": [
+            "Wet feet. Good. You have been in it.",
+            "Nothing moved on the bar overnight. I sat up for it. I am telling you because you are the only one who would not laugh.",
+            "Come to the water. I will show you what it is saying today."
+          ]
         }
       }
     },
@@ -900,15 +940,54 @@
         }
       },
       "dialog": {
-        "start": "hello",
+        "start": "open",
         "nodes": {
+          "open": {
+            "branch": [
+              {
+                "when": {
+                  "not": {
+                    "flag": "met"
+                  }
+                },
+                "to": "hello"
+              },
+              {
+                "to": "again"
+              }
+            ]
+          },
           "hello": {
-            "text": "Fern. Every useful basket in the holler starts as a wet switch in my yard. That's my place behind me. Come say hello before you let yourself in.",
-            "then": "again"
+            "text": [
+              "Fern. Baskets. Every one in this holler that holds anything worth holding started as a wet willow switch in my yard, and I bent it.",
+              "That cabin behind me is where I sleep among the rods. The door is not latched, but I would like to hear you at it before I see you through it."
+            ],
+            "do": {
+              "set": "met"
+            }
           },
           "again": {
-            "text": "The willow is soaking. Tomorrow it will listen."
+            "text": "The willow is soaking. Tomorrow it will bend without complaint."
           }
+        },
+        "greetings": {
+          "acquaintance": [
+            "Willow is cut and in the trough. Three days in the creek and it will go round a corner without splitting. Less and it argues.",
+            "I have a basket on the go for the store. It is going to be square. The willow does not want to be square.",
+            "Ducks have been in my soaking trough again. I do not mind. The willow does not mind. The ducks are pleased.",
+            "Fingers are raw today. That is the trade. You cannot bind a rod with gloves on and you cannot bind it forever without."
+          ],
+          "friend": [
+            "You brought me sticks last time and one of them was willow. You did not know that. I did.",
+            "Alder came down to tell me the creek was low. I could see it was low. I let him tell me, he needed to.",
+            "Hollis wants a basket for the ford stones. A basket. For stones. I am making it because I like a challenge and I like Hollis.",
+            "Stand on the dry side of the yard, by the bundle. Do not mind the smell. It is the creek, on purpose."
+          ],
+          "close": [
+            "I have started one for you. It is small and it is wrong and I am starting it again.",
+            "Hands. Give me your hands a moment. No -- I want to see if they would do this. They would.",
+            "Come round the yard. You can hold the rod ends while I bind and neither of us has to say anything."
+          ]
         }
       }
     },
@@ -931,15 +1010,54 @@
         }
       },
       "dialog": {
-        "start": "hello",
+        "start": "open",
         "nodes": {
+          "open": {
+            "branch": [
+              {
+                "when": {
+                  "not": {
+                    "flag": "met"
+                  }
+                },
+                "to": "hello"
+              },
+              {
+                "to": "again"
+              }
+            ]
+          },
           "hello": {
-            "text": "Hollis. I reset the ford after every hard rain. That's my place behind me. Come say hello before you let yourself in.",
-            "then": "again"
+            "text": [
+              "Hollis. I tend the fords. Every hard rain the creek moves the stones, and every morning after, I put them back where a foot expects them.",
+              "That bungalow is mine, the last house before the mouth. Stop at the door and say so. A ford you can just walk over. A house you cannot, not mine."
+            ],
+            "do": {
+              "set": "met"
+            }
           },
           "again": {
             "text": "The crossing is sound enough if you place your feet."
           }
+        },
+        "greetings": {
+          "acquaintance": [
+            "Lower ford is set. Moved four stones this morning and the fourth was the one that mattered. It always is.",
+            "Rain up the head last night. Alder will say so with more words. The ford said so with a stone gone.",
+            "A cart went over the bottom crossing and rocked the big flat one loose. I have had words with the cart.",
+            "Water is over the tops of the ford stones today. Not by much. Enough that I am standing here rather than there."
+          ],
+          "friend": [
+            "You crossed dry yesterday. Both feet. I do not get thanked for that and I do not need it, but I saw.",
+            "Fern is making me a basket for stones. I did not ask her to stop and I did not ask her to start. That is Fern.",
+            "There is a cart-track by the bottom ford that does not go on to the gate. I have been looking at it all morning.",
+            "Stand on the bank with me. The ford will not move while we are watching it. It waits until I am indoors."
+          ],
+          "close": [
+            "Right. You are here. Help me lift the flat one.",
+            "The ford held through last night's rain. First time in nine years. I wanted to tell somebody and you were the somebody.",
+            "Boots off if you are coming in. Not for the floor. For the feet."
+          ]
         }
       }
     }

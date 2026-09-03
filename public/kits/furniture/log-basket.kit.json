@@ -8,6 +8,7 @@
   "types": {
     "fixture.log-basket": {
       "kind": "object",
+      "use": "store",
       "label": "Fenrush Log Basket",
       "footprint": { "w": 1, "d": 1 },
       "height": 0.78,

@@ -8,6 +8,7 @@
   "types": {
     "fixture.coffer": {
       "kind": "object",
+      "use": "store",
       "label": "Coppervale Coffer",
       "footprint": { "w": 1, "d": 1 },
       "height": 0.6,

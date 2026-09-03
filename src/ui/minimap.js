@@ -114,6 +114,7 @@ export function bakeTiles(world, data) {
   }
 
   for (const obj of world.objects) {
+    if (world.felled.has(obj.id)) continue;
     const type = objectType(obj.type);
     const tint = objectTint(type);
     const [ax, az] = obj.tile;

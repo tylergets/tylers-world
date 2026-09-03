@@ -1,0 +1,58 @@
+{
+  "format": "tw.kit",
+  "version": 1,
+  "meta": {
+    "id": "turnip.shepherds-crook-lamp",
+    "name": "Sootpine Shepherd's Crook Lamp"
+  },
+  "types": {
+    "fixture.shepherds-crook-lamp": {
+      "kind": "object",
+      "label": "Sootpine Shepherd's Crook Lamp",
+      "footprint": { "w": 1, "d": 1 },
+      "height": 2.35,
+      "squash": 0.22,
+      "palette": {
+        "woodDark": "#332f2b",
+        "pale": "#dcd8cf",
+        "metal": "#9aa0a6",
+        "glass": "#b9cdd6"
+      },
+      "parts": [
+        { "prim": "cyl", "at": [0, 0.06, 0], "size": [0.3, 0.12, 0.3], "color": "metal" },
+        { "prim": "taper", "at": [0, 1.188, 0], "size": [0.065, 2.221, 0.065], "color": "woodDark" },
+        { "prim": "cyl", "at": [0, 0.465, 0], "size": [0.11, 0.08, 0.11], "color": "metal" },
+        { "prim": "cyl", "at": [0, 1.395, 0], "size": [0.085, 0.05, 0.085], "color": "metal" },
+        { "prim": "box", "at": [0.15, 2.273, 0], "rot": [0, 0, -18], "size": [0.3, 0.045, 0.045], "color": "metal" },
+        { "prim": "cyl", "at": [0.29, 2.118, 0], "size": [0.035, 0.2, 0.035], "color": "metal" },
+        { "prim": "box", "at": [0.29, 2.017, 0], "size": [0.26, 0.34, 0.26], "color": "glass" },
+        { "prim": "box", "at": [0.29, 2.017, 0], "size": [0.2, 0.27, 0.2], "color": "glass" },
+        { "prim": "pyr", "at": [0.29, 2.267, 0], "size": [0.2, 0.15, 0.2], "color": "metal" },
+        { "prim": "cyl", "at": [0.29, 1.827, 0], "size": [0.18, 0.06, 0.18], "color": "metal" },
+        { "prim": "blob", "at": [0.29, 2.017, 0], "size": [0.105, 0.13, 0.105], "color": "pale", "anim": { "pulse": { "amp": 0.12, "rate": 0.7 } } }
+      ],
+      "light": {
+        "color": "#ffc978",
+        "height": 2.08,
+        "range": 7,
+        "intensity": 11
+      }
+    },
+    "kititem.shepherds-crook-lamp": {
+      "kind": "item",
+      "label": "Sootpine Shepherd's Crook Lamp",
+      "value": 715,
+      "stack": 1,
+      "swatch": "#e18f40",
+      "badge": "crate",
+      "furniture": "fixture.shepherds-crook-lamp",
+      "site": "outdoors",
+      "palette": {
+        "wrap": "#d9c7a4",
+        "wrapHi": "#eee1c7",
+        "strap": "#8a6242",
+        "mark": "#e18f40"
+      }
+    }
+  }
+}

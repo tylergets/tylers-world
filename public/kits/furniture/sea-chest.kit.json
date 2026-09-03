@@ -8,6 +8,7 @@
   "types": {
     "fixture.sea-chest": {
       "kind": "object",
+      "use": "store",
       "label": "Sootpine Sea Chest",
       "footprint": { "w": 1, "d": 1 },
       "height": 0.96,

@@ -420,6 +420,7 @@
     {"id":"home.wren","type":"building.cabin","tile":[70,100],"props":{"label":"Wren's Cabin","interior":"worlds/interiors/home-wren.json","owner":"folk.wren"}},
     {"id":"home.tobin","type":"building.bungalow","tile":[76,62],"props":{"label":"Tobin's Bungalow","interior":"worlds/interiors/home-tobin.json","owner":"folk.tobin"}},
     {"id":"town.hall","type":"building.townhall","tile":[56,80],"props":{"label":"Town Hall","interior":"worlds/interiors/town-hall.json"}},
+    {"id":"town.noticeboard","type":"civic.noticeboard","tile":[56,86]},
     {"id":"town.museum","type":"building.museum","tile":[78,80],"props":{"label":"Museum","interior":"worlds/interiors/museum.json"}},
     {"id":"home.lark","type":"building.cabin","tile":[26,80],"props":{"label":"Lark's Cabin","interior":"worlds/interiors/home-lark.json","owner":"folk.lark"}},
     {"id":"home.juniper","type":"building.bungalow","tile":[94,84],"props":{"label":"Juniper's Bungalow","interior":"worlds/interiors/home-juniper.json","owner":"folk.juniper"}},
@@ -629,15 +630,54 @@
         }
       },
       "dialog": {
-        "start": "hello",
+        "start": "open",
         "nodes": {
+          "open": {
+            "branch": [
+              {
+                "when": {
+                  "not": {
+                    "flag": "met"
+                  }
+                },
+                "to": "hello"
+              },
+              {
+                "to": "again"
+              }
+            ]
+          },
           "hello": {
-            "text": "Lark. I keep the west hedges from swallowing the lane. That's my place behind me. Come say hello before you let yourself in.",
-            "then": "again"
+            "text": [
+              "Lark. Hedge binder. Every hedge on the west side of this island wants to be a wood, and I am what talks it out of it, with a billhook.",
+              "The cabin is mine, the one with the hazel rods leant against it. Knock, or call, or hum at the door -- anything but coming through it the way the hedge does."
+            ],
+            "do": {
+              "set": "met"
+            }
           },
           "again": {
             "text": "The hedge is winning today, but only by inches."
           }
+        },
+        "greetings": {
+          "acquaintance": [
+            "Laid twelve yards this morning and the lane has widened by a foot. That is a good day in my trade.",
+            "Hazel is up on the bluff and I am down here wanting it. Nothing in this trade is ever where the hedge is.",
+            "Mind the billhook. It is leant on the gatepost because it is sulking, and so am I.",
+            "Blackthorn got me across the knuckles. The hedge fights back. That is why it is a trade and not a hobby."
+          ],
+          "friend": [
+            "You went along the west lane yesterday without getting scratched. I did that. You are welcome.",
+            "Bramble wants his hedge laid and wants it to still flower. I have told him which he can have. He is thinking.",
+            "You came past whistling. The birds in the hedge answered you. They do not answer me, and I house them.",
+            "Grab a rod. No, that one. If you are going to stand there, you can hold something."
+          ],
+          "close": [
+            "Good. Come and look at this pleach. Nobody else on the island would care.",
+            "I left a gap in the hedge by the pond. It is for you. Nobody else uses that way.",
+            "Walk the lane with me. It is a lane because of me, and today I want to show it off."
+          ]
         }
       }
     },
@@ -660,15 +700,54 @@
         }
       },
       "dialog": {
-        "start": "hello",
+        "start": "open",
         "nodes": {
+          "open": {
+            "branch": [
+              {
+                "when": {
+                  "not": {
+                    "flag": "met"
+                  }
+                },
+                "to": "hello"
+              },
+              {
+                "to": "again"
+              }
+            ]
+          },
           "hello": {
-            "text": "Juniper. The young fruit trees east of the square are mine to worry over. That's my place behind me. Come say hello before you let yourself in.",
-            "then": "again"
+            "text": [
+              "Juniper. The young fruit trees east of the square are mine -- I planted them, I staked them, and now I stand about waiting for them to decide.",
+              "The bungalow behind me is where I sleep when the trees let me. Say something at the door before you go through it. The trees get a warning, and so should I."
+            ],
+            "do": {
+              "set": "met"
+            }
           },
           "again": {
-            "text": "No blossom yet. Ask me again after warmer rain."
+            "text": "No blossom yet. It will come after warmer rain, or it will not, and I will be standing here either way."
           }
+        },
+        "greetings": {
+          "acquaintance": [
+            "Two of the young pears have put out leaf. The third is thinking about it. I do not rush a tree.",
+            "I have been out with the stakes. The wind off the beach leans everything east and I lean it back.",
+            "Wasps have found the windfalls. I am leaving them. Somebody should get the fruit and it was never going to be me this year.",
+            "The graft on the end tree has taken. Do not touch it. Do not even look at it hard."
+          ],
+          "friend": [
+            "You walked through the orchard yesterday and stepped over the roots. I noticed. The trees noticed.",
+            "Bramble says a tree is a slow vegetable. I have not spoken to him since and it has been a restful week.",
+            "I saved you an apple off the old tree by your house. Well. I saved it from Pim, which is the same thing.",
+            "The blossom is coming. I can feel it in the bark. You may think that is nonsense and you may keep it to yourself."
+          ],
+          "close": [
+            "Come and stand under the pear with me. It is doing nothing. It is lovely.",
+            "First fruit off the young trees is yours. That was decided a while ago.",
+            "Lean on the fence. It is what it is for. Talk or do not."
+          ]
         }
       }
     },
@@ -898,6 +977,25 @@
           "bye": {
             "text": "Right you are."
           }
+        },
+        "greetings": {
+          "acquaintance": [
+            "Afternoon. Or it was when I started standing here. I have lost track and I am not going to go looking for it.",
+            "The chickens have moved on to the fountain. I told them there was nothing in it. They did not believe me either.",
+            "Nothing has happened on the square since you were last across it. I checked. I am still checking.",
+            "Marla had her blinds down till ten this morning. I do not know what that means and I have decided to find out."
+          ],
+          "friend": [
+            "There you go, walking about again. I would join you but somebody has to keep this bit of paving from wandering off.",
+            "Tobin came out of his house today. Twice. I am telling you because you are the only one who would count that as news.",
+            "I saved you a spot. It is this spot. There is not much of a view but I know all of it by heart.",
+            "The cat sat on my foot for an hour. I let it. We are neither of us going anywhere."
+          ],
+          "close": [
+            "You. Good. Stand there a minute and be nobody with me.",
+            "Eleven years I have said that gate goes somewhere yet. You are the first thing to come through it that did.",
+            "I have nothing to tell you and I am going to tell you all of it. It will take a while."
+          ]
         }
       }
     },
@@ -1216,6 +1314,25 @@
           "bye": {
             "text": "Mind the beds on your way past."
           }
+        },
+        "greetings": {
+          "acquaintance": [
+            "Hold on, let me get my hands out of the soil before I say anything I would have to stand behind.",
+            "Slugs have been at the lettuce. I have been at the slugs. We are about even, which is the usual arrangement.",
+            "The frame wants airing and the rack wants turning, so you have caught me between two jobs that both think they are first.",
+            "Mind where you put your feet. That row is sown, and it does not look like it yet."
+          ],
+          "friend": [
+            "The beans have gone up a hand since Tuesday. I would take the credit but the rain was here first.",
+            "Wren came past and told me the tide. I told her the beans. Neither of us wanted the news and both of us gave it.",
+            "You have soil under your nails. Do not wash it off on my account, it means you have been somewhere real.",
+            "Something new has come up in the shady corner. Do not tell Tobin, he will want to measure it."
+          ],
+          "close": [
+            "Come round the back. The good stuff is round the back.",
+            "I put a row in for you. Do not ask what. You will know when it comes up.",
+            "Hands in. Go on. The bed by the glass wants thinning and I have been saving it."
+          ]
         }
       }
     },
@@ -1478,6 +1595,25 @@
           "bye": {
             "text": "Aye. Watch the current."
           }
+        },
+        "greetings": {
+          "acquaintance": [
+            "Tide's on the turn. You have about an hour of dry sand and then you have not.",
+            "Line's been out since first light. Nothing on it yet, and nothing is a perfectly good answer from the sea.",
+            "Wind has gone round to the east. That is not a complaint, that is a forecast, and it is free.",
+            "Shells are thin on the south beach this week. The sea is keeping them. It does that."
+          ],
+          "friend": [
+            "You walk that sand like you were born on it. You were not. But you are learning where it is soft.",
+            "Bramble told me the tide this morning. Told me. I let him, because he looked pleased.",
+            "The boat is still upside down. Do not look at her like that, she can tell.",
+            "Do not tread on the net. It is drying, and it is the only thing I own that is."
+          ],
+          "close": [
+            "Come down to the water's edge. The sea is doing something and I want somebody to see it with me.",
+            "You were out on the water yesterday. I saw. You held her nose into it. Good.",
+            "Mug on the ledge. Not the one by the bait barrel. I should not have to say that but I have said it before."
+          ]
         }
       }
     },
@@ -1760,6 +1896,25 @@
           "bye": {
             "text": "Right. Mind the step."
           }
+        },
+        "greetings": {
+          "acquaintance": [
+            "Hm. One moment. There is a spring in this and if I look up it will leave.",
+            "A hinge from the store, a pan with a hole and a chair nobody will own up to. That is the morning's pile.",
+            "I have been out looking for straight timber. There is none. Trees here grow the way they like, and I respect it, and it is a nuisance.",
+            "You are standing where I put the solder. It is not on you. I checked."
+          ],
+          "friend": [
+            "The orrery has a tick in it. It did not have one last week. I am choosing to think of it as a voice.",
+            "Bramble brought me a trowel with the handle off and stood over me while I fixed it. Would not sit. There is nowhere to sit.",
+            "You have the look of somebody carrying something broken. If you are, I have the afternoon.",
+            "Pim says you are round here more than I leave the house. That is true and it is not a high bar."
+          ],
+          "close": [
+            "Sit on the crate. The heavy one. You know which.",
+            "I put a second chair in the back room. It is not for anyone. It is just there now.",
+            "Hm. Good, it's you. Hold this end and do not let go when it gets warm."
+          ]
         }
       }
     }

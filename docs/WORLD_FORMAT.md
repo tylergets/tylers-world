@@ -194,6 +194,30 @@ tile behind it. A faced NPC still wins over a nearby one, and an item in reach
 wins over a merely-nearby NPC (`Game.interaction` in `src/main.js` is the one
 place that decides).
 
+Dialog conditions may use `{ "hurt": true }` to test whether the player is
+missing health. The corresponding `{ "heal": true }` effect restores the
+player's health, allowing paid services to compose with ordinary coin effects.
+
+### Guards and fighters
+
+Three more `props` turn a person into somebody who reacts to a gun:
+
+- **`props.armedSecurity: true`** makes them a guard. The moment the player is
+  holding anything that shoots, every guard in the room draws and comes for
+  them, and they stand down the moment it is holstered (`src/sim/Security.js`).
+  The airport's TSA officers are the original; the Pit's fighters and the
+  casino's doorman are the same flag with different sentences.
+- **`props.alertLine`** is the sentence the HUD shows when a guard first
+  draws. Without it the default TSA warning is used, which is wrong in a fight
+  club.
+- **`props.sparring: true`** makes them a fighter rather than a victim: knocking
+  them down costs no friendship, sends no letter and starts no grudge. Put
+  every sparring fighter in the room on the floor at once and the house pays a
+  purse (`sparringHit` in `src/main.js`). That one flag is the whole of the
+  Pit's game: the arena is three guards who hold nothing against you.
+
+None of the three is saved. They describe the room, not the player.
+
 ### `npcs[].shop`
 
 ```jsonc
@@ -331,6 +355,39 @@ outlive it — and the NPC outlives you leaving the room.
 `{ "shop": true }` *parks* the conversation rather than ending it: the trade
 panel takes the screen, and closing it resumes at that choice's `to`. That is
 the whole difference between a shop and a vending machine.
+
+**Greetings** are the one part of a dialog that is not a node. Beside `start`
+and `nodes`, a script may carry what this person says *on seeing you*, one
+list per relationship tier:
+
+```jsonc
+"greetings": {
+  "acquaintance": [ "Back again. The shelves missed you, or I did.", ["Two pages,", "if you must."] ],
+  "friend":       [ "..." ],
+  "close":        [ "..." ]
+}
+```
+
+The game picks one — rotating through the list, out of step with the
+neighbours — and stitches it onto the front of `start`
+(`src/world/greetings.js`). Not on the first meeting, where the script's own
+opening does the introducing; and not again soon after the last conversation:
+a villager on the lane greets you once every few hours, someone behind a
+counter or a desk (a `shop`, or `props.office`) once a day. A tier with no
+list falls back to the next one down, so `close` may be left out and a close
+friend hears the `friend` lines. There is **no shared pool** of greetings in
+the code, on purpose: the fisher and the mayor do not notice the same things
+about you, and a line that could be given to anyone belongs to no one.
+`props.noSmallTalk: true` turns greetings off for a person who should get
+straight to it (gate agents, guards). `checkworld` fails on anyone who would
+be greeted and has nothing of their own to say, and on a greeting line two
+people share.
+
+Two exchanges the game adds at talk time — paid work (`src/sim/Workers.js`)
+and container pickups for shopkeepers (`src/sim/Logistics.js`) — are hung on
+the person's **menu**: the first say-node with choices reached from `start`
+through branches and `then`s, above its leaving line. A script with no menu
+at all gets the line, and a way out, on the node where it stops.
 
 There is deliberately **no expression string**. `"if": "flags.met && coins > 40"`
 is shorter to write and impossible to check — it needs a parser or an `eval`,

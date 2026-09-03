@@ -743,7 +743,7 @@ function critterFigure(p, fig) {
 
 const FIGURES = { fish: fishFigure, bird: birdFigure, quad: quadFigure, critter: critterFigure };
 
-function modelFor(typeId) {
+export function animalModel(typeId) {
   let m = MODELS.get(typeId);
   if (m) return m;
 
@@ -819,7 +819,7 @@ export class AnimalBatch {
       byType.delete(typeId);
     }
     for (const [typeId, members] of byType) {
-      const batch = { typeId, members, model: modelFor(typeId), body: null, head: null, capacity: 0 };
+      const batch = { typeId, members, model: animalModel(typeId), body: null, head: null, capacity: 0 };
       this.byType.set(typeId, batch);
       this.#ensureCapacity(batch, members.length);
       batch.body.count = members.length;

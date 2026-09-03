@@ -466,12 +466,13 @@ function fishSpecies(label, {
 /** A ground bird on the chicken's clock, resized and refeathered. */
 function birdSpecies(label, {
   size = 1, speed = 1, calm = 1, range = 6.5, fig = {}, palette, gait = {},
-  fear = null, herd = null, active = null,
+  fear = null, herd = null, active = null, habitat = null,
 }) {
   return {
     label,
     behavior: 'wander',
     ...(fear && { fear }), ...(herd && { herd }), ...(active && { active }),
+    ...(habitat && { habitat }),
     radius: 0.18 * size,
     height: 0.46 * size,
     dart: 2.7 * speed,
@@ -491,12 +492,13 @@ function birdSpecies(label, {
 /** A four-legged grazer or prowler on the goat's frame. */
 function quadSpecies(label, {
   size = 1, speed = 1, calm = 1, range = 7.5, fig = {}, palette, gait = {},
-  fear = null, herd = null, active = null,
+  fear = null, herd = null, active = null, habitat = null,
 }) {
   return {
     label,
     behavior: 'wander',
     ...(fear && { fear }), ...(herd && { herd }), ...(active && { active }),
+    ...(habitat && { habitat }),
     radius: 0.26 * size,
     height: 0.6 * size,
     dart: 2.2 * speed,
@@ -516,12 +518,13 @@ function quadSpecies(label, {
 /** Something small and quick, on the rabbit's nerves. */
 function critterSpecies(label, {
   size = 1, speed = 1, calm = 1, range = 5, fig = {}, palette, gait = {},
-  fear = null, herd = null, active = null,
+  fear = null, herd = null, active = null, habitat = null,
 }) {
   return {
     label,
     behavior: 'wander',
     ...(fear && { fear }), ...(herd && { herd }), ...(active && { active }),
+    ...(habitat && { habitat }),
     radius: 0.16 * size,
     height: 0.4 * size,
     dart: 3.5 * speed,
@@ -837,14 +840,14 @@ const LAND = {
     // A goose keeps its gaggle and barely yields ground -- the smallest flight
     // radius here, because the goose is not the one who is worried.
     size: 1.35, speed: 0.8, calm: 1.3, range: 7,
-    herd: 0.5, fear: [1.2, 1.15], active: [5, 21],
+    herd: 0.5, fear: [1.2, 1.15], active: [5, 21], habitat: { surface: 'grass' },
     fig: { neck: 1.6, bill: 'flat', tail: 'wedge', plump: 1.1 },
     gait: { roll: 0.18, bend: 1.1 },
     palette: { body: 0xdcd6c6, bodyShade: 0xbcb5a2, tail: 0xcac3b0, bill: 0xe08a34, leg: 0xd97f30, eye: 0x241f1b },
   }),
   turkey: birdSpecies('Turkey', {
     size: 1.4, speed: 0.85, calm: 1.2, range: 6,
-    herd: 0.4, fear: [1.8, 1.2], active: [6, 20],
+    herd: 0.4, fear: [1.8, 1.2], active: [6, 20], habitat: { surface: 'grass' },
     fig: { tail: 'fan', wattle: true, plump: 1.2 },
     gait: { roll: 0.12, bob: 0.03 },
     palette: { body: 0x5a4436, bodyShade: 0x403026, tail: 0x6e5340, bill: 0xc9a878, leg: 0xb5726b, eye: 0x241f1b, comb: 0xc23a35 },
@@ -857,7 +860,7 @@ const LAND = {
   }),
   gull: birdSpecies('Gull', {
     size: 1.0, speed: 1.1, range: 8,
-    fear: [2.0, 1.25],
+    fear: [2.0, 1.25], habitat: { surfaces: ['grass', 'sand'] },
     fig: { tail: 'wedge', bill: 'long' },
     palette: { body: 0xeceae2, bodyShade: 0xc4c2ba, tail: 0x9a988f, bill: 0xe0a83c, leg: 0xe89a48, eye: 0x241f1b },
   }),
@@ -879,7 +882,7 @@ const LAND = {
     // The night shift: dusk to dawn. By day it drowses on its patch, which is
     // exactly the still, head-sunk owl worth finding in a wood at noon.
     size: 1.05, speed: 0.9, calm: 2.2, range: 5,
-    active: [19, 6], fear: [2.0, 1.2],
+    active: [19, 6], fear: [2.0, 1.2], habitat: { surface: 'grass', buildingDistance: 10, outskirts: 0.34 },
     fig: { tail: 'wedge', bill: 'hook', crest: true, plump: 1.15 },
     gait: { bend: 0.6, bob: 0.02 },
     palette: { body: 0xa8916c, bodyShade: 0x84704f, tail: 0x6e5c40, bill: 0x4c4238, leg: 0x8d7853, eye: 0xe0b23c, crest: 0x84704f },
@@ -899,13 +902,13 @@ const LAND = {
   }),
   pheasant: birdSpecies('Pheasant', {
     size: 1.05, speed: 1.05, range: 7,
-    fear: [3.0, 1.3], active: [6, 20],
+    fear: [3.0, 1.3], active: [6, 20], habitat: { surface: 'grass', buildingDistance: 8, outskirts: 0.4 },
     fig: { tail: 'long', collar: true },
     palette: { body: 0xa05c34, bodyShade: 0x7c4426, tail: 0x6e4c2c, bill: 0xc9bd9c, leg: 0x8d7853, eye: 0xd0442f, collar: 0xe8e6dc, head: 0x2f5e46 },
   }),
   heron: birdSpecies('Heron', {
     size: 1.5, speed: 0.75, calm: 2.4, range: 7,
-    fear: [3.5, 1.25], active: [4, 21],
+    fear: [3.5, 1.25], active: [4, 21], habitat: { surfaces: ['grass', 'sand'] },
     fig: { neck: 2.1, legLen: 1.8, bill: 'long', tail: 'wedge', plump: 0.8 },
     gait: { roll: 0.03, bob: 0.02, bend: 1.0 },
     palette: { body: 0x9aa4ac, bodyShade: 0x76828c, tail: 0x5c6870, bill: 0xd8a83c, leg: 0x54565e, eye: 0xd8c47c },
@@ -914,27 +917,27 @@ const LAND = {
   // -- the farmyard and the wood -------------------------------------------
   pig: quadSpecies('Pig', {
     size: 1.15, speed: 0.9, calm: 1.2, range: 6,
-    active: [6, 20],
+    active: [6, 20], habitat: { surface: 'grass' },
     fig: { bulk: 1.3, legLen: 0.6, ears: 'flop', tail: 'curl', snout: 1 },
     palette: { body: 0xe2a68f, bodyShade: 0xc08a74, belly: 0xf0c8b4, ear: 0xd49a84, leg: 0xc08a74, eye: 0x241f1b, nose: 0xc97e68 },
   }),
   cow: quadSpecies('Cow', {
     size: 1.7, speed: 0.7, calm: 1.8, range: 8,
-    herd: 0.4, active: [5, 21],
+    herd: 0.4, active: [5, 21], habitat: { surface: 'grass' },
     fig: { bulk: 1.4, legLen: 0.9, ears: 'side', horns: 'short', patches: true },
     gait: { bob: 0.02 },
     palette: { body: 0xe8e2d4, bodyShade: 0xc6c0b0, belly: 0xf2eee2, ear: 0xd6d0c0, leg: 0xd0cabb, hoof: 0x3b342c, horn: 0xd8c9a4, eye: 0x241f1b, patch: 0x4c4238 },
   }),
   pony: quadSpecies('Pony', {
     size: 1.6, speed: 1.3, calm: 1.4, range: 9,
-    herd: 0.35,
+    herd: 0.35, habitat: { surface: 'grass' },
     fig: { bulk: 0.95, legLen: 1.3, ears: 'up', mane: true, tail: 'brush' },
     gait: { bob: 0.045, lean: 0.12 },
     palette: { body: 0xa8734a, bodyShade: 0x855a39, belly: 0xc99a6e, ear: 0x96663f, leg: 0x774f32, hoof: 0x3b342c, mane: 0x4c3524, eye: 0x241f1b },
   }),
   donkey: quadSpecies('Donkey', {
     size: 1.45, speed: 0.95, calm: 1.7, range: 8,
-    active: [5, 21],
+    active: [5, 21], habitat: { surface: 'grass' },
     fig: { bulk: 1.0, legLen: 1.15, ears: 'tall', mane: true, tail: 'brush' },
     palette: { body: 0x8d8478, bodyShade: 0x6e675d, belly: 0xcac2b2, ear: 0x7d756a, leg: 0x625c52, hoof: 0x3b342c, mane: 0x4a453d, eye: 0x241f1b },
   }),
@@ -948,7 +951,7 @@ const LAND = {
     // Dusk to well past breakfast: crepuscular reads as "you mostly see it at
     // the edges of the day", which is the whole romance of a fox.
     size: 0.95, speed: 1.5, calm: 1.1, range: 9,
-    fear: [3.0, 1.3], active: [17, 9],
+    fear: [3.0, 1.3], active: [17, 9], habitat: { surface: 'grass', buildingDistance: 10, outskirts: 0.3 },
     fig: { bulk: 0.75, legLen: 0.95, ears: 'up', tail: 'bush', snout: 0.9 },
     gait: { bob: 0.045, lean: 0.16 },
     palette: { body: 0xc9642f, bodyShade: 0xa04d23, belly: 0xefe4d2, ear: 0x3a2c22, leg: 0x3a2c22, tail: 0xc9642f, tip: 0xefe4d2, eye: 0x241f1b, nose: 0x2c241e },
@@ -958,7 +961,7 @@ const LAND = {
     // hours that put it out at dawn and dusk. A deer you got close to is a
     // deer that was asleep.
     size: 1.5, speed: 1.5, calm: 1.6, range: 10,
-    fear: [4.0, 1.35], herd: 0.45, active: [4, 22],
+    fear: [4.0, 1.35], herd: 0.45, active: [4, 22], habitat: { surface: 'grass', buildingDistance: 12, outskirts: 0.32 },
     fig: { bulk: 0.8, legLen: 1.5, ears: 'up', horns: 'antler', tail: 'down' },
     gait: { bob: 0.06, lean: 0.14 },
     palette: { body: 0xa8845c, bodyShade: 0x866846, belly: 0xe6d8bc, ear: 0x96754e, leg: 0x77603f, hoof: 0x3b342c, horn: 0x8d7b5e, eye: 0x241f1b },
@@ -966,13 +969,13 @@ const LAND = {
   boar: quadSpecies('Boar', {
     // A sounder keeps together, and a boar gives you very little ground.
     size: 1.3, speed: 1.1, calm: 1.3, range: 8,
-    herd: 0.35, fear: [1.6, 1.2],
+    herd: 0.35, fear: [1.6, 1.2], habitat: { surface: 'grass', buildingDistance: 9, outskirts: 0.36 },
     fig: { bulk: 1.25, legLen: 0.75, ears: 'up', snout: 1, tusks: true, mane: true },
     palette: { body: 0x5c4c3d, bodyShade: 0x42362b, belly: 0x8d7a64, ear: 0x4c3f32, leg: 0x3c3128, mane: 0x33291f, tusk: 0xe8e0cc, eye: 0x241f1b, nose: 0x594a3c },
   }),
   badger: quadSpecies('Badger', {
     size: 0.85, speed: 0.9, calm: 1.5, range: 6,
-    active: [18, 7], fear: [2.2, 1.2],
+    active: [18, 7], fear: [2.2, 1.2], habitat: { surface: 'grass', buildingDistance: 8, outskirts: 0.38 },
     fig: { bulk: 1.15, legLen: 0.55, ears: 'round', snout: 0.8, stripes: true },
     palette: { body: 0x8d8d88, bodyShade: 0x6a6a65, belly: 0x4c4c48, ear: 0x5c5c58, leg: 0x3c3c38, eye: 0x241f1b, stripe: 0xece9e0, nose: 0x2c2824 },
   }),
@@ -991,7 +994,7 @@ const LAND = {
   }),
   otter: quadSpecies('Otter', {
     size: 0.9, speed: 1.25, calm: 0.9, range: 8,
-    fear: [2.4, 1.3],
+    fear: [2.4, 1.3], habitat: { surfaces: ['grass', 'sand'] },
     fig: { bulk: 0.8, legLen: 0.55, ears: 'round', tail: 'taper', snout: 0.6 },
     gait: { roll: 0.1, bob: 0.05 },
     palette: { body: 0x6a5540, bodyShade: 0x4e3e2e, belly: 0xc2ab84, ear: 0x5c4936, leg: 0x453727, tail: 0x5c4936, eye: 0x241f1b, nose: 0x2c241e },
@@ -1007,6 +1010,7 @@ const LAND = {
   // -- the hedgerow --------------------------------------------------------
   hare: critterSpecies('Hare', {
     size: 1.25, speed: 1.3, calm: 1.3, range: 8,
+    habitat: { surface: 'grass', buildingDistance: 6, outskirts: 0.42 },
     fig: { ears: 'tall', tail: 'puff' },
     gait: { bob: 0.13, lean: 0.24 },
     palette: { body: 0x99805e, bodyShade: 0x7a6448, belly: 0xe4d8c0, tail: 0xefe9da, ear: 0x8a7050, earInner: 0xc9a08a, nose: 0xb98a80, eye: 0x231c17 },
@@ -1030,12 +1034,14 @@ const LAND = {
   }),
   frog: critterSpecies('Frog', {
     size: 0.5, speed: 1.1, calm: 1.4, range: 4.5,
+    habitat: { surfaces: ['grass', 'sand'] },
     fig: { squat: true, ears: 'none', tail: 'none' },
     gait: { bob: 0.12, lean: 0.1, bend: 0.5 },
     palette: { body: 0x5f8a44, bodyShade: 0x47692f, belly: 0xd9dfa8, ear: 0x5f8a44, earInner: 0x5f8a44, nose: 0x3c4c28, eye: 0xe0c23c },
   }),
   tortoise: critterSpecies('Tortoise', {
     size: 0.75, speed: 0.25, calm: 2.5, range: 3,
+    habitat: { surfaces: ['grass', 'sand'] },
     fig: { shell: true, ears: 'none', tail: 'none' },
     gait: { bob: 0.005, lean: 0.02, bend: 0.7 },
     palette: { body: 0x8d8456, bodyShade: 0x6c6540, belly: 0xc9bd8e, shell: 0x5c5c3a, shellHi: 0x77774c, ear: 0x8d8456, earInner: 0x8d8456, nose: 0x4c4630, eye: 0x231c17 },

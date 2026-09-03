@@ -209,6 +209,7 @@ function gun(p) {
   g.addGeometry(CYL, trs(0.09, 0.045, 0, 0, 0.2, Math.PI / 2, 0.019, 0.30, 0.019), p.barrel);
   g.addGeometry(CYL, trs(0.09, 0.058, 0.016, 0, 0.2, Math.PI / 2, 0.011, 0.28, 0.011), p.barrelHi);
   g.addGeometry(BOX, trs(-0.02, 0.045, 0, 0, 0.2, 0, 0.035, 0.05, 0.05), p.band);
+  g.addGeometry(CYL, trs(0.245, 0.045, 0.031, 0, 0.2, Math.PI / 2, 0.024, 0.035, 0.024), p.tip);
   return g;
 }
 
@@ -270,6 +271,7 @@ function machinegun(p) {
   // The magazine, hanging below the receiver: the one part no other long thing
   // in the bag has, and therefore the part that names it from any angle.
   g.addGeometry(BOX, trs(-0.05, 0.022, -0.012, 0, 0.2, 0.22, 0.03, 0.05, 0.045), p.band);
+  if (p.tip) g.addGeometry(CYL, trs(0.305, 0.045, 0.038, 0, 0.2, Math.PI / 2, 0.026, 0.04, 0.026), p.tip);
   return g;
 }
 
@@ -319,12 +321,26 @@ function torch(p) {
   return g;
 }
 
-/** A box of shot: brass cases stood together, with one red wad on top. */
+/** A clear bottle of white airsoft BBs with a dark screw cap. */
 function shot(p) {
   const g = new GeoBuilder();
-  g.addGeometry(BOX, trs(0, 0.045, 0, 0, 0.3, 0, 0.1, 0.045, 0.075), p.brass);
-  g.addGeometry(BOX, trs(0.012, 0.072, 0.01, 0, 0.3, 0, 0.07, 0.02, 0.05), p.brassHi);
-  g.addGeometry(CYL, trs(-0.03, 0.095, -0.012, 0, 0.3, 0, 0.018, 0.04, 0.018), p.wad);
+  g.addGeometry(CYL, trs(0, 0.055, 0, 0, 0, 0, 0.065, 0.09, 0.065), p.bottle);
+  g.addGeometry(CYL, trs(0, 0.102, 0, 0, 0, 0, 0.042, 0.025, 0.042), p.cap);
+  g.addGeometry(BOX, trs(-0.025, 0.07, 0.058, 0, 0, 0, 0.02, 0.055, 0.008), p.bottleHi);
+  for (const [x, y, z] of [[-0.025, 0.035, 0.045], [0.018, 0.03, 0.05], [0.032, 0.064, 0.048], [-0.018, 0.072, 0.052]]) {
+    g.addGeometry(ROUND, trs(x, y, z, 0, 0, 0, 0.014, 0.014, 0.014), p.bb);
+  }
+  return g;
+}
+
+/** Three brass cartridges, distinct from the bottled white BBs. */
+function bullets(p) {
+  const g = new GeoBuilder();
+  for (const [x, z, h] of [[-0.045, 0.02, 0.1], [0.01, -0.015, 0.115], [0.055, 0.025, 0.09]]) {
+    g.addGeometry(CYL, trs(x, h / 2, z, 0, 0, 0, 0.018, h, 0.018), p.brass);
+    g.addGeometry(CONE, trs(x, h + 0.018, z, 0, 0, 0, 0.017, 0.038, 0.017), p.lead);
+    g.addGeometry(CYL, trs(x, 0.008, z, 0, 0, 0, 0.021, 0.012, 0.021), p.brassHi);
+  }
   return g;
 }
 
@@ -502,11 +518,13 @@ const BUILDERS = {
   'tool.hammer': hammer,
   'tool.sword': sword,
   'tool.machinegun': machinegun,
+  'tool.machine-gun': machinegun,
   'tool.map': mapsheet,
   'tool.camera': camera,
   'tool.torch': torch,
   'tool.rod': rod,
   'item.shot': shot,
+  'item.bullets': bullets,
   'item.game': game,
   'item.trout': trout,
   'item.carp': carp,

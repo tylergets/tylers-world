@@ -22,6 +22,9 @@
 import { loadWorldFile, parseWorldFile } from './WorldFile.js';
 import { World } from './World.js';
 import { addCabService } from './cabService.js';
+import { addBusinessServices } from './businessServices.js';
+
+const addSharedServices = (world) => addBusinessServices(addCabService(world));
 
 export class Places {
   constructor() {
@@ -37,7 +40,7 @@ export class Places {
     let p = this._pending.get(url);
     if (!p) {
       p = loadWorldFile(url).then((data) => {
-        const world = addCabService(new World(data));
+        const world = addSharedServices(new World(data));
         world.url = url;
         this.byUrl.set(url, world);
         this._pending.delete(url);
@@ -64,7 +67,7 @@ export class Places {
    * the npc. Nothing skips it because of where it came from.
    */
   put(url, data) {
-    const world = addCabService(new World(parseWorldFile(data)));
+    const world = addSharedServices(new World(parseWorldFile(data)));
     world.url = url;
     this.byUrl.set(url, world);
     return world;

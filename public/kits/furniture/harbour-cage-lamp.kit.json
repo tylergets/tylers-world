@@ -1,0 +1,56 @@
+{
+  "format": "tw.kit",
+  "version": 1,
+  "meta": {
+    "id": "turnip.harbour-cage-lamp",
+    "name": "Seaglass Harbour Cage Lamp"
+  },
+  "types": {
+    "fixture.harbour-cage-lamp": {
+      "kind": "object",
+      "label": "Seaglass Harbour Cage Lamp",
+      "footprint": { "w": 1, "d": 1 },
+      "height": 2.35,
+      "squash": 0.22,
+      "palette": {
+        "woodDark": "#7b7d73",
+        "pale": "#eef2ee",
+        "metal": "#8f969c",
+        "glass": "#bfe0ea"
+      },
+      "parts": [
+        { "prim": "cyl", "at": [0, 0.06, 0], "size": [0.34, 0.12, 0.34], "color": "metal" },
+        { "prim": "taper", "at": [0, 1.091, 0], "size": [0.065, 2.04, 0.065], "color": "woodDark" },
+        { "prim": "cyl", "at": [0, 0.427, 0], "size": [0.11, 0.08, 0.11], "color": "metal" },
+        { "prim": "cyl", "at": [0, 1.281, 0], "size": [0.085, 0.05, 0.085], "color": "metal" },
+        { "prim": "box", "at": [0, 2.025, 0], "size": [0.26, 0.34, 0.26], "color": "metal" },
+        { "prim": "box", "at": [0, 2.025, 0], "size": [0.2, 0.27, 0.2], "color": "glass" },
+        { "prim": "pyr", "at": [0, 2.275, 0], "size": [0.2, 0.15, 0.2], "color": "metal" },
+        { "prim": "cyl", "at": [0, 1.835, 0], "size": [0.18, 0.06, 0.18], "color": "metal" },
+        { "prim": "blob", "at": [0, 2.025, 0], "size": [0.105, 0.13, 0.105], "color": "pale", "anim": { "pulse": { "amp": 0.12, "rate": 0.7 } } }
+      ],
+      "light": {
+        "color": "#bfe9ff",
+        "height": 2.08,
+        "range": 7.5,
+        "intensity": 13
+      }
+    },
+    "kititem.harbour-cage-lamp": {
+      "kind": "item",
+      "label": "Seaglass Harbour Cage Lamp",
+      "value": 800,
+      "stack": 1,
+      "swatch": "#82a482",
+      "badge": "crate",
+      "furniture": "fixture.harbour-cage-lamp",
+      "site": "outdoors",
+      "palette": {
+        "wrap": "#d9c7a4",
+        "wrapHi": "#eee1c7",
+        "strap": "#8a6242",
+        "mark": "#82a482"
+      }
+    }
+  }
+}

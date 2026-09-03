@@ -1,0 +1,88 @@
+{
+  "format": "tw.world",
+  "version": 1,
+  "kind": "interior",
+  "kits": ["kits/internet-cafe.kit.json"],
+  "meta": { "id": "business.internet-cafe.interior", "name": "Internet Cafe", "note": "A cozy retro cafe of chunky computers, coral booths, magazines, and coffee." },
+  "grid": { "width": 20, "height": 15, "tileSize": 1 },
+  "ambience": { "music": "home", "sun": 0.9, "hemi": 2.35, "hemiSky": "#ffe9c9", "hemiGround": "#557b72" },
+  "layers": {
+    "surface": {
+      "palette": { "#": "wall.stripe", "w": "floor.parquet", "i": "floor.tile", "t": "floor.terracotta" },
+      "data": [
+        "####################",
+        "#iiiiiiiwwttttttttt#",
+        "#iiiiiiiwwttttttttt#",
+        "#iiiiiiiwwttttttttt#",
+        "#iiiiiiiwwttttttttt#",
+        "#wwwwwwwwwwwwtttttt#",
+        "#wwwwwwwwwwwwtttttt#",
+        "#wwwwwwwwwwwwtttttt#",
+        "#wwwwwwwwwwwwtttttt#",
+        "#wwwwwwwwwwwwtttttt#",
+        "#wwwwwwwwwwwwtttttt#",
+        "#wwwwwwwwwwwwwwwwww#",
+        "#wwwwwwwwwwwwwwwwww#",
+        "#wwwwwwwwwwwwwwwwww#",
+        "#########ww#########"
+      ]
+    },
+    "elevation": {
+      "palette": { "0": "0", "4": "4" },
+      "data": [
+        "44444444444444444444",
+        "40000000000000000004",
+        "40000000000000000004",
+        "40000000000000000004",
+        "40000000000000000004",
+        "40000000000000000004",
+        "40000000000000000004",
+        "40000000000000000004",
+        "40000000000000000004",
+        "40000000000000000004",
+        "40000000000000000004",
+        "40000000000000000004",
+        "40000000000000000004",
+        "40000000000000000004",
+        "44444444400444444444"
+      ]
+    }
+  },
+  "objects": [
+    { "id": "cafe.counter", "type": "fixture.cafe.counter", "tile": [1, 2] },
+    { "id": "terminal.1", "type": "fixture.cafe.computer-desk", "tile": [7, 2] },
+    { "id": "terminal.2", "type": "fixture.cafe.computer-desk", "tile": [10, 2] },
+    { "id": "terminal.3", "type": "fixture.cafe.computer-desk", "tile": [2, 5], "rotation": 90 },
+    { "id": "terminal.4", "type": "fixture.cafe.computer-desk", "tile": [2, 8], "rotation": 90 },
+    { "id": "terminal.5", "type": "fixture.cafe.computer-desk", "tile": [7, 7] },
+    { "id": "terminal.6", "type": "fixture.cafe.computer-desk", "tile": [10, 7] },
+    { "id": "terminal.chair.1", "type": "furn.chair", "tile": [7, 3] },
+    { "id": "terminal.chair.2", "type": "furn.chair", "tile": [10, 3] },
+    { "id": "terminal.chair.3", "type": "furn.chair", "tile": [3, 5], "rotation": 90 },
+    { "id": "terminal.chair.4", "type": "furn.chair", "tile": [3, 8], "rotation": 90 },
+    { "id": "terminal.chair.5", "type": "furn.chair", "tile": [7, 8] },
+    { "id": "terminal.chair.6", "type": "furn.chair", "tile": [10, 8] },
+    { "id": "cafe.booth.n", "type": "fixture.cafe.booth", "tile": [15, 2] },
+    { "id": "cafe.booth.s", "type": "fixture.cafe.booth", "tile": [15, 7] },
+    { "id": "cafe.magazines", "type": "furn.shelf", "tile": [17, 11], "rotation": 90 },
+    { "id": "cafe.plant.n", "type": "furn.plant", "tile": [18, 1] },
+    { "id": "cafe.plant.s", "type": "furn.plant", "tile": [14, 12] },
+    { "id": "cafe.table", "type": "furn.table", "tile": [4, 11] },
+    { "id": "cafe.chair", "type": "furn.chair", "tile": [6, 12] }
+  ],
+  "npcs": [
+    {
+      "id": "keep.pixel", "type": "folk.shopkeep", "tile": [2, 1], "facing": "south",
+      "props": { "name": "Pixel", "title": "Internet Cafe Attendant", "noSmallTalk": true, "roam": 1 },
+      "dialog": { "start": "hello", "nodes": {
+        "hello": { "text": "Every glowing station is live. Face a computer and press E to browse the web or load a cartridge in the NES emulator.", "choices": [
+          { "text": "What can I do here?", "to": "about" },
+          { "text": "Maybe later.", "to": "end" }
+        ] },
+        "about": { "text": "Type an address or search, or choose NES and load your own .nes cartridge. Some sites refuse to appear inside another page; the external button opens those in your regular browser.", "then": "hello" }
+      } }
+    }
+  ],
+  "exits": [{ "tile": [9, 14] }, { "tile": [10, 14] }],
+  "spawn": { "tile": [9, 13], "facing": "north" }
+}

@@ -25,8 +25,9 @@
  *
  * WHAT THE PLAYER CAN DO ABOUT IT
  * -------------------------------
- * One line, and it is the same line in every version: hand over whatever is in your
- * hand. `gift` takes one of it and `peace` ends the feud (sim/Friends.js), and
+ * One line, and it is the same line in every version: offer something from your
+ * bag. `gift` opens the item picker and `peace` ends the feud only after a
+ * selection (sim/Friends.js), and
  * the pair of them is the entire apology -- there is no coin price, no required
  * item and no fetch quest, because a fetch quest is a thing you agree to and
  * this is a thing you owe. It costs whatever you were carrying when you decided
@@ -55,18 +56,13 @@ import { hashString } from '../core/rng.js';
 import { parseDialog } from './dialog.js';
 
 /**
- * The line that hands something over, worded the same way in all of them.
- *
- * Deliberately vague about WHAT: the script cannot name it -- `gift` takes
- * whatever is held and no condition can ask its label -- and it turns out to be
- * the better line anyway. "Here. Take this." is what you say when you are
- * apologising and have not thought it through, which is the situation.
+ * The line that opens gift selection, worded the same way in all versions.
  */
-const OFFER = 'Here. Take this.';
+const OFFER = 'I want to give you something.';
 
 /** The two lines everyone gets: the apology, and the way out. */
 const choices = (leave) => [
-  { text: OFFER, when: { holding: true }, do: [{ gift: true }, { peace: true }], to: 'took' },
+  { text: OFFER, when: { carrying: true }, do: [{ gift: true }, { peace: true }], to: 'took' },
   { text: leave, to: 'off' },
 ];
 
@@ -88,7 +84,7 @@ const MILD = [
   // 0: the one who counts. Cold rather than loud, and the least forgiving to read.
   speech(
     [
-      'You shot me.',
+      'You hit me with a BB.',
       'I have been stood in this spot for years and nobody has ever done that. Not once. You did it inside a week.',
       'So do not start. Whatever it was going to be, do not.',
     ],
@@ -159,7 +155,7 @@ const MILD = [
   speech(
     [
       'Do you know how long I have lived here? And not once, NOT once, have I been a story anybody tells.',
-      'Now I am the one who got shot by the newcomer. That is who I am at every supper table this week.',
+      'Now I am the one who got hit by the newcomer\'s BB. That is who I am at every supper table this week.',
       'You cannot give me back my boring life. But you may attempt it.',
     ],
     [
@@ -318,7 +314,7 @@ const ANGRY = [
   speech(
     [
       'Twice now. You have overtaken the horse.',
-      'The horse, I want it said, was a better shot and had the decency to be a horse.',
+      'The horse, I want it said, had better aim and the decency to be a horse.',
       'I am old, not patient. There is a difference, and you are stood on it.',
     ],
     [
@@ -402,7 +398,7 @@ const FURIOUS = [
   // 5: the proud one.
   speech(
     [
-      'Three times. I am no longer a story, I am a LANDMARK. They give directions by me. "Left at the one who keeps getting shot."',
+      'Three times. I am no longer a story, I am a LANDMARK. They give directions by me. "Left at the one who keeps getting hit with BBs."',
       'You have made my name a joke and my door a target, and I am past caring which of those I forgive you for last.',
     ],
     [

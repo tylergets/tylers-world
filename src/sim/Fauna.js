@@ -19,16 +19,18 @@
 
 import { Animal } from './Animal.js';
 import { animalType } from '../world/animalTypes.js';
+import { isAnimalSpawnTile } from '../world/animalHabitats.js';
 import { makeRng } from '../core/rng.js';
 
 export class Fauna {
   constructor(world) {
     this.world = world;
+    this._stockTiles = new Map();
     // `spawns()` and not `animals`, so the fish its water stocks arrive by the
     // same route the file's chickens do. See world/shoals.js: fish are derived
     // from the water rather than placed, and this is the only line that had to
     // know it.
-    this.animals = world.spawns().map((spec) => new Animal(world, spec));
+    this.animals = world.spawns().map((spec) => this.#spawn(spec));
     /**
      * Bumped when the FLOCK changes -- one fewer animal, or a night's worth
      * back again -- and never when one merely moves. Movement is what this
@@ -49,7 +51,7 @@ export class Fauna {
    * strategy that reads its animal. The herd centroids cost one pass over the
    * flock, and only species that herd pay it.
    */
-  update(dt, clock = null, player = null) {
+  update(dt, clock = null, player = null, bodies = null) {
     const hour = clock ? clock.t * 24 : null;
 
     let herds = null;
@@ -66,7 +68,7 @@ export class Fauna {
       animal.hour = hour;
       animal.threat = player && animal.type.fear ? player : null;
       animal.herd = herds?.get(animal.typeId) ?? null;
-      animal.update(dt, this.world);
+      animal.update(dt, this.world, bodies);
     }
 
     // A dead animal stays in the flock while it falls, so the batch goes on
@@ -78,7 +80,7 @@ export class Fauna {
   }
 
   /**
-   * Shoot one. It topples where it stood and leaves the flock when it lands.
+   * Kill one immediately. It topples where it stood and leaves the flock when it lands.
    *
    * Returns the animal so the caller can ask what it was and what it drops --
    * it is still a whole animal for the length of the fall, and answering
@@ -89,6 +91,16 @@ export class Fauna {
     if (!a || a.dying !== null) return null;
     a.dying = 0;
     return a;
+  }
+
+  /** Apply one gunshot, only toppling the animal when its size-based health is spent. */
+  shoot(id) {
+    const animal = this.animals.find((a) => a.id === id);
+    if (!animal || animal.dying !== null) return null;
+    animal.shotsLeft--;
+    if (animal.shotsLeft > 0) return { animal, killed: false };
+    animal.dying = 0;
+    return { animal, killed: true };
   }
 
   /**
@@ -129,7 +141,7 @@ export class Fauna {
     let back = 0;
     for (const spec of this.world.spawns()) {
       if (here.has(spec.id)) continue;
-      this.animals.push(new Animal(this.world, spec));
+      this.animals.push(this.#spawn(spec));
       back++;
     }
     if (back) this.version++;
@@ -166,23 +178,50 @@ export class Fauna {
 
   /** Rebuild membership after the planner changes land and water. */
   rebuild(culled, targets) {
-    this.animals = this.world.spawns().map((spec) => new Animal(this.world, spec));
+    this._stockTiles.clear();
+    this.animals = this.world.spawns().map((spec) => this.#spawn(spec));
     this.version++;
     this.sync(culled);
     this.reconcile(targets);
   }
 
+  /** Keep live positions and homes aligned when the old grid moves. */
+  translate(dx, dz) {
+    this._stockTiles.clear();
+    for (const animal of this.animals) {
+      animal.x += dx; animal.z += dz;
+      animal.home.x += dx; animal.home.z += dz;
+      if (animal.lure) { animal.lure.x += dx; animal.lure.z += dz; }
+      if (animal.herd) { animal.herd.x += dx; animal.herd.z += dz; }
+      animal.y = this.world.groundHeight(animal.x, animal.z);
+    }
+  }
+
   #stockTile(type, id) {
     const swims = animalType(type).swims === true;
-    const candidates = [];
-    for (let z = 0; z < this.world.height; z++) {
-      for (let x = 0; x < this.world.width; x++) {
-        if (swims ? this.world.isOpenWater(x, z) : !this.world.isBlocked(x, z)) candidates.push([x, z]);
+    let candidates = this._stockTiles.get(type);
+    if (!candidates) {
+      candidates = [];
+      for (let z = 0; z < this.world.height; z++) {
+        for (let x = 0; x < this.world.width; x++) {
+          const open = swims ? this.world.isOpenWater(x, z) : !this.world.isBlocked(x, z);
+          if (open && isAnimalSpawnTile(this.world, type, x, z)) candidates.push([x, z]);
+        }
       }
+      this._stockTiles.set(type, candidates);
     }
     if (!candidates.length) return null;
     const rng = makeRng(`office-stock:${this.world.meta.id}:${id}`);
     return candidates[Math.floor(rng() * candidates.length)];
+  }
+
+  #spawn(spec) {
+    const [x, z] = spec.tile;
+    const swims = animalType(spec.type).swims === true;
+    const open = swims ? this.world.isOpenWater(x, z) : !this.world.isBlocked(x, z);
+    if (open && isAnimalSpawnTile(this.world, spec.type, x, z)) return new Animal(this.world, spec);
+    const tile = this.#stockTile(spec.type, spec.id);
+    return new Animal(this.world, tile ? { ...spec, tile } : spec);
   }
 
   /**

@@ -8,6 +8,7 @@
   "types": {
     "fixture.blanket-chest": {
       "kind": "object",
+      "use": "store",
       "label": "Beechbark Blanket Chest",
       "footprint": { "w": 1, "d": 1 },
       "height": 0.65,

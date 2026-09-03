@@ -64,6 +64,7 @@ export class Animal {
     this.yaw = range(this.rng, -Math.PI, Math.PI);
 
     this.radius = this.type.radius;
+    this.shotsLeft = this.radius >= 0.38 ? 3 : this.radius >= 0.28 ? 2 : 1;
     this.phaseRate = this.type.phaseRate;
     this.speed = 0;
     this.walkPhase = range(this.rng, 0, 10);   // so a flock's legs are not in step
@@ -114,7 +115,7 @@ export class Animal {
   get tileZ() { return Math.floor(this.z); }
 
   /** Ask the behavior what it wants, then let the shared physics decide. */
-  update(dt, world) {
+  update(dt, world, bodies = null) {
     // A dying animal has no behaviour and no physics. The behaviour is not
     // paused -- it is over -- so this returns before body.js is asked to sweep
     // something that is on its way out of the world, and before the wander
@@ -127,6 +128,6 @@ export class Animal {
       return;
     }
     const { vx, vz } = this.behavior.update(dt, this, world);
-    sweep(world, this, dt, vx, vz);
+    sweep(world, this, dt, vx, vz, bodies);
   }
 }

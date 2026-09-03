@@ -1,0 +1,60 @@
+{
+  "format": "tw.world",
+  "version": 1,
+  "kind": "interior",
+  "meta": { "id": "civic.employment-office.interior", "name": "Employment Office", "note": "The town's payroll and worker records office." },
+  "grid": { "width": 15, "height": 11, "tileSize": 1 },
+  "ambience": { "music": "home", "sun": 0.9, "hemi": 2.2, "hemiSky": "#fff0d2" },
+  "layers": {
+    "surface": {
+      "palette": { "#": "wall.panel", "w": "floor.wood", "c": "floor.checker" },
+      "data": [
+        "###############",
+        "#ccccccccccccc#",
+        "#ccccccccccccc#",
+        "#wwwwwwwwwwwww#",
+        "#wwwwwwwwwwwww#",
+        "#wwwwwwwwwwwww#",
+        "#wwwwwwwwwwwww#",
+        "#wwwwwwwwwwwww#",
+        "#wwwwwwwwwwwww#",
+        "#wwwwwwwwwwwww#",
+        "#######w#######"
+      ]
+    },
+    "elevation": {
+      "palette": { "0": "0", "4": "4" },
+      "data": [
+        "444444444444444",
+        "400000000000004",
+        "400000000000004",
+        "400000000000004",
+        "400000000000004",
+        "400000000000004",
+        "400000000000004",
+        "400000000000004",
+        "400000000000004",
+        "400000000000004",
+        "444444404444444"
+      ]
+    }
+  },
+  "objects": [
+    { "id": "office.counter", "type": "furn.counter", "tile": [5, 2], "props": { "label": "Worker Records" } },
+    { "id": "office.shelf.a", "type": "furn.shelf", "tile": [1, 1] },
+    { "id": "office.shelf.b", "type": "furn.shelf", "tile": [12, 1] },
+    { "id": "office.table", "type": "furn.table", "tile": [3, 6] },
+    { "id": "office.chair.a", "type": "furn.chair", "tile": [5, 7] },
+    { "id": "office.chair.b", "type": "furn.chair", "tile": [10, 6] },
+    { "id": "office.plant", "type": "furn.plant", "tile": [13, 8] }
+  ],
+  "npcs": [
+    {
+      "id": "official.secretary", "type": "folk.secretary", "tile": [6, 1], "facing": "south",
+      "props": { "name": "Ada Ledger", "title": "Secretary", "office": "employment", "workerSecretary": true, "noSmallTalk": true },
+      "dialog": { "start": "hello", "nodes": { "hello": { "text": "I keep the town's worker records.", "then": "end" } } }
+    }
+  ],
+  "exits": [{ "tile": [7, 10] }],
+  "spawn": { "tile": [7, 9], "facing": "north" }
+}

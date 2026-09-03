@@ -443,6 +443,7 @@
     {"id":"store.clothier","type":"building.clothier","tile":[100,80],"props":{"label":"Cuff & Collar","interior":"worlds/interiors/store-clothier.json"}},
     {"id":"home.sennen","type":"building.cottage","tile":[92,72],"props":{"label":"Sennen's Cottage","interior":"worlds/interiors/home-sennen.json","owner":"folk.sennen"}},
     {"id":"town.hall","type":"building.townhall","tile":[52,76],"props":{"label":"Town Hall","interior":"worlds/interiors/town-hall.json"}},
+    {"id":"town.noticeboard","type":"civic.noticeboard","tile":[52,82]},
     {"id":"town.museum","type":"building.museum","tile":[72,68],"props":{"label":"Museum","interior":"worlds/interiors/museum.json"}},
     {"id":"home.kelp","type":"building.cottage","tile":[14,84],"props":{"label":"Kelp's Cottage","interior":"worlds/interiors/home-kelp.json","owner":"folk.kelp"}},
     {"id":"home.chalk","type":"building.cabin","tile":[100,72],"props":{"label":"Chalk's Cabin","interior":"worlds/interiors/home-chalk.json","owner":"folk.chalk"}},
@@ -661,15 +662,57 @@
         }
       },
       "dialog": {
-        "start": "hello",
+        "start": "open",
         "nodes": {
+          "open": {
+            "branch": [
+              {
+                "when": {
+                  "not": {
+                    "flag": "met"
+                  }
+                },
+                "to": "hello"
+              },
+              {
+                "to": "again"
+              }
+            ]
+          },
           "hello": {
-            "text": "Kelp. I stretch new rope between the road posts until it forgets how to kink. That's my place behind me. Come say hello before you let yourself in.",
-            "then": "again"
+            "text": [
+              "Kelp. I walk rope. Lay it out between the posts along the road and stretch it until it forgets it was ever coiled.",
+              "That cottage is mine, and there is usually a line off its door. Shout before you come up the path; a loaded rope does not care whose ankle it finds."
+            ],
+            "do": {
+              "set": "met"
+            }
           },
           "again": {
-            "text": "Step over the line, not on it."
+            "text": "Line is out between the posts. Step over it, not on it; it has a week of stretch in it and I would rather keep that."
           }
+        },
+        "greetings": {
+          "acquaintance": [
+            "Salt gets into new rope and makes it lazy. That is why I walk it up here and not down at the quay.",
+            "Doss wants three fathoms by Friday. He will get it Saturday. Rope does not read calendars.",
+            "Mind the far post. I have a line off it that is under so much strain it hums when the wind is right.",
+            "Hands are raw from the tarred stuff. Nod, and I will nod back, and we will call that shaking hands."
+          ],
+          "friend": [
+            "Morrow wants a bell rope soft enough to pull with a child's hand and strong enough to hang a bell from. I told him to pick.",
+            "Chalk marked one of my posts white. Said it was so nobody walked into the line in the fog. Nobody has since. I am annoyed that it worked.",
+            [
+              "A line went yesterday. Snapped under stretch, the whole length of the road.",
+              "Sound like a shot. Every gull on the coast went up. Nobody hurt but my pride and the rope."
+            ],
+            "You walk along the line, not across it. First person on this road who did that without being told."
+          ],
+          "close": [
+            "Nothing under strain today. Come and sit on the coil, it is the softest seat on the road.",
+            "Made you a short piece with a proper eye in it. Do not ask what for. Everybody needs one eventually.",
+            "Fog is down and the posts have gone. Sit in the door with me till they come back."
+          ]
         }
       }
     },
@@ -692,15 +735,57 @@
         }
       },
       "dialog": {
-        "start": "hello",
+        "start": "open",
         "nodes": {
+          "open": {
+            "branch": [
+              {
+                "when": {
+                  "not": {
+                    "flag": "met"
+                  }
+                },
+                "to": "hello"
+              },
+              {
+                "to": "again"
+              }
+            ]
+          },
           "hello": {
-            "text": "Chalk. I mark boats, walls, and anything else expected to be found in fog. That's my place behind me. Come say hello before you let yourself in.",
-            "then": "again"
+            "text": [
+              "Chalk. I limewash walls and mark boats. If a thing has to be found in fog, I am the one who makes it white enough to find.",
+              "That cabin is mine. Call out from the road before you come in; I will be up a ladder with a brush, and I would rather see you than drip on you."
+            ],
+            "do": {
+              "set": "met"
+            }
           },
           "again": {
-            "text": "White first. Color after the weather agrees."
+            "text": "White first. Colour after, once the weather has agreed to it. It has not agreed yet."
           }
+        },
+        "greetings": {
+          "acquaintance": [
+            "Fog this morning and every white mark on the coast earned its keep. I stood on the road and counted them.",
+            "Lime on my hands, lime in my hair. If I go grey early it will be work, not worry.",
+            "Doing the quay wall again. Salt eats white faster than it eats anything.",
+            "Mind the pail by the step. It is wash, and it will take the colour out of your boots and then your boots."
+          ],
+          "friend": [
+            "Kelp says my white post ruins the look of the road. Nobody has walked into his rope since. He knows that.",
+            "Sennen wants the road side of his house done in something cheerful. I said white, then wait. He said he has been waiting. I said good.",
+            [
+              "A boat came in last night and the skipper said he found the slip by my mark on the wall.",
+              "Best thing anyone has said to me all year and he did not know he was saying it."
+            ],
+            "You look at a wall and see whether it needs doing. Most people see a wall. I have got fond of you for it."
+          ],
+          "close": [
+            "Ladder is down and the pail is lidded. Come and sit on the step, it dried an hour ago.",
+            "Put a small white mark on your mailbox post when you were out. Now they can find you in fog too. Do not thank me.",
+            "Weather has not agreed to anything today, so nothing gets colour. Stop a while. It is rare, me with clean hands."
+          ]
         }
       }
     },
@@ -723,15 +808,57 @@
         }
       },
       "dialog": {
-        "start": "hello",
+        "start": "open",
         "nodes": {
+          "open": {
+            "branch": [
+              {
+                "when": {
+                  "not": {
+                    "flag": "met"
+                  }
+                },
+                "to": "hello"
+              },
+              {
+                "to": "again"
+              }
+            ]
+          },
           "hello": {
-            "text": "Morrow. I cast small bells for doors too far inland to hear the rock. That's my place behind me. Come say hello before you let yourself in.",
-            "then": "again"
+            "text": [
+              "Morrow. I cast bells. Small ones, for doors and gates too far inland to hear the rock and too proud to say so.",
+              "That bungalow is mine, and when the mould is open I do not hear the door. Ring the little one on the post and wait; that is what it is for."
+            ],
+            "do": {
+              "set": "met"
+            }
           },
           "again": {
-            "text": "A clear note needs room around it."
+            "text": "A clear note needs room around it. So does the pouring. Give the yard a wide berth today."
           }
+        },
+        "greetings": {
+          "acquaintance": [
+            "Poured at dawn. The bronze is still talking in the mould and I will not know for a day what it said.",
+            "Listen. That is the rock, out on the water. Every bell I make is trying to be that and not one has managed.",
+            "Ash pit is warm. Keep the boots off it. I say it to everyone, and most of them learn once.",
+            "The wind carries the rock further on a cold day. Good for me. I sit and take notes on it."
+          ],
+          "friend": [
+            "Sennen's bell is mine. He tells everyone he timed the echo with a candle. He did. I held the candle.",
+            "Kelp will not make me a rope that is both soft and strong. Says I have to pick. I have been picking for a year.",
+            [
+              "Cracked a bell on the cooling yesterday. Heard it go from the yard.",
+              "A cracked bell has a note. It is a sad note, and it is honest, and I hung it up anyway."
+            ],
+            "You stop and listen when the rock sounds. Most people here have stopped hearing it. I would rather they had not."
+          ],
+          "close": [
+            "Come and sit by the pit. It is warm and there is a bell cooling that will be worth the wait.",
+            "Cast a little one for your door. It is on the bench. It rings true and I did not expect it to.",
+            "No pour today, no fire. Sit in the quiet with me. It is the only day I hear the rock properly."
+          ]
         }
       }
     },
@@ -844,6 +971,28 @@
           "bye": {
             "text": "Mind the weed on the slip."
           }
+        },
+        "greetings": {
+          "acquaintance": [
+            "Tide is on the turn. You can hear the bell rock clearer when it is; the water gets out of the way of the sound.",
+            "Slip is green today. Walk it like it hates you and you will keep your feet.",
+            "Boats are in early. Nothing out there but weather and it was not the kind you fish in.",
+            "Gulls are working something off the point. Could be fish. Could be Nell's sheep gone in. Both have happened."
+          ],
+          "friend": [
+            "Nell sent down a note saying the wind is worse up there. I sent back a wet one saying the sea is wetter down here.",
+            "Sennen keeps wanting me to come and stand in his front room and listen. I told him I can hear the bell fine from here, thank you.",
+            [
+              "Came in on the bell last night, fog right down, no light at all.",
+              "You count between the notes and steer by the counting. Nobody taught me that. The rock did."
+            ],
+            "You walk the slip like a local now. Weed and all. The sea has stopped trying you out and I have as well."
+          ],
+          "close": [
+            "Bell is ringing plain this morning. Sit on the wall and listen to it with me.",
+            "Kept a crab back from the pot. It is in the bucket with your name on the lid, more or less.",
+            "Boats are out and I am not. Nobody else knows what to say to that. Sit down and say nothing with me."
+          ]
         }
       }
     },
@@ -930,6 +1079,28 @@
           "bye": {
             "text": "Shut the gate behind you."
           }
+        },
+        "greetings": {
+          "acquaintance": [
+            "Gate on the top step is off its hinge again. Lift it, do not push it, and it will forgive you.",
+            "Wind is up from the sea. I can smell salt on the sheep and they do not care for it either.",
+            "Cropped short up here this week. You can see the chalk through the grass where the sheep have been at it.",
+            "Sheep are in the far corner where the pines break the wind. Sheep know everything I know about weather and more."
+          ],
+          "friend": [
+            "Doss sent up a wet note about the sea. I have pinned it to the gate to dry. It will take a week.",
+            "Sennen thinks he lives in the middle of the town. He lives in the middle of an argument and he built the house there on purpose.",
+            [
+              "Walked north yesterday until the sheep stopped being mine.",
+              "Then I walked back. It was further than I thought and it did not stop. It never does."
+            ],
+            "You do not go on about the view. Everybody else stands here and says \"oh\". You look at the field. I have noticed."
+          ],
+          "close": [
+            "Sit in the lee of the wall. The sheep will come and look at you. Let them.",
+            "Left the gate on the latch for you. I have never done that for anyone, and the sheep have noticed.",
+            "Wind has dropped and there is nothing to do but be up here. Be up here with me."
+          ]
         }
       }
     },
@@ -1089,6 +1260,28 @@
           "bye": {
             "text": "Go on, then."
           }
+        },
+        "greetings": {
+          "acquaintance": [
+            "Halfway row. You can see both ends from the step and neither end will look back.",
+            "Wind off the sea on the front and wind off the hill on the back. I am the only house in the town that gets both.",
+            "Rang the bell at noon and both halves stopped. It is the only time in the day they agree on anything.",
+            "Swept the boards and washed the flags and neither half of the town has noticed either."
+          ],
+          "friend": [
+            "Nell says the sea is loud tonight. Doss says the hill is quiet. They said it at the same time, from either end of my window.",
+            "Painted the road side of the house. Chalk says it needs another coat before the weather. The weather has not been asked.",
+            [
+              "Somebody told me to pick a side once. I said I had. I said the middle.",
+              "They walked off up the hill. Then they came back down again. That is my point, and nobody gets it."
+            ],
+            "You come in one door and out the other. Nobody else uses both. I have started to think you understand the house."
+          ],
+          "close": [
+            "Good chair is in the middle, obviously. Come in whichever door you like and sit in it.",
+            "Bell rope is down for you. Give it a pull and then come and watch the town stop.",
+            "Quiet day, both ends. Sit on the step between them with me and enjoy nobody arguing."
+          ]
         }
       }
     }

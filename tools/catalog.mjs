@@ -33,6 +33,7 @@ import { parseKit, KitError } from '../src/world/kit.js';
 
 const SRC = 'public/kits/furniture';
 const OUT = 'public/kits/turnip-catalog.kit.json';
+const DEBUG_OUT = 'public/worlds/interiors/debug-room.json';
 const CHECK = process.argv.includes('--check');
 
 const files = fs.readdirSync(SRC).filter((f) => f.endsWith('.kit.json')).sort();
@@ -97,14 +98,79 @@ parseKit(bundle, OUT);
 
 const json = `${JSON.stringify(bundle)}\n`;
 
+/**
+ * The debug room is a generated showroom for the assembled half of every
+ * catalogue product. Keeping it beside the bundle generation means adding a
+ * furniture file cannot leave the visual test floor silently incomplete.
+ */
+function buildDebugRoom() {
+  const fixtures = Object.entries(types)
+    .filter(([id, type]) => id.startsWith('fixture.') && (type.kind ?? 'object') === 'object')
+    .sort(([a], [b]) => a.localeCompare(b));
+  const columns = 20;
+  const rows = Math.ceil(fixtures.length / columns);
+  const width = 84;
+  const height = rows * 4 + 2;
+  const doorX = [41, 42];
+  const wall = '#'.repeat(width);
+  const floor = `#${'t'.repeat(width - 2)}#`;
+  const floorDoor = `${'#'.repeat(doorX[0])}tt${'#'.repeat(width - doorX[1] - 1)}`;
+  const high = '4'.repeat(width);
+  const low = `4${'0'.repeat(width - 2)}4`;
+  const lowDoor = `${'4'.repeat(doorX[0])}00${'4'.repeat(width - doorX[1] - 1)}`;
+
+  const objects = [{
+    id: 'debug.sign', type: 'furn.construction-sign', tile: [40, 1],
+    props: { label: 'COMPLETE CATALOGUE' },
+  }];
+  for (const [[id, type], index] of fixtures.map((entry, index) => [entry, index])) {
+    const { w, d } = type.footprint;
+    if (w > 3 || d > 3) throw new Error(`${id}: debug showroom only supports footprints up to 3x3`);
+    const column = index % columns;
+    const row = Math.floor(index / columns);
+    const x = column < 10 ? 2 + column * 4 : 44 + (column - 10) * 4;
+    objects.push({ id: `display.${id.slice('fixture.'.length)}`, type: id, tile: [x, 2 + row * 4] });
+  }
+
+  const room = {
+    format: 'tw.world', version: 1, kind: 'interior',
+    kits: ['kits/turnip-catalog.kit.json'],
+    meta: {
+      id: 'debug.room', name: 'The Debug Room',
+      note: 'Generated showroom containing every assembled catalogue model.',
+    },
+    grid: { width, height, tileSize: 1 },
+    ambience: { music: 'home', sky: '#101820', sun: 1.4, hemi: 2.4, hemiSky: '#dff7ff' },
+    layers: {
+      surface: {
+        palette: { '#': 'wall.stripe', t: 'floor.tile' },
+        data: [wall, ...Array(height - 2).fill(floor), floorDoor],
+      },
+      elevation: {
+        palette: { 0: '0', 4: '4' },
+        data: [high, ...Array(height - 2).fill(low), lowDoor],
+      },
+      flags: { palette: { '.': 'none' }, data: Array(height).fill('.'.repeat(width)) },
+    },
+    objects,
+    exits: doorX.map((x) => ({ tile: [x, height - 1] })),
+    spawn: { tile: [doorX[1], height - 2], facing: 'north' },
+  };
+  return `${JSON.stringify(room, null, 2)}\n`;
+}
+
+const debugJson = buildDebugRoom();
+
 if (CHECK) {
   const have = fs.existsSync(OUT) ? fs.readFileSync(OUT, 'utf8') : '';
-  if (have !== json) {
+  const haveDebug = fs.existsSync(DEBUG_OUT) ? fs.readFileSync(DEBUG_OUT, 'utf8') : '';
+  if (have !== json || haveDebug !== debugJson) {
     console.error(`${OUT} is stale -- run "npm run catalog"`);
     process.exit(1);
   }
-  console.log(`${files.length} files, ${objects} fixtures + ${items} items: bundle is current`);
+  console.log(`${files.length} files, ${objects} fixtures + ${items} items: bundle and showroom are current`);
 } else {
   fs.writeFileSync(OUT, json);
-  console.log(`${files.length} files -> ${OUT} (${objects} fixtures, ${items} items, ${(json.length / 1024).toFixed(0)} KB)`);
+  fs.writeFileSync(DEBUG_OUT, debugJson);
+  console.log(`${files.length} files -> ${OUT} and ${DEBUG_OUT} (${objects} fixtures, ${items} items, ${(json.length / 1024).toFixed(0)} KB)`);
 }

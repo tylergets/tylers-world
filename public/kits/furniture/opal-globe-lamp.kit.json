@@ -1,0 +1,54 @@
+{
+  "format": "tw.kit",
+  "version": 1,
+  "meta": {
+    "id": "turnip.opal-globe-lamp",
+    "name": "Hollowmilk Opal Globe Lamp"
+  },
+  "types": {
+    "fixture.opal-globe-lamp": {
+      "kind": "object",
+      "label": "Hollowmilk Opal Globe Lamp",
+      "footprint": { "w": 1, "d": 1 },
+      "height": 2.32,
+      "squash": 0.22,
+      "palette": {
+        "woodDark": "#cfc7b6",
+        "pale": "#ffffff",
+        "metal": "#b6bcc1",
+        "glass": "#dceaf4"
+      },
+      "parts": [
+        { "prim": "cyl", "at": [0, 0.06, 0], "size": [0.3, 0.12, 0.3], "color": "metal" },
+        { "prim": "taper", "at": [0, 1.097, 0], "size": [0.065, 2.052, 0.065], "color": "woodDark" },
+        { "prim": "cyl", "at": [0, 0.429, 0], "size": [0.11, 0.08, 0.11], "color": "metal" },
+        { "prim": "cyl", "at": [0, 1.288, 0], "size": [0.085, 0.05, 0.085], "color": "metal" },
+        { "prim": "blob", "at": [0, 2.076, 0], "size": [0.24, 0.24, 0.24], "color": "glass" },
+        { "prim": "cyl", "at": [0, 1.906, 0], "size": [0.168, 0.07, 0.168], "color": "metal" },
+        { "prim": "blob", "at": [0, 2.036, 0], "size": [0.105, 0.13, 0.105], "color": "pale", "anim": { "pulse": { "amp": 0.12, "rate": 0.7 } } }
+      ],
+      "light": {
+        "color": "#fff4d5",
+        "height": 2.05,
+        "range": 7,
+        "intensity": 12
+      }
+    },
+    "kititem.opal-globe-lamp": {
+      "kind": "item",
+      "label": "Hollowmilk Opal Globe Lamp",
+      "value": 830,
+      "stack": 1,
+      "swatch": "#8c918a",
+      "badge": "crate",
+      "furniture": "fixture.opal-globe-lamp",
+      "site": "outdoors",
+      "palette": {
+        "wrap": "#d9c7a4",
+        "wrapHi": "#eee1c7",
+        "strap": "#8a6242",
+        "mark": "#8c918a"
+      }
+    }
+  }
+}

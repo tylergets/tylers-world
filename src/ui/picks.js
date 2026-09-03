@@ -26,12 +26,23 @@ import { STARTERS } from '../sim/Save.js';
  */
 export function worldChoices() {
   return [
-    ...STARTERS.map((s) => ({ id: s.id, name: s.name, note: s.note })),
+    ...STARTERS.map((s) => ({ id: s.id, name: s.name, note: s.note, form: s.form, size: s.size })),
     ...FORMS.map((f) => ({
       id: `gen:${f.id}`,
       name: `Random ${f.label.toLowerCase()}`,
       note: f.note,
+      form: f.label,
+      size: f.size,
     })),
+  ];
+}
+
+/** The same choices divided by how their map is made. */
+export function worldChoiceGroups() {
+  const choices = worldChoices();
+  return [
+    { id: 'established', label: 'Established places', choices: choices.slice(0, STARTERS.length) },
+    { id: 'generated', label: 'Generated places', choices: choices.slice(STARTERS.length) },
   ];
 }
 

@@ -1,0 +1,824 @@
+{
+  "format": "tw.world",
+  "version": 1,
+  "kind": "interior",
+  "kits": [
+    "kits/skydeck.kit.json",
+    "kits/turnip-catalog.kit.json"
+  ],
+  "meta": {
+    "id": "skydeck.rooftop",
+    "name": "The Skydeck",
+    "note": "A rooftop helipad turned night lounge: a helicopter idling on the H, a DJ, a bar, and a waist-high parapet with nothing past it."
+  },
+  "grid": {
+    "width": 30,
+    "height": 24,
+    "tileSize": 1
+  },
+  "ambience": {
+    "music": "clothier",
+    "sky": "#0b1230",
+    "sun": 0.7,
+    "hemi": 1.7,
+    "hemiSky": "#7a9cff"
+  },
+  "layers": {
+    "surface": {
+      "palette": {
+        "#": "wall.marble",
+        "c": "concrete",
+        "t": "floor.tile"
+      },
+      "data": [
+        "##############################",
+        "#cccccccccccccccccccccccccccc#",
+        "#cccccccccccccccccccccccccccc#",
+        "#cccccccccccccccccccccccccccc#",
+        "#ccccccccccctccctcccccccccccc#",
+        "#ccccccccccctttttcccccccccccc#",
+        "#ccccccccccctccctcccccccccccc#",
+        "#cccccccccccccccccccccccccccc#",
+        "#cccccccccccccccccccccccccccc#",
+        "#cccccccccccccccccccccccccccc#",
+        "#tttttttttttttttttttttttttttt#",
+        "#tttttttttttttttttttttttttttt#",
+        "#tttttttttttttttttttttttttttt#",
+        "#tttttttttttttttttttttttttttt#",
+        "#tttttttttttttttttttttttttttt#",
+        "#tttttttttttttttttttttttttttt#",
+        "#tttttttttttttttttttttttttttt#",
+        "#tttttttttttttttttttttttttttt#",
+        "#tttttttttttttttttttttttttttt#",
+        "#tttttttttttttttttttttttttttt#",
+        "#tttttttttttttttttttttttttttt#",
+        "#tttttttttttttttttttttttttttt#",
+        "#tttttttttttttttttttttttttttt#",
+        "##############tt##############"
+      ]
+    },
+    "elevation": {
+      "palette": {
+        "0": "0",
+        "2": "2"
+      },
+      "data": [
+        "222222222222222222222222222222",
+        "200000000000000000000000000002",
+        "200000000000000000000000000002",
+        "200000000000000000000000000002",
+        "200000000000000000000000000002",
+        "200000000000000000000000000002",
+        "200000000000000000000000000002",
+        "200000000000000000000000000002",
+        "200000000000000000000000000002",
+        "200000000000000000000000000002",
+        "200000000000000000000000000002",
+        "200000000000000000000000000002",
+        "200000000000000000000000000002",
+        "200000000000000000000000000002",
+        "200000000000000000000000000002",
+        "200000000000000000000000000002",
+        "200000000000000000000000000002",
+        "200000000000000000000000000002",
+        "200000000000000000000000000002",
+        "200000000000000000000000000002",
+        "200000000000000000000000000002",
+        "200000000000000000000000000002",
+        "200000000000000000000000000002",
+        "222222222222220022222222222222"
+      ]
+    },
+    "flags": {
+      "palette": {
+        ".": "none"
+      },
+      "data": [
+        "..............................",
+        "..............................",
+        "..............................",
+        "..............................",
+        "..............................",
+        "..............................",
+        "..............................",
+        "..............................",
+        "..............................",
+        "..............................",
+        "..............................",
+        "..............................",
+        "..............................",
+        "..............................",
+        "..............................",
+        "..............................",
+        "..............................",
+        "..............................",
+        "..............................",
+        "..............................",
+        "..............................",
+        "..............................",
+        "..............................",
+        ".............................."
+      ]
+    }
+  },
+  "objects": [
+    {
+      "id": "heli",
+      "type": "fixture.sky.helicopter",
+      "tile": [
+        12,
+        4
+      ]
+    },
+    {
+      "id": "pad.1",
+      "type": "fixture.sky.pad-light",
+      "tile": [
+        9,
+        2
+      ]
+    },
+    {
+      "id": "pad.2",
+      "type": "fixture.sky.pad-light",
+      "tile": [
+        19,
+        2
+      ]
+    },
+    {
+      "id": "pad.3",
+      "type": "fixture.sky.pad-light",
+      "tile": [
+        9,
+        8
+      ]
+    },
+    {
+      "id": "pad.4",
+      "type": "fixture.sky.pad-light",
+      "tile": [
+        19,
+        8
+      ]
+    },
+    {
+      "id": "pad.5",
+      "type": "fixture.sky.pad-light",
+      "tile": [
+        14,
+        1
+      ]
+    },
+    {
+      "id": "pad.6",
+      "type": "fixture.sky.pad-light",
+      "tile": [
+        14,
+        9
+      ]
+    },
+    {
+      "id": "pad.7",
+      "type": "fixture.sky.pad-light",
+      "tile": [
+        7,
+        5
+      ]
+    },
+    {
+      "id": "pad.8",
+      "type": "fixture.sky.pad-light",
+      "tile": [
+        21,
+        5
+      ]
+    },
+    {
+      "id": "search.w",
+      "type": "fixture.sky.searchlight",
+      "tile": [
+        2,
+        2
+      ]
+    },
+    {
+      "id": "search.e",
+      "type": "fixture.sky.searchlight",
+      "tile": [
+        27,
+        2
+      ]
+    },
+    {
+      "id": "bar",
+      "type": "fixture.sky.bar",
+      "tile": [
+        3,
+        16
+      ]
+    },
+    {
+      "id": "booth",
+      "type": "fixture.sky.dj-booth",
+      "tile": [
+        21,
+        13
+      ]
+    },
+    {
+      "id": "sofa.1",
+      "type": "fixture.sky.lounge-sofa",
+      "tile": [
+        10,
+        14
+      ]
+    },
+    {
+      "id": "sofa.2",
+      "type": "fixture.sky.lounge-sofa",
+      "tile": [
+        13,
+        14
+      ]
+    },
+    {
+      "id": "sofa.3",
+      "type": "fixture.sky.lounge-sofa",
+      "tile": [
+        16,
+        14
+      ]
+    },
+    {
+      "id": "sofa.4",
+      "type": "fixture.sky.lounge-sofa",
+      "tile": [
+        10,
+        18
+      ]
+    },
+    {
+      "id": "sofa.5",
+      "type": "fixture.sky.lounge-sofa",
+      "tile": [
+        16,
+        18
+      ]
+    },
+    {
+      "id": "fire.1",
+      "type": "fixture.sky.firebowl",
+      "tile": [
+        8,
+        12
+      ]
+    },
+    {
+      "id": "fire.2",
+      "type": "fixture.sky.firebowl",
+      "tile": [
+        20,
+        17
+      ]
+    },
+    {
+      "id": "fire.3",
+      "type": "fixture.sky.firebowl",
+      "tile": [
+        13,
+        20
+      ]
+    },
+    {
+      "id": "palm.1",
+      "type": "fixture.sky.neon-palm",
+      "tile": [
+        2,
+        11
+      ]
+    },
+    {
+      "id": "palm.2",
+      "type": "fixture.sky.neon-palm",
+      "tile": [
+        27,
+        11
+      ]
+    },
+    {
+      "id": "palm.3",
+      "type": "fixture.sky.neon-palm",
+      "tile": [
+        25,
+        19
+      ]
+    },
+    {
+      "id": "palm.4",
+      "type": "fixture.sky.neon-palm",
+      "tile": [
+        2,
+        21
+      ]
+    },
+    {
+      "id": "table.1",
+      "type": "furn.table",
+      "tile": [
+        12,
+        16
+      ],
+      "props": {
+        "label": "Lounge Table"
+      }
+    },
+    {
+      "id": "sign",
+      "type": "furn.construction-sign",
+      "tile": [
+        20,
+        21
+      ],
+      "props": {
+        "label": "SKYDECK - 11 FLOORS UP - MIND THE EDGE"
+      }
+    }
+  ],
+  "npcs": [
+    {
+      "id": "sky.halcyon",
+      "type": "folk.dj",
+      "tile": [
+        22,
+        12
+      ],
+      "facing": "south",
+      "props": {
+        "name": "DJ Halcyon",
+        "title": "Resident",
+        "noSmallTalk": true,
+        "roam": 1,
+        "voice": {
+          "pitch": 0.9,
+          "rate": 30,
+          "timbre": "square"
+        }
+      },
+      "dialog": {
+        "start": "open",
+        "nodes": {
+          "open": {
+            "branch": [
+              {
+                "when": {
+                  "not": {
+                    "flag": "met"
+                  }
+                },
+                "to": "hello"
+              },
+              {
+                "to": "again"
+              }
+            ]
+          },
+          "hello": {
+            "text": [
+              "Skydeck! You made it up! Eleven floors and a cab ride. Respect.",
+              "Halcyon. The tip jar is on the booth. The dance floor is wherever you are standing."
+            ],
+            "do": {
+              "set": "met"
+            },
+            "then": "menu"
+          },
+          "again": {
+            "text": "My person! Back on the roof!",
+            "then": "menu"
+          },
+          "menu": {
+            "text": "Requests?",
+            "choices": [
+              {
+                "text": "Play something loud.",
+                "to": "loud"
+              },
+              {
+                "text": "Play something slow.",
+                "to": "slow"
+              },
+              {
+                "text": "Whose helicopter is that?",
+                "to": "heli"
+              },
+              {
+                "text": "Just vibing.",
+                "to": "end"
+              }
+            ]
+          },
+          "loud": {
+            "text": "Say less. Hold onto the parapet.",
+            "then": "end"
+          },
+          "slow": {
+            "text": "Ah. That kind of night. This one is called \"Eleven Floors Up\". Juniper cries every time. Do not tell her I told you.",
+            "then": "end"
+          },
+          "heli": {
+            "text": "Captain Strand's. He never turns it off. Says the rotor is the beat and I am just following it. He is not entirely wrong.",
+            "then": "menu"
+          }
+        }
+      }
+    },
+    {
+      "id": "sky.juniper",
+      "type": "folk.shopkeep",
+      "tile": [
+        4,
+        15
+      ],
+      "facing": "south",
+      "props": {
+        "name": "Juniper",
+        "title": "Bartender",
+        "voice": {
+          "pitch": 1.08,
+          "rate": 24,
+          "timbre": "triangle"
+        },
+        "hair": "red"
+      },
+      "shop": {
+        "name": "The Skydeck Bar",
+        "markup": 1.3,
+        "buyRate": 0.5,
+        "takes": [
+          "kititem.sky-cocktail",
+          "kititem.vip-pass",
+          "kititem.neon-palm",
+          "kititem.lounge-sofa",
+          "kititem.firebowl",
+          "wear.glasses.aviator",
+          "wear.shirt.teal",
+          "wear.hat.cap"
+        ],
+        "stock": [
+          {
+            "type": "kititem.sky-cocktail",
+            "count": null,
+            "always": true
+          },
+          {
+            "type": "kititem.vip-pass",
+            "count": 1
+          },
+          {
+            "type": "kititem.neon-palm",
+            "count": 2
+          },
+          {
+            "type": "kititem.lounge-sofa",
+            "count": 3
+          },
+          {
+            "type": "kititem.firebowl",
+            "count": 3
+          },
+          {
+            "type": "wear.glasses.aviator",
+            "count": 2
+          },
+          {
+            "type": "wear.shirt.teal",
+            "count": 3
+          },
+          {
+            "type": "wear.hat.cap",
+            "count": 2
+          }
+        ]
+      },
+      "dialog": {
+        "start": "open",
+        "nodes": {
+          "open": {
+            "branch": [
+              {
+                "when": {
+                  "not": {
+                    "flag": "met"
+                  }
+                },
+                "to": "hello"
+              },
+              {
+                "to": "menu"
+              }
+            ]
+          },
+          "hello": {
+            "text": [
+              "Juniper. I pour, I listen, I do not repeat. Mostly.",
+              "The palms are for sale, the sofas are for sale, the view is not."
+            ],
+            "do": {
+              "set": "met"
+            },
+            "then": "menu"
+          },
+          "menu": {
+            "text": "What can I get you?",
+            "choices": [
+              {
+                "text": "Show me the bar.",
+                "do": {
+                  "shop": true
+                },
+                "to": "after"
+              },
+              {
+                "text": "One for the road. (25 coins)",
+                "when": {
+                  "hurt": true,
+                  "coins": 25
+                },
+                "do": [
+                  {
+                    "coins": -25
+                  },
+                  {
+                    "heal": true
+                  }
+                ],
+                "to": "healed"
+              },
+              {
+                "text": "Nothing, thanks.",
+                "to": "end"
+              }
+            ]
+          },
+          "after": {
+            "text": "Mind the edge on the way out. Everybody says it. Nobody has gone over. Yet.",
+            "then": "end"
+          },
+          "healed": {
+            "text": "There. Whatever that was, it is behind you now. That is what the drink is for.",
+            "then": "end"
+          }
+        },
+        "greetings": {
+          "acquaintance": [
+            "Bar is stocked. The palms are still for sale. Marguerite has told four people you are interesting, so brace.",
+            "The helicopter has not moved. Strand says that is the point. I have started pouring him one on the house for consistency.",
+            "Somebody bought a firebowl and tried to carry it lit. Dutch stopped them at the parapet. I sold them a cap for the burn.",
+            "Sofas are three for sale and one that is not, because Marguerite is on it and she came with the roof."
+          ],
+          "friend": [
+            "You are the only person who comes up here and does not go to the edge first. I notice that. I do not repeat it.",
+            "Strand asked me what you drink. I told him. That is the first thing I have repeated in a year. Be flattered.",
+            "Marguerite wants you at her table. There is no table. Everyone is at her table. That is how she does it.",
+            "Dutch let you through without the speech. He gives everyone the speech. I am choosing to take that personally on your behalf."
+          ],
+          "close": [
+            "Yours is already poured. Do not ask how I knew. I did not. I pour it every time and drink it myself when you do not come.",
+            "Sit at the end. It is the stool that faces away from the edge and towards me, and I arranged it that way.",
+            "Rotor is loud, Marguerite is louder, and you are the one quiet thing that comes up here. Stay a while."
+          ]
+        }
+      }
+    },
+    {
+      "id": "sky.strand",
+      "type": "folk.pilot",
+      "tile": [
+        18,
+        6
+      ],
+      "facing": "west",
+      "props": {
+        "name": "Captain Strand",
+        "title": "Helicopter Pilot",
+        "roam": 1,
+        "voice": {
+          "pitch": 0.86,
+          "rate": 21,
+          "timbre": "triangle"
+        }
+      },
+      "dialog": {
+        "start": "open",
+        "nodes": {
+          "open": {
+            "branch": [
+              {
+                "when": {
+                  "not": {
+                    "flag": "met"
+                  }
+                },
+                "to": "hello"
+              },
+              {
+                "to": "menu"
+              }
+            ]
+          },
+          "hello": {
+            "text": [
+              "Strand. Do not touch the rotor. People always want to touch the rotor.",
+              "She stays running because starting her is worse than the fuel. That is the whole philosophy."
+            ],
+            "do": {
+              "set": "met"
+            },
+            "then": "menu"
+          },
+          "menu": {
+            "text": "Yes?",
+            "choices": [
+              {
+                "text": "Can you fly me somewhere?",
+                "to": "fly"
+              },
+              {
+                "text": "Where did you fly in from?",
+                "to": "from"
+              },
+              {
+                "text": "Nice bird.",
+                "to": "end"
+              }
+            ]
+          },
+          "fly": {
+            "text": "No. Ask the cab. The cab goes everywhere and it does not need a ninety-minute pre-flight.",
+            "then": "menu"
+          },
+          "from": {
+            "text": "The airport. Both gates. It was a long argument about which one and I lost.",
+            "then": "menu"
+          }
+        },
+        "greetings": {
+          "acquaintance": [
+            "Rotor is turning. Keep your head down and your hands to yourself and we will get along.",
+            "The pad lights went out on the east side again. Halcyon says it is ambience. It is a wiring fault.",
+            "Fuel truck is late. The fuel truck is always late. Eleven floors is not on its way to anywhere.",
+            "Marguerite asked to sit in the cockpit. I said no. She said darling. I still said no."
+          ],
+          "friend": [
+            "You are the only one on this roof who does not ask for a ride. I have noticed. I appreciate it.",
+            "Halcyon has started mixing the rotor into the set. I did not agree to that. I am not going to stop it either.",
+            "The airport tower called to ask if I was ever coming back. I said I would answer when the gate argument was settled.",
+            "Juniper sends up a coffee on a tray. Dutch carries it. Nobody spills. Best crew I have had."
+          ],
+          "close": [
+            "Come stand in the wash with me. Everyone else gets shooed off.",
+            "I kept the seat next to mine empty. Not for a flight. Just empty.",
+            "Rotor is still going. So am I. That is the report."
+          ]
+        }
+      }
+    },
+    {
+      "id": "sky.marguerite",
+      "type": "folk.villager",
+      "tile": [
+        14,
+        17
+      ],
+      "facing": "south",
+      "props": {
+        "name": "Marguerite",
+        "title": "Socialite",
+        "roam": 5,
+        "voice": {
+          "pitch": 1.2,
+          "rate": 28,
+          "timbre": "triangle"
+        }
+      },
+      "dialog": {
+        "start": "hello",
+        "nodes": {
+          "hello": {
+            "text": [
+              "Darling! You look like somebody who has never been on a roof before. Wonderful. I love a first roof.",
+              "Get a drink from Juniper and stand near the fire. Everything looks better near a fire."
+            ],
+            "choices": [
+              {
+                "text": "Is that a helicopter?",
+                "to": "heli"
+              },
+              {
+                "text": "Enjoy the night.",
+                "to": "end"
+              }
+            ]
+          },
+          "heli": {
+            "text": "It is. It is always running and it never goes anywhere. It is the most relatable thing on this roof.",
+            "then": "end"
+          }
+        },
+        "greetings": {
+          "acquaintance": [
+            "Darling! The fire bowls are lit and the palms are buzzing and I have decided this is a good one.",
+            "Darling, stand where the searchlight can find you. Nobody comes eleven floors up to be dim.",
+            "Juniper is doing something new with a cocktail glass. I have not asked. I prefer to be surprised.",
+            "Halcyon played the slow one. I only cried a little. It was the smoke from the fire bowls."
+          ],
+          "friend": [
+            "There you are. I told Juniper you would come up and she said darling, you say that about everyone. I do not.",
+            "Sit with me on the good sofa. The middle one. The other four are for people I have not decided about.",
+            "Dutch offered to walk me to the cab. Dutch has never offered anyone anything. I think you are a good influence.",
+            "I have decided you are old money. Do not correct me. It is more fun for both of us."
+          ],
+          "close": [
+            "Darling. Just darling. Come here.",
+            "I put your name on the VIP list. There is no list. I made one for you.",
+            "Every hour on this roof looks the same to me except the ones with you in them."
+          ]
+        }
+      }
+    },
+    {
+      "id": "sky.dutch",
+      "type": "folk.pitfighter",
+      "tile": [
+        17,
+        21
+      ],
+      "facing": "west",
+      "props": {
+        "name": "Dutch",
+        "title": "Rooftop Security",
+        "noSmallTalk": true,
+        "roam": 1,
+        "armedSecurity": true,
+        "alertLine": "Dutch saw the gun. \"Not on the roof. Put it away.\"",
+        "voice": {
+          "pitch": 0.7,
+          "rate": 18,
+          "timbre": "sawtooth"
+        }
+      },
+      "dialog": {
+        "start": "hello",
+        "nodes": {
+          "hello": {
+            "text": "No guns. No climbing the parapet. No touching the rotor. Have a good night.",
+            "then": "end"
+          }
+        }
+      }
+    }
+  ],
+  "animals": [],
+  "items": [
+    {
+      "id": "loose.cocktail",
+      "type": "kititem.sky-cocktail",
+      "tile": [
+        12,
+        19
+      ]
+    },
+    {
+      "id": "loose.pass",
+      "type": "kititem.vip-pass",
+      "tile": [
+        26,
+        8
+      ]
+    }
+  ],
+  "exits": [
+    {
+      "tile": [
+        14,
+        23
+      ],
+      "label": "Cab stand"
+    },
+    {
+      "tile": [
+        15,
+        23
+      ],
+      "label": "Cab stand"
+    }
+  ],
+  "spawn": {
+    "tile": [
+      14,
+      22
+    ],
+    "facing": "north"
+  }
+}

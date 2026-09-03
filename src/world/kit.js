@@ -233,6 +233,7 @@ function checkPart(raw, path, palette) {
 }
 
 const MASK_CHARS = new Set(['#', '.', '+']);
+const BUILTIN_USES = new Set(['lean', 'sit', 'sleep', 'store', 'warm']);
 
 function checkFootprint(raw, path) {
   if (!isObj(raw)) throw new KitError('"footprint" must be an object', path);
@@ -312,10 +313,15 @@ function checkInteract(raw, path) {
     // missing interaction because it looks like it works.
     throw new KitError('"interact" needs a "label" -- it is what the HUD prompts', path);
   }
-  if (typeof raw.run !== 'string' || !raw.run.trim()) {
-    throw new KitError('"run" must name the script file beside this kit', path);
+  const action = raw.action === undefined ? null : raw.action;
+  const run = typeof raw.run === 'string' && raw.run.trim() ? raw.run : null;
+  if (action !== null && action !== 'browser') {
+    throw new KitError('"interact.action" must be "browser"', path);
   }
-  if (raw.run.includes('..') || raw.run.startsWith('/') || !raw.run.endsWith('.js')) {
+  if ((run === null) === (action === null)) {
+    throw new KitError('"interact" needs exactly one of "run" or "action"', path);
+  }
+  if (run && (run.includes('..') || run.startsWith('/') || !run.endsWith('.js'))) {
     // Resolved against the kit's own URL, so a path that can climb out of that
     // directory is a kit reaching for a file its author did not ship.
     throw new KitError('"run" must be a plain .js filename beside the kit', path);
@@ -323,7 +329,8 @@ function checkInteract(raw, path) {
   return {
     label: raw.label,
     when: raw.when === undefined ? null : checkCond(raw.when, `${path}.when`),
-    run: raw.run,
+    run,
+    action,
     /** Filled in by kits.js once the script text has been fetched. */
     source: null,
   };
@@ -335,6 +342,19 @@ function hex(v, path, key) {
     throw new KitError(`"${key}" must be a "#rrggbb" string`, path);
   }
   return parseInt(v.slice(1), 16);
+}
+
+/** A fixture's optional local light source, consumed by the Stage. */
+function checkLight(raw, path) {
+  if (raw === undefined) return null;
+  if (!isObj(raw)) throw new KitError('"light" must be an object', path);
+  const height = num(raw.height, path, 'height');
+  const range = num(raw.range, path, 'range');
+  const intensity = num(raw.intensity, path, 'intensity');
+  if (height <= 0 || range <= 0 || intensity <= 0) {
+    throw new KitError('"light" height, range and intensity must be greater than zero', path);
+  }
+  return { color: hex(raw.color, path, 'color'), height, range, intensity };
 }
 
 /**
@@ -454,6 +474,9 @@ function checkItemType(id, raw, path) {
   if (raw.badge !== undefined && (typeof raw.badge !== 'string' || !raw.badge.trim())) {
     throw new KitError('"badge" must be a non-empty string', path);
   }
+  if (raw.site !== undefined && raw.site !== 'outdoors') {
+    throw new KitError('"site" must be "outdoors"', path);
+  }
 
   return {
     id,
@@ -469,6 +492,7 @@ function checkItemType(id, raw, path) {
     palette,
     parts,
     furniture,
+    site: raw.site ?? null,
   };
 }
 
@@ -479,6 +503,9 @@ function checkObjectType(id, raw, path) {
     throw new KitError('"parts" must be a non-empty array', path);
   }
   const parts = rawParts.map((p, i) => checkPart(p, `${path}.parts[${i}]`, palette));
+  if (raw.use !== undefined && !BUILTIN_USES.has(raw.use)) {
+    throw new KitError(`unknown built-in use "${raw.use}" (known: ${[...BUILTIN_USES].join(', ')})`, path);
+  }
 
   return {
     id,
@@ -489,6 +516,7 @@ function checkObjectType(id, raw, path) {
     label: raw.label,
     footprint: checkFootprint(raw.footprint, `${path}.footprint`),
     height: raw.height === undefined ? 1 : num(raw.height, path, 'height'),
+    use: raw.use ?? null,
     // Squash is how far the model collapses in top-down view. Defaulted to
     // furniture's 0.34 rather than to 1, because a kit author who has not
     // thought about the map view has authored a thing that hides its own tile.
@@ -498,6 +526,7 @@ function checkObjectType(id, raw, path) {
     /** Split once, here: the bake and the per-frame batch never re-scan. */
     staticParts: parts.filter((p) => !p.anim),
     livingParts: parts.filter((p) => p.anim),
+    light: checkLight(raw.light, `${path}.light`),
     state: checkState(raw.state, `${path}.state`),
     interact: checkInteract(raw.interact, `${path}.interact`),
   };

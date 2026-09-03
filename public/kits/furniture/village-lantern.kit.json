@@ -1,0 +1,58 @@
+{
+  "format": "tw.kit",
+  "version": 1,
+  "meta": {
+    "id": "turnip.village-lantern",
+    "name": "Fenrush Village Lantern"
+  },
+  "types": {
+    "fixture.village-lantern": {
+      "kind": "object",
+      "label": "Fenrush Village Lantern",
+      "footprint": { "w": 1, "d": 1 },
+      "height": 2,
+      "squash": 0.22,
+      "palette": {
+        "woodDark": "#a8873f",
+        "pale": "#f7efd9",
+        "metal": "#9d9384",
+        "glass": "#e2e8d8"
+      },
+      "parts": [
+        { "prim": "cyl", "at": [0, 0.06, 0], "size": [0.3, 0.12, 0.3], "color": "metal" },
+        { "prim": "taper", "at": [0, 0.973, 0], "size": [0.065, 1.819, 0.065], "color": "woodDark" },
+        { "prim": "cyl", "at": [0, 0.381, 0], "size": [0.11, 0.08, 0.11], "color": "metal" },
+        { "prim": "cyl", "at": [0, 1.142, 0], "size": [0.085, 0.05, 0.085], "color": "metal" },
+        { "prim": "box", "at": [0.15, 1.862, 0], "rot": [0, 0, -18], "size": [0.3, 0.045, 0.045], "color": "metal" },
+        { "prim": "cyl", "at": [0.29, 1.735, 0], "size": [0.035, 0.2, 0.035], "color": "metal" },
+        { "prim": "box", "at": [0.29, 1.667, 0], "size": [0.26, 0.34, 0.26], "color": "glass" },
+        { "prim": "box", "at": [0.29, 1.667, 0], "size": [0.2, 0.27, 0.2], "color": "glass" },
+        { "prim": "pyr", "at": [0.29, 1.917, 0], "size": [0.2, 0.15, 0.2], "color": "metal" },
+        { "prim": "cyl", "at": [0.29, 1.477, 0], "size": [0.18, 0.06, 0.18], "color": "metal" },
+        { "prim": "blob", "at": [0.29, 1.667, 0], "size": [0.105, 0.13, 0.105], "color": "pale", "anim": { "pulse": { "amp": 0.12, "rate": 0.7 } } }
+      ],
+      "light": {
+        "color": "#ffd080",
+        "height": 1.78,
+        "range": 6.5,
+        "intensity": 10
+      }
+    },
+    "kititem.village-lantern": {
+      "kind": "item",
+      "label": "Fenrush Village Lantern",
+      "value": 520,
+      "stack": 1,
+      "swatch": "#cda040",
+      "badge": "crate",
+      "furniture": "fixture.village-lantern",
+      "site": "outdoors",
+      "palette": {
+        "wrap": "#d9c7a4",
+        "wrapHi": "#eee1c7",
+        "strap": "#8a6242",
+        "mark": "#cda040"
+      }
+    }
+  }
+}

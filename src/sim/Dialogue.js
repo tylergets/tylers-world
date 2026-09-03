@@ -38,7 +38,7 @@
  * conversation, and "we have met" has to outlive it. See sim/Npc.js.
  */
 
-import { END } from '../world/dialog.js';
+import { END, endsConversation } from '../world/dialog.js';
 
 /** How many branch hops before we call it a loop. Generous; scripts are small. */
 const MAX_HOPS = 32;
@@ -48,6 +48,8 @@ export class Dialogue {
    * @param {Npc} npc  the person talking; supplies the memory and the shop
    * @param {{inventory: Inventory, purse: Purse, friends?: Friends,
    *   houseStories?: function(): number, setHouseStories?: function(number): void,
+   *   shops24?: function(): boolean, setShops24?: function(boolean): void,
+   *   townBankBalance?: function(): number,
    *   travel?: function(string): void}} ctx
    * @param {object} [script]  what he says, defaulting to his own dialog. The
    *   one caller that passes something else is the one talking to somebody who
@@ -66,6 +68,8 @@ export class Dialogue {
     this.shop = null;
     /** Where to resume once the shop closes. */
     this._after = null;
+    /** Choice effects waiting for the player to select an apology gift. */
+    this.gift = null;
     /** Bumped whenever what is on screen changes, so the UI can redraw on it. */
     this.version = 0;
 
@@ -79,33 +83,48 @@ export class Dialogue {
   get text() { return this.node ? this.#say(this.node.text[this.page]) : null; }
 
   /**
-   * A line with its tokens filled in: `{player}` becomes whoever is playing.
+   * A line with its tokens filled in from the narrow game context.
    *
    * Done HERE and not at parse time, deliberately -- these two getters are the
    * one gate every rendered word passes through (the typewriter, the skip, the
    * redraw and the choice menu all read them), so a token expanded here is
-   * expanded everywhere, including in the smalltalk, grudge, closed-shop and
+   * expanded everywhere, including in the greeting, grudge, closed-shop and
    * theft scripts that never went near a world file. The fallback is for
    * callers with no player at all, like tools/checkworld.mjs: absent means the
    * caller is not asking, and "friend" is what a villager says in that case.
    */
   #say(text) {
     if (typeof text !== 'string' || !text.includes('{')) return text;
-    return text.replaceAll('{player}', this.ctx.playerName ?? 'friend');
+    const thefts = this.ctx.friends?.crimes?.thefts ?? 0;
+    const killings = this.ctx.friends?.crimes?.killings ?? 0;
+    return text
+      .replaceAll('{player}', this.ctx.playerName ?? 'friend')
+      .replaceAll('{townBankBalance}', String(this.ctx.townBankBalance?.() ?? 0))
+      .replaceAll('{townReputation}', String(this.ctx.friends?.townReputation ?? 0))
+      .replaceAll('{theftRecord}', `${thefts} theft${thefts === 1 ? '' : 's'}`)
+      .replaceAll('{killingRecord}', `${killings} killing${killings === 1 ? '' : 's'}`);
   }
 
   /** True while the shop has the screen. */
   get trading() { return this.shop !== null; }
+  get gifting() { return this.gift !== null; }
+  get suspended() { return this.trading || this.gifting; }
 
   /**
    * The choices on offer right now: only on the LAST page of a node, and only
    * the ones whose `when` holds. Offering them on page one would mean answering
    * a question the NPC has not finished asking.
+   *
+   * Each carries `ends`: whether taking it closes the conversation. The UI
+   * draws those apart, so "I'll let you get on" never looks like one more
+   * question -- the player should be able to tell the way out at a glance.
    */
   get choices() {
-    if (!this.node || this.trading || !this.#onLastPage) return [];
+    if (!this.node || this.suspended || !this.#onLastPage) return [];
     return this.node.choices
-      .map((choice, index) => ({ ...choice, text: this.#say(choice.text), index }))
+      .map((choice, index) => ({
+        ...choice, text: this.#say(choice.text), index, ends: endsConversation(this.script.nodes, choice.to),
+      }))
       .filter((choice) => this.#test(choice.when));
   }
 
@@ -119,7 +138,7 @@ export class Dialogue {
    * how fast the player is mashing the key.
    */
   advance() {
-    if (this.done || this.trading) return;
+    if (this.done || this.suspended) return;
     if (!this.#onLastPage) { this.page++; this.version++; return; }
     if (this.choices.length) return;
     this.#goto(this.node.then ?? END);
@@ -127,10 +146,18 @@ export class Dialogue {
 
   /** Take one of the offered choices, by its `index` from `choices`. */
   choose(index) {
-    if (this.done || this.trading) return;
+    if (this.done || this.suspended) return;
     const choice = this.node?.choices[index];
     if (!choice || !this.#test(choice.when)) return;   // a stale click on a line that just stopped applying
 
+    if (choice.do.some((effect) => effect.gift === true)) {
+      this.gift = {
+        effects: choice.do.filter((effect) => effect.gift !== true),
+        to: choice.to,
+      };
+      this.version++;
+      return;
+    }
     this.#apply(choice.do);
     if (this.shop) { this._after = choice.to; this.version++; return; }
     this.#goto(choice.to);
@@ -145,10 +172,33 @@ export class Dialogue {
     this.#goto(to);
   }
 
+  selectGift(slotIndex) {
+    if (!this.gift || !Number.isInteger(slotIndex)) return false;
+    if (this.ctx.friends && !this.ctx.friends.hates(this.npc.id)) {
+      this.end();
+      return false;
+    }
+    const stack = this.ctx.inventory.slot(slotIndex);
+    if (!stack || !this.ctx.inventory.removeFrom(slotIndex, 1)) return false;
+    const pending = this.gift;
+    this.gift = null;
+    this.#apply(pending.effects);
+    this.#goto(pending.to);
+    return true;
+  }
+
+  cancelGift() {
+    if (!this.gift) return false;
+    this.gift = null;
+    this.version++;
+    return true;
+  }
+
   /** Abandon the conversation wherever it is. */
   end() {
     this.node = null;
     this.shop = null;
+    this.gift = null;
     this.done = true;
     this.version++;
   }
@@ -200,13 +250,16 @@ export class Dialogue {
         // player has is a bug in the file, and clamping at zero keeps it from
         // becoming a debt the game has no way to express.
         case 'coins': v >= 0 ? this.ctx.purse.earn(v) : this.ctx.purse.pay(Math.min(-v, this.ctx.purse.coins)); break;
+        case 'heal': if (v) this.ctx.health?.restore(); break;
         // The Game owns progression and the consequences of changing it. An
         // absent callback is a headless format walker, where effects are inert.
         case 'houseStories': this.ctx.setHouseStories?.(v); break;
+        case 'shops24': this.ctx.setShops24?.(v); break;
+        case 'officeBuilt': if (v) this.ctx.buildWorkerOffice?.(); break;
         case 'travel': this.ctx.travel?.(v); break;
         case 'shop': if (v) this.shop = this.npc.shop; break;
         case 'poker': if (v) this.ctx.openPoker?.(this.npc); break;
-        case 'gift': if (v) this.#gift(); break;
+        case 'gift': break; // Choice handling suspends for explicit item selection.
         // Absent friends is a caller who is not asking -- checkworld drives
         // these scripts with no player in the world -- and the sensible thing
         // to do with a feud nobody is keeping track of is nothing.
@@ -221,24 +274,11 @@ export class Dialogue {
           if (v.action === 'accept') this.ctx.errands?.accept(this.npc.id, v.id);
           else if (v.action === 'complete') this.ctx.errands?.complete(this.npc, v.id, this.ctx);
           break;
+        case 'work': this.ctx.setWorker?.(this.npc, v); break;
+        case 'logistics': this.ctx.setLogistics?.(this.npc, v); break;
       }
     }
     this.version++;
-  }
-
-  /**
-   * Hand over one of whatever is in the player's hand.
-   *
-   * The held slot rather than a search, because "what you are holding" is a
-   * thing the player can see and change: the item is on the hotbar with the
-   * highlight on it, and giving away something out of a slot they were not
-   * looking at would be a theft. An empty hand gives nothing and is not an
-   * error -- the `holding` condition is how a script avoids offering the line
-   * at all, and this is the belt to that pair of braces.
-   */
-  #gift() {
-    const inv = this.ctx.inventory;
-    if (inv.held) inv.removeFrom(inv.selected, 1);
   }
 
   /** Remove `count` of a type from wherever it is in the bag. */
@@ -283,11 +323,18 @@ export class Dialogue {
         }
         case 'shopOpen': if (this.npc.shopAvailable !== v) return false; break;
         case 'holding': if (!!inventory.held !== v) return false; break;
+        case 'carrying': if (inventory.slots.some(Boolean) !== v) return false; break;
         case 'visits': if (mem.visits < v) return false; break;
         case 'coins': if (purse.coins < v) return false; break;
+        case 'hurt': if (this.ctx.health && (!this.ctx.health.full) !== v) return false; break;
         // As with `friend`, absence means the caller is not asking. This keeps
         // every authored tier alternative walkable under checkworld.
         case 'houseStories': if (this.ctx.houseStories && this.ctx.houseStories() !== v) return false; break;
+        case 'shops24': if (this.ctx.shops24 && this.ctx.shops24() !== v) return false; break;
+        case 'hasHiredWorker': if (this.ctx.hasHiredWorker && this.ctx.hasHiredWorker() !== v) return false; break;
+        case 'officeBuilt': if (this.ctx.officeBuilt && this.ctx.officeBuilt() !== v) return false; break;
+        case 'thefts': if (this.ctx.friends && this.ctx.friends.crimes.thefts < v) return false; break;
+        case 'killings': if (this.ctx.friends && this.ctx.friends.crimes.killings < v) return false; break;
         case 'has': if (inventory.count(v.type) < v.count) return false; break;
         case 'room': if (inventory.room(v.type) < v.count) return false; break;
         case 'not': if (this.#test(v)) return false; break;

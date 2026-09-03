@@ -13,8 +13,11 @@ export class UiStore {
     const stamp = [
       this.hudTick,
       game.hud?.version, game.chat?.version, game.worlds?.version,
-      game.mapScreen?.version, game.photos?.version, game.wardrobe?.version, game.townOffice?.version,
+      game.mapScreen?.version, game.photos?.version, game.wardrobe?.version,
+      game.internet?.version,
+      game.containerPanel?.version, game.containerPanel?.context?.edits?.version, game.townOffice?.version,
       game.townOffice?.context?.fauna?.version, game.townOffice?.context?.edits?.version,
+      game.workers?.version, player?.friends?.version,
       game.contextVersion,
       player?.inventory?.version, player?.purse?.version, player?.health?.version,
       game.chat?.dialogue?.version ?? -1, game.chat?.dialogue?.shop?.version ?? -1,

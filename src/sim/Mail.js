@@ -60,7 +60,7 @@ export class Mail {
       id: `hurt:${npc.id}`,
       from: String(npc.name ?? 'A neighbour'),
       subject: 'I am still hurting',
-      body: `Dear ${playerName},\n\nI am still hurting from being shot. I hope you understand that what you did caused real pain, and it is not something I can simply forget.\n\n${npc.name}`,
+      body: `Dear ${playerName},\n\nI am still hurting from being hit by your BB. I hope you understand that what you did caused real pain, and it is not something I can simply forget.\n\n${npc.name}`,
     }, dueDay);
   }
 

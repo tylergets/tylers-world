@@ -1,0 +1,121 @@
+{
+  "format": "tw.kit",
+  "version": 1,
+  "meta": { "id": "airport", "name": "Municipal Airport Fixtures" },
+  "types": {
+    "fixture.airport.security-arch": {
+      "kind": "object",
+      "label": "Security Scanner",
+      "footprint": { "w": 1, "d": 1, "mask": ["."] },
+      "height": 2.15,
+      "squash": 0.22,
+      "palette": { "metal": "#8d99a6", "dark": "#313943", "light": "#70d4c2", "warning": "#e1b84b" },
+      "parts": [
+        { "prim": "box", "at": [-0.37, 1.02, 0], "size": [0.13, 2.04, 0.34], "color": "metal" },
+        { "prim": "box", "at": [0.37, 1.02, 0], "size": [0.13, 2.04, 0.34], "color": "metal" },
+        { "prim": "box", "at": [0, 2.04, 0], "size": [0.87, 0.17, 0.34], "color": "dark" },
+        { "prim": "box", "at": [0, 1.94, 0.18], "size": [0.32, 0.06, 0.03], "color": "light" },
+        { "prim": "box", "at": [-0.37, 0.18, 0.19], "size": [0.07, 0.22, 0.03], "color": "warning" },
+        { "prim": "box", "at": [0.37, 0.18, 0.19], "size": [0.07, 0.22, 0.03], "color": "warning" }
+      ]
+    },
+    "fixture.airport.baggage-belt": {
+      "kind": "object",
+      "label": "Baggage Conveyor",
+      "footprint": { "w": 4, "d": 1, "mask": ["####"] },
+      "height": 0.78,
+      "squash": 0.34,
+      "palette": { "metal": "#7e8994", "metalHi": "#b2bbc2", "belt": "#252b31", "edge": "#d0a846" },
+      "parts": [
+        { "prim": "box", "at": [0, 0.48, 0], "size": [3.8, 0.42, 0.76], "color": "metal" },
+        { "prim": "box", "at": [0, 0.71, 0], "size": [3.68, 0.08, 0.61], "color": "belt" },
+        { "prim": "box", "at": [0, 0.76, -0.31], "size": [3.9, 0.08, 0.08], "color": "metalHi" },
+        { "prim": "box", "at": [0, 0.76, 0.31], "size": [3.9, 0.08, 0.08], "color": "metalHi" },
+        { "prim": "box", "at": [-1.82, 0.18, 0], "size": [0.12, 0.36, 0.55], "color": "edge" },
+        { "prim": "box", "at": [1.82, 0.18, 0], "size": [0.12, 0.36, 0.55], "color": "edge" }
+      ]
+    },
+    "fixture.airport.walkway": {
+      "kind": "object",
+      "label": "Moving Walkway",
+      "footprint": { "w": 2, "d": 6, "mask": ["..", "..", "..", "..", "..", ".."] },
+      "height": 0.55,
+      "squash": 0.12,
+      "palette": { "belt": "#303943", "strip": "#697783", "rail": "#a9bcc7", "glass": "#7aa7b8", "light": "#76dfc4" },
+      "parts": [
+        { "prim": "box", "at": [0, 0.035, 0], "size": [1.72, 0.07, 5.78], "color": "belt" },
+        { "prim": "box", "at": [-0.56, 0.075, 0], "size": [0.05, 0.02, 5.55], "color": "strip" },
+        { "prim": "box", "at": [0, 0.075, 0], "size": [0.05, 0.02, 5.55], "color": "strip" },
+        { "prim": "box", "at": [0.56, 0.075, 0], "size": [0.05, 0.02, 5.55], "color": "strip" },
+        { "prim": "box", "at": [-0.88, 0.29, 0], "size": [0.05, 0.42, 5.78], "color": "glass" },
+        { "prim": "box", "at": [0.88, 0.29, 0], "size": [0.05, 0.42, 5.78], "color": "glass" },
+        { "prim": "box", "at": [-0.88, 0.53, 0], "size": [0.09, 0.09, 5.9], "color": "rail" },
+        { "prim": "box", "at": [0.88, 0.53, 0], "size": [0.09, 0.09, 5.9], "color": "rail" },
+        { "prim": "box", "at": [0, 0.1, -2.78], "size": [0.7, 0.035, 0.14], "color": "light" }
+      ]
+    },
+    "fixture.airport.stanchion": {
+      "kind": "object",
+      "label": "Queue Stanchion",
+      "footprint": { "w": 1, "d": 1 },
+      "height": 1.02,
+      "squash": 0.28,
+      "palette": { "metal": "#aeb8c0", "base": "#4a535c", "strap": "#326b9a" },
+      "parts": [
+        { "prim": "cyl", "at": [0, 0.04, 0], "size": [0.25, 0.08, 0.25], "color": "base" },
+        { "prim": "cyl", "at": [0, 0.52, 0], "size": [0.035, 0.96, 0.035], "color": "metal" },
+        { "prim": "cyl", "at": [0, 1, 0], "size": [0.09, 0.06, 0.09], "color": "base" },
+        { "prim": "box", "at": [0.37, 0.94, 0], "size": [0.74, 0.07, 0.04], "color": "strap" }
+      ]
+    },
+    "fixture.airport.terminal-divider": {
+      "kind": "object",
+      "label": "Security Divider",
+      "footprint": { "w": 14, "d": 1, "mask": ["##############"] },
+      "height": 2.35,
+      "squash": 0.18,
+      "palette": { "frame": "#667580", "panel": "#dce7eb", "glass": "#78a9bb", "line": "#344957" },
+      "parts": [
+        { "prim": "box", "at": [0, 0.08, 0], "size": [13.9, 0.16, 0.26], "color": "frame" },
+        { "prim": "box", "at": [0, 1.12, 0], "size": [13.72, 1.92, 0.12], "color": "panel" },
+        { "prim": "box", "at": [0, 1.72, 0.07], "size": [13.5, 0.62, 0.04], "color": "glass" },
+        { "prim": "box", "at": [0, 2.28, 0], "size": [13.9, 0.14, 0.26], "color": "frame" },
+        { "prim": "box", "at": [0, 1.37, 0.1], "size": [13.3, 0.05, 0.03], "color": "line" }
+      ]
+    },
+    "fixture.airport.flight-board": {
+      "kind": "object",
+      "label": "Departures Board",
+      "footprint": { "w": 4, "d": 1 },
+      "height": 2.25,
+      "squash": 0.2,
+      "palette": { "frame": "#66717c", "screen": "#11171d", "text": "#e5b94f", "green": "#71d0a0" },
+      "parts": [
+        { "prim": "box", "at": [-1.65, 0.9, 0], "size": [0.1, 1.8, 0.1], "color": "frame" },
+        { "prim": "box", "at": [1.65, 0.9, 0], "size": [0.1, 1.8, 0.1], "color": "frame" },
+        { "prim": "box", "at": [0, 1.63, 0], "size": [3.65, 1.12, 0.14], "color": "frame" },
+        { "prim": "box", "at": [0, 1.63, 0.08], "size": [3.42, 0.9, 0.04], "color": "screen" },
+        { "prim": "box", "at": [-0.7, 1.88, 0.11], "size": [1.55, 0.055, 0.025], "color": "text" },
+        { "prim": "box", "at": [-0.85, 1.65, 0.11], "size": [1.25, 0.055, 0.025], "color": "green" },
+        { "prim": "box", "at": [-0.55, 1.42, 0.11], "size": [1.85, 0.055, 0.025], "color": "text" },
+        { "prim": "box", "at": [1.18, 1.88, 0.11], "size": [0.48, 0.055, 0.025], "color": "green" },
+        { "prim": "box", "at": [1.18, 1.65, 0.11], "size": [0.48, 0.055, 0.025], "color": "text" },
+        { "prim": "box", "at": [1.18, 1.42, 0.11], "size": [0.48, 0.055, 0.025], "color": "green" }
+      ]
+    },
+    "fixture.airport.gate-podium": {
+      "kind": "object",
+      "label": "Gate Podium",
+      "footprint": { "w": 1, "d": 1 },
+      "height": 1.38,
+      "squash": 0.3,
+      "palette": { "body": "#536b80", "top": "#91a9ba", "screen": "#18232c", "light": "#76dfc4" },
+      "parts": [
+        { "prim": "taper", "at": [0, 0.62, 0], "size": [0.34, 1.24, 0.3], "color": "body" },
+        { "prim": "box", "at": [0, 1.25, 0], "rot": [-16, 0, 0], "size": [0.72, 0.12, 0.55], "color": "top" },
+        { "prim": "box", "at": [0, 1.31, 0.03], "rot": [-16, 0, 0], "size": [0.49, 0.03, 0.32], "color": "screen" },
+        { "prim": "box", "at": [0, 0.88, 0.31], "size": [0.18, 0.07, 0.03], "color": "light" }
+      ]
+    }
+  }
+}

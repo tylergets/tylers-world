@@ -479,6 +479,7 @@
     {"id":"store.clothier","type":"building.clothier","tile":[102,64],"props":{"label":"Cuff & Collar","interior":"worlds/interiors/store-clothier.json"}},
     {"id":"home.vesper","type":"building.cottage","tile":[32,54],"props":{"label":"Vesper's","interior":"worlds/interiors/home-vesper.json","owner":"folk.vesper"}},
     {"id":"town.hall","type":"building.townhall","tile":[72,110],"props":{"label":"Town Hall","interior":"worlds/interiors/town-hall.json"}},
+    {"id":"town.noticeboard","type":"civic.noticeboard","tile":[72,116]},
     {"id":"town.museum","type":"building.museum","tile":[92,106],"props":{"label":"Museum","interior":"worlds/interiors/museum.json"}},
     {"id":"home.ember","type":"building.cottage","tile":[72,30],"props":{"label":"Ember's Cottage","interior":"worlds/interiors/home-ember.json","owner":"folk.ember"}},
     {"id":"home.basalt","type":"building.cabin","tile":[104,42],"props":{"label":"Basalt's Cabin","interior":"worlds/interiors/home-basalt.json","owner":"folk.basalt"}},
@@ -742,15 +743,57 @@
         }
       },
       "dialog": {
-        "start": "hello",
+        "start": "open",
         "nodes": {
+          "open": {
+            "branch": [
+              {
+                "when": {
+                  "not": {
+                    "flag": "met"
+                  }
+                },
+                "to": "hello"
+              },
+              {
+                "to": "again"
+              }
+            ]
+          },
           "hello": {
-            "text": "Ember. Kettle ash makes green glass if you keep the heat patient. That's my place behind me. Come say hello before you let yourself in.",
-            "then": "again"
+            "text": [
+              "Ember. I make glass out of kettle ash. It comes out green, if you keep the heat patient, and something else if you do not.",
+              "That is my cottage, with a furnace in the back that does not like a door opened unannounced. Say my name from the path and I will come and let you in."
+            ],
+            "do": {
+              "set": "met"
+            }
           },
           "again": {
-            "text": "The bubbles are part of it. Perfect glass belongs elsewhere."
+            "text": "Bubbles again in the last batch. They are part of it. Perfect glass belongs elsewhere."
           }
+        },
+        "greetings": {
+          "acquaintance": [
+            "Furnace has been up since before light. If I look grey it is not weather, it is the raw stuff.",
+            "Got a green off the beach ash this morning that I have been chasing for a year. It will not do it twice.",
+            "Mind the crate on the step. There is nothing in it but the cullet, and cullet is sharper than it looks.",
+            "Wind is down the bowl today. It pushes the flame flat and I have to coax it back up. Long day."
+          ],
+          "friend": [
+            "Basalt wants a window for the bakehouse and he wants it clear. I told him clear is for people with better ash and worse bread.",
+            "Tally brought me a bucket off the top bench to try. It went black. I have not told her. You are not to either.",
+            [
+              "A bottle cracked in the annealing overnight. I heard it from bed.",
+              "It is like hearing a coin fall down a well. You know exactly what it cost."
+            ],
+            "You are the one person who has looked at a bubble in my glass and not said \"shame\". I keep thinking of it."
+          ],
+          "close": [
+            "Come and sit by the furnace. It is the warmest chair on the floor and it is yours.",
+            "Pulled a green cup off the pipe this morning that came out right. First of the season. I put it on your side of the shelf.",
+            "Letting the fire go down today. Sit with me while it does. It is the only quiet the trade allows."
+          ]
         }
       }
     },
@@ -773,15 +816,57 @@
         }
       },
       "dialog": {
-        "start": "hello",
+        "start": "open",
         "nodes": {
+          "open": {
+            "branch": [
+              {
+                "when": {
+                  "not": {
+                    "flag": "met"
+                  }
+                },
+                "to": "hello"
+              },
+              {
+                "to": "again"
+              }
+            ]
+          },
           "hello": {
-            "text": "Basalt. I bake on stone the ground warms for nothing. That's my place behind me. Come say hello before you let yourself in.",
-            "then": "again"
+            "text": [
+              "Basalt. I bake on a slab the ground keeps warm for nothing. Bread does not know the difference and neither do I, most days.",
+              "That cabin is mine, and the oven is most of it. Give the door a rap and wait for the answer; a loaf spoils if the heat gets a fright."
+            ],
+            "do": {
+              "set": "met"
+            }
           },
           "again": {
-            "text": "The loaf is ready when the crust sounds hollow."
+            "text": "Loaf is in. It is ready when the crust sounds hollow, and not a moment before."
           }
+        },
+        "greetings": {
+          "acquaintance": [
+            "Slab is warmer than yesterday. The ground does that. I set the loaves by it and I am never asked why.",
+            "Flour on everything, me included. Do not lean on the post.",
+            "Four loaves out and three of them right. The fourth is for me. That is the arrangement.",
+            "The crows know when the door opens. If you hear a lot of wings, that is my morning going."
+          ],
+          "friend": [
+            "Ember says my crust would be better with a proper window to see it by. I say I bake by sound and she is welcome to bake by glass.",
+            "Ro will not take bread on the quay because the damp gets it. So I take it down and eat it at him.",
+            [
+              "Ground went cold under the oven one night last week. First time in years.",
+              "I sat up with it like a sick animal. It came back before dawn. We do not talk about it."
+            ],
+            "You take the heel of the loaf without being asked. That is the sign of a person raised properly."
+          ],
+          "close": [
+            "Heel of the loaf is on the slab and it is yours. Sit down while it is still warm.",
+            "Kneading day. You can talk and I can grunt, and by the end we will have a loaf between us.",
+            "Nothing in the oven and nothing needing doing. Come and sit on the warm step and waste an hour with me."
+          ]
         }
       }
     },
@@ -894,6 +979,28 @@
           "bye": {
             "text": "Mind the warm patches."
           }
+        },
+        "greetings": {
+          "acquaintance": [
+            "Lake is steaming this morning. It does that when it is cold up top. Do not read anything into it.",
+            "Somebody tried the water again yesterday. I did not see who. I heard the noise they made.",
+            "Duck went in up to the neck and came out looking pleased. Ducks are wrong about most things.",
+            "Keep to the dry ash along here. The soft patches are warm underneath and warm is where it gives."
+          ],
+          "friend": [
+            "Tally sent down a note saying the benches are better than the floor. I sent back a stone. Skipped it eleven.",
+            "Vesper is due a visit and it is the whole way round and my knees have opinions. You could go instead.",
+            [
+              "The lake was flat as a plate at dawn. Not a ripple anywhere on it.",
+              "I sat and did not throw anything for an hour. Felt like a betrayal."
+            ],
+            "You look at the water the way I do. Sideways, like it might do something. It will not, but keep looking."
+          ],
+          "close": [
+            "Bring a stone and sit down. We can not speak for as long as you like.",
+            "Warm patch just here, and it is mine, and I am letting you have half.",
+            "Best skim of the year this morning. Nobody saw it. Now you know, and that will do."
+          ]
         }
       }
     },
@@ -980,6 +1087,28 @@
           "bye": {
             "text": "Go steady on the steps."
           }
+        },
+        "greetings": {
+          "acquaintance": [
+            "Sheep are on the second bench again. They do not use the ramps. I have watched and I still do not know how.",
+            "Cinder holds the heat till noon. Put a hand on the wall and you will feel yesterday in it.",
+            "Count the steps on the trail if you want; I make it a different number every time.",
+            "Nothing rooted on the top bench this week. Nothing rooted on it last week either. I am keeping a list."
+          ],
+          "friend": [
+            "Ro sent up a stone with \"floor\" written on it. I put it on the wall and it is doing better than most of the plants.",
+            "Talked a fern into the third bench this spring. It came up, looked around, and went back in. I understand it.",
+            [
+              "I walked the whole rim yesterday. Same wall the whole way, same drop, same lake.",
+              "Nobody else does it. I think that is the mistake."
+            ],
+            "You have started going steady on the steps without me saying it. Took the crows longer."
+          ],
+          "close": [
+            "Come and sit on the warm side of the wall. I saved the best stone.",
+            "Two mushrooms up by the trail and I did not pick them. They are yours if you want the walk.",
+            "Cloud sitting in the bowl today and nothing to see. Sit anyway. It is warmer up here than it looks."
+          ]
         }
       }
     },
@@ -1138,6 +1267,28 @@
           "bye": {
             "text": "Round you go."
           }
+        },
+        "greetings": {
+          "acquaintance": [
+            "Round again. It is the same distance from the other end; people only think it is longer coming this way.",
+            "Fire is in. It is always in. If it is ever out, look for me on the far shore and worry a little.",
+            "Lit the lamp last night and left the shutter up. Nobody answered. That is not a complaint.",
+            "I can see the whole town from this step and none of it can see me. I like that arrangement better than you would think."
+          ],
+          "friend": [
+            "Ro came round on Tuesday. Complained from the quay to the door and back. I counted it as a visit.",
+            "Somebody across the water had a light on till late. It was not a signal. I watched it like one anyway.",
+            [
+              "The round room has a draught now. I have walked it three times and cannot find where.",
+              "I would rather have a corner than a draught, which is a thing I did not think I would say."
+            ],
+            "I have stopped lighting the lamp on nights I think you will be over. That is not a thing I have told anybody."
+          ],
+          "close": [
+            "Fire is in and the good side of it is yours. Go and sit.",
+            "I lit the lamp last night. Long, short, long. Then I remembered you would be along in the morning anyway.",
+            "Nothing has happened over here since I saw you last. Come in and have none of it with me."
+          ]
         }
       }
     }

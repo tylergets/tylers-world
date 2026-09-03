@@ -718,6 +718,58 @@ family('lamp', { w: 1, d: 1, badge: 'crate', squash: 0.3 }, (o, g) => {
   return p;
 });
 
+family('streetlamp', { w: 1, d: 1, badge: 'crate', squash: 0.22, site: 'outdoors' }, (o, g) => {
+  const H = g.j(o.H ?? 2.5), p = [], heads = [];
+  const post = o.modern ? 'metal' : 'woodDark';
+  p.push(P('cyl', [0, 0.06, 0], [o.baseR ?? 0.3, 0.12, o.baseR ?? 0.3], 'metal'));
+  if (!o.bollard) {
+    p.push(P('taper', [0, H * 0.46, 0], [o.postR ?? 0.065, H * 0.86, o.postR ?? 0.065], post));
+    p.push(P('cyl', [0, H * 0.18, 0], [0.11, 0.08, 0.11], 'metal'));
+    p.push(P('cyl', [0, H * 0.54, 0], [0.085, 0.05, 0.085], 'metal'));
+  } else {
+    p.push(P('cyl', [0, H * 0.46, 0], [0.16, H * 0.82, 0.16], post));
+  }
+
+  const arms = o.arms ?? 1;
+  if (arms === 1 && o.crook) {
+    p.push(P('box', [0.15, H * 0.88, 0], [0.3, 0.045, 0.045], 'metal', [0, 0, -18]));
+    p.push(P('cyl', [0.29, H * 0.82, 0], [0.035, 0.2, 0.035], 'metal'));
+    heads.push([0.29, H * 0.75, 0]);
+  } else if (arms > 1) {
+    for (let i = 0; i < arms; i++) {
+      const a = (i / arms) * Math.PI * 2, r = o.armR ?? 0.34;
+      p.push(P('box', [Math.cos(a) * r * 0.5, H * 0.86, Math.sin(a) * r * 0.5],
+        [r, 0.045, 0.045], 'metal', [0, -a / DEG, 0]));
+      heads.push([Math.cos(a) * r, H * 0.8, Math.sin(a) * r]);
+    }
+  } else heads.push([0, H * 0.82, 0]);
+
+  for (const [x, y, z] of heads) {
+    const style = o.head ?? 'lantern', R = o.headR ?? 0.2;
+    if (style === 'globe' || style === 'acorn') {
+      p.push(P('blob', [x, y + 0.12, z], [R, style === 'acorn' ? R * 1.25 : R, R], 'glass'));
+      p.push(P('cyl', [x, y - 0.05, z], [R * 0.7, 0.07, R * 0.7], 'metal'));
+    } else if (style === 'pagoda') {
+      p.push(P('box', [x, y + 0.08, z], [R * 1.4, 0.3, R * 1.4], 'glass'));
+      p.push(P('pyr', [x, y + 0.31, z], [R * 1.35, 0.18, R * 1.35], 'accent'));
+      p.push(P('cyl', [x, y - 0.1, z], [R, 0.06, R], 'metal'));
+    } else {
+      p.push(P('box', [x, y + 0.08, z], [R * 1.3, 0.34, R * 1.3], style === 'cage' ? 'metal' : 'glass'));
+      p.push(P('box', [x, y + 0.08, z], [R, 0.27, R], 'glass'));
+      p.push(P('pyr', [x, y + 0.33, z], [R, 0.15, R], o.copper ? 'accent' : 'metal'));
+      p.push(P('cyl', [x, y - 0.11, z], [R * 0.9, 0.06, R * 0.9], 'metal'));
+    }
+    p.push(PA('blob', [x, y + 0.08, z], [0.105, 0.13, 0.105], 'pale',
+      { pulse: { amp: 0.12, rate: 0.7 } }));
+  }
+  if (o.finial) p.push(P('cone', [0, H * 0.98, 0], [0.07, 0.2, 0.07], 'accent'));
+  if (o.flower) for (let i = 0; i < 4; i++) {
+    const a = i * Math.PI / 2;
+    p.push(P('blob', [Math.cos(a) * 0.13, H * 0.57, Math.sin(a) * 0.13], [0.08, 0.04, 0.08], 'accent'));
+  }
+  return p;
+});
+
 family('clock', { w: 1, d: 1, badge: 'crate', squash: 0.3 }, (o, g) => {
   const kind = o.kind ?? 'longcase', p = [];
   if (kind === 'longcase') {
@@ -1674,6 +1726,23 @@ I('Five-Branch Candelabra', 'lamp', 'turnipwood', 520, { kind: 'candelabra', arm
 I('Candlestand', 'lamp', 'fenrush', 165, { kind: 'candelabra', arms: 1, H: 1.0, armR: 0 });
 I('Bedside Lamp', 'lamp', 'meadowash', 200, { H: 0.48, shade: 'drum', shadeR: 0.17, baseR: 0.13 });
 
+// ------------------------------------------------------------ street lamps --
+I('Heritage Street Lamp', 'streetlamp', 'inkthorn', 720, { head: 'lantern', H: 2.65, finial: true, light: { color: '#ffd18a', height: 2.35, range: 7.5, intensity: 12 } });
+I("Shepherd's Crook Lamp", 'streetlamp', 'sootpine', 650, { head: 'lantern', crook: true, H: 2.55, light: { color: '#ffc978', height: 2.08, range: 7, intensity: 11 } });
+I('Twin-Arm Boulevard Lamp', 'streetlamp', 'coppervale', 980, { head: 'globe', arms: 2, H: 2.8, armR: 0.4, light: { color: '#ffe2aa', height: 2.36, range: 8.5, intensity: 15 } });
+I('Triple Crown Lamp', 'streetlamp', 'turnipwood', 1260, { head: 'acorn', arms: 3, H: 2.9, armR: 0.38, finial: true, light: { color: '#ffe6b5', height: 2.48, range: 9, intensity: 17 } });
+I('Harbour Cage Lamp', 'streetlamp', 'seaglass', 760, { head: 'cage', H: 2.45, baseR: 0.34, light: { color: '#bfe9ff', height: 2.08, range: 7.5, intensity: 13 } });
+I('Railway Platform Lamp', 'streetlamp', 'beechbark', 840, { head: 'pagoda', arms: 2, H: 2.6, armR: 0.36, light: { color: '#fff0c2', height: 2.2, range: 8, intensity: 14 } });
+I('Opal Globe Lamp', 'streetlamp', 'hollowmilk', 690, { head: 'globe', H: 2.35, headR: 0.24, light: { color: '#fff4d5', height: 2.05, range: 7, intensity: 12 } });
+I('Acorn Street Lamp', 'streetlamp', 'rosewick', 740, { head: 'acorn', H: 2.55, finial: true, light: { color: '#ffd59a', height: 2.2, range: 7.5, intensity: 13 } });
+I('Pagoda Garden Lamp', 'streetlamp', 'meadowash', 620, { head: 'pagoda', H: 2.15, headR: 0.23, light: { color: '#ffe0a0', height: 1.82, range: 6.5, intensity: 10 } });
+I('Copper Gas Lamp', 'streetlamp', 'coppervale', 900, { head: 'lantern', H: 2.7, copper: true, finial: true, light: { color: '#ffbd68', height: 2.32, range: 8, intensity: 14 } });
+I('Floral Avenue Lamp', 'streetlamp', 'rosewick', 860, { head: 'globe', H: 2.6, flower: true, light: { color: '#ffe5b8', height: 2.25, range: 7.5, intensity: 13 } });
+I('Modern Column Lamp', 'streetlamp', 'hollowmilk', 780, { head: 'globe', H: 2.5, modern: true, postR: 0.09, light: { color: '#e5f3ff', height: 2.16, range: 8, intensity: 14 } });
+I('Low Bollard Lamp', 'streetlamp', 'sootpine', 390, { head: 'pagoda', H: 1.15, bollard: true, headR: 0.18, light: { color: '#ffd99a', height: 0.92, range: 4.5, intensity: 7 } });
+I('Beacon Post Lamp', 'streetlamp', 'seaglass', 700, { head: 'cage', H: 2.25, modern: true, light: { color: '#9edcff', height: 1.92, range: 7.5, intensity: 13 } });
+I('Village Lantern', 'streetlamp', 'fenrush', 580, { head: 'lantern', H: 2.2, crook: true, light: { color: '#ffd080', height: 1.78, range: 6.5, intensity: 10 } });
+
 // ------------------------------------------------------------------- clocks --
 I('Longcase Clock', 'clock', 'inkthorn', 1350, { kind: 'longcase' });
 I('Grandmother Clock', 'clock', 'rosewick', 1120, { kind: 'longcase', H: 1.62 });
@@ -1850,8 +1919,8 @@ I('Boot Scraper', 'oddment', 'sootpine', 140, { kind: 'bootscraper' });
 
 // ------------------------------------------------------------------- emit --
 
-if (CATALOGUE.length !== 300) {
-  throw new Error(`the catalogue holds ${CATALOGUE.length} pieces, not 300`);
+if (CATALOGUE.length !== 315) {
+  throw new Error(`the catalogue holds ${CATALOGUE.length} pieces, not 315`);
 }
 
 /** A product name as a file and type id: "Captain's Chair" -> captains-chair. */
@@ -1872,7 +1941,7 @@ const slugify = (name) => name
 const TINTS = {
   chair: '#c07a4a', stool: '#b9944f', bench: '#a8683f', sofa: '#a25b7a',
   table: '#c08b55', desk: '#8a6a4a', bed: '#5d86b5', case: '#8a6242',
-  shelf: '#7f6a52', chest: '#9a7a3f', barrel: '#a06a3a', lamp: '#e8c24b',
+  shelf: '#7f6a52', chest: '#9a7a3f', barrel: '#a06a3a', lamp: '#e8c24b', streetlamp: '#f0b84b',
   clock: '#b08d3f', mirror: '#8fb6c4', rug: '#b4544e', screen: '#7c8f6a',
   stove: '#8f969c', wash: '#7fa8bd', tank: '#4f97a8', craft: '#8a7a5a',
   standing: '#6f8a9c', rack: '#9a8a6a', cart: '#8f8f8f', plant: '#63b84e',
@@ -1890,7 +1959,7 @@ function heightOf(parts) {
 }
 
 /** A part list, compact enough to read one part per line. */
-const fmt = (v) => Array.isArray(v) ? `[${v.join(', ')}]`
+const fmt = (v) => Array.isArray(v) ? `[${v.map(fmt).join(', ')}]`
   : (v && typeof v === 'object' ? compact(v) : JSON.stringify(v));
 const compact = (o) => `{ ${Object.entries(o).map(([k, v]) => `"${k}": ${fmt(v)}`).join(', ')} }`;
 
@@ -1916,6 +1985,8 @@ function build(row, index) {
   for (const key of Object.keys(finish.pal)) if (used.has(key)) palette[key] = finish.pal[key];
 
   const w = row.opts.w ?? fam.w, d = row.opts.d ?? fam.d;
+  const footprint = { w, d };
+  if (row.family === 'rug') footprint.mask = Array.from({ length: d }, () => '.'.repeat(w));
   const swatch = mix(finish.pal.accent, TINTS[row.family], 0.38);
   const value = Math.max(5, Math.round(row.value * finish.mul / 5) * 5);
 
@@ -1933,6 +2004,7 @@ function build(row, index) {
         squash: row.opts.squash ?? fam.squash ?? 0.34,
         palette,
         parts: parts.map((_, i) => `@@PART${i}@@`),
+        ...(row.opts.light ? { light: row.opts.light } : {}),
       },
       [`kititem.${slug}`]: {
         kind: 'item',
@@ -1942,6 +2014,7 @@ function build(row, index) {
         swatch,
         badge: row.opts.badge ?? fam.badge,
         furniture: fixture,
+        ...(row.opts.site ?? fam.site ? { site: row.opts.site ?? fam.site } : {}),
         // The kraft parcel every flat-pack in the game travels as. Only `mark`
         // is this piece's own -- see ui/icons.js on why that is the right way
         // round for a bag holding three hundred wrapped boards.
@@ -1951,7 +2024,7 @@ function build(row, index) {
   };
 
   let json = JSON.stringify(kit, null, 2)
-    .replace('"@@FOOT@@"', compact({ w, d }));
+    .replace('"@@FOOT@@"', compact(footprint));
   parts.forEach((part, i) => { json = json.replace(`"@@PART${i}@@"`, compact(part)); });
   return { slug, json: `${json}\n`, name: kit.meta.name, value, index };
 }

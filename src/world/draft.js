@@ -27,7 +27,7 @@ const FOOT = {
   'building.cottage': [3, 3], 'building.cabin': [4, 3], 'building.bungalow': [5, 3],
   'tree.oak': [1, 1], 'tree.pine': [1, 1], 'tree.palm': [1, 1],
   'rock.small': [1, 1], 'rock.large': [2, 2],
-  'yard.mailbox': [1, 1],
+  'yard.mailbox': [1, 1], 'civic.noticeboard': [3, 1],
 };
 
 /**

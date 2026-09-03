@@ -4,14 +4,38 @@ import { DIR } from '../core/constants.js';
 import { parseDialog } from './dialog.js';
 
 export const DEBUG_ROOM_URL = 'worlds/interiors/debug-room.json';
+export const AIRPORT_URL = 'worlds/interiors/airport.json';
+export const PIT_URL = 'worlds/interiors/the-pit.json';
+export const CASINO_URL = 'worlds/interiors/lucky-seven.json';
+export const BUNKER_URL = 'worlds/interiors/sub-level-9.json';
+export const SKYDECK_URL = 'worlds/interiors/skydeck.json';
+export const MOONWELL_URL = 'worlds/interiors/moonwell.json';
+
+/**
+ * Every place on the driver's board, in the order he offers them.
+ *
+ * Exported so `npm run checkworld` can walk these rooms too: none of them sits
+ * behind a building's doorway, so the place graph would otherwise never reach
+ * them, and a cab stop nobody has validated is a black screen at the end of a
+ * fade.
+ */
+export const CAB_STOPS = Object.freeze([
+  { label: 'The Airport', url: AIRPORT_URL },
+  { label: 'The Pit (fight club)', url: PIT_URL },
+  { label: 'The Lucky Seven (casino)', url: CASINO_URL },
+  { label: 'Sub-Level 9 (the bunker)', url: BUNKER_URL },
+  { label: 'The Skydeck (rooftop)', url: SKYDECK_URL },
+  { label: 'The Moonwell (sanctum)', url: MOONWELL_URL },
+  { label: 'The Debug Room', url: DEBUG_ROOM_URL },
+]);
 
 const DRIVER_DIALOG = parseDialog({
   start: 'offer',
   nodes: {
     offer: {
-      text: 'Need a ride? I can take you anywhere on my board.',
+      text: 'Need a ride? I can take you anywhere on my board. Some of it is rougher than it sounds.',
       choices: [
-        { text: 'The Debug Room', do: { travel: DEBUG_ROOM_URL }, to: 'end' },
+        ...CAB_STOPS.map(({ label, url }) => ({ text: label, do: { travel: url }, to: 'end' })),
         { text: 'Not right now.', to: 'end' },
       ],
     },
@@ -106,8 +130,9 @@ export function addCabService(world) {
   // Loader-added service objects are part of the place baseline, not player furniture.
   world.authoredObjectCount = world.objects.length;
   world.baseObjectTiles.set(cab.id, [...cab.tile]);
+  world.authoredObjectTiles.set(cab.id, [...cab.tile]);
   world.baseObjectRotations.set(cab.id, cab.rotation);
-  world.npcs.push({
+  const driver = {
     id: `cab.driver.${world.meta.id}`,
     type: 'folk.cabbie',
     tile: spot.driver.tile,
@@ -117,6 +142,9 @@ export function addCabService(world) {
     schedule: [],
     errands: [],
     props: { name: 'Hackney', title: 'Cab Driver', noSmallTalk: true },
-  });
+  };
+  world.npcs.push(driver);
+  world.authoredNpcTiles.set(driver.id, [...driver.tile]);
+  world.authoredNpcSchedules.set(driver.id, []);
   return world;
 }

@@ -10,6 +10,9 @@
  * animation is already running during the load it is there to cover. Built in
  * JS it would start at the one moment there was nothing left to hide.
  *
+ * A saved game's screenshot can appear inside the menu once JS has loaded;
+ * the full-screen scene remains untouched behind it.
+ *
  * So what this owns is the menu, and only that: which saves there are, which
  * world a new game would be, and turning a click into a call back into
  * main.js. Like ui/worlds.js it OWNS NOTHING ELSE. It does not read storage,
@@ -25,7 +28,7 @@
  * sign on it.
  */
 
-import { worldChoices, formOf, choiceSource, ago } from './picks.js';
+import { worldChoices, worldChoiceGroups, formOf, choiceSource, ago } from './picks.js';
 import { randomSeed, worldName } from '../world/generate.js';
 import {
   GENDERS, HAIR_STYLES, HAIR_COLORS, SKIN_COLORS, EYE_COLORS, DEFAULT_IDENTITY,
@@ -36,16 +39,17 @@ import { SEASONS, DAYS_PER_SEASON } from '../sim/Clock.js';
 export class TitleScreen {
   /**
    * @param {HTMLElement} el  the `#title` element already in the document
-   * @param {object} hooks  `{ onContinue, onLoad, onStart, onDelete }`; each
-   *   returns a promise that resolves once a game is actually on screen
+   * @param {object} hooks  game-loading callbacks plus `onAutoLoad`, which
+   *   persists the startup preference
    */
-  constructor(el, { onContinue, onLoad, onStart, onDelete }) {
+  constructor(el, { onContinue, onLoad, onStart, onDelete, onAutoLoad }) {
     this.el = el;
-    this.hooks = { onContinue, onLoad, onStart, onDelete };
+    this.hooks = { onContinue, onLoad, onStart, onDelete, onAutoLoad };
     this.card = el.querySelector('#title-card');
     this.note = el.querySelector('#title-note');
 
     this.pane = 'home';
+    this.group = 'established';
     this.choice = worldChoices()[0].id;
     this.seed = randomSeed();
     /**
@@ -64,6 +68,8 @@ export class TitleScreen {
     };
     this.resume = null;
     this.saves = [];
+    this.preview = null;
+    this.autoLoad = false;
     this.busy = false;
 
     // One listener on the card rather than one per row: the panes redraw
@@ -124,12 +130,13 @@ export class TitleScreen {
   /**
    * Draw the menu.
    *
-   * @param {object} state  `{ resume, saves }` -- the save this tab would carry
-   *   on from, and every save there is, newest first
+   * @param {object} state  the resumable save, save list, preview and startup preference
    */
-  present({ resume, saves }) {
+  present({ resume, saves, preview, autoLoad }) {
     this.resume = resume ?? null;
     this.saves = saves ?? [];
+    this.preview = preview ?? null;
+    this.autoLoad = !!autoLoad;
     this.pane = this.#hasHome() ? 'home' : 'new';
     this.#draw();
     this.note.textContent = '';
@@ -169,6 +176,7 @@ export class TitleScreen {
   // ------------------------------------------------------------- rendering --
 
   #draw() {
+    this.card.classList.toggle('world-picker', this.pane === 'new');
     this.card.innerHTML = this.pane === 'home' ? this.#homeHtml()
       : this.pane === 'new' ? this.#newHtml() : this.#whoHtml();
     if (this.pane === 'new') this.#describe();
@@ -176,6 +184,9 @@ export class TitleScreen {
 
   #homeHtml() {
     const r = this.resume;
+    const preview = this.preview
+      ? `<img class="tt-card-preview" src="${esc(this.preview)}" alt="Latest view of this saved game">`
+      : '';
     // The save this tab is attached to is drawn as a sentence rather than a
     // row, because "carry on where you were" is not a choice among equals with
     // the eleven older saves under it -- it is the reason most sessions open
@@ -206,26 +217,37 @@ export class TitleScreen {
       </div>`).join('')
       : `<div class="modal-empty">${r ? 'No other saved games.' : 'Nothing saved yet.'}</div>`;
 
-    return `${cont}
+    return `${preview}${cont}
       <div class="set-title">Saved games</div>
       <div class="tt-list">${list}</div>
+      <button class="tt-auto${this.autoLoad ? ' on' : ''}" data-act="autoload"
+              aria-pressed="${this.autoLoad}">
+        <span>Auto Load Last Save on Startup</span><b>${this.autoLoad ? 'On' : 'Off'}</b>
+      </button>
       <div class="modal-actions">
         <button class="btn" data-act="new">New world&hellip;</button>
       </div>`;
   }
 
   #newHtml() {
-    const rows = worldChoices().map((c) => `
-      <button class="pick${c.id === this.choice ? ' on' : ''}" data-choice="${esc(c.id)}">
-        <span class="pick-body">
-          <div class="pick-name">${esc(c.name)}</div>
-          <div class="pick-note">${esc(c.note)}</div>
-        </span>
+    const groups = worldChoiceGroups();
+    const selected = groups.find((group) => group.id === this.group) ?? groups[0];
+    const tabs = groups.map((group) => `
+      <button class="pick-tab${group.id === selected.id ? ' on' : ''}" data-world-group="${group.id}"
+              role="tab" aria-selected="${group.id === selected.id}">${esc(group.label)}</button>`).join('');
+    const rows = selected.choices.map((c) => `
+      <button class="world-pick${c.id === this.choice ? ' on' : ''}" data-choice="${esc(c.id)}">
+        <span>${esc(c.name)}</span><small>${esc(c.form)}</small>
       </button>`).join('');
+    const choice = selected.choices.find((c) => c.id === this.choice) ?? selected.choices[0];
 
     return `
       <div class="set-title">Start a new world</div>
-      <div class="tt-list">${rows}</div>
+      <div class="pick-tabs" role="tablist" aria-label="World category">${tabs}</div>
+      <div class="world-browser">
+        <div class="world-picks">${rows}</div>
+        ${this.#worldPreviewHtml(choice)}
+      </div>
       <div class="seed-row" id="title-seed-row" hidden>
         <span class="seed-label">Seed</span>
         <input id="title-seed" type="text" inputmode="numeric" spellcheck="false"
@@ -236,6 +258,18 @@ export class TitleScreen {
         ${this.#hasHome() ? '<button class="btn" data-act="home">Back</button>' : ''}
         <button class="btn go" data-act="start">Start&hellip;</button>
       </div>`;
+  }
+
+  #worldPreviewHtml(choice) {
+    return `<section class="world-preview" aria-live="polite">
+      <div class="world-art" aria-hidden="true">${landformSvg(choice.form)}</div>
+      <div class="world-preview-body">
+        <span class="world-preview-kind">${esc(choice.form)}</span>
+        <h2>${esc(choice.name)}</h2>
+        <p>${esc(choice.note)}</p>
+        <dl><div><dt>World size</dt><dd>${esc(choice.size)}</dd></div></dl>
+      </div>
+    </section>`;
   }
 
   /**
@@ -315,8 +349,7 @@ export class TitleScreen {
         + ' the same place, so it is worth writing down.');
       return;
     }
-    const named = worldChoices().find((r) => r.id === this.choice);
-    this.say(`Starts ${named?.name ?? 'a world'} from the beginning.`);
+    this.say('');
   }
 
   // -------------------------------------------------------------- pressing --
@@ -330,12 +363,26 @@ export class TitleScreen {
     const load = e.target.closest('[data-load]');
     if (load) { this.#run(() => this.hooks.onLoad(load.dataset.load)); return; }
 
+    const groupButton = e.target.closest('[data-world-group]');
+    if (groupButton) {
+      const group = worldChoiceGroups().find((entry) => entry.id === groupButton.dataset.worldGroup);
+      if (!group || group.id === this.group) return;
+      this.group = group.id;
+      this.choice = group.choices[0].id;
+      this.#draw();
+      this.card.querySelector(`[data-world-group="${group.id}"]`)?.focus();
+      return;
+    }
+
     const pick = e.target.closest('[data-choice]');
     if (pick) {
       this.choice = pick.dataset.choice;
       for (const b of this.card.querySelectorAll('[data-choice]')) {
         b.classList.toggle('on', b === pick);
       }
+      const choice = worldChoices().find((entry) => entry.id === this.choice);
+      const preview = this.card.querySelector('.world-preview');
+      if (choice && preview) preview.outerHTML = this.#worldPreviewHtml(choice);
       this.#describe();
       return;
     }
@@ -372,6 +419,14 @@ export class TitleScreen {
 
     switch (e.target.closest('[data-act]')?.dataset.act) {
       case 'continue': this.#run(() => this.hooks.onContinue()); break;
+      case 'autoload': {
+        const button = e.target.closest('[data-act="autoload"]');
+        this.autoLoad = this.hooks.onAutoLoad(!this.autoLoad);
+        button.classList.toggle('on', this.autoLoad);
+        button.setAttribute('aria-pressed', String(this.autoLoad));
+        button.querySelector('b').textContent = this.autoLoad ? 'On' : 'Off';
+        break;
+      }
       case 'new': this.#go('new'); break;
       case 'home': this.#go('home'); break;
       case 'world': this.#go('new'); break;
@@ -479,6 +534,24 @@ function esc(s) {
 
 /** 0xrrggbb -> a CSS colour, for the swatches and the mirror. */
 const hex = (n) => `#${n.toString(16).padStart(6, '0')}`;
+
+/** Small terrain portraits for the picker; illustrative, not map screenshots. */
+function landformSvg(form) {
+  const shapes = {
+    Island: `<path d="M0 62h180v58H0z" fill="#397f9f"/><ellipse cx="90" cy="73" rx="66" ry="30" fill="#d1ac66"/><ellipse cx="90" cy="68" rx="55" ry="24" fill="#5f9252"/><path d="M66 67q22-32 48 0z" fill="#466f45"/>`,
+    Atoll: `<path d="M0 48h180v72H0z" fill="#397f9f"/><ellipse cx="90" cy="75" rx="69" ry="32" fill="#d4b168"/><ellipse cx="90" cy="75" rx="49" ry="21" fill="#60904f"/><ellipse cx="90" cy="76" rx="32" ry="13" fill="#5ca7bd"/>`,
+    Holler: `<path d="M0 37l57 25 18 58H0z" fill="#547746"/><path d="M180 37l-57 25-18 58h75z" fill="#63834d"/><path d="M75 120l15-58 15 58z" fill="#b8965d"/><path d="M88 120q13-33 3-58" fill="none" stroke="#4f9abb" stroke-width="6"/>`,
+    Gap: `<path d="M0 27l64 39 12 54H0z" fill="#557849"/><path d="M180 27l-64 39-12 54h76z" fill="#607f4e"/><path d="M76 120L87 57h6l11 63z" fill="#c2a56e"/><path d="M89 120V58" stroke="#e2cf9a" stroke-width="3"/>`,
+    Mesa: `<path d="M0 79l38-13 25-35h57l23 35 37 13v41H0z" fill="#a86942"/><path d="M63 31h57l14 21H49z" fill="#c49d63"/><path d="M69 31h45l8 8H58z" fill="#6f8b52"/>`,
+    Caldera: `<path d="M0 87l35-49 35 29 20-45 23 44 31-28 36 49v33H0z" fill="#655d49"/><ellipse cx="90" cy="91" rx="57" ry="24" fill="#6f8c54"/><ellipse cx="90" cy="96" rx="32" ry="12" fill="#4e91a8"/><path d="M59 87q31-21 62 0" fill="none" stroke="#b49969" stroke-width="5"/>`,
+    Fen: `<path d="M0 45h180v75H0z" fill="#668259"/><path d="M21 120q13-40 53-74M74 120q13-46 45-74M130 120q-3-42 31-72" fill="none" stroke="#4d8791" stroke-width="13"/><path d="M0 82h180M0 103h180" stroke="#a98f62" stroke-width="4" stroke-dasharray="16 10"/>`,
+    Coast: `<path d="M0 25h180v56Q132 65 92 83T0 79z" fill="#63864e"/><path d="M0 76q53 13 92 0t88-2v22q-47-12-88 1T0 94z" fill="#d2ae6b"/><path d="M0 91q50 13 94 0t86-1v30H0z" fill="#3f88a7"/>`,
+  };
+  return `<svg viewBox="0 0 180 120" preserveAspectRatio="none">
+    <defs><linearGradient id="world-sky" x2="0" y2="1"><stop stop-color="#719bb1"/><stop offset="1" stop-color="#d8c59b"/></linearGradient></defs>
+    <rect width="180" height="120" fill="url(#world-sky)"/>${shapes[form] ?? shapes.Island}
+  </svg>`;
+}
 
 /**
  * The face in the mirror: the character from the front, in the chosen cut and

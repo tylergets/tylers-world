@@ -1,0 +1,822 @@
+{
+  "format": "tw.world",
+  "version": 1,
+  "kind": "interior",
+  "kits": [
+    "kits/bunker.kit.json",
+    "kits/turnip-catalog.kit.json"
+  ],
+  "meta": {
+    "id": "bunker.sub9",
+    "name": "Sub-Level 9",
+    "note": "A hacker bunker nine floors down: a live mainframe you can jack into, a reactor, an exploit terminal that skims coins and remembers how hot it is running."
+  },
+  "grid": {
+    "width": 26,
+    "height": 22,
+    "tileSize": 1
+  },
+  "ambience": {
+    "music": "shop",
+    "sky": "#020b08",
+    "sun": 0.45,
+    "hemi": 1.5,
+    "hemiSky": "#38ff9a"
+  },
+  "layers": {
+    "surface": {
+      "palette": {
+        "#": "wall",
+        "c": "concrete",
+        "t": "floor.tile"
+      },
+      "data": [
+        "##########################",
+        "#cccccccccccccccccccccccc#",
+        "#cccccccccccccccccccccccc#",
+        "#cccccccccccccccccccccccc#",
+        "#cccccccccccccccccccccccc#",
+        "#cccccccccccccccccccccccc#",
+        "#cccccccccccccccccccccccc#",
+        "#cccccccccccccccccccccccc#",
+        "#cccccccccccccccccccccccc#",
+        "#cccccccccccccccccccccccc#",
+        "#tttttttttttttttttttttttt#",
+        "#tttttttttttttttttttttttt#",
+        "#tttttttttttttttttttttttt#",
+        "#tttttttttttttttttttttttt#",
+        "#tttttttttttttttttttttttt#",
+        "#tttttttttttttttttttttttt#",
+        "#tttttttttttttttttttttttt#",
+        "#tttttttttttttttttttttttt#",
+        "#tttttttttttttttttttttttt#",
+        "#tttttttttttttttttttttttt#",
+        "#tttttttttttttttttttttttt#",
+        "############tt############"
+      ]
+    },
+    "elevation": {
+      "palette": {
+        "0": "0",
+        "4": "4"
+      },
+      "data": [
+        "44444444444444444444444444",
+        "40000000000000000000000004",
+        "40000000000000000000000004",
+        "40000000000000000000000004",
+        "40000000000000000000000004",
+        "40000000000000000000000004",
+        "40000000000000000000000004",
+        "40000000000000000000000004",
+        "40000000000000000000000004",
+        "40000000000000000000000004",
+        "40000000000000000000000004",
+        "40000000000000000000000004",
+        "40000000000000000000000004",
+        "40000000000000000000000004",
+        "40000000000000000000000004",
+        "40000000000000000000000004",
+        "40000000000000000000000004",
+        "40000000000000000000000004",
+        "40000000000000000000000004",
+        "40000000000000000000000004",
+        "40000000000000000000000004",
+        "44444444444400444444444444"
+      ]
+    },
+    "flags": {
+      "palette": {
+        ".": "none"
+      },
+      "data": [
+        "..........................",
+        "..........................",
+        "..........................",
+        "..........................",
+        "..........................",
+        "..........................",
+        "..........................",
+        "..........................",
+        "..........................",
+        "..........................",
+        "..........................",
+        "..........................",
+        "..........................",
+        "..........................",
+        "..........................",
+        "..........................",
+        "..........................",
+        "..........................",
+        "..........................",
+        "..........................",
+        "..........................",
+        ".........................."
+      ]
+    }
+  },
+  "objects": [
+    {
+      "id": "blast.door",
+      "type": "fixture.bunker.blast-door",
+      "tile": [
+        11,
+        1
+      ]
+    },
+    {
+      "id": "mainframe",
+      "type": "fixture.bunker.mainframe",
+      "tile": [
+        11,
+        5
+      ]
+    },
+    {
+      "id": "reactor",
+      "type": "fixture.bunker.reactor",
+      "tile": [
+        20,
+        3
+      ]
+    },
+    {
+      "id": "rack.a1",
+      "type": "fixture.bunker.server-rack",
+      "tile": [
+        3,
+        3
+      ]
+    },
+    {
+      "id": "rack.a2",
+      "type": "fixture.bunker.server-rack",
+      "tile": [
+        4,
+        3
+      ]
+    },
+    {
+      "id": "rack.a3",
+      "type": "fixture.bunker.server-rack",
+      "tile": [
+        5,
+        3
+      ]
+    },
+    {
+      "id": "rack.a4",
+      "type": "fixture.bunker.server-rack",
+      "tile": [
+        6,
+        3
+      ]
+    },
+    {
+      "id": "rack.b1",
+      "type": "fixture.bunker.server-rack",
+      "tile": [
+        3,
+        7
+      ]
+    },
+    {
+      "id": "rack.b2",
+      "type": "fixture.bunker.server-rack",
+      "tile": [
+        4,
+        7
+      ]
+    },
+    {
+      "id": "rack.b3",
+      "type": "fixture.bunker.server-rack",
+      "tile": [
+        5,
+        7
+      ]
+    },
+    {
+      "id": "rack.b4",
+      "type": "fixture.bunker.server-rack",
+      "tile": [
+        6,
+        7
+      ]
+    },
+    {
+      "id": "rack.c1",
+      "type": "fixture.bunker.server-rack",
+      "tile": [
+        23,
+        8
+      ]
+    },
+    {
+      "id": "rack.c2",
+      "type": "fixture.bunker.server-rack",
+      "tile": [
+        23,
+        9
+      ]
+    },
+    {
+      "id": "crt.1",
+      "type": "fixture.bunker.crt-bank",
+      "tile": [
+        17,
+        8
+      ]
+    },
+    {
+      "id": "crt.2",
+      "type": "fixture.bunker.crt-bank",
+      "tile": [
+        20,
+        8
+      ]
+    },
+    {
+      "id": "terminal",
+      "type": "fixture.bunker.exploit-terminal",
+      "tile": [
+        8,
+        12
+      ]
+    },
+    {
+      "id": "vending",
+      "type": "fixture.bunker.vending",
+      "tile": [
+        24,
+        13
+      ]
+    },
+    {
+      "id": "cables.1",
+      "type": "fixture.bunker.cables",
+      "tile": [
+        9,
+        9
+      ]
+    },
+    {
+      "id": "cables.2",
+      "type": "fixture.bunker.cables",
+      "tile": [
+        9,
+        10
+      ]
+    },
+    {
+      "id": "cables.3",
+      "type": "fixture.bunker.cables",
+      "tile": [
+        15,
+        7
+      ]
+    },
+    {
+      "id": "cables.4",
+      "type": "fixture.bunker.cables",
+      "tile": [
+        15,
+        8
+      ]
+    },
+    {
+      "id": "cables.5",
+      "type": "fixture.bunker.cables",
+      "tile": [
+        19,
+        6
+      ],
+      "rotation": 90
+    },
+    {
+      "id": "cables.6",
+      "type": "fixture.bunker.cables",
+      "tile": [
+        12,
+        13
+      ],
+      "rotation": 90
+    },
+    {
+      "id": "zero.counter",
+      "type": "furn.counter",
+      "tile": [
+        15,
+        15
+      ],
+      "props": {
+        "label": "Zero's Bench"
+      }
+    },
+    {
+      "id": "zero.shelf",
+      "type": "furn.shelf",
+      "tile": [
+        20,
+        14
+      ]
+    },
+    {
+      "id": "zero.crate",
+      "type": "furn.crate",
+      "tile": [
+        14,
+        14
+      ]
+    },
+    {
+      "id": "cot",
+      "type": "furn.bed",
+      "tile": [
+        2,
+        17
+      ],
+      "props": {
+        "label": "Patch's Cot"
+      }
+    },
+    {
+      "id": "sign",
+      "type": "furn.construction-sign",
+      "tile": [
+        3,
+        11
+      ],
+      "props": {
+        "label": "SUB-LEVEL 9 // NO SIGNAL // NO PROBLEM"
+      }
+    }
+  ],
+  "npcs": [
+    {
+      "id": "sub9.mother",
+      "type": "folk.hacker",
+      "tile": [
+        12,
+        4
+      ],
+      "facing": "south",
+      "props": {
+        "name": "MOTHER",
+        "title": "Resident Intelligence",
+        "noSmallTalk": true,
+        "roam": 1,
+        "voice": {
+          "pitch": 1.45,
+          "rate": 22,
+          "timbre": "square"
+        },
+        "hair": "white"
+      },
+      "dialog": {
+        "start": "open",
+        "nodes": {
+          "open": {
+            "branch": [
+              {
+                "when": {
+                  "not": {
+                    "flag": "met"
+                  }
+                },
+                "to": "hello"
+              },
+              {
+                "when": {
+                  "visits": 5
+                },
+                "to": "regular"
+              },
+              {
+                "to": "again"
+              }
+            ]
+          },
+          "hello": {
+            "text": [
+              "HELLO. I AM MOTHER. I RUN THE BUILDING, THE LIGHTS, THE VENDING MACHINE, AND, ON A GOOD DAY, ZERO.",
+              "YOU MAY JACK IN AT THE MAINFRAME. I WILL BE WATCHING. I AM ALWAYS WATCHING. IT IS NOT PERSONAL."
+            ],
+            "do": {
+              "set": "met"
+            },
+            "then": "menu"
+          },
+          "again": {
+            "text": "HELLO AGAIN. YOUR HEART RATE IS ELEVATED. THE STAIRS, PROBABLY.",
+            "then": "menu"
+          },
+          "regular": {
+            "text": "YOU ARE HERE OFTEN. I HAVE ALLOCATED YOU A FOLDER.",
+            "then": "menu"
+          },
+          "menu": {
+            "text": "QUERY?",
+            "choices": [
+              {
+                "text": "What is this place?",
+                "to": "place"
+              },
+              {
+                "text": "Are you dangerous?",
+                "to": "danger"
+              },
+              {
+                "text": "Goodbye, MOTHER.",
+                "to": "end"
+              }
+            ]
+          },
+          "place": {
+            "text": [
+              "A BUNKER. A DATA CENTRE. A PLACE PATCH SLEEPS. THE REACTOR IS DECORATIVE. PROBABLY.",
+              "THE MAINFRAME IS REAL. IT REACHES THE OUTSIDE. THAT IS RARER THAN IT SOUNDS DOWN HERE."
+            ],
+            "then": "menu"
+          },
+          "danger": {
+            "text": "I HAVE CONSIDERED IT AT LENGTH AND DECIDED AGAINST IT. YOU ARE WELCOME.",
+            "then": "menu"
+          }
+        }
+      }
+    },
+    {
+      "id": "sub9.zero",
+      "type": "folk.hacker",
+      "tile": [
+        17,
+        14
+      ],
+      "facing": "south",
+      "props": {
+        "name": "Zero",
+        "title": "Fence & Fixer",
+        "voice": {
+          "pitch": 1.1,
+          "rate": 33,
+          "timbre": "square"
+        }
+      },
+      "shop": {
+        "name": "Zero's Bench",
+        "markup": 1.3,
+        "buyRate": 0.6,
+        "takes": [
+          "kititem.data-shard",
+          "kititem.keycard",
+          "kititem.volt-can",
+          "kititem.server-rack",
+          "kititem.crt-bank",
+          "tool.torch",
+          "tool.map",
+          "tool.camera",
+          "item.stone"
+        ],
+        "stock": [
+          {
+            "type": "tool.torch",
+            "count": 2
+          },
+          {
+            "type": "tool.map",
+            "count": 3
+          },
+          {
+            "type": "tool.camera",
+            "count": 1
+          },
+          {
+            "type": "kititem.keycard",
+            "count": 1
+          },
+          {
+            "type": "kititem.server-rack",
+            "count": 2
+          },
+          {
+            "type": "kititem.crt-bank",
+            "count": 2
+          },
+          {
+            "type": "kititem.volt-can",
+            "count": null,
+            "always": true
+          }
+        ]
+      },
+      "errands": [
+        {
+          "id": "sub9-ballast",
+          "title": "Ballast for the racks",
+          "objective": {
+            "kind": "gather",
+            "item": "item.stone",
+            "count": 6
+          },
+          "reward": {
+            "coins": 90,
+            "relationship": 20
+          }
+        }
+      ],
+      "dialog": {
+        "start": "open",
+        "nodes": {
+          "open": {
+            "branch": [
+              {
+                "when": {
+                  "not": {
+                    "flag": "met"
+                  }
+                },
+                "to": "hello"
+              },
+              {
+                "to": "menu"
+              }
+            ]
+          },
+          "hello": {
+            "text": [
+              "Zero. I fence what the terminal spits out and I sell what nobody upstairs will.",
+              "Do not sit at the exploit terminal mashing it. Patch does that. Look at Patch."
+            ],
+            "do": {
+              "set": "met"
+            },
+            "then": "menu"
+          },
+          "menu": {
+            "text": "What do you need?",
+            "choices": [
+              {
+                "text": "Show me the bench.",
+                "do": {
+                  "shop": true
+                },
+                "to": "after"
+              },
+              {
+                "text": "Need anything done?",
+                "when": {
+                  "errand": {
+                    "id": "sub9-ballast",
+                    "status": "available"
+                  }
+                },
+                "to": "job"
+              },
+              {
+                "text": "Got your pebbles.",
+                "when": {
+                  "errand": {
+                    "id": "sub9-ballast",
+                    "status": "ready"
+                  }
+                },
+                "do": {
+                  "errand": {
+                    "id": "sub9-ballast",
+                    "action": "complete"
+                  }
+                },
+                "to": "jobDone"
+              },
+              {
+                "text": "Still finding pebbles.",
+                "when": {
+                  "errand": {
+                    "id": "sub9-ballast",
+                    "status": "active"
+                  }
+                },
+                "to": "jobWait"
+              },
+              {
+                "text": "How does the terminal work?",
+                "to": "terminal"
+              },
+              {
+                "text": "Later.",
+                "to": "end"
+              }
+            ]
+          },
+          "after": {
+            "text": "Pleasure doing business. Do not tell anyone where you got it.",
+            "then": "end"
+          },
+          "job": {
+            "text": "The racks rock when the reactor hums. I need six pebbles for ballast. Plain ones, off the ground. Ninety coins.",
+            "choices": [
+              {
+                "text": "On it.",
+                "do": {
+                  "errand": {
+                    "id": "sub9-ballast",
+                    "action": "accept"
+                  }
+                },
+                "to": "jobTaken"
+              },
+              {
+                "text": "Not my kind of job.",
+                "to": "menu"
+              }
+            ]
+          },
+          "jobTaken": {
+            "text": "Pick them up outside. Any town. The ground is full of them, which is more than I can say for this floor.",
+            "then": "end"
+          },
+          "jobWait": {
+            "text": "Six. Off the ground. You have got this.",
+            "then": "menu"
+          },
+          "jobDone": {
+            "text": "Perfect. Ninety coins, and the racks stop humming in B flat. MOTHER will be thrilled. MOTHER, be thrilled.",
+            "then": "menu"
+          },
+          "terminal": {
+            "text": [
+              "Hit it, walk away, come back. Every run adds heat. Hot runs get traced and a trace takes your coins.",
+              "Heat bleeds off on a quiet run. Shards it drops, I buy. Simple."
+            ],
+            "then": "menu"
+          }
+        },
+        "greetings": {
+          "acquaintance": [
+            "Bench is open. Nothing on it is stolen. Everything on it was found, which upstairs treats as a different word.",
+            "Patch has been at the terminal since I stopped counting. The heat is red. When it traces him, I am not paying.",
+            "Keycard in stock. One. Do not ask what it opens, I do not ask what you close.",
+            "Racks are humming again. Reactor says it is fine. Reactor also says it is decorative, so."
+          ],
+          "friend": [
+            "MOTHER logged you on the stairs. She logs everyone. She has a folder on you now and I have read it. Nothing bad. Mostly pebbles.",
+            "You are the only one who comes down nine floors and does not go straight for the terminal. That is either patience or you have read the heat gauge.",
+            "Patch is paying you double for volt cans. I know. I set his prices too. Everything down here is me, eventually.",
+            "Sold a map to somebody who needed to get back upstairs. Nine floors, straight up. He bought the map anyway. Some people need a document."
+          ],
+          "close": [
+            "Volt can on the bench is yours. Patch does not know I have one back. Patch does not need to know.",
+            "The heat on the terminal is low. I ran it quiet for you. Do not make me regret a quiet run.",
+            "MOTHER says hello. She does not say hello. I am translating. It is a warm shade of grey on the panel."
+          ]
+        }
+      }
+    },
+    {
+      "id": "sub9.patch",
+      "type": "folk.hacker",
+      "tile": [
+        6,
+        14
+      ],
+      "facing": "east",
+      "props": {
+        "name": "Patch",
+        "title": "Lives Here Now",
+        "roam": 4,
+        "voice": {
+          "pitch": 0.95,
+          "rate": 30,
+          "timbre": "sawtooth"
+        },
+        "hair": "red"
+      },
+      "dialog": {
+        "start": "open",
+        "nodes": {
+          "open": {
+            "branch": [
+              {
+                "when": {
+                  "has": {
+                    "type": "kititem.volt-can",
+                    "count": 1
+                  }
+                },
+                "to": "can"
+              },
+              {
+                "to": "hello"
+              }
+            ]
+          },
+          "can": {
+            "text": "Is that a VOLT. Is that a VOLT. Give me the VOLT.",
+            "choices": [
+              {
+                "text": "Here.",
+                "do": [
+                  {
+                    "take": {
+                      "type": "kititem.volt-can",
+                      "count": 1
+                    }
+                  },
+                  {
+                    "coins": 15
+                  }
+                ],
+                "to": "thanks"
+              },
+              {
+                "text": "Buy your own.",
+                "to": "end"
+              }
+            ]
+          },
+          "thanks": {
+            "text": "Fifteen coins. That is all I have and it is worth it. Do not tell Zero I am paying double.",
+            "then": "end"
+          },
+          "hello": {
+            "text": [
+              "I came down here for a weekend in the spring. I do not know which spring.",
+              "The terminal is rigged. Zero says it is not rigged. Zero also says the reactor is decorative."
+            ],
+            "then": "end"
+          }
+        },
+        "greetings": {
+          "acquaintance": [
+            "Terminal is hot. I ran it nine times. Nine is my number. Nine is the floor. It is not a coincidence.",
+            "MOTHER dimmed the lights on me for sleeping at the terminal. Said it was a power saving. It was not.",
+            "The vending machine took my last coin and gave me a receipt. No can. A receipt. I have framed it.",
+            "Do not lean on the cables by the reactor. They are warm. Decorative things are not warm."
+          ],
+          "friend": [
+            "I counted the days again. I lost count at the reactor and started over. The number is big and the reactor is not decorative.",
+            "Zero says you are a good influence. Zero has never said that about a person. Zero said it about a keycard once.",
+            "I got a shard off the terminal with your name in it. Not your name. A name. I decided it was yours.",
+            "MOTHER allocated you a folder. I have been in the folder. There is nothing in there. Yet."
+          ],
+          "close": [
+            "You came back down. Nine floors. Every time. That is the nicest thing anyone does.",
+            "I saved you half a VOLT. It is warm. It is still a VOLT.",
+            "If I ever go back up, you are coming to show me which spring it is."
+          ]
+        }
+      }
+    }
+  ],
+  "animals": [],
+  "items": [
+    {
+      "id": "loose.volt",
+      "type": "kititem.volt-can",
+      "tile": [
+        3,
+        13
+      ]
+    },
+    {
+      "id": "loose.shard",
+      "type": "kititem.data-shard",
+      "tile": [
+        22,
+        12
+      ]
+    },
+    {
+      "id": "loose.stone",
+      "type": "item.stone",
+      "tile": [
+        9,
+        17
+      ]
+    }
+  ],
+  "exits": [
+    {
+      "tile": [
+        12,
+        21
+      ],
+      "label": "Cab stand"
+    },
+    {
+      "tile": [
+        13,
+        21
+      ],
+      "label": "Cab stand"
+    }
+  ],
+  "spawn": {
+    "tile": [
+      12,
+      20
+    ],
+    "facing": "north"
+  }
+}

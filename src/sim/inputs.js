@@ -30,6 +30,7 @@
 import {
   STEP8, STEP8_YAW, angleDelta, isDiagonal, rotateY, step8Index, yawFromVec,
 } from '../core/constants.js';
+import { canTraverse, findPath } from './pathfind.js';
 
 /** Radians per second the grid walker pivots at, turning in place or mid-step. */
 const TURN_RATE = 22;
@@ -48,6 +49,7 @@ export class FreeInput {
     this.route = [];
     this.destination = null;
     this.stuckT = 0;
+    this.repaths = 0;
   }
 
   atRest() { return true; }   // free movement can be interrupted at any moment
@@ -58,6 +60,7 @@ export class FreeInput {
     this.route.length = 0;
     this.destination = null;
     this.stuckT = 0;
+    this.repaths = 0;
   }
 
   follow(route) {
@@ -67,7 +70,7 @@ export class FreeInput {
     this.destination = route[route.length - 1];
   }
 
-  update(dt, player, keys, world, camYaw = 0) {
+  update(dt, player, keys, world, camYaw = 0, faceMovement = true) {
     const kx = (keys.right ? 1 : 0) - (keys.left ? 1 : 0);
     const kz = (keys.down ? 1 : 0) - (keys.up ? 1 : 0);
     if (kx !== 0 || kz !== 0) this.cancel();
@@ -88,14 +91,14 @@ export class FreeInput {
 
         this.stuckT = player.speed < 0.05 ? this.stuckT + dt : 0;
         if (this.stuckT > 0.3) {
-          this.cancel();
+          replan(this, player, world);
           return { vx: 0, vz: 0 };
         }
 
         // Face the walk, same as a held key does below. The pointer only
         // steers the body while it stands still (see Game.facePointer), so a
         // route that did not turn would slide to its destination sideways.
-        player.turnToward(yawFromVec(dx / dist, dz / dist), dt, 12);
+        if (faceMovement) player.turnToward(yawFromVec(dx / dist, dz / dist), dt, 12);
         return { vx: (dx / dist) * speed, vz: (dz / dist) * speed };
       }
       return { vx: 0, vz: 0 };
@@ -108,7 +111,7 @@ export class FreeInput {
     const len = Math.hypot(rx, rz);
     const dx = rx / len, dz = rz / len;
 
-    player.turnToward(yawFromVec(dx, dz), dt, 12);
+    if (faceMovement) player.turnToward(yawFromVec(dx, dz), dt, 12);
 
     const speed = (keys.run ? this.run : this.walk) * player.surfaceSpeed();
     return { vx: dx * speed, vz: dz * speed };
@@ -116,8 +119,9 @@ export class FreeInput {
 }
 
 export class GridInput {
-  constructor({ stepTime = 0.21, turnTime = 0.09 } = {}) {
+  constructor({ stepTime = 0.21, runStepTime = 0.13, turnTime = 0.09 } = {}) {
     this.stepTime = stepTime;
+    this.runStepTime = runStepTime;
     this.turnTime = turnTime;
     this.name = 'grid';
     this.goal = null;        // {x, z} tile centre we're stepping to
@@ -130,6 +134,7 @@ export class GridInput {
     this.route = [];
     this.destination = null;
     this.stuckT = 0;
+    this.repaths = 0;
   }
 
   atRest() { return this.goal === null && this.turnT <= 0; }
@@ -155,6 +160,7 @@ export class GridInput {
   cancel() {
     this.route.length = 0;
     this.destination = null;
+    this.repaths = 0;
   }
 
   /** Aim at a specific tile centre (used to settle the player on view change). */
@@ -180,7 +186,8 @@ export class GridInput {
    * @param {number} camYaw  a QUARTER turn -- Orbit.stepYaw, not Orbit.yaw.
    */
   update(dt, player, keys, world, camYaw = 0) {
-    const speed = (1 / this.stepTime) * player.surfaceSpeed();
+    const stepTime = keys.run ? this.runStepTime : this.stepTime;
+    const speed = (1 / stepTime) * player.surfaceSpeed();
 
     // Keys outrank the route, always. Auto-walk is a convenience, and a player
     // reaching for the keys has stopped finding it convenient.
@@ -222,7 +229,11 @@ export class GridInput {
       // the player jammed against it and no key able to interrupt (we are not
       // reading any). Give the step a moment to make progress, then drop it.
       this.stuckT = player.speed < 0.05 ? this.stuckT + dt : 0;
-      if (this.stuckT > 0.3) { this.goal = null; this.stuckT = 0; this.cancel(); }
+      if (this.stuckT > 0.3) {
+        this.goal = null;
+        this.stuckT = 0;
+        replan(this, player, world);
+      }
 
       return { vx: (dx / dist) * speed, vz: (dz / dist) * speed };
     }
@@ -242,7 +253,7 @@ export class GridInput {
     } else if (this.route.length) {
       want = this.#routeStep(player);
       fromRoute = true;
-      if (want < 0) this.cancel();
+      if (want < 0) replan(this, player, world);
     }
     if (want < 0) return { vx: 0, vz: 0 };
 
@@ -266,8 +277,8 @@ export class GridInput {
     // 5. Step, if the world allows it.
     const v = STEP8[want];
     const tx = player.tileX + v.x, tz = player.tileZ + v.z;
-    if (!passable(world, player.tileX, player.tileZ, tx, tz, player.climbs)) {
-      if (fromRoute) this.cancel();
+    if (!canTraverse(world, player.tileX, player.tileZ, tx, tz, player.climbs)) {
+      if (fromRoute) replan(this, player, world);
       return { vx: 0, vz: 0 };   // bump: facing it, going nowhere
     }
 
@@ -298,16 +309,21 @@ export class GridInput {
   }
 }
 
-/**
- * Can a body on tile A take a single grid step to tile B?
- *
- * The same split pathfind.js makes, and for the same reason: an edge step is
- * `canStep`, a corner step is `canOccupy`, which additionally demands both of
- * the orthogonal tiles the corner squeezes between.
- */
-function passable(world, ax, az, bx, bz, climbs = false) {
-  const dx = bx - ax, dz = bz - az;
-  return dx !== 0 && dz !== 0
-    ? world.canOccupy(bx, bz, ax, az, climbs)
-    : world.canStep(ax, az, bx, bz, climbs);
+/** Retry an invalidated click route once from the body's current tile. */
+function replan(input, player, world) {
+  if (!input.destination || input.repaths >= 1) {
+    input.cancel();
+    return false;
+  }
+  const destination = input.destination;
+  const route = findPath(world, [player.tileX, player.tileZ], destination, player.climbs);
+  const end = route.at(-1);
+  if (!end || end[0] !== destination[0] || end[1] !== destination[1]) {
+    input.cancel();
+    return false;
+  }
+  input.route = route;
+  input.repaths++;
+  input.stuckT = 0;
+  return true;
 }

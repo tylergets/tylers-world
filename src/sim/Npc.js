@@ -21,16 +21,14 @@
  * forgotten rather than resumed. Anything else means being talked to is a thing
  * that happens while he walks away from you.
  *
- * WHY HE DOES NOT BLOCK
- * ---------------------
- * Collision is derived from the world FILE at load and is never mutated (see
- * World.js), and body.js asks the world about tiles rather than about actors.
- * An NPC who stamped collision would have to punch a hole in that, and the
- * hole would be a tile that is blocked for the player and not for the chickens.
- * So you can walk through the shopkeeper, and in exchange there is still
- * exactly one collision model. He stands behind a counter, where it does not
- * come up -- and a walker who could be shoved through a wall by a body he does
- * not know about is a bug this rule cannot have.
+ * WHY HE BLOCKS WITHOUT STAMPING THE MAP
+ * --------------------------------------
+ * Static collision remains derived from the world file, while body.js resolves
+ * live actors as circles. That keeps a moving NPC out of the immutable tile
+ * index and still lets every actor use one collision model. Only the player's
+ * sweep may push him, and the pushed position must pass the same world fit test
+ * as a step he requested himself, so a shove cannot put him through a wall or
+ * into water.
  *
  * MEMORY IS PER NPC AND OUTLIVES THE CONVERSATION. `flags` is whatever his
  * script has set on him; `visits` counts how many times you have talked to him.
@@ -104,6 +102,7 @@ export class Npc {
     this.dialog = spec.dialog ?? null;
     this.shop = spec.shop ? new Shop(spec.shop, spec.id) : null;
     this.shopHours = spec.shop?.hours ?? null;
+    this.shopAlwaysOpen = false;
     this.shopAvailable = this.shop !== null;
     this.schedule = spec.schedule ?? [];
     this.errands = spec.errands ?? [];
@@ -111,7 +110,13 @@ export class Npc {
     // Unscheduled NPCs, and headless callers without a clock, remain talkable.
     this.available = true;
     this._station = null;
-    this.memory = { flags: new Set(), visits: 0 };
+    /**
+     * `talkedAt` is the Clock stamp of the last conversation, or null before
+     * the first: it is what decides whether the next one opens with a hello
+     * (world/greetings.js). A stamp and not a day, for the reason a grudge is
+     * -- "a few hours ago" has to survive midnight.
+     */
+    this.memory = { flags: new Set(), visits: 0, talkedAt: null };
 
     // Placed at his tile centre, NOT nudged to the nearest walkable one the way
     // an animal is: an NPC is posted somewhere on purpose -- behind that
@@ -197,6 +202,13 @@ export class Npc {
      * already declines to save his POSITION for the same class of reason.
      */
     this.downed = 0;
+    /** Saved firearm damage. Five machine-gun hits permanently kill this NPC. */
+    this.bulletHits = 0;
+    this.dead = false;
+    /** Transient fall progress; restored corpses begin already settled. */
+    this.deathT = null;
+    /** Saved place and pose of the body, independent of resident scheduling. */
+    this.corpse = null;
     /** Current player-side grudge severity, mirrored by Folk for movement/view. */
     this.grudge = 0;
 
@@ -236,6 +248,8 @@ export class Npc {
      * player where every other lasting fact about a person is. See Friends.js.
      */
     this.hostile = 0;
+    /** Temporary multiplier supplied by reusable pursuit policies such as security. */
+    this.hostileSpeedMultiplier = 1;
     /** `{ debt, typeId, label }` while walking over to ask you to pay. */
     this.confront = null;
     /** Set for exactly one frame when a shot leaves his gun. Read by the Game. */
@@ -264,7 +278,7 @@ export class Npc {
 
     if (this.shop) {
       const hours = this.shopHours;
-      this.shopAvailable = !hours || (hours.open < hours.close
+      this.shopAvailable = this.shopAlwaysOpen || !hours || (hours.open < hours.close
         ? hour >= hours.open && hour < hours.close
         : hour >= hours.open || hour < hours.close);
     }
@@ -296,10 +310,37 @@ export class Npc {
     this.post = DIR_YAW[station.facing];
   }
 
+  /** Translate every live coordinate that belongs to the resized place. */
+  translate(dx, dz, world, position = true) {
+    this.tile[0] += dx; this.tile[1] += dz;
+    if (this.corpse?.url === world.url) {
+      this.corpse.x += dx; this.corpse.z += dz;
+    }
+    if (!position) return;
+    this.x += dx; this.z += dz;
+    this.home.x += dx; this.home.z += dz;
+    if (this.goal) { this.goal.x += dx; this.goal.z += dz; }
+    if (this.attention) { this.attention.x += dx; this.attention.z += dz; }
+    if (this.behavior?.target) {
+      this.behavior.target.x += dx; this.behavior.target.z += dz;
+    }
+    if (this.furniturePlan) {
+      this.furniturePlan.stand[0] += dx; this.furniturePlan.stand[1] += dz;
+      for (const tile of this.furniturePlan.route) { tile[0] += dx; tile[1] += dz; }
+    }
+    if (this.furnitureUse) {
+      this.furnitureUse.x += dx; this.furnitureUse.z += dz;
+    }
+  }
+
   snapshot() {
     return {
       flags: [...this.memory.flags],
       visits: this.memory.visits,
+      ...(this.memory.talkedAt != null ? { talkedAt: this.memory.talkedAt } : {}),
+      ...(this.bulletHits ? { bulletHits: this.bulletHits } : {}),
+      ...(this.dead ? { dead: true } : {}),
+      ...(this.corpse ? { corpse: { ...this.corpse } } : {}),
       ...(this.shop ? { shop: this.shop.snapshot() } : {}),
     };
   }
@@ -308,6 +349,20 @@ export class Npc {
     if (!snap) return;
     this.memory.flags = new Set(Array.isArray(snap.flags) ? snap.flags : []);
     this.memory.visits = snap.visits | 0;
+    this.memory.talkedAt = Number.isFinite(snap.talkedAt) ? snap.talkedAt : null;
+    this.bulletHits = Math.max(0, Math.min(5, snap.bulletHits | 0));
+    this.dead = snap.dead === true || this.bulletHits >= 5;
+    this.deathT = this.dead ? 1 : null;
+    this.corpse = this.dead && snap.corpse && typeof snap.corpse.url === 'string'
+      ? {
+          url: snap.corpse.url,
+          x: Number.isFinite(snap.corpse.x) ? snap.corpse.x : this.x,
+          y: Number.isFinite(snap.corpse.y) ? snap.corpse.y : this.y,
+          z: Number.isFinite(snap.corpse.z) ? snap.corpse.z : this.z,
+          yaw: Number.isFinite(snap.corpse.yaw) ? snap.corpse.yaw : this.yaw,
+          onBed: snap.corpse.onBed === true,
+        }
+      : null;
     this.shop?.restore(snap.shop);
   }
 
@@ -327,7 +382,23 @@ export class Npc {
     // apple in your pocket is very much available for a conversation -- it is
     // the conversation he is coming to have -- and the Game hands him the right
     // script for it. Somebody with the gun already up is not.
-    return this.dialog !== null && this.downed <= 0 && this.available && this.hostile <= 0;
+    return !this.dead && this.dialog !== null && this.downed <= 0 && this.available && this.hostile <= 0;
+  }
+
+  /** Record one machine-gun hit and report whether it was the fatal fifth hit. */
+  hitByBullet() {
+    if (this.dead) return true;
+    this.bulletHits = Math.min(5, this.bulletHits + 1);
+    if (this.bulletHits < 5) return false;
+    this.dead = true;
+    this.deathT = 0;
+    this.downed = 0;
+    this.hostile = 0;
+    this.attention = null;
+    this.goal = null;
+    this.leaveFurniture();
+    this.confront = null;
+    return true;
   }
 
   /** Put him on the floor. He gets up on his own. */
@@ -360,6 +431,11 @@ export class Npc {
     // Half a beat before the first shot, so it reads as him raising the gun
     // rather than as the theft having a damage number attached to it.
     this._reload = Math.max(this._reload, 0.7);
+  }
+
+  /** Extend an active pursuit without restarting the draw/reload timer. */
+  sustainHostility(seconds = HUNT.patience) {
+    this.hostile = Math.max(this.hostile, seconds);
   }
 
   /** Walk over and ask about it. `debt` is what the shop wants for the goods. */
@@ -487,8 +563,13 @@ export class Npc {
    *   after them. Absent for a headless caller, and for every ordinary frame it
    *   changes nothing: an NPC who is neither angry nor owed money never reads it.
    */
-  update(dt, world, clock = null, target = null) {
+  update(dt, world, clock = null, target = null, bodies = null) {
     this.firing = false;
+    if (this.dead) {
+      this.deathT = Math.min(1, (this.deathT ?? 1) + dt);
+      this.speed = 0;
+      return;
+    }
     this.syncClock(clock);
     if (!this.furnitureId) this._furnitureWait -= dt;
     // Down, and nothing else is true while he is. Above everything, so Stroll
@@ -507,7 +588,7 @@ export class Npc {
     // conversation about the weather, and the conversation he IS available for
     // is one the Game opens on his behalf when he arrives.
     if (this.roused && target) {
-      this.#pursue(dt, world, target);
+      this.#pursue(dt, world, target, bodies);
       return;
     }
 
@@ -534,7 +615,7 @@ export class Npc {
     }
 
     if (this.furniturePlan) {
-      if (!this.#approachFurniture(dt, world)) this.leaveFurniture();
+      if (!this.#approachFurniture(dt, world, bodies)) this.leaveFurniture();
       return;
     }
 
@@ -547,7 +628,7 @@ export class Npc {
       if (distance > 0.3) {
         const speed = this.type.walkSpeed;
         this.yaw = Math.atan2(dx, dz);
-        sweep(world, this, dt, dx / distance * speed, dz / distance * speed);
+        sweep(world, this, dt, dx / distance * speed, dz / distance * speed, bodies);
         this._target = this.yaw;
         this.lean = 0;
         return;
@@ -561,7 +642,7 @@ export class Npc {
       if (distance > 0.18) {
         const speed = this.type.walkSpeed;
         this.yaw = Math.atan2(dx, dz);
-        sweep(world, this, dt, dx / distance * speed, dz / distance * speed);
+        sweep(world, this, dt, dx / distance * speed, dz / distance * speed, bodies);
         this._target = this.yaw;
         this.lean = 0;
         return;
@@ -573,7 +654,7 @@ export class Npc {
       // follows the yaw rather than driving it -- otherwise the turn below
       // would fight the one Stroll just made.
       const { vx, vz } = this.behavior.update(dt, this, world);
-      sweep(world, this, dt, vx, vz);
+      sweep(world, this, dt, vx, vz, bodies);
       this._target = this.yaw;
       this.lean = 0;
       return;
@@ -592,7 +673,7 @@ export class Npc {
   }
 
   /** Follow the reserved tile route, then exchange it for an occupied pose. */
-  #approachFurniture(dt, world) {
+  #approachFurniture(dt, world, bodies) {
     const plan = this.furniturePlan;
     const obj = world.objectById(plan.objectId);
     if (!obj || world.felled.has(obj.id)) return false;
@@ -612,7 +693,7 @@ export class Npc {
         turnToward(this, heading, dt, this.type.turnRate);
         const aligned = Math.max(0, Math.cos(angleDelta(this.yaw, heading)));
         const want = this.type.walkSpeed * aligned;
-        sweep(world, this, dt, Math.sin(this.yaw) * want, Math.cos(this.yaw) * want);
+        sweep(world, this, dt, Math.sin(this.yaw) * want, Math.cos(this.yaw) * want, bodies);
         this._target = this.yaw;
         this.lean = 0;
         return true;
@@ -640,7 +721,7 @@ export class Npc {
    * that could hurt the player directly would be a second copy of the damage
    * rules living on the thing least able to say what they are.
    */
-  #pursue(dt, world, target) {
+  #pursue(dt, world, target, bodies) {
     if (this.hostile > 0) this.hostile = Math.max(0, this.hostile - dt);
     if (this._reload > 0) this._reload = Math.max(0, this._reload - dt);
 
@@ -658,8 +739,9 @@ export class Npc {
     // line, rather than politely closing to a mark first.
     const want = this.hostile > 0 ? HUNT.close : 1.25;
     if (distance > want) {
-      const speed = this.type.walkSpeed * (this.hostile > 0 ? HUNT.hurry : 1.15);
-      sweep(world, this, dt, dx / distance * speed, dz / distance * speed);
+      const speed = this.type.walkSpeed
+        * (this.hostile > 0 ? HUNT.hurry * this.hostileSpeedMultiplier : 1.15);
+      sweep(world, this, dt, dx / distance * speed, dz / distance * speed, bodies);
     } else {
       this.speed = 0;
     }

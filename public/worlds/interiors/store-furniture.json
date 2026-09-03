@@ -33,10 +33,10 @@
         "#wwwwwwwwww#",
         "#wwwwwwwwww#",
         "#wwwwwwwwww#",
-        "#wwwwwwwwww#",
-        "#wwrrrrrrww#",
-        "#wwrrrrrrww#",
-        "#wwwwwwwwww#",
+        "#rrrwwwwwrr#",
+        "#rrrwwwwwrr#",
+        "#rrrwwrrrww#",
+        "#wwwwwrrrww#",
         "#wwwwwwwwww#",
         "#####ww#####"
       ]
@@ -113,18 +113,18 @@
     {
       "id": "mirror.display",
       "type": "fixture.cheval-mirror",
-      "tile": [1, 3]
+      "tile": [1, 7]
     },
     {
       "id": "shelf.display",
       "type": "fixture.bookcase",
-      "tile": [9, 4],
+      "tile": [9, 5],
       "rotation": 90
     },
     {
       "id": "bed.display",
       "type": "fixture.four-poster-bed",
-      "tile": [1, 5]
+      "tile": [1, 4]
     },
     {
       "id": "table.display",
@@ -140,7 +140,7 @@
     {
       "id": "wardrobe.display",
       "type": "fixture.wardrobe",
-      "tile": [10, 4],
+      "tile": [10, 3],
       "rotation": 90
     },
     {
@@ -179,6 +179,21 @@
         "stock": [
           { "type": "yarditem.fence-post", "count": null, "always": true },
           { "type": "yarditem.ladder", "count": null, "always": true },
+          { "type": "kititem.acorn-street-lamp", "count": null, "always": true },
+          { "type": "kititem.beacon-post-lamp", "count": null, "always": true },
+          { "type": "kititem.copper-gas-lamp", "count": null, "always": true },
+          { "type": "kititem.floral-avenue-lamp", "count": null, "always": true },
+          { "type": "kititem.harbour-cage-lamp", "count": null, "always": true },
+          { "type": "kititem.heritage-street-lamp", "count": null, "always": true },
+          { "type": "kititem.low-bollard-lamp", "count": null, "always": true },
+          { "type": "kititem.modern-column-lamp", "count": null, "always": true },
+          { "type": "kititem.opal-globe-lamp", "count": null, "always": true },
+          { "type": "kititem.pagoda-garden-lamp", "count": null, "always": true },
+          { "type": "kititem.railway-platform-lamp", "count": null, "always": true },
+          { "type": "kititem.shepherds-crook-lamp", "count": null, "always": true },
+          { "type": "kititem.triple-crown-lamp", "count": null, "always": true },
+          { "type": "kititem.twin-arm-boulevard-lamp", "count": null, "always": true },
+          { "type": "kititem.village-lantern", "count": null, "always": true },
           { "type": "furnitem.bed", "count": 1 },
           { "type": "furnitem.table", "count": 1 },
           { "type": "furnitem.chair", "count": 1 },
@@ -186,7 +201,7 @@
           { "type": "furnitem.counter", "count": 1 },
           { "type": "furnitem.stove", "count": 1 },
           { "type": "furnitem.plant", "count": 1 },
-          { "type": "furnitem.crate", "count": 1 },
+          { "type": "furnitem.crate", "count": null, "always": true },
           { "type": "kititem.ale-firkin", "count": 1 },
           { "type": "kititem.aloe-pot", "count": 1 },
           { "type": "kititem.anvil-and-block", "count": 1 },
@@ -563,6 +578,25 @@
             ],
             "then": "menu"
           }
+        },
+        "greetings": {
+          "acquaintance": [
+            "New floor. Ten pieces out of the book, and I already regret two of them.",
+            "Somebody stood in front of the four-poster for an hour and went home with a footstool. That is a room getting decided.",
+            "Lamps along the wall are always here. Everything else is here on sufferance until tomorrow.",
+            "I sold a church pew to somebody with a very small house. I did not ask. That is between them and the pew."
+          ],
+          "friend": [
+            "You have bought more chairs off me than one house has corners. I count that as loyalty.",
+            "The book coughed up the aquarium again. Third time. It wants you to have it and I am tired of arguing.",
+            "Do not tell anyone, but the floor is drawn by a book with a pin in it. The pin has better taste than I do.",
+            "Your place must be filling up. When it is full, buy a shelf. When the shelves are full, buy a bigger house."
+          ],
+          "close": [
+            "The good piece is at the back. I put it there so you would have to walk past the others.",
+            "Sit down on whatever is nearest. Nobody buys the chair somebody is sitting in, so you are doing me a favour.",
+            "I have stopped charging you the markup. Do not tell the book."
+          ]
         }
       }
     }

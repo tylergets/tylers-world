@@ -81,14 +81,14 @@
     }
   },
   "objects": [
-    {"id":"planner.counter","type":"furn.counter","tile":[3,2],"props":{"label":"Plan Desk"}},
+    {"id":"planner.counter","type":"furn.counter","tile":[3,2],"props":{"label":"Plan Desk","office":"planner"}},
     {"id":"planner.shelf","type":"furn.shelf","tile":[1,1]},
     {"id":"planner.table.a","type":"furn.table","tile":[2,5]},
     {"id":"planner.table.b","type":"furn.table","tile":[6,5]},
     {"id":"planner.plant","type":"furn.plant","tile":[10,1]},
     {"id":"planner.sign","type":"furn.sign.planning","tile":[8,7],"props":{"label":"URBAN PLANNER"}},
 
-    {"id":"mayor.counter","type":"furn.counter","tile":[23,4],"props":{"label":"Mayor's Desk"}},
+    {"id":"mayor.counter","type":"furn.counter","tile":[23,4],"props":{"label":"Mayor's Desk","office":"mayor"}},
     {"id":"mayor.shelf.a","type":"furn.shelf","tile":[20,1]},
     {"id":"mayor.shelf.b","type":"furn.shelf","tile":[27,1]},
     {"id":"mayor.table","type":"furn.table","tile":[21,8]},
@@ -96,7 +96,7 @@
     {"id":"mayor.plant","type":"furn.plant","tile":[20,9]},
     {"id":"mayor.sign","type":"furn.sign.mayor","tile":[26,9],"props":{"label":"MAYOR'S OFFICE"}},
 
-    {"id":"wildlife.counter","type":"furn.counter","tile":[3,13],"props":{"label":"Warden's Desk"}},
+    {"id":"wildlife.counter","type":"furn.counter","tile":[3,13],"props":{"label":"Warden's Desk","office":"wildlife"}},
     {"id":"wildlife.table","type":"furn.table","tile":[3,17]},
     {"id":"wildlife.crate.a","type":"furn.crate","tile":[12,12]},
     {"id":"wildlife.crate.b","type":"furn.crate","tile":[13,12]},
@@ -105,7 +105,7 @@
     {"id":"wildlife.plant.c","type":"furn.plant","tile":[13,19]},
     {"id":"wildlife.sign","type":"furn.sign.wildlife","tile":[10,17],"props":{"label":"FISH & WILDLIFE"}},
 
-    {"id":"cheats.counter","type":"furn.counter","tile":[23,16],"props":{"label":"Exceptions Desk"}},
+    {"id":"cheats.counter","type":"furn.counter","tile":[23,16],"props":{"label":"Exceptions Desk","office":"cheats"}},
     {"id":"cheats.shelf","type":"furn.shelf","tile":[21,14]},
     {"id":"cheats.crate.a","type":"furn.crate","tile":[28,14]},
     {"id":"cheats.crate.b","type":"furn.crate","tile":[28,15]},
@@ -118,22 +118,75 @@
   ],
   "npcs": [
     {
-      "id":"official.planner","type":"folk.villager","tile":[4,1],"facing":"south",
+      "id":"official.planner","type":"folk.planner","tile":[4,1],"facing":"south",
       "props":{"name":"Mara Vale","title":"Urban Planner","office":"planner","voice":{"pitch":1.08,"rate":23,"timbre":"triangle"}},
-      "dialog":{"start":"desk","nodes":{"desk":{"text":"Let us put the whole town on the drafting table. I will protect buildings and occupied ground; you decide what the land should become.","then":"end"}}}
+      "dialog":{"start":"desk","nodes":{"desk":{"text":"Let us put the whole town on the drafting table. I will protect buildings and occupied ground; you decide what the land should become.","then":"end"}},"greetings":{
+        "acquaintance":[
+          "The Plan Desk is open. I have the survey sheets out and a sharpened pencil, which is as ready as planning ever gets.",
+          "Good, a resident who reads the zoning notices. Most people learn what a footpath is when one goes through their yard.",
+          "I walked the boundary lines again. They have not moved. Residents keep asking, so I keep checking.",
+          "Every path in this town started as somebody's shortcut. My job is to catch them before they become a street."
+        ],
+        "friend":[
+          "You have redrawn more of this town than the last three planners together. I am not complaining. I am filing.",
+          "The Mayor asked me where the town's money goes. I said, into the ground, mostly in straight lines. The answer was accepted.",
+          "I have a new ruler. Do not mention it to Reed Fen, or the Warden's desk will want one and there is no budget line for rulers.",
+          "Somebody moved a fence overnight. I know it was not you, because you would have brought me the drawing first."
+        ],
+        "close":[
+          "Pull up a stool. The drafting table has your corner worn smooth by now.",
+          "I still keep your first sketch in the top drawer. The one with the pond where the road should go.",
+          "Between us, half the plan is yours already. I just hold the pencil straight."
+        ]
+      }}
     },
     {
-      "id":"official.wildlife","type":"folk.fisher","tile":[4,12],"facing":"south",
+      "id":"official.wildlife","type":"folk.warden","tile":[4,12],"facing":"south",
       "props":{"name":"Reed Fen","title":"Fish & Wildlife Warden","office":"wildlife","voice":{"pitch":0.9,"rate":21,"timbre":"sawtooth"}},
-      "dialog":{"start":"desk","nodes":{"desk":{"text":"We can stock water or set bait, but every habitat has a limit.","then":"end"}}}
+      "dialog":{"start":"desk","nodes":{"desk":{"text":"We can stock water or set bait, but every habitat has a limit.","then":"end"}},"greetings":{
+        "acquaintance":[
+          "Warden's desk. Stocking requests on the left, bait permits on the right, complaints about geese in the bin.",
+          "I counted the pond this week. The fish do not hold still for it, but the numbers are close enough for government.",
+          "A habitat only carries so much. Write that on your hand before you ask me for more trout.",
+          "The crates behind me are full of fingerlings waiting on a pond that can take them. Patience is most of this job."
+        ],
+        "friend":[
+          "You are the only one who brings me a count instead of a wish. Keep doing that and we will get along.",
+          "Somebody upstream is overfeeding the ducks again. I have a list of suspects and you are not on it, yet.",
+          "The Mayor wants more game in the woods. I want the woods to want more game. We are negotiating.",
+          "Between you and me, I sign more bait permits than I would like. The rivers are patient. People are not."
+        ],
+        "close":[
+          "Good. Sit. I have been saving a story about a heron and a very surprised angler.",
+          "You know the water as well as I do now. That is not flattery, that is a staffing complaint.",
+          "If I ever leave this desk, I am putting your name on it. The geese will need someone."
+        ]
+      }}
     },
     {
-      "id":"official.mayor","type":"folk.villager","tile":[24,3],"facing":"south",
-      "props":{"name":"Mayor Bell","title":"Mayor","voice":{"pitch":0.96,"rate":22,"timbre":"square"}},
-      "dialog":{"start":"hello","nodes":{
+      "id":"official.mayor","type":"folk.mayor","tile":[24,3],"facing":"south",
+      "props":{"name":"Mayor Bell","title":"Mayor","office":"mayor","voice":{"pitch":0.96,"rate":22,"timbre":"square"}},
+      "dialog":{"start":"opening","nodes":{
+        "opening":{"branch":[
+          {"when":{"all":[{"killings":1},{"thefts":1}]},"to":"crime.both"},
+          {"when":{"killings":1},"to":"crime.killing"},
+          {"when":{"thefts":1},"to":"crime.theft"},
+          {"when":{"visits":2},"to":"returning"},
+          {"to":"hello"}
+        ]},
         "hello":{"text":"Welcome to the Mayor's Office. We can discuss the town, or put your coin behind a lasting improvement.","then":"menu"},
+        "returning":{"text":"What has changed since we last spoke?","then":"menu"},
+        "crime.both":{"text":"Reports travel quickly to this desk. Your civic record now includes {killingRecord} and {theftRecord}. That weighs heavily on how this town sees you.","then":"menu"},
+        "crime.killing":{"text":"I know about the death. Your civic record now includes {killingRecord}, and the whole town's trust has suffered for it.","then":"menu"},
+        "crime.theft":{"text":"I know what you took. Your civic record now includes {theftRecord}, and word has traveled beyond the person you stole from.","then":"menu"},
         "menu":{"text":"What is on your mind?","choices":[
           {"text":"How is the town doing?","to":"town"},
+          {"text":"What is my reputation here?","to":"reputation"},
+          {"text":"What is the town bank balance?","to":"bank"},
+          {"text":"Can shops stay open 24 hours?","when":{"shops24":false},"to":"shops24.proposal"},
+          {"text":"Are shops still open all day?","when":{"shops24":true},"to":"shops24.active"},
+          {"text":"We need an office for managing my workers.","when":{"all":[{"hasHiredWorker":true},{"officeBuilt":false}]},"do":{"officeBuilt":true},"to":"office.approved"},
+          {"text":"How is the employment office?","when":{"officeBuilt":true},"to":"office.active"},
           {"text":"Add a second story to my home — 1800 coin.","when":{"houseStories":1,"coins":1800},"do":[{"coins":-1800},{"houseStories":2}],"to":"second"},
           {"text":"I need 1800 coin for the second story.","when":{"all":[{"houseStories":1},{"not":{"coins":1800}}]},"to":"short"},
           {"text":"Add a third story to my home — 3600 coin.","when":{"houseStories":2,"coins":3600},"do":[{"coins":-3600},{"houseStories":3}],"to":"third"},
@@ -142,17 +195,76 @@
           {"text":"That is all for now.","to":"endline"}
         ]},
         "town":{"text":"The town is what we keep in common: sound paths, living water, room for wildlife, and neighbors willing to invest in one another.","then":"menu"},
+        "reputation":{"text":"Your standing with the town is {townReputation} out of 100. What you do with any resident reaches this office eventually.","then":"menu"},
+        "bank":{"text":"The town bank currently holds {townBankBalance} coin. Every neighbor contributes 10 coin at dawn.","then":"menu"},
+        "shops24.proposal":{"text":["They can, if the town funds night permits, lamps, and the clerks willing to keep them.","The ordinance costs 2400 coin. Once enacted, every shop will trade at any hour."],"choices":[
+          {"text":"Fund the ordinance — 2400 coin.","when":{"coins":2400},"do":[{"coins":-2400},{"shops24":true}],"to":"shops24.approved"},
+          {"text":"I do not have 2400 coin.","when":{"not":{"coins":2400}},"to":"shops24.short"},
+          {"text":"Not yet.","to":"menu"}
+        ]},
+        "shops24.approved":{"text":"Paid, signed, and posted. The shops are now licensed to trade around the clock.","then":"end"},
+        "shops24.short":{"text":"Then the proposal stays on my desk. Bring 2400 coin when you are ready to fund it.","then":"end"},
+        "shops24.active":{"text":"The ordinance remains in force. Day or night, a shopkeeper may open the till when you ask.","then":"menu"},
+        "office.approved":{"text":"Approved. The town crew will put up an employment office, and the secretary there will keep your worker records.","then":"end"},
+        "office.active":{"text":"The employment office is open. Its secretary has the current payroll and a report on every worker.","then":"menu"},
         "second":{"text":"Approved and funded. The new stair and second floor are ready at home.","then":"end"},
         "third":{"text":"The final floor is funded. Your home is complete at three stories.","then":"end"},
         "short":{"text":"Keep the proposal. Public business is better done without pretending the purse is ready.","then":"end"},
         "complete":{"text":"Three stories, fully approved. Any higher would need a different kind of town.","then":"end"},
         "endline":{"text":"My door is open when the town gives you something else to bring in.","then":"end"}
+      },"greetings":{
+        "acquaintance":[
+          "Welcome back to the Mayor's Office. The ledger is open and the town is, as always, in need of both coin and opinions.",
+          "Your name crosses this desk a little more each week. So far nobody has attached a complaint to it.",
+          "The town keeps its own books on people. I only read them aloud. Come in.",
+          "The council voted to keep the lamps lit another season. It cost more than it should and I would do it again."
+        ],
+        "friend":[
+          "Three residents mentioned you this week, and none of them wanted anything. That is a rare kind of report.",
+          "The town speaks well of you. I have learned to trust the town more than the paperwork.",
+          "If you ever want to run for this chair, I will pretend to object and then hand you the keys.",
+          "The bank has taken its ten coin from every household again. I mention it because you are the only one who asks where it goes."
+        ],
+        "close":[
+          "There you are. The whole town would have my head if I kept you waiting at the counter.",
+          "I stopped writing you down as a resident in the minutes some time ago. The clerk writes neighbour now, and nobody has corrected it.",
+          "Half of this office is yours in everything but the sign. The other half is paperwork, and you are welcome to that too."
+        ]
       }}
     },
     {
-      "id":"official.cheater","type":"folk.tinker","tile":[24,15],"facing":"south",
+      "id":"official.cheater","type":"folk.exceptions","tile":[24,15],"facing":"south",
       "props":{"name":"Glitch","title":"Director of Exceptions","office":"cheats","voice":{"pitch":1.28,"rate":28,"timbre":"square"}},
-      "dialog":{"start":"desk","nodes":{"desk":{"text":"Every rule has a form, and every form has an exception box. Mine are already checked.","then":"end"}}}
+      "dialog":{"start":"desk","nodes":{"desk":{"text":[
+        "Before I open the Office of Cheats, I am legally required to explain that cheating is bad. Morally bad, spiritually itchy, and terrible for the resale value of your conscience.",
+        "A cheat may look like a shortcut, but so does jumping through a bakery window. You arrive faster, certainly, yet everyone is screaming and there is a baguette in your trousers.",
+        "Cheating also ruins surprise. If you give yourself every treasure at once, opening a treasure chest becomes just another meeting with your own poor decisions.",
+        "Then there is character. Honest effort builds character. Cheating builds a suspiciously tall pile of turnips and a character who keeps insisting the turnips were always there.",
+        "Your neighbors may notice. Villagers are polite, but they can count. If you buy a mansion on Tuesday after spending Monday shaking trees, eyebrows will be raised to dangerous civic heights.",
+        "The fish notice too. Fish know nothing of economics, yet even they find infinite bait tacky. Imagine being judged by a carp. Take a moment with that.",
+        "Cheating can make work meaningless. A golden shovel earned through patience is a tool with a story. A golden shovel conjured from nowhere is merely loud cutlery.",
+        "It is habit-forming. First you request one harmless coin. Soon you are demanding perfect weather, royal pockets, and a municipal ordinance declaring weeds to be decorative citizens.",
+        "Worst of all, you cheat yourself. This phrase is a classic because it is true, and because the Department of Better Phrases lost its budget under deeply suspicious circumstances.",
+        "So play fairly, accept setbacks, and savor what you earn. Having delivered this stern ethical warning, I will now open the forbidden menu directly behind me. Please admire the government's consistency."
+      ],"then":"end"}},"greetings":{
+        "acquaintance":[
+          "Welcome to the Office of Exceptions. Please take a number. The numbers are also exceptions, so yours may be a letter.",
+          "Before we begin, I am obliged to remind you that this desk does not exist. Please sign the form confirming you did not see it.",
+          "The Department has reviewed your file. It is empty, which makes it the most honest file in the building.",
+          "Kindly refrain from leaning on the counter. It was requisitioned from a department that is still looking for it."
+        ],
+        "friend":[
+          "Ah. My most frequent non-visitor. Your attendance has been noted in a ledger that is legally a doodle.",
+          "I have been asked to reduce the number of exceptions granted. I granted myself an exception to that. It was a productive meeting.",
+          "The turnips you did not conjure last week have been recorded as having always existed. The pile agrees.",
+          "Between us, the forbidden menu behind me hums when you walk in. I have filed a noise complaint against it on your behalf."
+        ],
+        "close":[
+          "There is only one chair at this desk and it has your name on it in official crayon.",
+          "I have stopped reading you the warning. The Department of Warnings has been informed and is sulking.",
+          "You and I are the only two people who know what this office is for. I am still not sure about me."
+        ]
+      }}
     }
   ],
   "exits": [{"tile":[16,22]},{"tile":[17,22]}],

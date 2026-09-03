@@ -152,23 +152,25 @@ export class Shop {
   }
 
   /**
-   * Buy one of a stock row.
+   * Buy a quantity from a stock row.
    *
    * The order is: check everything, then move money, then move goods. Any
    * other order has a window where the coins are gone and the apple is not
    * anywhere, and that window is exactly one thrown exception wide.
    */
-  buy(row, { inventory, purse }) {
+  buy(row, { inventory, purse }, quantity = 1) {
     if (!row) return { ok: false, reason: 'gone' };
-    if (row.count !== null && row.count <= 0) return { ok: false, reason: 'sold out' };
-    if (!purse.canAfford(row.price)) return { ok: false, reason: 'not enough coin' };
-    if (inventory.isFullFor(row.typeId)) return { ok: false, reason: 'no room' };
+    if (!Number.isInteger(quantity) || quantity < 1) return { ok: false, reason: 'bad quantity' };
+    if (row.count !== null && row.count < quantity) return { ok: false, reason: row.count <= 0 ? 'sold out' : 'not enough stock' };
+    const total = row.price * quantity;
+    if (!purse.canAfford(total)) return { ok: false, reason: 'not enough coin' };
+    if (inventory.room(row.typeId) < quantity) return { ok: false, reason: 'no room' };
 
-    purse.pay(row.price);
-    inventory.add(row.typeId, 1);
-    if (row.count !== null) row.count--;
+    purse.pay(total);
+    inventory.add(row.typeId, quantity);
+    if (row.count !== null) row.count -= quantity;
     this.version++;
-    return { ok: true, typeId: row.typeId, coins: row.price };
+    return { ok: true, typeId: row.typeId, quantity, coins: total };
   }
 
   /**
@@ -190,6 +192,18 @@ export class Shop {
     purse.earn(paid);
     this.version++;
     return { ok: true, typeId: gone.typeId, coins: paid };
+  }
+
+  /** Buy every wanted stack from one placed container as one logistics pickup. */
+  buyStored(edits, containerId, purse) {
+    if (!edits || !purse) return { ok: false, reason: 'container unavailable' };
+    const goods = edits.extractStored(containerId, (typeId) => this.payFor(typeId) !== null);
+    if (!goods.length) return { ok: false, reason: 'nothing wanted' };
+    const coins = goods.reduce((total, stack) => total + this.payFor(stack.typeId) * stack.count, 0);
+    const quantity = goods.reduce((total, stack) => total + stack.count, 0);
+    purse.earn(coins);
+    this.version++;
+    return { ok: true, goods, quantity, coins };
   }
 
   /**

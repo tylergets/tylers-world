@@ -69,6 +69,23 @@
       ]
     }
   },
+  "architecture": {"groups":[{
+    "id":"downstairs","landingColumns":[5,6,7],
+    "parts":[
+      {"primitive":"box","at":[5.45,-0.525,15.125],"size":[0.38,0.05,1.64],"color":"#b78654"},
+      {"primitive":"box","at":[5.79,-0.475,15.125],"size":[0.38,0.15,1.64],"color":"#a8734a"},
+      {"primitive":"box","at":[6.13,-0.425,15.125],"size":[0.38,0.25,1.64],"color":"#b78654"},
+      {"primitive":"box","at":[6.47,-0.375,15.125],"size":[0.38,0.35,1.64],"color":"#a8734a"},
+      {"primitive":"box","at":[6.81,-0.325,15.125],"size":[0.38,0.45,1.64],"color":"#b78654"},
+      {"primitive":"box","at":[7.15,-0.275,15.125],"size":[0.38,0.55,1.64],"color":"#a8734a"},
+      {"primitive":"box","at":[5.35,-0.25,14.305],"size":[0.08,0.50,0.08],"color":"#68462f"},
+      {"primitive":"box","at":[5.35,-0.25,15.945],"size":[0.08,0.50,0.08],"color":"#68462f"},
+      {"primitive":"box","at":[7.28,0.25,14.305],"size":[0.08,0.50,0.08],"color":"#68462f"},
+      {"primitive":"box","at":[7.28,0.25,15.945],"size":[0.08,0.50,0.08],"color":"#68462f"},
+      {"primitive":"box","at":[6.315,0.25,14.305],"size":[2.08,0.08,0.08],"rotation":[0,0,14.5],"color":"#68462f"},
+      {"primitive":"box","at":[6.315,0.25,15.945],"size":[2.08,0.08,0.08],"rotation":[0,0,14.5],"color":"#68462f"}
+    ]
+  }]},
   "objects": [
     {"id":"shelf","type":"furn.shelf","tile":[1,1]},
     {"id":"crate.one","type":"furn.crate","tile":[14,1]},
@@ -82,8 +99,7 @@
     {"id":"stick.spare","type":"item.stick","tile":[14,11]}
   ],
   "exits": [
-    {"tile":[8,13],"label":"Downstairs"},
-    {"tile":[9,13],"label":"Downstairs"}
+    {"tile":[5,15],"label":"Downstairs"}
   ],
-  "spawn": {"tile":[9,12],"facing":"north"}
+  "spawn": {"tile":[9,16],"facing":"north"}
 }

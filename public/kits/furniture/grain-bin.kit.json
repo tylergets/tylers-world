@@ -8,6 +8,7 @@
   "types": {
     "fixture.grain-bin": {
       "kind": "object",
+      "use": "store",
       "label": "Coppervale Grain Bin",
       "footprint": { "w": 1, "d": 1 },
       "height": 0.77,

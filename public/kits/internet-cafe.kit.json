@@ -1,0 +1,91 @@
+{
+  "format": "tw.kit",
+  "version": 1,
+  "meta": { "id": "internet-cafe", "name": "Internet Cafe Fixtures" },
+  "types": {
+    "fixture.cafe.computer-desk": {
+      "kind": "object",
+      "label": "Computer Workstation",
+      "footprint": { "w": 2, "d": 1 },
+      "height": 1.42,
+      "squash": 0.3,
+      "palette": { "desk": "#477e78", "deskHi": "#6aa59d", "case": "#d9cfb6", "dark": "#343637", "screen": "#6da3a5", "key": "#eee7d5", "light": "#e59b55" },
+      "parts": [
+        { "prim": "box", "at": [0, 0.7, 0], "size": [1.78, 0.12, 0.82], "color": "desk" },
+        { "prim": "box", "at": [0, 0.77, 0], "size": [1.7, 0.03, 0.74], "color": "deskHi" },
+        { "prim": "box", "at": [-0.72, 0.34, 0], "size": [0.1, 0.68, 0.62], "color": "desk" },
+        { "prim": "box", "at": [0.72, 0.34, 0], "size": [0.1, 0.68, 0.62], "color": "desk" },
+        { "prim": "box", "at": [0, 1.12, -0.18], "size": [0.82, 0.58, 0.12], "color": "case" },
+        { "prim": "box", "at": [0, 1.12, -0.105], "size": [0.67, 0.43, 0.035], "color": "screen" },
+        { "prim": "box", "at": [0, 0.83, -0.18], "size": [0.12, 0.13, 0.1], "color": "dark" },
+        { "prim": "box", "at": [0, 0.79, 0.18], "size": [0.72, 0.04, 0.24], "color": "key" },
+        { "prim": "box", "at": [0.28, 1.12, -0.08], "size": [0.08, 0.035, 0.02], "color": "light" },
+        { "prim": "box", "at": [0.48, 0.99, 0.12], "size": [0.18, 0.04, 0.24], "color": "dark" }
+      ],
+      "interact": { "label": "Browse internet", "action": "browser" }
+    },
+    "fixture.cafe.neon-spine": {
+      "kind": "object",
+      "label": "Network Light Strip",
+      "footprint": { "w": 1, "d": 4, "mask": [".", ".", ".", "."] },
+      "height": 0.06,
+      "squash": 0,
+      "palette": { "cyan": "#55d9e8", "pink": "#f06fb6", "dark": "#17212b" },
+      "parts": [
+        { "prim": "box", "at": [0, 0.018, 0], "size": [0.72, 0.036, 3.86], "color": "dark" },
+        { "prim": "box", "at": [-0.19, 0.041, 0], "size": [0.12, 0.018, 3.72], "color": "cyan" },
+        { "prim": "box", "at": [0.19, 0.041, 0], "size": [0.12, 0.018, 3.72], "color": "pink" }
+      ]
+    },
+    "fixture.cafe.server": {
+      "kind": "object",
+      "label": "Server Tower",
+      "footprint": { "w": 1, "d": 1 },
+      "height": 2.05,
+      "squash": 0.22,
+      "palette": { "case": "#1b2631", "edge": "#526476", "cyan": "#55d9e8", "pink": "#f06fb6" },
+      "parts": [
+        { "prim": "box", "at": [0, 1, 0], "size": [0.72, 2, 0.72], "color": "case" },
+        { "prim": "box", "at": [0, 2.02, 0], "size": [0.8, 0.06, 0.8], "color": "edge" },
+        { "prim": "box", "at": [0, 0.04, 0], "size": [0.8, 0.08, 0.8], "color": "edge" },
+        { "prim": "box", "at": [0, 1.48, 0.37], "size": [0.48, 0.06, 0.025], "color": "cyan" },
+        { "prim": "box", "at": [0, 1.18, 0.37], "size": [0.48, 0.06, 0.025], "color": "pink" },
+        { "prim": "box", "at": [0, 0.88, 0.37], "size": [0.48, 0.06, 0.025], "color": "cyan" },
+        { "prim": "box", "at": [0, 0.58, 0.37], "size": [0.48, 0.06, 0.025], "color": "pink" }
+      ]
+    },
+    "fixture.cafe.counter": {
+      "kind": "object",
+      "label": "Login Bar",
+      "footprint": { "w": 4, "d": 1 },
+      "height": 1.18,
+      "squash": 0.3,
+      "palette": { "body": "#5a8f88", "top": "#f0e2c4", "cyan": "#e89a62", "pink": "#d96676", "screen": "#36484b" },
+      "parts": [
+        { "prim": "box", "at": [0, 0.52, 0], "size": [3.82, 1.04, 0.76], "color": "body" },
+        { "prim": "box", "at": [0, 1.09, 0], "size": [3.96, 0.14, 0.9], "color": "top" },
+        { "prim": "box", "at": [-0.9, 0.54, 0.39], "size": [1.45, 0.1, 0.03], "color": "cyan" },
+        { "prim": "box", "at": [0.9, 0.54, 0.39], "size": [1.45, 0.1, 0.03], "color": "pink" },
+        { "prim": "box", "at": [0, 1.24, -0.1], "size": [0.64, 0.34, 0.08], "color": "screen" }
+      ]
+    },
+    "fixture.cafe.booth": {
+      "kind": "object",
+      "label": "Cafe Booth",
+      "footprint": { "w": 3, "d": 2 },
+      "height": 1.18,
+      "squash": 0.3,
+      "palette": { "seat": "#cf6675", "seatHi": "#e48791", "table": "#f0dfbd", "edge": "#6d8e87", "leg": "#48585a" },
+      "parts": [
+        { "prim": "box", "at": [0, 0.72, 0], "size": [2.35, 0.12, 0.78], "color": "table" },
+        { "prim": "cyl", "at": [0, 0.36, 0], "size": [0.09, 0.72, 0.09], "color": "leg" },
+        { "prim": "box", "at": [0, 0.08, 0], "size": [0.9, 0.12, 0.5], "color": "leg" },
+        { "prim": "box", "at": [0, 0.48, -0.72], "size": [2.65, 0.22, 0.48], "color": "seat" },
+        { "prim": "box", "at": [0, 0.91, -0.91], "rot": [-7, 0, 0], "size": [2.65, 0.72, 0.18], "color": "seatHi" },
+        { "prim": "box", "at": [0, 0.48, 0.72], "size": [2.65, 0.22, 0.48], "color": "seat" },
+        { "prim": "box", "at": [0, 0.91, 0.91], "rot": [7, 0, 0], "size": [2.65, 0.72, 0.18], "color": "seatHi" },
+        { "prim": "box", "at": [0, 0.77, 0], "size": [2.42, 0.04, 0.84], "color": "edge" }
+      ]
+    }
+  }
+}

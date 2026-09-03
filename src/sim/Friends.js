@@ -74,6 +74,7 @@
  */
 export const GRUDGE_DAYS = 1;
 export const MAX_GRUDGE = 3;
+export const MAYOR_ID = 'official.mayor';
 
 export const RELATIONSHIP_TIERS = Object.freeze([
   { id: 'stranger', points: 0 },
@@ -93,13 +94,18 @@ export class Friends {
     this.visited = new Map();
     /** NPC id -> { until: Clock stamp, severity: repeat attacks this feud }. */
     this.foes = new Map();
+    /** Mayor Bell's relationship is the player's standing with the whole town. */
+    this.townReputation = 10;
+    this.crimes = { thefts: 0, killings: 0 };
     /** Bumped on every change, so the HUD can skip a redraw. */
     this.version = 0;
   }
 
   get count() { return this.points.size; }
 
-  pointsFor(npcId) { return this.points.get(npcId) ?? 0; }
+  pointsFor(npcId) {
+    return npcId === MAYOR_ID ? this.townReputation : (this.points.get(npcId) ?? 0);
+  }
 
   tier(npcId) {
     const points = this.pointsFor(npcId);
@@ -125,6 +131,16 @@ export class Friends {
   /** How angry this person currently is, from 0 (calm) to MAX_GRUDGE. */
   grudgeLevel(npcId) { return this.foes.get(npcId)?.severity ?? 0; }
 
+  /** Record town-wide offenses that Mayor Bell always learns about. */
+  recordCrime(kind) {
+    if (kind !== 'theft' && kind !== 'killing') return false;
+    const key = kind === 'theft' ? 'thefts' : 'killings';
+    this.crimes[key]++;
+    this.#changeTownReputation(kind === 'theft' ? -10 : -40);
+    this.version++;
+    return true;
+  }
+
   /**
    * Become friends. Returns true if this was news.
    *
@@ -136,7 +152,11 @@ export class Friends {
    */
   add(npcId) {
     if (!npcId || this.foes.has(npcId) || this.has(npcId)) return false;
-    this.points.set(npcId, 10);
+    if (npcId === MAYOR_ID) this.townReputation = Math.max(10, this.townReputation);
+    else {
+      this.points.set(npcId, 10);
+      this.#changeTownReputation(2);
+    }
     this.version++;
     return true;
   }
@@ -145,23 +165,48 @@ export class Friends {
   visit(npcId, day) {
     if (!npcId || this.foes.has(npcId)) return false;
     if (!this.has(npcId)) {
-      this.points.set(npcId, 10);
+      if (npcId === MAYOR_ID) this.townReputation = Math.max(10, this.townReputation);
+      else {
+        this.points.set(npcId, 10);
+        this.#changeTownReputation(2);
+      }
       if (Number.isInteger(day)) this.visited.set(npcId, day);
       this.version++;
       return true;
     }
     if (!Number.isInteger(day) || this.visited.get(npcId) === day) return false;
     this.visited.set(npcId, day);
-    this.points.set(npcId, Math.min(100, this.pointsFor(npcId) + 5));
+    if (npcId === MAYOR_ID) this.#changeTownReputation(5);
+    else {
+      this.points.set(npcId, Math.min(100, this.pointsFor(npcId) + 5));
+      this.#changeTownReputation(1);
+    }
     this.version++;
     return true;
   }
 
   reward(npcId, points) {
     if (!npcId || this.foes.has(npcId) || !(points > 0)) return false;
-    this.points.set(npcId, Math.min(100, this.pointsFor(npcId) + points));
+    if (npcId === MAYOR_ID) this.#changeTownReputation(points);
+    else {
+      this.points.set(npcId, Math.min(100, this.pointsFor(npcId) + points));
+      this.#changeTownReputation(Math.max(1, Math.round(points / 5)));
+    }
     this.version++;
     return true;
+  }
+
+  /** Remove relationship points, returning how many were actually lost. */
+  penalize(npcId, points) {
+    if (!npcId || !(points > 0)) return 0;
+    const before = this.pointsFor(npcId);
+    const after = Math.max(0, before - points);
+    if (after === before) return 0;
+    if (npcId === MAYOR_ID) this.townReputation = after;
+    else if (after === 0) this.points.delete(npcId);
+    else this.points.set(npcId, after);
+    this.version++;
+    return before - after;
   }
 
   /**
@@ -182,7 +227,11 @@ export class Friends {
     if (!npcId) return false;
     const previous = this.foes.get(npcId);
     const fresh = !previous;
-    this.points.delete(npcId);
+    if (npcId === MAYOR_ID) this.townReputation = 0;
+    else {
+      this.points.delete(npcId);
+      this.#changeTownReputation(-5);
+    }
     this.visited.delete(npcId);
     this.foes.set(npcId, {
       until: now + GRUDGE_DAYS,
@@ -234,6 +283,8 @@ export class Friends {
   snapshot() {
     return {
       relationships: Object.fromEntries(this.points),
+      townReputation: this.townReputation,
+      crimes: { ...this.crimes },
       visited: Object.fromEntries(this.visited),
       foes: Object.fromEntries(this.foes),
     };
@@ -259,6 +310,15 @@ export class Friends {
       ? Object.entries(relationships).flatMap(([id, value]) => Number.isFinite(value)
         ? [[id, Math.max(0, Math.min(100, value))]] : [])
       : (Array.isArray(friends) ? friends.map((id) => [id, 10]) : []));
+    const oldMayorPoints = this.points.get(MAYOR_ID);
+    this.townReputation = Number.isFinite(snap?.townReputation)
+      ? Math.max(0, Math.min(100, snap.townReputation))
+      : Math.max(10, oldMayorPoints ?? 0);
+    this.crimes = {
+      thefts: Math.max(0, snap?.crimes?.thefts | 0),
+      killings: Math.max(0, snap?.crimes?.killings | 0),
+    };
+    this.points.delete(MAYOR_ID);
     this.visited = new Map(Object.entries(snap?.visited ?? {}).flatMap(([id, day]) =>
       Number.isInteger(day) && day >= 1 ? [[id, day]] : []));
     this.foes = new Map(Array.isArray(foes)
@@ -278,5 +338,9 @@ export class Friends {
       this.visited.delete(id);
     }
     this.version++;
+  }
+
+  #changeTownReputation(points) {
+    this.townReputation = Math.max(0, Math.min(100, this.townReputation + points));
   }
 }

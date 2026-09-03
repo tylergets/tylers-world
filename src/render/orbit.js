@@ -60,6 +60,12 @@ export class Orbit {
    */
   get stepYaw() { return Math.round(this.yaw / QUARTER) * QUARTER; }
 
+  /** Apply immediate mouse-look without introducing orbit chase lag. */
+  look(delta) {
+    this.yaw += delta;
+    this.target += delta;
+  }
+
   /**
    * @param {number} dt
    * @param {number} held   -1, 0 or 1 -- a turn key down THIS frame

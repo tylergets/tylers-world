@@ -1,0 +1,56 @@
+{
+  "format": "tw.kit",
+  "version": 1,
+  "meta": {
+    "id": "turnip.pagoda-garden-lamp",
+    "name": "Meadowash Pagoda Garden Lamp"
+  },
+  "types": {
+    "fixture.pagoda-garden-lamp": {
+      "kind": "object",
+      "label": "Meadowash Pagoda Garden Lamp",
+      "footprint": { "w": 1, "d": 1 },
+      "height": 2.18,
+      "squash": 0.22,
+      "palette": {
+        "woodDark": "#a89d84",
+        "pale": "#f4f1e6",
+        "metal": "#a9ada0",
+        "accent": "#6f9c5a",
+        "glass": "#dcecdf"
+      },
+      "parts": [
+        { "prim": "cyl", "at": [0, 0.06, 0], "size": [0.3, 0.12, 0.3], "color": "metal" },
+        { "prim": "taper", "at": [0, 0.995, 0], "size": [0.065, 1.861, 0.065], "color": "woodDark" },
+        { "prim": "cyl", "at": [0, 0.389, 0], "size": [0.11, 0.08, 0.11], "color": "metal" },
+        { "prim": "cyl", "at": [0, 1.168, 0], "size": [0.085, 0.05, 0.085], "color": "metal" },
+        { "prim": "box", "at": [0, 1.854, 0], "size": [0.322, 0.3, 0.322], "color": "glass" },
+        { "prim": "pyr", "at": [0, 2.084, 0], "size": [0.311, 0.18, 0.311], "color": "accent" },
+        { "prim": "cyl", "at": [0, 1.674, 0], "size": [0.23, 0.06, 0.23], "color": "metal" },
+        { "prim": "blob", "at": [0, 1.854, 0], "size": [0.105, 0.13, 0.105], "color": "pale", "anim": { "pulse": { "amp": 0.12, "rate": 0.7 } } }
+      ],
+      "light": {
+        "color": "#ffe0a0",
+        "height": 1.82,
+        "range": 6.5,
+        "intensity": 10
+      }
+    },
+    "kititem.pagoda-garden-lamp": {
+      "kind": "item",
+      "label": "Meadowash Pagoda Garden Lamp",
+      "value": 590,
+      "stack": 1,
+      "swatch": "#a0a754",
+      "badge": "crate",
+      "furniture": "fixture.pagoda-garden-lamp",
+      "site": "outdoors",
+      "palette": {
+        "wrap": "#d9c7a4",
+        "wrapHi": "#eee1c7",
+        "strap": "#8a6242",
+        "mark": "#a0a754"
+      }
+    }
+  }
+}

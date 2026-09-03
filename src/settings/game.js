@@ -86,6 +86,7 @@ export const DEFAULT_GAME = Object.freeze({
   // one this game is made of -- the same argument sim/Friends.js makes about a
   // grudge that runs out. Losing the lot is available to anyone who wants it.
   deathPenalty: 'drop',
+  autoLoadLastSave: false,
 });
 
 /** One setting, validated against its own list. Same helper as graphics.js. */
@@ -97,6 +98,7 @@ export function readGameSettings() {
     return {
       dayLength: pick(DAY_LENGTHS, s?.dayLength, DEFAULT_GAME.dayLength),
       deathPenalty: pick(DEATH_PENALTIES, s?.deathPenalty, DEFAULT_GAME.deathPenalty),
+      autoLoadLastSave: s?.autoLoadLastSave === true,
     };
   } catch {
     return { ...DEFAULT_GAME };

@@ -1,0 +1,58 @@
+{
+  "format": "tw.kit",
+  "version": 1,
+  "meta": {
+    "id": "turnip.heritage-street-lamp",
+    "name": "Inkthorn Heritage Street Lamp"
+  },
+  "types": {
+    "fixture.heritage-street-lamp": {
+      "kind": "object",
+      "label": "Inkthorn Heritage Street Lamp",
+      "footprint": { "w": 1, "d": 1 },
+      "height": 2.66,
+      "squash": 0.22,
+      "palette": {
+        "woodDark": "#241d1a",
+        "pale": "#e6ddcb",
+        "metal": "#c8a24a",
+        "accent": "#c9a227",
+        "glass": "#9fb6bd"
+      },
+      "parts": [
+        { "prim": "cyl", "at": [0, 0.06, 0], "size": [0.3, 0.12, 0.3], "color": "metal" },
+        { "prim": "taper", "at": [0, 1.198, 0], "size": [0.065, 2.239, 0.065], "color": "woodDark" },
+        { "prim": "cyl", "at": [0, 0.469, 0], "size": [0.11, 0.08, 0.11], "color": "metal" },
+        { "prim": "cyl", "at": [0, 1.406, 0], "size": [0.085, 0.05, 0.085], "color": "metal" },
+        { "prim": "box", "at": [0, 2.215, 0], "size": [0.26, 0.34, 0.26], "color": "glass" },
+        { "prim": "box", "at": [0, 2.215, 0], "size": [0.2, 0.27, 0.2], "color": "glass" },
+        { "prim": "pyr", "at": [0, 2.465, 0], "size": [0.2, 0.15, 0.2], "color": "metal" },
+        { "prim": "cyl", "at": [0, 2.025, 0], "size": [0.18, 0.06, 0.18], "color": "metal" },
+        { "prim": "blob", "at": [0, 2.215, 0], "size": [0.105, 0.13, 0.105], "color": "pale", "anim": { "pulse": { "amp": 0.12, "rate": 0.7 } } },
+        { "prim": "cone", "at": [0, 2.552, 0], "size": [0.07, 0.2, 0.07], "color": "accent" }
+      ],
+      "light": {
+        "color": "#ffd18a",
+        "height": 2.35,
+        "range": 7.5,
+        "intensity": 12
+      }
+    },
+    "kititem.heritage-street-lamp": {
+      "kind": "item",
+      "label": "Inkthorn Heritage Street Lamp",
+      "value": 1010,
+      "stack": 1,
+      "swatch": "#d8aa35",
+      "badge": "crate",
+      "furniture": "fixture.heritage-street-lamp",
+      "site": "outdoors",
+      "palette": {
+        "wrap": "#d9c7a4",
+        "wrapHi": "#eee1c7",
+        "strap": "#8a6242",
+        "mark": "#d8aa35"
+      }
+    }
+  }
+}

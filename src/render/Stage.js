@@ -42,6 +42,7 @@ import * as THREE from 'three';
 import { CameraRig } from './CameraRig.js';
 import { buildTerrain, shorelineBlendUniform } from './Terrain.js';
 import { buildProps, hideProp, leanProp, ghostProp } from './props.js';
+import { buildArchitecture } from './architecture.js';
 import { objectType } from '../world/objectTypes.js';
 import { STEP_HEIGHT } from '../core/constants.js';
 import { FixtureBatch } from './FixtureBatch.js';
@@ -55,12 +56,16 @@ import { flatUniform, timeUniform, tintUniform, patchFlatten } from './flatten.j
 import { GeoBuilder, trs } from './geo.js';
 import { daylightAt } from './daylight.js';
 import { waterUniforms, WATER_LEVELS } from './water.js';
+import {
+  buildInteriorWindows, planInteriorWindows, setInteriorWindowDaylight,
+} from './interiorWindows.js';
 
 /** Half-width of the shadow frustum, in tiles. Sized to the top-down view. */
 const SHADOW_SPAN = 17;
 
-/** Scratch for the daylight lerps. One, reused: see daylight.js on litter. */
+/** Scratch for the daylight lerps. Reused: see daylight.js on litter. */
 const _c1 = new THREE.Color();
+const _c2 = new THREE.Color();
 
 /** How long a struck tree sways for, and how far its top leans while it does. */
 const SWAY_TIME = 0.34;
@@ -111,6 +116,8 @@ const TORCH_ANGLE = 0.62;
 const TORCH_POWER = 9.5;
 /** Where the beam leaves the body: shoulder height, a little in front. */
 const TORCH_HEIGHT = 0.62;
+/** Fixed GPU light budget; every other lamp still keeps its visible glowing bulb. */
+const STREET_LIGHT_SLOTS = 4;
 
 /**
  * Ambience defaults, per place kind. A world file's `ambience` block overrides
@@ -139,10 +146,9 @@ const AMBIENCE = {
     sunArc: 1, nightFloor: 0,
   },
   interior: {
-    // Warm, low-contrast, and lit from almost straight overhead: a raking sun
-    // would throw a wall's shadow across half the floor and read as an
-    // open-air courtyard rather than a room.
-    sky: 0x1b1712, flatSky: 0x1d2029,
+    // The room remains warm and low-contrast, but the world outside its shell
+    // is a pure-black void.
+    sky: 0x000000, flatSky: 0x000000,
     fog: null,
     sun: 0.85, sunColor: 0xffe9c4, sunOffset: [-4, 26, 6],
     hemi: 2.1, hemiSky: 0xffe6c0, hemiGround: 0x7a5c42,
@@ -164,27 +170,29 @@ const AMBIENCE = {
  * WORLD is shaded, not to how a cursor is.
  */
 /**
- * The line a shot took.
+ * The trail of BBs along a fired path.
  *
  * Unlit, unfogged and drawn over everything, on exactly the doctrine the walk
  * marker is built on: it is UI that happens to live in the scene, so it must
- * read the same in both views. That is also why it is a TRACER and not a muzzle
+ * read the same in both views. That is also why it is a trail and not a muzzle
  * flash -- a flash at the barrel is three pixels from directly overhead and
- * invisible on the map, whereas a line lying along the ground plane says what
+ * invisible on the map, whereas points along the flight path say what
  * happened from any angle. The ray resolver is otherwise entirely invisible,
  * and this is the only thing that shows the player what it decided.
  *
  * Built once, at the origin, pointing down +z with its near end at 0, so a
- * shot is a position, a yaw and a scale rather than new geometry.
+ * trail is a position, a yaw and a scale rather than new geometry.
  */
 function makeTracer() {
-  const geometry = new THREE.BoxGeometry(0.045, 0.02, 1);
-  geometry.translate(0, 0, 0.5);
-  const mesh = new THREE.Mesh(geometry, new THREE.MeshBasicMaterial({
-    color: 0xfff3c4, transparent: true, opacity: 0.9,
+  const positions = new Float32Array(18 * 3);
+  for (let i = 0; i < 18; i++) positions[i * 3 + 2] = (i + 0.5) / 18;
+  const geometry = new THREE.BufferGeometry();
+  geometry.setAttribute('position', new THREE.BufferAttribute(positions, 3));
+  const mesh = new THREE.Points(geometry, new THREE.PointsMaterial({
+    color: 0xf4f5ef, size: 0.055, sizeAttenuation: true, transparent: true, opacity: 0.95,
     depthTest: false, depthWrite: false, fog: false,
   }));
-  mesh.name = 'shot-tracer';
+  mesh.name = 'bb-tracer';
   mesh.renderOrder = 10;
   mesh.visible = false;
   return mesh;
@@ -354,6 +362,17 @@ export class Stage {
     this.torchOn = false;
     this.torchRange = TORCH_RANGE;
 
+    // Kept in the scene at zero intensity when unused. Adding and removing
+    // lights recompiles materials; moving four existing lights does not.
+    this.streetLights = Array.from({ length: STREET_LIGHT_SLOTS }, () => {
+      const light = new THREE.PointLight(0xffd58f, 0, 8, 1.6);
+      light.castShadow = false;
+      this.scene.add(light);
+      return light;
+    });
+    this.streetLampObjects = [];
+    this._lampNight = 0;
+
     this.rig = new CameraRig(1);
     this.player = new PlayerView();
     this.scene.add(this.player.root);
@@ -427,8 +446,10 @@ export class Stage {
     this.angle = null;
     this._tip = new THREE.Vector3();
     this._spot = new THREE.Vector3();
-    /** A pending `requestPhoto` callback, read and cleared by `render`. */
+    /** Pending frame captures, read and cleared by `render`. */
     this._photo = null;
+    this._preview = null;
+    this._previewCanvas = null;
   }
 
   /**
@@ -475,9 +496,9 @@ export class Stage {
    * marker you cannot see is the same as no feedback at all.
    */
   /**
-   * Show where a shot went. Chest height, so it does not z-fight the ground.
+   * Show where a BB went. Chest height, so it does not z-fight the ground.
    *
-   * @param {number} dist  how far along the line the shot actually stopped
+   * @param {number} dist  how far along the line the BB actually stopped
    */
   setShot(x, y, z, yaw, dist, time) {
     this.tracer.position.set(x, y + 0.55, z);
@@ -540,6 +561,11 @@ export class Stage {
    */
   requestPhoto(onShot) {
     this._photo = onShot;
+  }
+
+  /** Queue a compact view of the next frame for save and title-screen storage. */
+  requestPreview(onShot) {
+    this._preview = onShot;
   }
 
   /**
@@ -809,6 +835,8 @@ export class Stage {
     this.group = null;
     this.terrain = null;
     this.world = null;
+    this.streetLampObjects = [];
+    for (const light of this.streetLights) light.intensity = 0;
     this.setMarker(null);
     // The ghost's geometry cache is keyed by TYPE, not by place, so it stays:
     // it is bounded like ItemBatch's model cache, and the next world's chairs
@@ -826,6 +854,16 @@ export class Stage {
    */
   setWorld(world) {
     this.world = world;
+    this.streetLampObjects = world.kind === 'exterior'
+      ? world.objects
+        .filter((obj) => !world.felled.has(obj.id) && objectType(obj.type).light)
+        .map((obj) => ({
+          obj,
+          x: obj.tile[0] + obj.shape.w * 0.5,
+          z: obj.tile[1] + obj.shape.d * 0.5,
+          d2: 0,
+        }))
+      : [];
 
     let group = this.built.get(world.meta.id);
     if (!group) {
@@ -836,9 +874,14 @@ export class Stage {
       // shader, so their CPU-side geometry is the wrong shape to raycast against
       // in the top-down view -- and a ray that passes through a roof and lands
       // on the ground below it answers the question the click was asking anyway.
-      const terrain = buildTerrain(world);
+      const windowPlan = planInteriorWindows(world);
+      const terrain = buildTerrain(world, windowPlan?.openings);
       group.add(terrain);
       group.userData.terrain = terrain;
+      const windows = buildInteriorWindows(windowPlan);
+      if (windows) group.add(windows);
+      const architecture = buildArchitecture(world);
+      if (architecture) group.add(architecture);
       for (const m of buildProps(world)) group.add(m);
       // Terrain and props are authored directly in world space and never move.
       // Stop Three from recomposing their identity transforms on every main and
@@ -1178,6 +1221,7 @@ export class Stage {
     const kind = AMBIENCE[world.kind] ?? AMBIENCE.exterior;
     const base = { ...kind, ...(world.ambience ?? {}) };
     this.base = base;
+    this.interiorVoid = world.kind === 'interior';
 
     this._baseSun = new THREE.Color(base.sunColor);
     this._baseHemi = new THREE.Color(base.hemiSky);
@@ -1215,6 +1259,7 @@ export class Stage {
     const weather = WEATHER_LOOK[this.weather] ?? WEATHER_LOOK.sun;
     const floor = base.nightFloor ?? 0;
     const lift = (mul) => mul + (1 - mul) * floor;
+    this._lampNight = Math.max(0, Math.min(1, (0.82 - key.sunMul) / 0.5));
 
     this.sun.intensity = base.sun * lift(key.sunMul) * weather.light;
     this.sun.color.copy(this._baseSun).lerp(_c1.set(key.sun), key.sunTint * (1 - floor));
@@ -1222,9 +1267,20 @@ export class Stage {
     this.hemi.intensity = base.hemi * lift(key.hemiMul) * weather.fill;
     this.hemi.color.copy(this._baseHemi).lerp(_c1.set(key.hemiSky), key.hemiTint);
 
-    this.sky3d.copy(this._baseSky).lerp(_c1.set(key.sky), key.skyTint);
-    this.sky3d.lerp(_c1.set(weather.tint), weather.mix);
-    this.sky2d.copy(this._baseFlatSky).lerp(_c1.set(key.flatSky), key.flatSkyTint);
+    if (this.interiorVoid) {
+      this.sky3d.setHex(0x000000);
+      this.sky2d.setHex(0x000000);
+    } else {
+      this.sky3d.copy(this._baseSky).lerp(_c1.set(key.sky), key.skyTint);
+      this.sky3d.lerp(_c1.set(weather.tint), weather.mix);
+      this.sky2d.copy(this._baseFlatSky).lerp(_c1.set(key.flatSky), key.flatSkyTint);
+    }
+
+    // Unlike the room's lamp-like night floor, window light follows raw outside
+    // daylight in both brightness and colour. Noon is warm-white; moonlight is
+    // faint blue even though the room's own fill stays comfortably warm.
+    setInteriorWindowDaylight(this.interiorVoid ? key.sunMul : 0,
+      _c1.copy(this._baseSun).lerp(_c2.set(key.sun), key.sunTint));
 
     // The one channel the top-down view has. See flatten.js.
     tintUniform.value.setRGB(key.flat[0], key.flat[1], key.flat[2]);
@@ -1253,6 +1309,24 @@ export class Stage {
   /** Which fraction of a day it is. Written by the Game each frame. */
   setTimeOfDay(t) { this.dayT = t; }
 
+  /** Put the fixed light pool on the nearest placed lamps and fade it at dawn. */
+  #updateStreetLights(player) {
+    for (const entry of this.streetLampObjects) {
+      entry.d2 = (entry.x - player.x) ** 2 + (entry.z - player.z) ** 2;
+    }
+    this.streetLampObjects.sort((a, b) => a.d2 - b.d2);
+    for (let i = 0; i < this.streetLights.length; i++) {
+      const light = this.streetLights[i], entry = this.streetLampObjects[i];
+      if (!entry || this._lampNight <= 0) { light.intensity = 0; continue; }
+      const spec = objectType(entry.obj.type).light;
+      light.color.setHex(spec.color);
+      light.distance = spec.range;
+      light.intensity = spec.intensity * this._lampNight;
+      light.position.set(entry.x,
+        this.world.groundHeight(entry.x, entry.z) + spec.height, entry.z);
+    }
+  }
+
   /** Set the deterministic daily sky; null keeps interiors weatherless. */
   setWeather(kind) {
     this.weather = kind;
@@ -1270,11 +1344,13 @@ export class Stage {
    * @param {number} t      raw morph amount in [0,1]
    * @param {number} time   seconds, for the water surface
    * @param {number} yaw    which way the camera is facing (see render/orbit.js)
+   * @param {boolean} firstPerson whether the camera is at the player's eyes
+   * @param {number} lookPitch first-person vertical look angle
    */
-  render(player, t, time, yaw = 0) {
+  render(player, t, time, yaw = 0, firstPerson = false, lookPitch = 0) {
     const mark0 = performance.now();
     // Smoothstep: linear t makes the camera start and stop abruptly.
-    const e = t * t * (3 - 2 * t);
+    const e = firstPerson ? 0 : t * t * (3 - 2 * t);
 
     flatUniform.value = e;
     timeUniform.value = time;
@@ -1308,9 +1384,9 @@ export class Stage {
 
     // Pivot slightly above the feet so the player sits a touch below centre in
     // 3D, which leaves more of the world visible ahead of them.
-    this._pivot.set(player.x, player.y + 0.6 * (1 - e), player.z);
+    this._pivot.set(player.x, player.y + (firstPerson ? 0.72 : 0.6 * (1 - e)), player.z);
     this.rig.yaw = yaw;
-    this.rig.update(e, this._pivot);
+    this.rig.update(e, this._pivot, firstPerson, lookPitch);
     if (this.rain.visible) {
       this.rain.position.set(player.x, player.y - ((time * 5) % 0.42), player.z);
     }
@@ -1351,6 +1427,7 @@ export class Stage {
     this._lieBack.setFromAxisAngle(this._camRight, tilt);
 
     this.player.update(player, this._lieBack, time);
+    this.player.root.visible = !firstPerson;
     // After the player's model and before three walks the scene, for the reason
     // the torch beam is: the line hangs off the rod tip, and the rod tip is a
     // pose that was decided one line ago.
@@ -1358,6 +1435,7 @@ export class Stage {
     // Before three walks the scene, and after the player's own model has been
     // placed: the beam comes off the body and must not be a frame behind it.
     this.#aimTorch(player);
+    this.#updateStreetLights(player);
     this.live?.update(this._lieBack);
     if (this.liveFolk) for (const { npc, view } of this.liveFolk.pairs) view.update(npc, this._lieBack, time);
     this.#syncGround();
@@ -1391,6 +1469,17 @@ export class Stage {
       const shot = this._photo;
       this._photo = null;
       shot(this.renderer.domElement.toDataURL('image/png'));
+    }
+    if (this._preview) {
+      const shot = this._preview;
+      this._preview = null;
+      const source = this.renderer.domElement;
+      const scale = Math.min(1, 640 / source.width);
+      const preview = this._previewCanvas ??= document.createElement('canvas');
+      preview.width = Math.max(1, Math.round(source.width * scale));
+      preview.height = Math.max(1, Math.round(source.height * scale));
+      preview.getContext('2d').drawImage(source, 0, 0, preview.width, preview.height);
+      shot(preview.toDataURL('image/jpeg', 0.72));
     }
 
     this.tViews = mark1 - mark0;

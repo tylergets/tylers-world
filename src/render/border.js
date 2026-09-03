@@ -41,6 +41,7 @@
 
 import { WATER_DROP } from '../core/constants.js';
 import { hashString } from '../core/rng.js';
+import { SURFACE_ID, surfaceById, surfaceInteraction } from '../world/surfaces.js';
 
 /**
  * Outward distances, in tiles, of each ring from the map edge.
@@ -65,6 +66,7 @@ const RIM_DROP = 4;
 
 /** Sea level: water tiles sit this far below their tile's elevation. */
 const SEA_Y = -WATER_DROP;
+const WATER_SURFACE = surfaceById(SURFACE_ID.water);
 
 /**
  * How the band's profile approaches its full height, as a function of distance.
@@ -152,6 +154,14 @@ function edgeCornerY(world, cornerY, px, pz) {
   return cornerY(world, x, z, px > x ? 1 : 0, pz > z ? 1 : 0);
 }
 
+/** Runtime surface owning a boundary lattice point. */
+function edgeSurface(world, px, pz) {
+  return world.surfaceAt(
+    Math.min(px, world.width - 1),
+    Math.min(pz, world.height - 1),
+  );
+}
+
 const _lerpColor = (a, b, t) => {
   const ar = (a >> 16) & 255, ag = (a >> 8) & 255, ab = a & 255;
   const br = (b >> 16) & 255, bg = (b >> 8) & 255, bb = b & 255;
@@ -202,6 +212,9 @@ export function buildBorder(world, b, cornerY) {
     p.innerY = edgeCornerY(world, cornerY, p.px, p.pz);
     p.open = band.taper ? openness(world, p.px, p.pz, band.taper) : 0;
     p.wobble = ridgeWobble(i, n);
+    // A border sea is shallow only where it welds to a family that declares a
+    // shoreline with liquid (currently granular ground). Grass remains a bank.
+    p.shore = surfaceInteraction(WATER_SURFACE, edgeSurface(world, p.px, p.pz))?.shore ?? 0;
   }
 
   // The sea half of a MIXED band (forms.js: `coast`), or null for the five
@@ -252,6 +265,12 @@ export function buildBorder(world, b, cornerY) {
   /** How much this quad shimmers: all, none, or -- on a coast -- part way. */
   const wetness = band.water ? () => 1 : sea ? (open) => open : () => 0;
 
+  const shoreAt = (p, r) => {
+    const waterBand = band.water ? 1 : sea ? p.open : 0;
+    const profile = band.water ? band : sea;
+    return profile ? p.shore * waterBand * (1 - smoothstep(r / profile.shore)) : 0;
+  };
+
   const skirtAt = sea ? (open) => _lerpColor(band.skirt, sea.skirt, open) : () => band.skirt;
 
   const point = (p, r) => [p.px + p.ox * r, heightAt(p, r), p.pz + p.oz * r];
@@ -273,6 +292,7 @@ export function buildBorder(world, b, cornerY) {
       b.addQuad(a, c, d, e, colorAt(mid, lift, open), {
         normal,
         water: wetness(open),
+        shore: [shoreAt(p, r0), shoreAt(q, r0), shoreAt(q, r1), shoreAt(p, r1)],
         shades: [shade, shade, shade, shade],
       });
     }

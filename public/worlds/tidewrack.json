@@ -443,6 +443,7 @@
     {"id":"store.clothier","type":"building.clothier","tile":[86,56],"props":{"label":"Cuff & Collar","interior":"worlds/interiors/store-clothier.json"}},
     {"id":"home.marnie","type":"building.cottage","tile":[32,58],"props":{"label":"Marnie's Cottage","interior":"worlds/interiors/home-marnie.json","owner":"folk.marnie"}},
     {"id":"town.hall","type":"building.townhall","tile":[84,78],"props":{"label":"Town Hall","interior":"worlds/interiors/town-hall.json"}},
+    {"id":"town.noticeboard","type":"civic.noticeboard","tile":[84,84]},
     {"id":"town.museum","type":"building.museum","tile":[90,92],"props":{"label":"Museum","interior":"worlds/interiors/museum.json"}},
     {"id":"home.coral","type":"building.cottage","tile":[40,40],"props":{"label":"Coral's Cottage","interior":"worlds/interiors/home-coral.json","owner":"folk.coral"}},
     {"id":"home.selkie","type":"building.cabin","tile":[80,102],"props":{"label":"Selkie's Cabin","interior":"worlds/interiors/home-selkie.json","owner":"folk.selkie"}},
@@ -611,15 +612,54 @@
         }
       },
       "dialog": {
-        "start": "hello",
+        "start": "open",
         "nodes": {
+          "open": {
+            "branch": [
+              {
+                "when": {
+                  "not": {
+                    "flag": "met"
+                  }
+                },
+                "to": "hello"
+              },
+              {
+                "to": "again"
+              }
+            ]
+          },
           "hello": {
-            "text": "Coral. Nets come to me after the sea has finished arguing with them. That's my place behind me. Come say hello before you let yourself in.",
-            "then": "again"
+            "text": [
+              "Coral. I mend nets. The sea tears them, the fishers bring them to me, and I sit on that step and argue the holes closed one knot at a time.",
+              "The cottage behind me is mine, and so is the net across the doorway. Speak up before you push through it. It is not there to keep you out, it is there so I hear you coming."
+            ],
+            "do": {
+              "set": "met"
+            }
           },
           "again": {
             "text": "This knot will hold. The next one is the sea's concern."
           }
+        },
+        "greetings": {
+          "acquaintance": [
+            "Marnie's cast net came in with a hole the size of a dog. I asked what did it. She says the sea. The sea does not bite like that.",
+            "Twine is the wrong colour today. The sea does not care and the fish do not care and I will finish it anyway.",
+            "Sat on the step since first light, mending. Cold hands are fine. Cold hands and wet twine is the trade.",
+            "Otto brought me a net he found on the far sand. Not one of ours. I have mended it anyway. It seemed rude not to."
+          ],
+          "friend": [
+            "You walked past yesterday and did not stand on the net laid out on the grass. Not many people manage that.",
+            "Marnie watches me from her window and I mend her nets. That is a fair trade and neither of us has ever said so.",
+            "There is a knot I cannot get right. I have been at it since Tuesday. Do not look at it. It knows.",
+            "I have a shuttle spare. It is on the step. You could learn. I am not saying you should. I am saying it is on the step."
+          ],
+          "close": [
+            "Come and sit on the step. There is room now. I moved the twine.",
+            "You have a hole in your sleeve. Give it here. I have the needle threaded anyway.",
+            "Marnie's net is done, so I have nothing in my hands. Stay while that lasts."
+          ]
         }
       }
     },
@@ -642,15 +682,54 @@
         }
       },
       "dialog": {
-        "start": "hello",
+        "start": "open",
         "nodes": {
+          "open": {
+            "branch": [
+              {
+                "when": {
+                  "not": {
+                    "flag": "met"
+                  }
+                },
+                "to": "hello"
+              },
+              {
+                "to": "again"
+              }
+            ]
+          },
           "hello": {
-            "text": "Selkie. I burn broken shell into lime and keep the whole ring whitewashed. That's my place behind me. Come say hello before you let yourself in.",
-            "then": "again"
+            "text": [
+              "Selkie. I burn shell. Broken ones, off the tide line, into the kiln and out the other side as lime -- and every white wall on this ring is my doing.",
+              "The cabin behind me is mine, and the kiln beside it is hotter than it looks. Sing out at the door before you come in. I hear better than I see, once the kiln is lit."
+            ],
+            "do": {
+              "set": "met"
+            }
           },
           "again": {
             "text": "Stand upwind of the kiln. That advice is free."
           }
+        },
+        "greetings": {
+          "acquaintance": [
+            "Kiln is lit. You will have smelt it round at the store. Everybody does. Nobody complains, because they all want white walls.",
+            "Crows walk the tide line ahead of me and take the shells I want. We have not come to an arrangement.",
+            "Limewashed the store's south wall this morning. Watch your sleeve on it till tomorrow. It comes off on everything.",
+            "The kiln has gone cold and I am sorting the burnt from the unburnt. It is a job for fingers and I am short of fingers."
+          ],
+          "friend": [
+            "You went past the kiln on the downwind side yesterday. I did tell you. Your coat has told you since.",
+            "Otto wants his landing posts limed. Otto wants a great many things and says so slowly. I will do them.",
+            "Marnie says she can see my smoke from her chair. She can see everything from that chair. I lit it early to give her something.",
+            "Bring me shells if you find them. Broken ones. Whole ones go to the post at the landing, and Otto counts."
+          ],
+          "close": [
+            "Come by the kiln. It is banked. You will be warm and I will be quiet.",
+            "I have a pot of wash put by for your walls. Whenever you want. It does not go off.",
+            "Hands black again. I would take yours but you would not thank me. Stay a minute anyway."
+          ]
         }
       }
     },
@@ -841,6 +920,25 @@
           "bye": {
             "text": "Aye. Mind the rope."
           }
+        },
+        "greetings": {
+          "acquaintance": [
+            "Watch your step. That plank is sound and the one next to it is having a think.",
+            "Rope wants coiling and the hull wants patching. The hull is louder. I am doing the rope.",
+            "Tide has brought in a bit of somebody else's boat. Not mine. I have counted mine.",
+            "The post at the head of the landing has a new shell on it. Not from me. I like not knowing whose."
+          ],
+          "friend": [
+            "Marnie says I tied a granny knot on the mooring line last Thursday. It was Wednesday. I am not going to correct her.",
+            "You went round the ring the other way this time. I saw you come in from the east. It is not shorter. I did tell you.",
+            "There is a hull under that tarpaulin I said I had finished. Do not lift it. I have not.",
+            "Tar on my hands, so I will not shake yours. You are welcome to the smell, though. It is the smell of things not sinking."
+          ],
+          "close": [
+            "Come and hold this. No, it is not going anywhere. That is the point of holding it.",
+            "I have kept this landing dry for fourteen years and this is the first year I have had somebody to say that to.",
+            "Sit on the bollard. The rope will wait. It is very good at waiting."
+          ]
         }
       }
     },
@@ -1027,6 +1125,25 @@
           "bye": {
             "text": "Mind the tide line."
           }
+        },
+        "greetings": {
+          "acquaintance": [
+            "Sea side this morning. The lagoon had nothing to say and the sea had too much, as usual.",
+            "I saw you come round the north arm. Through the glass. Do not look like that, it is what the glass is for.",
+            "There is a new thing on the shelf from the far sand. A bottle. Nothing in it. There never is.",
+            "Wind off the lagoon and spray off the sea, both at once. Ten steps apart. I have told you about the ten steps."
+          ],
+          "friend": [
+            "Otto has been at that same hull for a week. I have watched him from the chair. It is better than the sea some days.",
+            "I saw you skip a stone across the lagoon. Six. From here it looked like six. If it was seven, tell me and I will believe you.",
+            "That boat on the far side has moved. Nobody has mentioned it. You are not going to be the one to make me.",
+            "You are the only person on this ring who walks the whole of it without complaining. I count that as a character."
+          ],
+          "close": [
+            "The glass is pointed at nothing this morning. It is your turn to tell me something.",
+            "The far sand gave up a good one for you. Top shelf. Do not ask which. You will know it.",
+            "I was going to walk out to the sea. I will wait, if you are coming."
+          ]
         }
       }
     },
@@ -1177,6 +1294,25 @@
           "bye": {
             "text": "Go careful on the way down."
           }
+        },
+        "greetings": {
+          "acquaintance": [
+            "Up again. The dune grass has held through the wind, which is all I ask of it and all it gives.",
+            "There is a thing growing by the ramp I did not plant. Salt-sown. I am watching it and it is watching the sea.",
+            "Rabbits have been at the sea holly. They are welcome. It is the only thing up here with an opinion about them.",
+            "You can see the weather coming for an hour before it gets here. I have had my hour, and it is coming."
+          ],
+          "friend": [
+            "I went down for flour and came back up in half the time. I am not telling you why. It was Otto's rope talk.",
+            "The samphire is up. Do not tell Marnie, she will send somebody for it and it will be you.",
+            "You stand at the edge the way I did the first year. Looking for the shape of it. It does not get any less round.",
+            "Lie back in the grass if you like. The sand is warm on the south face and cold on the north, and that is the whole of the dune."
+          ],
+          "close": [
+            "I left the view alone for you. Same as ever. Take your time with it.",
+            "Wind has dropped. That is the sound of nothing, up here, and I wanted you to hear it.",
+            "The salt bush by the ramp has flowered. I think it did it because you kept walking past."
+          ]
         }
       }
     }

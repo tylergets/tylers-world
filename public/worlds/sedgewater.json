@@ -418,6 +418,7 @@
     {"id":"store.clothier","type":"building.clothier","tile":[86,46],"props":{"label":"Cuff & Collar","interior":"worlds/interiors/store-clothier.json"}},
     {"id":"home.quill","type":"building.cottage","tile":[68,40],"props":{"label":"Quill's Hut","interior":"worlds/interiors/home-quill.json","owner":"folk.quill"}},
     {"id":"town.hall","type":"building.townhall","tile":[38,78],"props":{"label":"Town Hall","interior":"worlds/interiors/town-hall.json"}},
+    {"id":"town.noticeboard","type":"civic.noticeboard","tile":[38,84]},
     {"id":"town.museum","type":"building.museum","tile":[64,74],"props":{"label":"Museum","interior":"worlds/interiors/museum.json"}},
     {"id":"home.reed","type":"building.cottage","tile":[82,80],"props":{"label":"Reed's Cottage","interior":"worlds/interiors/home-reed.json","owner":"folk.reed"}},
     {"id":"home.marsh","type":"building.cabin","tile":[46,96],"props":{"label":"Marsh's Cabin","interior":"worlds/interiors/home-marsh.json","owner":"folk.marsh"}},
@@ -595,15 +596,57 @@
         }
       },
       "dialog": {
-        "start": "hello",
+        "start": "open",
         "nodes": {
+          "open": {
+            "branch": [
+              {
+                "when": {
+                  "not": {
+                    "flag": "met"
+                  }
+                },
+                "to": "hello"
+              },
+              {
+                "to": "again"
+              }
+            ]
+          },
           "hello": {
-            "text": "Reed. I cut thatch where the sedge grows straight and quiet. That's my place behind me. Come say hello before you let yourself in.",
-            "then": "again"
+            "text": [
+              "Reed. I lay thatch. I cut sedge where it grows straight and quiet, and I put it on roofs where it does the same.",
+              "The cottage behind me is mine and its roof is my best work. Sing out from the boards before you try the door; I am usually up on it."
+            ],
+            "do": {
+              "set": "met"
+            }
           },
           "again": {
-            "text": "Dry stems above, wet roots below. Keep them that way."
+            "text": "Dry stems above, wet roots below. That is the whole of thatching, and the whole of the fen. Keep them that way."
           }
+        },
+        "greetings": {
+          "acquaintance": [
+            "Cutting on the north bank this week. The sedge stands straighter where the wind cannot get at it.",
+            "Ridge on the store wants doing before the winter. I have said so twice. Nobody hears a thatcher until it drips.",
+            "Leave the bundles where they lean. They are drying and a dropped bundle is a wet bundle.",
+            "Rain came sideways last night. Good test. Roof passed. I did not sleep for listening to it pass."
+          ],
+          "friend": [
+            "Quill cuts reed by the armful and calls it a trade. I cut it by the acre and call it a Tuesday.",
+            "Marsh wants offcuts for his baskets and asks by leaving a basket on my step. I have started leaving it full. Neither of us has said a word.",
+            [
+              "Fell through my own ladder yesterday. Third rung. Landed in the soft.",
+              "Nothing hurt but the ladder, and I am not telling Meg, because she said that ladder would go."
+            ],
+            "You look up at a roof before you look at the door. I like a person who does that."
+          ],
+          "close": [
+            "Come in under it. Best-thatched roof in the fen and I would rather you were dry under it than anybody.",
+            "Kept a bundle of the straight stuff back. Not for a roof. For you to see what straight looks like.",
+            "No cutting today, water is too high. Come under the eaves with me and listen to the roof not leak."
+          ]
         }
       }
     },
@@ -626,15 +669,57 @@
         }
       },
       "dialog": {
-        "start": "hello",
+        "start": "open",
         "nodes": {
+          "open": {
+            "branch": [
+              {
+                "when": {
+                  "not": {
+                    "flag": "met"
+                  }
+                },
+                "to": "hello"
+              },
+              {
+                "to": "again"
+              }
+            ]
+          },
           "hello": {
-            "text": "Marsh. I weave traps with openings an eel understands too late. That's my place behind me. Come say hello before you let yourself in.",
-            "then": "again"
+            "text": [
+              "Marsh. I weave eel baskets. The trick is the mouth: an eel goes in easy and works out the rest too late.",
+              "That cabin is mine, willow soaking in every tub of it. Knock and wait to be let in; an eel goes in without asking, and look where it gets the eel."
+            ],
+            "do": {
+              "set": "met"
+            }
           },
           "again": {
-            "text": "Nothing in the basket yet. That is how waiting looks."
+            "text": "Nothing in the baskets yet this morning. That is how waiting looks; it is most of the trade."
           }
+        },
+        "greetings": {
+          "acquaintance": [
+            "Willow is soaking. It has to be soft as string before it will bend round the mouth. Give it a day.",
+            "Two baskets down in the west channel since dark. If they come up empty the water is too warm, not the basket.",
+            "Watch the tubs by the door. It is only water, but it is cold water and a lot of it.",
+            "Eels run when the moon is thin. I do not know why. I have stopped asking and started weaving."
+          ],
+          "friend": [
+            "Reed will not sell me offcuts, so I leave a basket on his step, and it comes back full. Neither of us has admitted anything.",
+            "Quill hides his thin reed from me now. I know where. I am letting him think it works.",
+            [
+              "Had an eel work its way back out of the mouth last night. First one in years.",
+              "Sat and looked at that basket a long time. It has been unpicked and it is going to be a better basket."
+            ],
+            "You pick a basket up by the middle, not the mouth. Somebody taught you or you worked it out. Either does."
+          ],
+          "close": [
+            "Come and sit by the tubs. I am at the slow part and it is better with company.",
+            "Smoked the best of the catch. Kept the tail end for you, which is the good end, whatever people say.",
+            "Baskets are all down and there is nothing to do but wait. Wait with me."
+          ]
         }
       }
     },
@@ -747,6 +832,28 @@
           "bye": {
             "text": "Boards, mind."
           }
+        },
+        "greetings": {
+          "acquaintance": [
+            "Water is up a hand since Sunday. The far plank will be under by dinner. Go round.",
+            "Board by the second spur has gone soft. I have marked it with a reed. Trust the reed.",
+            "Ducks have gone west, which means the wind is coming east. That is all the weather I do.",
+            "Stood up here all morning and watched three people take the wrong spur. None of them were you. Good."
+          ],
+          "friend": [
+            "Tarn asked me to mark a short cut to his door. I told him the fen has already marked it and it says no.",
+            "Quill wants planks out to that hut of his. I said the walk is what makes it his. He did not laugh.",
+            [
+              "Forty years and I put a foot in it yesterday. Right up to the knee.",
+              "Nobody saw. I am telling you so that at least one person knows I am not proud."
+            ],
+            "You take the long way even when the water is down. I have started thinking of you as one of the sensible ones."
+          ],
+          "close": [
+            "Sit with me on the rise. You can see every spur from here and none of them need us.",
+            "I have kept the dry seat by the staithe post for you. It is the only one there is.",
+            "Nothing needs mending today. Stand here a while and we will both pretend that is normal."
+          ]
         }
       }
     },
@@ -912,6 +1019,28 @@
           "bye": {
             "text": "Go careful off the boards."
           }
+        },
+        "greetings": {
+          "acquaintance": [
+            "Cut a stand of reed by the second channel this morning. Straight as pencils. It is a good year for it.",
+            "Bundles on the step want turning. If you step over them rather than on them, we will get on.",
+            "Water is sitting an inch under the floor. Floor knows it. I know it. We are all fine.",
+            "You came the whole way out on a wet day. Nobody sees that but the herons, and the herons and I have noticed."
+          ],
+          "friend": [
+            "Meg says I should have planks out here. I say once there are planks, there will be people, and then where will I be.",
+            "Marsh wants my thin reed for his baskets and he does not want to pay reed prices. I have started hiding the good stuff.",
+            [
+              "The trap came up with a pike in it. A real one, not the man.",
+              "Ate it. Told nobody. It was the best thing to happen all week and I am sharing it with you."
+            ],
+            "You lift the trap without being told. That is worth more to me than half the people who know my name."
+          ],
+          "close": [
+            "Dry corner is swept and the step is yours. Come up and sit.",
+            "Marigolds are out on the bank. I left the best ones for you. They will not last.",
+            "Rain on the reed roof today and nothing to do under it. Come and listen to it with me."
+          ]
         }
       }
     },
@@ -1000,6 +1129,28 @@
           "bye": {
             "text": "Aye. Mind the soft bits."
           }
+        },
+        "greetings": {
+          "acquaintance": [
+            "Saw your smoke before I saw you. Out here that counts as a visit.",
+            "Been laying stone on the soft bit by my gate. It sinks. I lay more. That is the whole job.",
+            "Quarter of an hour, door to door, and the water still took the short way before I did.",
+            "Ducks on the channel between us this morning. Five. I am telling you because there is nobody else to tell."
+          ],
+          "friend": [
+            "Meg will not mark me a short cut. I asked twice. Second time she just pointed at the water.",
+            "Went to the Staithe and took the wrong spur. Twenty years here. Do not tell Meg, she will only be pleased.",
+            [
+              "Roof leaked over the bed last night. I moved the bed.",
+              "This morning I moved it back. If the roof wants to argue it knows where I am."
+            ],
+            "A quarter of an hour used to feel like a long way to a neighbour. It has stopped feeling like that lately."
+          ],
+          "close": [
+            "Come in out of the wet. Door sticks. Everything sticks, it is a fen.",
+            "Kept a dry stone for you to sit on. It is the only one with nothing growing on it.",
+            "Walk over in the rain and there is a mug on the hook that has stopped being mine."
+          ]
         }
       }
     }

@@ -9,7 +9,7 @@
     "fixture.hall-runner": {
       "kind": "object",
       "label": "Coppervale Hall Runner",
-      "footprint": { "w": 1, "d": 3 },
+      "footprint": { "w": 1, "d": 3, "mask": [".", ".", "."] },
       "height": 0.2,
       "squash": 0.9,
       "palette": {

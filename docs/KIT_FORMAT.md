@@ -73,6 +73,11 @@ somewhere a step budget is affordable.
 }
 ```
 
+Built-in product surfaces may use an action instead of a script, for example
+`{ "label": "Browse internet", "action": "browser" }`. Exactly one of
+`interact.run` or `interact.action` is required; actions remain host-owned and
+the currently supported action is `browser`.
+
 A world file then places one exactly as it places a tree, and declares the kit
 at the top so it is registered before the world is validated:
 
@@ -130,6 +135,23 @@ centre of the footprint, base at `y = 0`, unrotated.
 **`squash`** is how far the model collapses in the top-down view, and it
 defaults to `0.34` rather than to `1`: an author who has not thought about the
 map view has authored a thing that hides its own tile.
+
+**`use`** gives an ordinary built-in furniture interaction to a fixture. The
+supported values are `lean`, `sit`, `sleep`, `store`, and `warm`. Use
+`"store"` for crates, chests, barrels, baskets, and other containers that should
+hold a carried stack after the player places them. Omit `site` from the linked
+item to keep the normal furniture policy: placement outdoors or in the player's
+home. Bespoke behavior still belongs in `interact`, not in this field.
+
+**`site`** belongs on a linked item and currently accepts `"outdoors"`. It makes
+the flat-pack placeable only in exterior worlds, as used by fences, ladders and
+street lamps.
+
+**`light`** belongs on an object and declares a local nighttime light source:
+`{ "color": "#ffd18a", "height": 2.35, "range": 7.5, "intensity": 12 }`.
+Height is measured above the fixture's ground point. The renderer assigns a
+fixed pool to the nearest sources, so adding fixtures cannot grow the scene's
+GPU light count without bound.
 
 ## `anim` — the parts that move
 
@@ -400,6 +422,25 @@ for everybody who walks into Meadowbrook.
 | `vesper` | `fixture.signallamp`, `fixture.firepit` | Vesper's |
 | `quill` | `fixture.eeltrap` | Quill's Hut |
 | `sennen` | `fixture.bell` | Sennen's Cottage |
+
+And five more, one per stop on the cab driver's board (`src/world/cabService.js`).
+Each ships its fixtures **and** the items its vendor sells, several of which are
+flat-packs of the room's own furniture — so a slot machine, a neon palm or a
+floating crystal can go home in your pockets:
+
+| kit | scripted fixtures | in |
+|---|---|---|
+| `pit` | `fixture.pit.gong`, `fixture.pit.ammo-crate` | The Pit |
+| `casino` | `fixture.casino.slot` (a saved jackpot pool per machine), `fixture.casino.roulette` | The Lucky Seven |
+| `bunker` | `fixture.bunker.exploit-terminal` (skims coins, remembers its heat), `fixture.bunker.mainframe` (`action: browser`), `fixture.bunker.vending` | Sub-Level 9 |
+| `skydeck` | `fixture.sky.dj-booth` | The Skydeck |
+| `moonwell` | `fixture.moon.well` (fortunes; trades pebbles for shells) | The Moonwell |
+
+One rule fell out of the bunker's vending machine: **a kit's `interact.when`
+cannot name an item the same kit defines.** `when` is validated while the kit
+is parsed, before its own items are registered, so `{ "room": { "type":
+"kititem.volt-can" } }` is an unknown type at that moment. Ask the question in
+the script instead (`room()` is available there) and `say` why nothing happened.
 
 Each house gets **one fixture you can press `E` on** and, where the room wants
 movement, one that only animates. The interactive one is the person: the loom

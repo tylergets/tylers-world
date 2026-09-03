@@ -407,6 +407,7 @@
     {"id":"store.clothier","type":"building.clothier","tile":[108,66],"props":{"label":"Cuff & Collar","interior":"worlds/interiors/store-clothier.json"}},
     {"id":"home.pike","type":"building.cottage","tile":[30,88],"props":{"label":"Pike's Place","interior":"worlds/interiors/home-pike.json","owner":"folk.pike"}},
     {"id":"town.hall","type":"building.townhall","tile":[64,76],"props":{"label":"Town Hall","interior":"worlds/interiors/town-hall.json"}},
+    {"id":"town.noticeboard","type":"civic.noticeboard","tile":[64,82]},
     {"id":"town.museum","type":"building.museum","tile":[86,76],"props":{"label":"Museum","interior":"worlds/interiors/museum.json"}},
     {"id":"home.mesa","type":"building.cottage","tile":[24,66],"props":{"label":"Mesa's Cottage","interior":"worlds/interiors/home-mesa.json","owner":"folk.mesa"}},
     {"id":"home.flint","type":"building.cabin","tile":[94,92],"props":{"label":"Flint's Cabin","interior":"worlds/interiors/home-flint.json","owner":"folk.flint"}},
@@ -641,15 +642,57 @@
         }
       },
       "dialog": {
-        "start": "hello",
+        "start": "open",
         "nodes": {
+          "open": {
+            "branch": [
+              {
+                "when": {
+                  "not": {
+                    "flag": "met"
+                  }
+                },
+                "to": "hello"
+              },
+              {
+                "to": "again"
+              }
+            ]
+          },
           "hello": {
-            "text": "Mesa. I keep rain by the jar because the sky seldom keeps appointments. That's my place behind me. Come say hello before you let yourself in.",
-            "then": "again"
+            "text": [
+              "Mesa. I keep rain in jars, because the sky seldom keeps an appointment and a jar always does.",
+              "The cottage behind me is where the jars live. Knock first; a jar that has been startled has usually been dropped."
+            ],
+            "do": {
+              "set": "met"
+            }
           },
           "again": {
-            "text": "Three jars full. That counts as a wet season here."
+            "text": "Three jars full since you were last by. That counts as a wet season here."
           }
+        },
+        "greetings": {
+          "acquaintance": [
+            "Dry morning. They mostly are. I have been out counting the jars again, which does not change the number.",
+            "If you hear thunder, tell me before you tell anyone. I have lids to get off.",
+            "Wash is sand today, same as yesterday. I keep looking anyway. It is a kind of exercise.",
+            "The goats have found the overflow trough. I am not going to fight a goat over a cupful."
+          ],
+          "friend": [
+            "Bly counted rain for the week and I set out every jar I own. Bly was wrong. I am not speaking to the weather.",
+            "Sora keeps asking for a jar of the clean stuff for her still. I keep saying no and she keeps asking nicer.",
+            [
+              "Somebody left a lid off overnight. A quarter of a jar gone to the air.",
+              "It was me. I am telling you so I do not have to tell anyone else."
+            ],
+            "You are the only one who looks at the sky when I do. Everyone else looks at me."
+          ],
+          "close": [
+            "Come and sit by the full one. It is cool in a way nothing else on this rock is.",
+            "Jar six has a crack. I have not decided to be upset about it. Help me not decide.",
+            "If it ever rains properly I want you standing here when it does. That is all."
+          ]
         }
       }
     },
@@ -672,15 +715,57 @@
         }
       },
       "dialog": {
-        "start": "hello",
+        "start": "open",
         "nodes": {
+          "open": {
+            "branch": [
+              {
+                "when": {
+                  "not": {
+                    "flag": "met"
+                  }
+                },
+                "to": "hello"
+              },
+              {
+                "to": "again"
+              }
+            ]
+          },
           "hello": {
-            "text": "Flint. I polish stone until it admits the sky was there first. That's my place behind me. Come say hello before you let yourself in.",
-            "then": "again"
+            "text": [
+              "Flint. I polish slickrock. Rub it long enough and it gives up a shine that looks like water and is not.",
+              "The cabin is mine and its polished floor is the point of it. Shout from the step before you come in; one boot of grit undoes a week."
+            ],
+            "do": {
+              "set": "met"
+            }
           },
           "again": {
-            "text": "That shine is honest work, not water."
+            "text": "That shine on the step is a month of my arm. It is not wet, whatever it looks like."
           }
+        },
+        "greetings": {
+          "acquaintance": [
+            "Rubbing down a slab for the town hall step. They want it to look wet. They will get what the rock gives.",
+            "My hands are grey to the wrist and it does not wash off. Do not shake them if you value your sleeves.",
+            "There is a piece on the bench that took the sun this morning like a pool. I have stopped work to look at it.",
+            "Rim is loose again on this side. Any stone you find lying about, that is where it came from."
+          ],
+          "friend": [
+            "Bly wants a cairn stone polished. I said a cairn is meant to be seen from a distance, not admired up close. Bly went quiet.",
+            "Sora says the shine smells of juniper because I use her oil for the finish. I say it smells of work. We are both right.",
+            [
+              "Somebody took a polished offcut off my step last week. Did not ask.",
+              "If it was you, it was a good choice. If it was a goat, I want it back."
+            ],
+            "You walked round the floor and not across it. That is the first thing I look for in a person."
+          ],
+          "close": [
+            "Come in and take the good chair. It is the only thing in there I have not polished.",
+            "Finished the slab. It is a mirror with a grain in it and I wanted you to see it before the grit does.",
+            "Hands are too sore to work today. Sit on the step with me and we will watch the stone do nothing."
+          ]
         }
       }
     },
@@ -703,15 +788,57 @@
         }
       },
       "dialog": {
-        "start": "hello",
+        "start": "open",
         "nodes": {
+          "open": {
+            "branch": [
+              {
+                "when": {
+                  "not": {
+                    "flag": "met"
+                  }
+                },
+                "to": "hello"
+              },
+              {
+                "to": "again"
+              }
+            ]
+          },
           "hello": {
-            "text": "Sora. I make bitter oil from the juniper that survives the rim. That's my place behind me. Come say hello before you let yourself in.",
-            "then": "again"
+            "text": [
+              "Sora. I distil the juniper that clings to the rim. It comes out as an oil, bitter enough to cure most things and to teach the rest.",
+              "The bungalow behind me is where the still lives. Call out before you come in; it is hot in there and the stuff in the pot does not like surprises."
+            ],
+            "do": {
+              "set": "met"
+            }
           },
           "again": {
-            "text": "A drop is medicine. Two drops are a lesson."
+            "text": "A drop is medicine. Two drops are a lesson. I keep saying it and people keep learning."
           }
+        },
+        "greetings": {
+          "acquaintance": [
+            "The still has been going since first light. If you smell it on me, that is why. It gets in the hair.",
+            "Cut a bough off the crooked tree on the north rim this morning. The wind has been shaping it for me for years.",
+            "Mind the crows. They like the mash and they do not like sharing the yard.",
+            "Grey haze off the basin again. Good for nothing but the juniper, which likes to be left alone."
+          ],
+          "friend": [
+            "Flint has taken to using my oil on his floor. It shines beautifully and the whole cabin smells like a cough cure.",
+            "Mesa will not sell me a clean jar of rain for the still. I have asked six ways. I am working on a seventh.",
+            [
+              "Somebody bought a whole bottle last week and put two drops in a stew.",
+              "They came back for an explanation. I gave them a bit of bread and no refund."
+            ],
+            "You do not screw your face up when you smell the yard any more. It took Pike a decade."
+          ],
+          "close": [
+            "Sit in the yard. The still is talking to itself and I like an ear that is not mine.",
+            "I kept back the first cut of the year. It is the clean one. It is yours, and do not thank me.",
+            "Slow day, fire low. Stop a while and help me not work."
+          ]
         }
       }
     },
@@ -824,6 +951,28 @@
           "bye": {
             "text": "Mind the edge."
           }
+        },
+        "greetings": {
+          "acquaintance": [
+            "Cloud in the west. Two days off, maybe three. You can put your coat away for now.",
+            "Stand where the rock is dry. The lip crumbles a little every year and I would rather it did not take you.",
+            "Came to look down, did you. Most do the once and then they look anywhere else.",
+            "Two crows and no wind since sunrise. I have written it down. It will mean something later or it will not."
+          ],
+          "friend": [
+            "Somebody knocked my cairn over in the night. Goats, I think, though a goat has never once admitted anything.",
+            "You have a way of standing at the lip that does not make me nervous. It took Wend twenty years to learn that.",
+            [
+              "I told Pike there was rain coming and he laughed and oiled every hinge in the house.",
+              "It rained. He has not said a word about it and neither have I."
+            ],
+            "The shadow of the rock is on the far side of the basin already. I lose the whole afternoon watching it cross."
+          ],
+          "close": [
+            "Sit down a while. The edge keeps, and so does the weather, mostly.",
+            "I saved you the flat stone. It holds the sun until after dark.",
+            "Quiet day. Nothing coming. I do not get many and I am glad it is you I get to waste one on."
+          ]
         }
       }
     },
@@ -910,6 +1059,28 @@
           "bye": {
             "text": "Go on, then."
           }
+        },
+        "greetings": {
+          "acquaintance": [
+            "Mind the goats on the apron. They eat anything I plant and they look at me while they do it.",
+            "You made the cut again. It is no shorter the second time, whatever people say.",
+            "Hauled water from the seep this morning. Two buckets up, and about one and a half arrived.",
+            "The wind has been at the beds all night. Anything still standing has earned its place."
+          ],
+          "friend": [
+            "Pike says gardening up here is a hobby with a spade. He can say that when his squash come in.",
+            "I had a whole row of something green yesterday. Today I have a whole row of goat. You are better company.",
+            [
+              "Bly sent word there was rain coming. I put every pot out on the apron.",
+              "Nothing yet. If it comes I will look wise, and if not I will bring the pots back in after dark."
+            ],
+            "You are the only one who climbs up here and does not ask why I bother. I have noticed."
+          ],
+          "close": [
+            "There you are. I kept a bucket back so you would not have to fetch.",
+            "Rock holds the night cold a bit longer this week. Come and see what it has done for the cracks.",
+            "Nothing to show you today. Stand out of the wind with me anyway."
+          ]
         }
       }
     },
@@ -1051,6 +1222,28 @@
           "bye": {
             "text": "Right you are."
           }
+        },
+        "greetings": {
+          "acquaintance": [
+            "Grit in the hinge again. Every door on this rock sings the same note and I know all the words.",
+            "Boots. Stamp them there, not here. I am not saying it twice.",
+            "Axle off the store cart on the bench. Third one this year. The road wants the blame and I want the road.",
+            "You have sand on your collar. Everybody does. It is how I know you have been outside."
+          ],
+          "friend": [
+            "Wend brought me a trowel with the handle gone. I asked what it did. She said it grew things. It does not, now.",
+            "Slow week. Nothing has broken that I did not break myself, and I am not paying me.",
+            [
+              "The sifter drum wants a new stave and I have been putting it off.",
+              "You can stand there and watch me put it off, if you like. Company helps."
+            ],
+            "You shut the inner door last time without being told. I noticed, and I do not notice much on purpose."
+          ],
+          "close": [
+            "Go on through. Porch is swept, floor is not, same as always.",
+            "Fetched a pebble out of the sifter that was worth something. Kept it for you. Do not ask why.",
+            "Wind is up. Sit inside with me till it has done, and we will say nothing much."
+          ]
         }
       }
     }

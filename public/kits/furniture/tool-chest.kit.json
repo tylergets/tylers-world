@@ -8,6 +8,7 @@
   "types": {
     "fixture.tool-chest": {
       "kind": "object",
+      "use": "store",
       "label": "Sootpine Tool Chest",
       "footprint": { "w": 1, "d": 1 },
       "height": 0.5,

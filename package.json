@@ -20,6 +20,7 @@
   },
   "dependencies": {
     "@jitl/quickjs-singlefile-browser-release-sync": "^0.32.0",
+    "jsnes": "^2.1.0",
     "quickjs-emscripten-core": "^0.32.0",
     "react": "^19.2.8",
     "react-dom": "^19.2.8",

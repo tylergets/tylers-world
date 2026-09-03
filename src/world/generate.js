@@ -42,6 +42,7 @@
 import { flood, heal, verifyForm } from './draft.js';
 import { parseWorldFile } from './WorldFile.js';
 import { World } from './World.js';
+import { isAnimalSpawnTile } from './animalHabitats.js';
 import { WILDLIFE } from './wildlife.js';
 import {
   ashkettle, bellrock, meadowbrook, rimrock, sedgewater, sourwood, thistledown, tidewrack,
@@ -58,14 +59,14 @@ import {
  * holler are two different arguments about the same ridges.
  */
 export const FORMS = [
-  { id: 'island', label: 'Island', note: 'A shore all the way round, and a bluff over the town.' },
-  { id: 'holler', label: 'Holler', note: 'A creek in the bottom, benches climbing both walls.' },
-  { id: 'atoll', label: 'Atoll', note: 'A ring of land round a lagoon you cannot cut across.' },
-  { id: 'gap', label: 'Gap', note: 'A pass open at both ends, with pasture stepping up either side.' },
-  { id: 'mesa', label: 'Mesa', note: 'A table in the sky. The world drops away on all four sides.' },
-  { id: 'caldera', label: 'Caldera', note: 'A crater with a lake in it and terraces stepping down to the water.' },
-  { id: 'fen', label: 'Fen', note: 'Sedge and channels. The ground gives out long before the water does.' },
-  { id: 'coast', label: 'Coast', note: 'A beach along the bottom, and downs stepping up behind the town.' },
+  { id: 'island', label: 'Island', size: '60–70 × 60–70 blocks', note: 'A shore all the way round, and a bluff over the town.' },
+  { id: 'holler', label: 'Holler', size: '38–46 × 76–92 blocks', note: 'A creek in the bottom, benches climbing both walls.' },
+  { id: 'atoll', label: 'Atoll', size: '64–72 × 64–72 blocks', note: 'A ring of land round a lagoon you cannot cut across.' },
+  { id: 'gap', label: 'Gap', size: '42–48 × 72–88 blocks', note: 'A pass open at both ends, with pasture stepping up either side.' },
+  { id: 'mesa', label: 'Mesa', size: '58–66 × 58–66 blocks', note: 'A table in the sky. The world drops away on all four sides.' },
+  { id: 'caldera', label: 'Caldera', size: '72–80 × 72–80 blocks', note: 'A crater with a lake in it and terraces stepping down to the water.' },
+  { id: 'fen', label: 'Fen', size: '60–68 × 60–68 blocks', note: 'Sedge and channels. The ground gives out long before the water does.' },
+  { id: 'coast', label: 'Coast', size: '56–64 × 64–72 blocks', note: 'A beach along the bottom, and downs stepping up behind the town.' },
 ];
 
 /** form -> the recipe that builds it. */
@@ -482,10 +483,13 @@ function stockWildlife(world, town, rnd) {
     const j = Math.floor(rnd() * (i + 1));
     [ground[i], ground[j]] = [ground[j], ground[i]];
   }
-  let cursor = 0;
+  const used = new Set();
   for (const species of wild) {
-    for (let n = 0; n < 2 && cursor < ground.length; n++) {
-      world.animals.push({ id: `wild.${species}.${n}`, type: species, tile: ground[cursor++] });
+    for (let n = 0; n < 2; n++) {
+      const tile = ground.find(([x, z]) => !used.has(`${x},${z}`) && isAnimalSpawnTile(built, species, x, z));
+      if (!tile) break;
+      used.add(`${tile[0]},${tile[1]}`);
+      world.animals.push({ id: `wild.${species}.${n}`, type: species, tile });
     }
   }
 }

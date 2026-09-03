@@ -9,7 +9,7 @@
     "fixture.striped-runner": {
       "kind": "object",
       "label": "Fenrush Striped Runner",
-      "footprint": { "w": 1, "d": 3 },
+      "footprint": { "w": 1, "d": 3, "mask": [".", ".", "."] },
       "height": 0.2,
       "squash": 0.9,
       "palette": {

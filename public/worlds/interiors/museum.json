@@ -11,16 +11,16 @@
   "ambience": {"music":"home","sky":"#20333b","sun":1.1,"hemi":2.4,"hemiSky":"#e5f4ef"},
   "layers": {
     "surface": {
-      "palette": {"#":"wall.panel","t":"floor.tile","w":"water","g":"grass","r":"rug"},
+      "palette": {"#":"wall.marble","t":"floor.marble","w":"water","g":"grass","r":"rug"},
       "data": [
         "#############################",
-        "#ttttttttttt##tttttttttttttt#",
-        "#ttwwwwwwwwt##ttggggggggggtt#",
-        "#ttwwwwwwwwt##ttggggggggggtt#",
-        "#ttwwwwwwwwt##ttggggggggggtt#",
-        "#ttwwwwwwwwt##ttggggggggggtt#",
-        "#ttwwwwwwwwt##ttggggggggggtt#",
-        "#ttwwwwwwwwt##ttggggggggggtt#",
+        "#ttttttttttt##gggggggggggggg#",
+        "#ttwwwwwwwwt##gggggggggggggg#",
+        "#ttwwwwwwwwt##gggggggggggggg#",
+        "#ttwwwwwwwwt##gggggggggggggg#",
+        "#ttwwwwwwwwt##gggggggggggggg#",
+        "#ttwwwwwwwwt##gggggggggggggg#",
+        "#ttwwwwwwwwt##gggggggggggggg#",
         "#ttttttttttttttttttttttttttt#",
         "#ttttttttttttttttttttttttttt#",
         "#######tttttttttttttt########",
@@ -75,19 +75,86 @@
       ]
     }
   },
+  "architecture": {
+    "groups": [{
+      "id":"cellar-stairs","landingColumns":[11,12,13],
+      "portal":{"tile":[11,22],"to":"worlds/interiors/museum-basement.json","label":"Card Cellar","facing":"east","out":[3,0]},
+      "parts":[
+        {"primitive":"box","at":[11.45,-0.525,22.125],"size":[0.38,0.05,1.64],"color":"#c9ceca"},
+        {"primitive":"box","at":[11.79,-0.475,22.125],"size":[0.38,0.15,1.64],"color":"#bdc4c1"},
+        {"primitive":"box","at":[12.13,-0.425,22.125],"size":[0.38,0.25,1.64],"color":"#c9ceca"},
+        {"primitive":"box","at":[12.47,-0.375,22.125],"size":[0.38,0.35,1.64],"color":"#bdc4c1"},
+        {"primitive":"box","at":[12.81,-0.325,22.125],"size":[0.38,0.45,1.64],"color":"#c9ceca"},
+        {"primitive":"box","at":[13.15,-0.275,22.125],"size":[0.38,0.55,1.64],"color":"#bdc4c1"},
+        {"primitive":"box","at":[11.35,-0.25,21.305],"size":[0.08,0.50,0.08],"color":"#657170"},
+        {"primitive":"box","at":[11.35,-0.25,22.945],"size":[0.08,0.50,0.08],"color":"#657170"},
+        {"primitive":"box","at":[13.28,0.25,21.305],"size":[0.08,0.50,0.08],"color":"#657170"},
+        {"primitive":"box","at":[13.28,0.25,22.945],"size":[0.08,0.50,0.08],"color":"#657170"},
+        {"primitive":"box","at":[12.315,0.25,21.305],"size":[2.08,0.08,0.08],"rotation":[0,0,14.5],"color":"#657170"},
+        {"primitive":"box","at":[12.315,0.25,22.945],"size":[2.08,0.08,0.08],"rotation":[0,0,14.5],"color":"#657170"}
+      ]
+    }]
+  },
   "objects": [
     {"id":"fish.sign","type":"furn.sign.fish","tile":[2,8],"props":{"label":"FISH GALLERY"}},
     {"id":"fish.bench","type":"furn.table","tile":[9,8]},
-    {"id":"game.sign","type":"furn.sign.game","tile":[23,8],"props":{"label":"GAME GALLERY"}},
-    {"id":"game.bench","type":"furn.table","tile":[18,8]},
+    {"id":"game.sign","type":"furn.sign.game","tile":[23,9],"props":{"label":"GAME GALLERY"}},
+    {"id":"game.bench","type":"furn.table","tile":[18,9]},
+    {"id":"game.fence.a","type":"yard.fence","tile":[14,8]},
+    {"id":"game.fence.b","type":"yard.fence","tile":[15,8]},
+    {"id":"game.fence.c","type":"yard.fence","tile":[16,8]},
+    {"id":"game.fence.d","type":"yard.fence","tile":[17,8]},
+    {"id":"game.fence.e","type":"yard.fence","tile":[18,8]},
+    {"id":"game.fence.f","type":"yard.fence","tile":[19,8]},
+    {"id":"game.fence.g","type":"yard.fence","tile":[20,8]},
+    {"id":"game.fence.h","type":"yard.fence","tile":[21,8]},
+    {"id":"game.fence.i","type":"yard.fence","tile":[22,8]},
+    {"id":"game.fence.j","type":"yard.fence","tile":[23,8]},
+    {"id":"game.fence.k","type":"yard.fence","tile":[24,8]},
+    {"id":"game.fence.l","type":"yard.fence","tile":[25,8]},
+    {"id":"game.fence.m","type":"yard.fence","tile":[26,8]},
+    {"id":"game.fence.n","type":"yard.fence","tile":[27,8]},
     {"id":"lobby.shelf.a","type":"furn.shelf","tile":[2,12]},
     {"id":"lobby.shelf.b","type":"furn.shelf","tile":[25,12]},
     {"id":"lobby.plant.a","type":"furn.plant","tile":[8,16]},
     {"id":"lobby.plant.b","type":"furn.plant","tile":[20,16]},
-    {"id":"cellar.sign","type":"furn.sign.poker","tile":[3,18],"props":{"label":"CARD CELLAR"}},
-    {"id":"stairs.basement","type":"furn.stairs","tile":[23,16],"props":{"label":"Card Cellar","interior":"worlds/interiors/museum-basement.json"}}
+    {"id":"cellar.sign","type":"furn.sign.poker","tile":[4,18],"props":{"label":"CARD CELLAR"}}
   ],
-  "npcs": [],
+  "npcs": [
+    {
+      "id":"museum.curator","type":"folk.curator","tile":[14,14],"facing":"south",
+      "props":{"name":"Mina Vellum","title":"Museum Curator","roam":4},
+      "dialog":{"start":"welcome","nodes":{
+        "welcome":{"text":"Welcome. Every creature displayed here began with somebody paying close attention outside these walls.","then":"menu"},
+        "menu":{"text":"What would you like to know?","choices":[
+          {"text":"How do the exhibits grow?","to":"exhibits"},
+          {"text":"What is downstairs?","to":"cellar"},
+          {"text":"I will look around.","to":"goodbye"}
+        ]},
+        "exhibits":{"text":"Catch a species for the first time and we prepare an exhibit. Later discoveries strengthen the record, even when the gallery needs only one representative.","then":"menu"},
+        "cellar":{"text":"Officially, archival storage. Unofficially, Marrow keeps a card table down there. The collections committee has elected not to inspect too closely.","then":"menu"},
+        "goodbye":{"text":"Take your time. A museum should reward a slow walk.","then":"end"}
+      },"greetings":{
+        "acquaintance":[
+          "The fish gallery has a new tank on the end. It is empty, which is a polite way of saying it is waiting on you.",
+          "Mind the wet patch by the fish gallery. The exhibits are sealed; the mop is not.",
+          "We had a school group through. They asked which animal was the oldest. I said the curator.",
+          "The collections committee meets in the lobby, mostly to agree that the benches need replacing."
+        ],
+        "friend":[
+          "Half the labels in the game gallery have your name on the collector line now. The engraver is getting tired of it.",
+          "Marrow sent up a note asking for better lamps in the cellar. I sent down a note asking what he needs to see so clearly.",
+          "A visitor asked whether the museum buys specimens. I said we accept them from people who pay attention. Then I thought of you.",
+          "The committee wants a plaque for the top donor. I have not told them it would just be your name and a very long list."
+        ],
+        "close":[
+          "Come in. I have kept the bench that does not wobble for you.",
+          "You have walked these galleries slower than anyone, myself included. That is the highest praise I have.",
+          "Nothing new in the cases this week. It is still good to see the person who filled most of them."
+        ]
+      }}
+    }
+  ],
   "exits": [{"tile":[14,20]},{"tile":[15,20]}],
-  "spawn": {"tile":[14,19],"facing":"north"}
+  "spawn": {"tile":[15,23],"facing":"north"}
 }

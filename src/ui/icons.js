@@ -39,6 +39,12 @@ import { itemType } from '../world/itemTypes.js';
 /** 0xrrggbb -> a CSS colour. */
 const css = (hex) => `#${hex.toString(16).padStart(6, '0')}`;
 
+const seedPacket = (p) => `
+  <path d="M5 3.5h14l1 17H4z" fill="${css(p.paper)}"/>
+  <path d="M5.5 4h13l.2 3H5.3z" fill="${css(p.paperHi)}"/>
+  <path d="M4.5 13h15l.3 5H4.2z" fill="${css(p.band)}"/>
+  <path d="M12 9.2c2.2 0 3.6 1.4 3.6 3.1-2.1.3-3.6-.9-3.6-3.1zm0 0c-2.2 0-3.6 1.4-3.6 3.1 2.1.3 3.6-.9 3.6-3.1z" fill="${css(p.mark)}"/>`;
+
 /**
  * Type id -> a function from palette to the INSIDE of an svg element.
  *
@@ -94,6 +100,28 @@ const GLYPHS = {
     </g>
     <circle cx="12" cy="10.4" r="2.6" fill="${css(p.heart)}"/>`,
 
+  'item.turnip': (p) => `
+    <path d="M7 10.2c0-3.5 2.1-5.4 5-5.4s5 1.9 5 5.4c0 4.8-2.7 8.8-5 10.4-2.3-1.6-5-5.6-5-10.4z" fill="${css(p.root)}"/>
+    <path d="M9.1 8.4c.7-1.6 1.8-2.3 3.1-2.3" stroke="${css(p.rootHi)}" stroke-width="1.4" stroke-linecap="round" fill="none"/>
+    <path d="M12 5.5C8.7 5.1 7.1 2.8 7.1 2.8c2.7-1 4.4.7 4.9 2.7zm0 0c3.3-.4 4.9-2.7 4.9-2.7-2.7-1-4.4.7-4.9 2.7z" fill="${css(p.leaf)}"/>
+    <path d="M8.1 6.7h7.8" stroke="${css(p.crown)}" stroke-width="1.8" stroke-linecap="round"/>`,
+
+  'item.pumpkin': (p) => `
+    <path d="M11 5.8V3.1h3.5" stroke="${css(p.stem)}" stroke-width="2" stroke-linecap="round" fill="none"/>
+    <ellipse cx="12" cy="13.2" rx="9.2" ry="7.2" fill="${css(p.skin)}"/>
+    <path d="M12 6.1c-2.2 1.9-2.8 11.6 0 14.2M8.2 6.8c-3 2.7-2.5 10.1.3 12.5M15.8 6.8c3 2.7 2.5 10.1-.3 12.5" stroke="${css(p.rib)}" stroke-width="1.1" fill="none"/>
+    <path d="M6 10c1.4-2.1 3-2.7 4-2.8" stroke="${css(p.skinHi)}" stroke-width="1.3" stroke-linecap="round" fill="none"/>`,
+
+  'item.cress': (p) => `
+    <path d="M7 20.5 11.5 7M11 20.5 12 5M15.5 20.5 13 8" stroke="${css(p.sprig)}" stroke-width="1.3" stroke-linecap="round"/>
+    <g fill="${css(p.leaf)}"><ellipse cx="8.2" cy="12" rx="3.1" ry="1.8" transform="rotate(28 8.2 12)"/><ellipse cx="15.5" cy="10.4" rx="3.1" ry="1.8" transform="rotate(-27 15.5 10.4)"/><ellipse cx="9.8" cy="7.2" rx="2.7" ry="1.6" transform="rotate(35 9.8 7.2)"/><ellipse cx="14.4" cy="15" rx="3" ry="1.8" transform="rotate(-33 14.4 15)"/></g>
+    <path d="M6.5 17.5h10.8" stroke="${css(p.tie)}" stroke-width="2" stroke-linecap="round"/>`,
+
+  'seed.turnip': seedPacket,
+  'seed.flower': seedPacket,
+  'seed.pumpkin': seedPacket,
+  'seed.cress': seedPacket,
+
   // ----------------------------------------------------------------- tools --
   // Every one of these is drawn along the same diagonal, low-left to high-right.
   // That is not decoration: a row of tools all facing the same way is a row you
@@ -141,7 +169,8 @@ const GLYPHS = {
     <path d="M4.4 19.2 8.4 15.2l.8.8-4 4z" fill="${css(p.stockHi)}"/>
     <path d="M9.6 14.8 20.8 3.6" stroke="${css(p.barrel)}" stroke-width="3" stroke-linecap="round" fill="none"/>
     <path d="M10.4 14 20.4 4.4" stroke="${css(p.barrelHi)}" stroke-width="1" stroke-linecap="round" fill="none"/>
-    <path d="M9.2 15.2 11.4 17.4" stroke="${css(p.band)}" stroke-width="2.2" stroke-linecap="round" fill="none"/>`,
+    <path d="M9.2 15.2 11.4 17.4" stroke="${css(p.band)}" stroke-width="2.2" stroke-linecap="round" fill="none"/>
+    <path d="M20.2 4.2 21.4 3" stroke="${css(p.tip)}" stroke-width="3.2" stroke-linecap="round" fill="none"/>`,
 
   'tool.machinegun': (p) => `
     <path d="M2.8 18.2 7 14l2.2 2.2-4.2 4.2a1.6 1.6 0 0 1-2.2-2.2z" fill="${css(p.stock)}"/>
@@ -151,6 +180,16 @@ const GLYPHS = {
     <path d="M8 16 10 18" stroke="${css(p.band)}" stroke-width="2.2" stroke-linecap="round" fill="none"/>
     <!-- The magazine. The one part no other long thing in the bag has, which is
          why it is the part that has to survive at 25 pixels. -->
+    <path d="M11.6 12.4 15 15.8l-2.6 4.6-3.2-3.2z" fill="${css(p.band)}"/>
+    <path d="M12.6 14.2 14 15.6l-1.8 3.2-1.4-1.4z" fill="${css(p.barrelHi)}" opacity="0.5"/>
+    <path d="M20.3 2.9 21.6 1.6" stroke="${css(p.tip)}" stroke-width="3.4" stroke-linecap="round" fill="none"/>`,
+
+  'tool.machine-gun': (p) => `
+    <path d="M2.8 18.2 7 14l2.2 2.2-4.2 4.2a1.6 1.6 0 0 1-2.2-2.2z" fill="${css(p.stock)}"/>
+    <path d="M3.6 19 7 15.6l.7.7L4.3 19.7z" fill="${css(p.stockHi)}"/>
+    <path d="M8.2 15 21 2.2" stroke="${css(p.barrel)}" stroke-width="3.2" stroke-linecap="round" fill="none"/>
+    <path d="M9 14.2 20.4 2.8" stroke="${css(p.barrelHi)}" stroke-width="1" stroke-linecap="round" fill="none"/>
+    <path d="M8 16 10 18" stroke="${css(p.band)}" stroke-width="2.2" stroke-linecap="round" fill="none"/>
     <path d="M11.6 12.4 15 15.8l-2.6 4.6-3.2-3.2z" fill="${css(p.band)}"/>
     <path d="M12.6 14.2 14 15.6l-1.8 3.2-1.4-1.4z" fill="${css(p.barrelHi)}" opacity="0.5"/>`,
 
@@ -240,13 +279,23 @@ const GLYPHS = {
 
   // ----------------------------------------------------------------- spent --
   'item.shot': (p) => `
-    <g fill="${css(p.brass)}">
-      <path d="M5 10.6h4v10H5z"/><path d="M10 8.6h4v12h-4z"/><path d="M15 11.6h4v9h-4z"/>
-    </g>
-    <path d="M5 10.6h1.4v10H5zM10 8.6h1.4v12H10zM15 11.6h1.4v9H15z" fill="${css(p.brassHi)}"/>
-    <g fill="${css(p.wad)}">
-      <path d="M5 8.6h4v2.4H5z"/><path d="M10 6.6h4V9h-4z"/><path d="M15 9.6h4V12h-4z"/>
+    <path d="M6 7h12v14H6z" fill="${css(p.bottle)}"/>
+    <path d="M7.2 8.2h2V20h-2z" fill="${css(p.bottleHi)}" opacity="0.85"/>
+    <path d="M8 3h8v4H8z" fill="${css(p.cap)}"/>
+    <g fill="${css(p.bb)}">
+      <circle cx="9" cy="12" r="1.5"/><circle cx="13.2" cy="10.4" r="1.5"/>
+      <circle cx="15.2" cy="14.2" r="1.5"/><circle cx="10.8" cy="16.4" r="1.5"/>
+      <circle cx="14.4" cy="18.2" r="1.5"/>
     </g>`,
+
+  'item.bullets': (p) => `
+    <g fill="${css(p.brass)}">
+      <path d="M4.5 10h4v10h-4z"/><path d="M10 7h4v13h-4z"/><path d="M15.5 10h4v10h-4z"/>
+    </g>
+    <g fill="${css(p.lead)}">
+      <path d="m4.5 10 2-4 2 4z"/><path d="m10 7 2-4 2 4z"/><path d="m15.5 10 2-4 2 4z"/>
+    </g>
+    <path d="M4.5 18h4v2h-4zM10 18h4v2h-4zM15.5 18h4v2h-4z" fill="${css(p.brassHi)}"/>`,
 
   // Both fish are the same drawing at two weights, which is the one place in
   // this file that repeats itself on purpose: they are the same silhouette in

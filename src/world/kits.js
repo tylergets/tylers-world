@@ -135,7 +135,7 @@ export class Kits {
     // Scripts next, in parallel, and BEFORE anything is registered: a kit whose
     // script 404s should leave the registry exactly as it found it rather than
     // half-installed with a fountain that throws on the first press.
-    const scripted = Object.values(kit.types).filter((t) => t.interact);
+    const scripted = Object.values(kit.types).filter((t) => t.interact?.run);
     await Promise.all(scripted.map(async (type) => {
       const src = await this.reader(beside(url, type.interact.run));
       if (src.length > MAX_SOURCE) {

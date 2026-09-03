@@ -2,6 +2,7 @@
   "format": "tw.world",
   "version": 1,
   "kind": "interior",
+  "kits": ["kits/turnip-catalog.kit.json"],
   "meta": {
     "id": "store.capstan.interior",
     "name": "The Capstan",
@@ -31,9 +32,9 @@
         "#############",
         "#ttttttttttt#",
         "#ttttttttttt#",
-        "#tttwwwwwttt#",
-        "#wwwwwwwwwww#",
-        "#wwwwrrrwwww#",
+        "#tttwwwwtttt#",
+        "#tttwwwwtttt#",
+        "#wwwrrrrrwww#",
         "#wwwwrrrwwww#",
         "#wwwwwwwwwww#",
         "#wwwwwwwwwww#",
@@ -97,7 +98,7 @@
   "objects": [
     {
       "id": "shelf.a",
-      "type": "furn.shelf",
+      "type": "fixture.sea-chest",
       "tile": [
         1,
         1
@@ -130,9 +131,9 @@
     },
     {
       "id": "shelf.d",
-      "type": "furn.shelf",
+      "type": "fixture.open-shelving",
       "tile": [
-        10,
+        9,
         1
       ],
       "props": {
@@ -152,9 +153,9 @@
     },
     {
       "id": "stove",
-      "type": "furn.stove",
+      "type": "fixture.oak-barrel",
       "tile": [
-        9,
+        10,
         3
       ],
       "props": {
@@ -163,15 +164,15 @@
     },
     {
       "id": "chair.loafers",
-      "type": "furn.chair",
+      "type": "fixture.storm-lantern-stand",
       "tile": [
         11,
-        4
+        5
       ]
     },
     {
       "id": "crate.west",
-      "type": "furn.crate",
+      "type": "fixture.bottle-crate",
       "tile": [
         1,
         6
@@ -179,15 +180,15 @@
     },
     {
       "id": "crate.east",
-      "type": "furn.crate",
+      "type": "fixture.captains-chair",
       "tile": [
-        11,
-        6
+        10,
+        5
       ]
     },
     {
       "id": "crate.door",
-      "type": "furn.crate",
+      "type": "fixture.sea-chest",
       "tile": [
         1,
         8
@@ -225,6 +226,9 @@
           "item.stone",
           "item.stick",
           "item.flower",
+          "item.turnip",
+          "item.pumpkin",
+          "item.cress",
           "tool.axe",
           "tool.shovel",
           "tool.gun",
@@ -237,6 +241,8 @@
           "tool.map",
           "tool.camera",
           "tool.machinegun",
+          "tool.machine-gun",
+          "item.bullets",
           "tool.rod",
           "item.trout",
           "item.carp"
@@ -316,6 +322,15 @@
             "type": "tool.machinegun",
             "count": 1,
             "price": 1350
+          },
+          {
+            "type": "tool.machine-gun",
+            "count": 1,
+            "price": 3600
+          },
+          {
+            "type": "item.bullets",
+            "count": null
           }
         ]
       },
@@ -380,6 +395,25 @@
           "bye": {
             "text": "Pull it to. The wind takes it."
           }
+        },
+        "greetings": {
+          "acquaintance": [
+            "Boat lot were in first, so the rope is gone. Hill lot will be in for the feed. You are neither, which is restful.",
+            "Kelp wants rope, Nell wants feed, and both of them want it cheaper. Chandlery and feed. It is on the sign.",
+            "Sand on the floor from one side and mud from the other. I sweep it into a pile and call it Bellrock.",
+            "Every time Morrow tests a bell, the shop empties. I have not decided whether it is the noise or the omen."
+          ],
+          "friend": [
+            "Doss told you he pays more for shells. He does. He also pays in Doss, which is a currency of opinions.",
+            "Sennen came in to stand in the middle of the shop. I think it is a habit now, not a position.",
+            "You have been up the hill and down to the boats in the same pair of boots. That makes you the only one in town who has.",
+            "Chalk asked if I had a wall going spare. Told him the wind already took the paint off the last one."
+          ],
+          "close": [
+            "Lean on the counter. It is the one thing in here the wind has not moved.",
+            "I saved you the last of the cress seed before the hill lot got at it.",
+            "Door held itself shut this once. I am putting it down to you."
+          ]
         }
       }
     }

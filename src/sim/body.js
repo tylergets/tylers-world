@@ -1,7 +1,7 @@
 /**
  * The ONE movement simulation.
  *
- * Every moving thing in the world -- the player, and every animal -- resolves
+ * Every moving thing in the world -- the player, NPCs and every animal -- resolves
  * its motion here. There is a single continuous swept-circle model and it is
  * shared by reference, not by convention: `Player.move` and `Animal.move` are
  * both one line, and that line is `sweep`.
@@ -42,21 +42,23 @@ const DEFAULT_PHASE_RATE = 3.1;
  *
  * Axes resolve independently, which is what produces wall sliding: blocked
  * north-south does not veto the east-west component.
+ * `bodies` adds live circle collision; `push` allows this mover to displace a
+ * blocker only when the blocker's own terrain and body checks accept the move.
  *
  * @returns {number} distance actually travelled, in tiles. Less than asked for
  *   means something was in the way -- which is how a behavior notices a wall
  *   without doing any collision reasoning of its own.
  */
-export function sweep(world, body, dt, vx, vz) {
+export function sweep(world, body, dt, vx, vz, bodies = null, push = false) {
   const x0 = body.x, z0 = body.z;
 
   if (vx !== 0) {
     const nx = body.x + vx * dt;
-    if (fits(world, body, nx, body.z)) body.x = nx;
+    moveAxis(world, body, 'x', nx, bodies, push);
   }
   if (vz !== 0) {
     const nz = body.z + vz * dt;
-    if (fits(world, body, body.x, nz)) body.z = nz;
+    moveAxis(world, body, 'z', nz, bodies, push);
   }
 
   const moved = Math.hypot(body.x - x0, body.z - z0);
@@ -64,6 +66,69 @@ export function sweep(world, body, dt, vx, vz) {
   body.walkPhase += moved * (body.phaseRate ?? DEFAULT_PHASE_RATE);
   body.y = world.groundHeight(body.x, body.z);
   return moved;
+}
+
+/** Resolve one sliding axis against the world and the other live bodies. */
+function moveAxis(world, body, axis, value, bodies, push) {
+  const px = axis === 'x' ? value : body.x;
+  const pz = axis === 'z' ? value : body.z;
+  if (!fits(world, body, px, pz)) return false;
+
+  const blockers = blockingBodies(body, px, pz, bodies);
+  if (!blockers.length) { body[axis] = value; return true; }
+  if (!push) return false;
+
+  const before = [];
+  const direction = Math.sign(value - body[axis]);
+  for (const other of blockers) {
+    const perpendicular = axis === 'x' ? pz - other.z : px - other.x;
+    const distance = body.radius + other.radius;
+    const along = Math.sqrt(Math.max(0, distance * distance - perpendicular * perpendicular));
+    const next = (axis === 'x' ? px : pz) + direction * (along + 1e-6);
+    const ox = axis === 'x' ? next : other.x;
+    const oz = axis === 'z' ? next : other.z;
+    if (!fits(world, other, ox, oz)
+      || blockingBodies(other, ox, oz, bodies, body).length) {
+      restorePushed(before);
+      return false;
+    }
+    before.push({ body: other, x: other.x, z: other.z, y: other.y, walkPhase: other.walkPhase });
+    const moved = Math.abs(next - other[axis]);
+    other[axis] = next;
+    other.y = world.groundHeight(other.x, other.z);
+    other.walkPhase += moved * (other.phaseRate ?? DEFAULT_PHASE_RATE);
+  }
+
+  if (blockingBodies(body, px, pz, bodies).length) {
+    restorePushed(before);
+    return false;
+  }
+  body[axis] = value;
+  return true;
+}
+
+/** Bodies newly entered or approached at a candidate position. */
+function blockingBodies(body, px, pz, bodies, ignore = null) {
+  if (!bodies) return [];
+  const blocked = [];
+  for (const other of bodies) {
+    if (other === body || other === ignore || !Number.isFinite(other?.radius)) continue;
+    const limit = body.radius + other.radius;
+    const next = (px - other.x) ** 2 + (pz - other.z) ** 2;
+    if (next >= limit * limit - 1e-8) continue;
+    const current = (body.x - other.x) ** 2 + (body.z - other.z) ** 2;
+    // Authored overlaps may separate, but no body may deepen one.
+    if (next <= current + 1e-8) blocked.push(other);
+  }
+  return blocked;
+}
+
+function restorePushed(before) {
+  for (const saved of before) {
+    Object.assign(saved.body, {
+      x: saved.x, z: saved.z, y: saved.y, walkPhase: saved.walkPhase,
+    });
+  }
 }
 
 /**

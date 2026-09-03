@@ -10,7 +10,7 @@
  *
  * ONE EDIT LOG, ONE VERSION
  * -------------------------
- * Tool work, placed furniture, civic terrain overlays, and wildlife targets
+ * Tool work, placed objects, civic terrain overlays, and wildlife targets
  * all describe what changed in one place. They share one version counter so a
  * save and renderer can observe the place as one coherent unit.
  *
@@ -38,9 +38,15 @@
  */
 
 import { objectType } from '../world/objectTypes.js';
+import { itemType } from '../world/itemTypes.js';
 import { PLANT_TYPES, stageOf } from '../world/plantTypes.js';
 import { SURFACE_ID } from '../world/surfaces.js';
 import { ANIMAL_TYPES } from '../world/animalTypes.js';
+
+export const CONTAINER_SLOT_COUNT = 8;
+export const TOWN_EXPANSION_TILES = 16;
+const MAX_TOWN_EXPANSION = 256;
+const EXPANSION_DIRECTIONS = new Set(['north', 'east', 'south', 'west', 'all']);
 
 export class Edits {
   constructor(world) {
@@ -69,6 +75,8 @@ export class Edits {
     this.wildlife = new Map();
     /** authored building id -> its approved replacement tile and rotation. */
     this.buildings = new Map();
+    /** Tiles added beyond each authored edge. */
+    this.expansion = { north: 0, east: 0, south: 0, west: 0 };
     /** tile index -> the id of the tree whose stump is on it, and back again. */
     this.stumps = new Map();
     this.stumpTile = new Map();
@@ -78,10 +86,12 @@ export class Edits {
     this.plantings = new Map();
     /** How many holes this place has ever had dug in it. Seeds what they turn up. */
     this.digs = 0;
-    /** Furniture assembled by the player, in placement order. */
+    /** Objects added by the player or planner, in placement order. */
     this.placed = [];
-    /** Placed furniture id -> one stored inventory stack. */
+    /** Placed storage furniture id -> fixed array of inventory stacks. */
     this.stored = new Map();
+    /** Placed storage furniture id -> player-facing name and picker allow-list. */
+    this.containers = new Map();
     /** Bumped on every change, so the renderer can skip a reconcile. */
     this.version = 0;
     /** object id -> swings landed so far. Transient: see the note above. */
@@ -135,7 +145,69 @@ export class Edits {
     return moved;
   }
 
-  place(type, tile, rotation = 0, id = null) {
+  /** Enlarge this exterior by one civic expansion increment. */
+  expand(direction) {
+    if (!EXPANSION_DIRECTIONS.has(direction) || this.world.kind !== 'exterior') return null;
+    const additions = { north: 0, east: 0, south: 0, west: 0 };
+    for (const side of Object.keys(additions)) {
+      if ((direction === side || direction === 'all')
+        && this.expansion[side] + TOWN_EXPANSION_TILES <= MAX_TOWN_EXPANSION) {
+        additions[side] = TOWN_EXPANSION_TILES;
+      }
+    }
+    if (direction === 'all' && Object.values(additions).some((n) => n === 0)) return null;
+    return this.#applyExpansion(additions, true);
+  }
+
+  /** Resize coordinate-indexed edit state as one transaction with the World. */
+  #applyExpansion(additions, record) {
+    if (!Object.values(additions).some(Boolean)) return null;
+    const oldWidth = this.world.width;
+    const terrain = [...this.terrain].map(([i, surface]) => ({
+      x: i % oldWidth, z: Math.floor(i / oldWidth), surface,
+    }));
+    const stumps = [...this.stumps].map(([i, id]) => ({
+      x: i % oldWidth, z: Math.floor(i / oldWidth), id,
+    }));
+    const result = this.world.expand(additions);
+    if (!result) return null;
+    const { x: dx, z: dz } = result;
+
+    this.terrain = new Map(terrain.map((row) => [
+      this.world.idx(row.x + dx, row.z + dz), row.surface,
+    ]));
+    for (const transform of this.buildings.values()) {
+      transform.tile[0] += dx; transform.tile[1] += dz;
+    }
+    for (const placed of this.placed) {
+      placed.tile[0] += dx; placed.tile[1] += dz;
+    }
+    this.stumps = new Map(stumps.map((row) => [
+      this.world.idx(row.x + dx, row.z + dz), row.id,
+    ]));
+    this.stumpTile = new Map([...this.stumps].map(([i, id]) => [id, i]));
+
+    const remapRecords = (records) => {
+      const next = new Map();
+      for (const record of records.values()) {
+        record.tile[0] += dx; record.tile[1] += dz;
+        record.x += dx; record.z += dz;
+        record.y = this.world.groundHeight(record.x, record.z);
+        next.set(this.world.idx(...record.tile), record);
+      }
+      return next;
+    };
+    this.holes = remapRecords(this.holes);
+    this.plantings = remapRecords(this.plantings);
+
+    if (record) for (const side of Object.keys(this.expansion)) {
+      this.expansion[side] += additions[side];
+    }
+    this.version++;
+    return result;
+  }
+
+  place(type, tile, rotation = 0, id = null, props = {}) {
     let nextId = id;
     if (!nextId) {
       let n = this.placed.length + 1;
@@ -146,6 +218,7 @@ export class Edits {
       type,
       tile: [...tile],
       rotation,
+      props: { ...props },
     };
     const obj = this.world.addObject(placed);
     if (!obj) return null;
@@ -156,29 +229,182 @@ export class Edits {
 
   isPlaced(id) { return this.placed.some((p) => p.id === id); }
 
-  storedIn(id) { return this.stored.get(id) ?? null; }
+  /** Remove one object created by an edit, without turning it back into an item. */
+  removePlaced(id) {
+    const index = this.placed.findIndex((p) => p.id === id);
+    if (index < 0 || this.hasStored(id) || !this.world.removeAddedObject(id)) return null;
+    const [placed] = this.placed.splice(index, 1);
+    this.containers.delete(id);
+    this.version++;
+    return placed;
+  }
 
-  store(id, stack) {
-    if (!this.isPlaced(id) || this.stored.has(id) || !stack) return false;
-    this.stored.set(id, { typeId: stack.typeId, count: stack.count });
+  /** A copy for presentation; callers never receive the persisted live array. */
+  storedSlots(id) {
+    const slots = this.stored.get(id);
+    return Array.from({ length: CONTAINER_SLOT_COUNT }, (_, i) => {
+      const stack = slots?.[i];
+      return stack ? { ...stack } : null;
+    });
+  }
+
+  storedSlot(id, index) {
+    const stack = this.stored.get(id)?.[index];
+    return stack ? { ...stack } : null;
+  }
+
+  hasStored(id) { return this.stored.get(id)?.some(Boolean) ?? false; }
+
+  containerConfig(id) {
+    if (!this.#isStorage(id)) return null;
+    const config = this.containers.get(id);
+    return {
+      name: config?.name ?? null,
+      allow: config?.allow ? [...config.allow] : null,
+    };
+  }
+
+  setContainerName(id, value) {
+    if (!this.#isStorage(id)) return false;
+    const name = typeof value === 'string' ? value.trim().slice(0, 40) || null : null;
+    const current = this.containers.get(id) ?? { name: null, allow: null };
+    if (current.name === name) return false;
+    if (!name && current.allow === null) this.containers.delete(id);
+    else this.containers.set(id, { ...current, name });
     this.version++;
     return true;
   }
 
-  takeStored(id) {
-    const stack = this.stored.get(id);
-    if (!stack) return null;
-    this.stored.delete(id);
+  /** null means unfiltered; an array is the exact set a picker may put here. */
+  setContainerAllowList(id, typeIds) {
+    if (!this.#isStorage(id)) return false;
+    let allow = null;
+    if (Array.isArray(typeIds)) {
+      allow = [...new Set(typeIds.filter((typeId) => {
+        try { itemType(typeId); return true; } catch { return false; }
+      }))].sort();
+    }
+    const current = this.containers.get(id) ?? { name: null, allow: null };
+    if (JSON.stringify(current.allow) === JSON.stringify(allow)) return false;
+    if (!current.name && allow === null) this.containers.delete(id);
+    else this.containers.set(id, { ...current, allow });
     this.version++;
-    return stack;
+    return true;
+  }
+
+  pickerAllows(id, typeId) {
+    const allow = this.containers.get(id)?.allow;
+    return allow === null || allow === undefined || allow.includes(typeId);
+  }
+
+  /** Item kinds for which the container can present meaningful filter controls. */
+  representedStoredTypes(id) {
+    const represented = new Set(this.containers.get(id)?.allow ?? []);
+    for (const stack of this.stored.get(id) ?? []) if (stack) represented.add(stack.typeId);
+    return [...represented].sort((a, b) => itemType(a).label.localeCompare(itemType(b).label));
+  }
+
+  namedContainers() {
+    const rows = [];
+    for (const [id, config] of this.containers) {
+      if (config.name && this.#isStorage(id)) rows.push({ containerId: id, name: config.name });
+    }
+    return rows;
+  }
+
+  roomStored(id, typeId) {
+    if (!this.#isStorage(id)) return 0;
+    const max = itemType(typeId).stack;
+    return this.storedSlots(id).reduce((room, stack) => room
+      + (!stack ? max : stack.typeId === typeId ? max - stack.count : 0), 0);
+  }
+
+  canAddStoredTo(id, index, typeId, count) {
+    if (!this.#isStorage(id) || !Number.isInteger(index) || index < 0
+      || index >= CONTAINER_SLOT_COUNT || !Number.isInteger(count) || count < 1) return false;
+    const stack = this.stored.get(id)?.[index];
+    return (!stack || stack.typeId === typeId)
+      && (stack?.count ?? 0) + count <= itemType(typeId).stack;
+  }
+
+  /** Add an entire stack to one exact container slot, or change nothing. */
+  addStoredTo(id, index, typeId, count) {
+    if (!this.canAddStoredTo(id, index, typeId, count)) return false;
+    let slots = this.stored.get(id);
+    if (!slots) {
+      slots = Array.from({ length: CONTAINER_SLOT_COUNT }, () => null);
+      this.stored.set(id, slots);
+    }
+    if (slots[index]) slots[index].count += count;
+    else slots[index] = { typeId, count };
+    this.version++;
+    return true;
+  }
+
+  removeStoredFrom(id, index, count) {
+    if (!Number.isInteger(index) || index < 0 || index >= CONTAINER_SLOT_COUNT
+      || !Number.isInteger(count) || count < 1) return null;
+    const slots = this.stored.get(id), stack = slots?.[index];
+    if (!stack) return null;
+    const took = Math.min(stack.count, count);
+    const removed = { typeId: stack.typeId, count: took };
+    stack.count -= took;
+    if (stack.count === 0) slots[index] = null;
+    if (!slots.some(Boolean)) this.stored.delete(id);
+    this.version++;
+    return removed;
+  }
+
+  /** Remove every matching stack in one edit and return the exact removed goods. */
+  extractStored(id, accepts) {
+    if (!this.#isStorage(id) || typeof accepts !== 'function') return [];
+    const slots = this.stored.get(id);
+    if (!slots) return [];
+    const removed = [];
+    for (let index = 0; index < slots.length; index++) {
+      const stack = slots[index];
+      if (!stack || !accepts(stack.typeId)) continue;
+      removed.push({ ...stack });
+      slots[index] = null;
+    }
+    if (!removed.length) return removed;
+    if (!slots.some(Boolean)) this.stored.delete(id);
+    this.version++;
+    return removed;
+  }
+
+  /** Add all items, packing matching stacks before opening empty slots. */
+  addStored(id, typeId, count = 1) {
+    if (!Number.isInteger(count) || count < 1 || this.roomStored(id, typeId) < count) return false;
+    const max = itemType(typeId).stack;
+    let slots = this.stored.get(id);
+    if (!slots) slots = Array.from({ length: CONTAINER_SLOT_COUNT }, () => null);
+    let left = count;
+    for (const stack of slots) {
+      if (!stack || stack.typeId !== typeId || stack.count >= max) continue;
+      const moved = Math.min(left, max - stack.count);
+      stack.count += moved;
+      left -= moved;
+      if (!left) break;
+    }
+    for (let i = 0; i < slots.length && left; i++) {
+      if (slots[i]) continue;
+      const moved = Math.min(left, max);
+      slots[i] = { typeId, count: moved };
+      left -= moved;
+    }
+    this.stored.set(id, slots);
+    this.version++;
+    return true;
+  }
+
+  #isStorage(id) {
+    const obj = this.world.objectById(id);
+    return !!obj && this.isPlaced(id) && objectType(obj.type).use === 'store';
   }
 
   pack(id) {
-    const index = this.placed.findIndex((p) => p.id === id);
-    if (index < 0 || this.stored.has(id) || !this.world.removeAddedObject(id)) return null;
-    const [placed] = this.placed.splice(index, 1);
-    this.version++;
-    return placed;
+    return this.removePlaced(id);
   }
 
   hitsOn(id) { return this.hits.get(id) ?? 0; }
@@ -233,6 +459,20 @@ export class Edits {
       this.stumps.set(i, obj.id);
       this.stumpTile.set(obj.id, i);
     }
+    this.version++;
+    return true;
+  }
+
+  /** Put one authored object back and remove its destruction record. */
+  restoreObject(id) {
+    if (!this.felled.has(id)) return false;
+    const obj = this.world.objectRecord(id);
+    if (!obj || !this.world.restoreObject(obj)) return false;
+    this.felled.delete(id);
+    const tile = this.stumpTile.get(id);
+    if (tile !== undefined) this.stumps.delete(tile);
+    this.stumpTile.delete(id);
+    this.hits.delete(id);
     this.version++;
     return true;
   }
@@ -365,12 +605,17 @@ export class Edits {
       })),
       digs: this.digs,
       placed: this.placed.map((p) => ({ ...p, tile: [...p.tile] })),
-      stored: Object.fromEntries([...this.stored].map(([id, stack]) => [id, { ...stack }])),
+      stored: Object.fromEntries([...this.stored].map(([id, slots]) => [id,
+        slots.map((stack) => (stack ? { ...stack } : null))])),
+      containers: Object.fromEntries([...this.containers].map(([id, config]) => [id, {
+        name: config.name, allow: config.allow ? [...config.allow] : null,
+      }])),
       terrain: [...this.terrain].map(([i, surface]) => [i % this.world.width, Math.floor(i / this.world.width), surface]),
       wildlife: Object.fromEntries(this.wildlife),
       buildings: Object.fromEntries([...this.buildings].map(([id, transform]) => [id, {
         tile: [...transform.tile], rotation: transform.rotation,
       }])),
+      expansion: { ...this.expansion },
     };
   }
 
@@ -383,6 +628,16 @@ export class Edits {
    */
   restore(snap) {
     if (!snap) return;
+    const expansion = {};
+    for (const side of ['north', 'east', 'south', 'west']) {
+      const amount = snap.expansion?.[side];
+      expansion[side] = Number.isInteger(amount) && amount >= 0
+        && amount <= MAX_TOWN_EXPANSION && amount % TOWN_EXPANSION_TILES === 0 ? amount : 0;
+    }
+    if (Object.values(expansion).some(Boolean)) {
+      this.#applyExpansion(expansion, false);
+      this.expansion = expansion;
+    }
     // Terrain first: everything placed afterward must validate against the
     // effective town rather than against the old map underneath it.
     for (const row of snap.terrain ?? []) {
@@ -410,14 +665,34 @@ export class Edits {
     for (const p of snap.placed ?? []) {
       if (p && typeof p.id === 'string' && typeof p.type === 'string'
         && Array.isArray(p.tile) && [0, 90, 180, 270].includes(p.rotation ?? 0)) {
-        this.place(p.type, p.tile, p.rotation ?? 0, p.id);
+        this.place(p.type, p.tile, p.rotation ?? 0, p.id,
+          p.props && typeof p.props === 'object' ? p.props : {});
       }
     }
-    for (const [id, stack] of Object.entries(snap.stored ?? {})) {
-      if (this.isPlaced(id) && stack && typeof stack.typeId === 'string'
-        && Number.isInteger(stack.count) && stack.count > 0) {
-        this.stored.set(id, { typeId: stack.typeId, count: stack.count });
+    for (const [id, saved] of Object.entries(snap.stored ?? {})) {
+      if (!this.#isStorage(id)) continue;
+      // Version-one saves held one stack directly. It becomes slot zero.
+      const source = Array.isArray(saved) ? saved : [saved];
+      const slots = Array.from({ length: CONTAINER_SLOT_COUNT }, (_, index) => {
+        const stack = source[index];
+        if (!stack || typeof stack.typeId !== 'string' || !Number.isInteger(stack.count)
+          || stack.count < 1) return null;
+        try {
+          return stack.count <= itemType(stack.typeId).stack ? { typeId: stack.typeId, count: stack.count } : null;
+        } catch { return null; }
+      });
+      if (slots.some(Boolean)) this.stored.set(id, slots);
+    }
+    for (const [id, saved] of Object.entries(snap.containers ?? {})) {
+      if (!this.#isStorage(id) || !saved || typeof saved !== 'object') continue;
+      const name = typeof saved.name === 'string' ? saved.name.trim().slice(0, 40) || null : null;
+      let allow = null;
+      if (Array.isArray(saved.allow)) {
+        allow = [...new Set(saved.allow.filter((typeId) => {
+          try { itemType(typeId); return true; } catch { return false; }
+        }))].sort();
       }
+      if (name || allow !== null) this.containers.set(id, { name, allow });
     }
     // Through `fell` and not straight into the World, so replaying a save takes
     // exactly the path an axe takes -- including the stump it leaves, which a

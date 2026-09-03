@@ -2,6 +2,7 @@
   "format": "tw.world",
   "version": 1,
   "kind": "interior",
+  "kits": ["kits/turnip-catalog.kit.json"],
   "meta": {
     "id": "store.slickrock.interior",
     "name": "Slickrock Post",
@@ -32,9 +33,9 @@
         "#ttttttttttt#",
         "#ttttttttttt#",
         "#tttwwwwwttt#",
-        "#wwwwwwwwwww#",
-        "#wwwwrrrwwww#",
-        "#wwwwrrrwwww#",
+        "#tttwwwwwttt#",
+        "#rrrwwwwwwww#",
+        "#rrrwwwwrrrw#",
         "#wwwwwwwwwww#",
         "#wwwwwwwwwww#",
         "######tt#####"
@@ -97,7 +98,7 @@
   "objects": [
     {
       "id": "shelf.water",
-      "type": "furn.shelf",
+      "type": "fixture.water-butt",
       "tile": [
         1,
         1
@@ -108,9 +109,9 @@
     },
     {
       "id": "shelf.rope",
-      "type": "furn.shelf",
+      "type": "fixture.rain-barrel",
       "tile": [
-        4,
+        2,
         1
       ],
       "props": {
@@ -119,7 +120,7 @@
     },
     {
       "id": "shelf.iron",
-      "type": "furn.shelf",
+      "type": "fixture.tool-chest",
       "tile": [
         7,
         1
@@ -130,9 +131,9 @@
     },
     {
       "id": "shelf.dry",
-      "type": "furn.shelf",
+      "type": "fixture.open-shelving",
       "tile": [
-        10,
+        9,
         1
       ],
       "props": {
@@ -152,9 +153,9 @@
     },
     {
       "id": "stove",
-      "type": "furn.stove",
+      "type": "fixture.storm-lantern-stand",
       "tile": [
-        9,
+        10,
         3
       ],
       "props": {
@@ -171,7 +172,7 @@
     },
     {
       "id": "crate.west",
-      "type": "furn.crate",
+      "type": "fixture.packing-crate",
       "tile": [
         1,
         6
@@ -179,15 +180,15 @@
     },
     {
       "id": "crate.east",
-      "type": "furn.crate",
+      "type": "fixture.sideboard",
       "tile": [
-        11,
+        8,
         6
       ]
     },
     {
       "id": "crate.door",
-      "type": "furn.crate",
+      "type": "fixture.packing-crate",
       "tile": [
         1,
         8
@@ -224,6 +225,7 @@
           "item.stone",
           "item.stick",
           "item.flower",
+          "item.pumpkin",
           "tool.axe",
           "tool.shovel",
           "tool.gun",
@@ -236,6 +238,8 @@
           "tool.map",
           "tool.camera",
           "tool.machinegun",
+          "tool.machine-gun",
+          "item.bullets",
           "tool.rod",
           "item.trout",
           "item.carp"
@@ -312,6 +316,15 @@
             "type": "tool.machinegun",
             "count": 1,
             "price": 1350
+          },
+          {
+            "type": "tool.machine-gun",
+            "count": 1,
+            "price": 3600
+          },
+          {
+            "type": "item.bullets",
+            "count": null
           }
         ]
       },
@@ -376,6 +389,25 @@
           "bye": {
             "text": "Sit where you like. Do not lean on the shelves."
           }
+        },
+        "greetings": {
+          "acquaintance": [
+            "Water is full price. It is always full price. Mesa's jars are the only competition and she does not sell.",
+            "Flint brought a polished stone in to trade. I told him a stone is a stone. He told me it was nine hours. We are not speaking.",
+            "Bly says there is a number for how much dust comes in when the door opens. I said the number is all of it.",
+            "Sora's juniper is under the counter. Not for sale. Not officially. Ask right and I might not hear you."
+          ],
+          "friend": [
+            "Wend was in for pumpkin seed. Again. Nothing grows out here and she plants it anyway, and it grows. Do not tell her it should not.",
+            "Pike fixed the shelf you leaned on. So now you know what happens. It costs me Pike.",
+            "You have been down the long way and back. Most people go down once. The shop looks the same from either direction.",
+            "Nine years of the same joke and you laughed at it. I have not decided if that is kindness or bad taste."
+          ],
+          "close": [
+            "Sit on the counter. The shelves you cannot lean on. The counter has given up arguing.",
+            "There is water in the jug that is not for sale. It is for you. Do not make it a habit, I cannot afford you.",
+            "Dust off. Or do not. It is in everything already and so are you."
+          ]
         }
       }
     }

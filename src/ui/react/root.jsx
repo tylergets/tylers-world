@@ -9,6 +9,8 @@ import { TownOfficeView } from './TownOfficeView.jsx';
 import { MapScreenView } from './MapScreenView.jsx';
 import { PhotoView } from './PhotoView.jsx';
 import { ContextMenuView } from './ContextMenuView.jsx';
+import { ContainerView } from './ContainerView.jsx';
+import { InternetView } from './InternetView.jsx';
 import '../react.css';
 
 let root;
@@ -22,6 +24,8 @@ const MemoTownOffice = memo(TownOfficeView);
 const MemoMapScreen = memo(MapScreenView);
 const MemoPhoto = memo(PhotoView);
 const MemoContextMenu = memo(ContextMenuView);
+const MemoContainer = memo(ContainerView);
+const MemoInternet = memo(InternetView);
 
 function UI({ game }) {
   useSyncExternalStore(game.ui.subscribe, game.ui.getSnapshot);
@@ -32,9 +36,15 @@ function UI({ game }) {
     <MemoChat controller={game.chat} version={game.chat.version} />
     <MemoWorlds controller={game.worlds} version={game.worlds.version} />
     <MemoWardrobe controller={game.wardrobe} version={game.wardrobe.version} />
+    <MemoContainer controller={game.containerPanel} version={game.containerPanel.version}
+      inventoryVersion={game.player.inventory.version} editsVersion={game.containerPanel.context?.edits.version} />
+    <MemoInternet controller={game.internet} version={game.internet.version} />
     <MemoTownOffice controller={game.townOffice} version={game.townOffice.version}
       faunaVersion={game.townOffice.context?.fauna?.version}
-      editsVersion={game.townOffice.context?.edits?.version} />
+      editsVersion={game.townOffice.context?.edits?.version}
+      workersVersion={game.workers.version} friendsVersion={game.player.friends.version}
+      inventoryVersion={game.player.inventory.version}
+      hudTick={game.ui.hudTick} />
     <MemoMapScreen controller={game.mapScreen} version={game.mapScreen.version} />
     <MemoPhoto controller={game.photos} version={game.photos.version} />
     <MemoContextMenu game={game} version={game.contextVersion} />

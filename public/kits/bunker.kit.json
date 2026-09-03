@@ -1,0 +1,281 @@
+{
+  "format": "tw.kit",
+  "version": 1,
+  "meta": { "id": "bunker", "name": "Sub-Level 9" },
+
+  "types": {
+    "fixture.bunker.server-rack": {
+      "kind": "object",
+      "label": "Server Rack",
+      "footprint": { "w": 1, "d": 1 },
+      "height": 2.2,
+      "squash": 0.3,
+      "palette": { "case": "#1d2126", "caseHi": "#2c3238", "rail": "#3b434b", "green": "#38ff9a", "amber": "#ffb347", "blue": "#4fa3ff", "vent": "#0e1114" },
+      "parts": [
+        { "prim": "box", "at": [0, 1.1, 0], "size": [0.8, 2.2, 0.8], "color": "case" },
+        { "prim": "box", "at": [0, 1.1, 0.41], "size": [0.7, 2.0, 0.02], "color": "caseHi" },
+        { "prim": "box", "at": [-0.33, 1.1, 0.42], "size": [0.04, 2.0, 0.02], "color": "rail" },
+        { "prim": "box", "at": [0.33, 1.1, 0.42], "size": [0.04, 2.0, 0.02], "color": "rail" },
+        { "prim": "box", "at": [0, 0.5, 0.43], "size": [0.6, 0.18, 0.02], "color": "vent" },
+        { "prim": "box", "at": [0, 0.9, 0.43], "size": [0.6, 0.18, 0.02], "color": "vent" },
+        { "prim": "box", "at": [0, 1.3, 0.43], "size": [0.6, 0.18, 0.02], "color": "vent" },
+        { "prim": "box", "at": [0, 1.7, 0.43], "size": [0.6, 0.18, 0.02], "color": "vent" },
+        { "prim": "box", "at": [-0.2, 0.5, 0.445], "size": [0.05, 0.05, 0.01], "color": "green",
+          "anim": { "pulse": { "amp": 0.6, "rate": 2.7, "phase": 0.0 } } },
+        { "prim": "box", "at": [-0.1, 0.5, 0.445], "size": [0.05, 0.05, 0.01], "color": "amber",
+          "anim": { "pulse": { "amp": 0.6, "rate": 1.9, "phase": 0.4 } } },
+        { "prim": "box", "at": [-0.2, 0.9, 0.445], "size": [0.05, 0.05, 0.01], "color": "green",
+          "anim": { "pulse": { "amp": 0.6, "rate": 3.3, "phase": 0.7 } } },
+        { "prim": "box", "at": [0.1, 1.3, 0.445], "size": [0.05, 0.05, 0.01], "color": "blue",
+          "anim": { "pulse": { "amp": 0.6, "rate": 1.3, "phase": 0.2 } } },
+        { "prim": "box", "at": [-0.2, 1.7, 0.445], "size": [0.05, 0.05, 0.01], "color": "green",
+          "anim": { "pulse": { "amp": 0.6, "rate": 4.1, "phase": 0.9 } } },
+        { "prim": "box", "at": [0.2, 1.7, 0.445], "size": [0.05, 0.05, 0.01], "color": "amber",
+          "anim": { "pulse": { "amp": 0.6, "rate": 0.9, "phase": 0.5 } } }
+      ]
+    },
+
+    "fixture.bunker.mainframe": {
+      "kind": "object",
+      "label": "MOTHER Mainframe",
+      "footprint": { "w": 3, "d": 1, "mask": ["###"] },
+      "height": 2.1,
+      "squash": 0.3,
+      "palette": { "case": "#1d2126", "caseHi": "#2c3238", "screen": "#061a10", "text": "#38ff9a", "textDim": "#1c8a55", "key": "#3b434b", "red": "#ff4a4a" },
+      "parts": [
+        { "prim": "box", "at": [0, 0.45, 0], "size": [2.9, 0.9, 0.9], "color": "case" },
+        { "prim": "box", "at": [0, 0.92, 0.1], "size": [2.9, 0.06, 0.7], "color": "caseHi" },
+        { "prim": "box", "at": [0, 0.98, 0.15], "size": [2.4, 0.06, 0.4], "color": "key" },
+        { "prim": "box", "at": [0, 1.5, -0.25], "size": [2.8, 1.2, 0.4], "color": "case" },
+        { "prim": "box", "at": [-0.9, 1.5, -0.04], "size": [0.7, 0.55, 0.03], "color": "screen" },
+        { "prim": "box", "at": [0, 1.5, -0.04], "size": [0.7, 0.55, 0.03], "color": "screen" },
+        { "prim": "box", "at": [0.9, 1.5, -0.04], "size": [0.7, 0.55, 0.03], "color": "screen" },
+        { "prim": "box", "at": [-1.0, 1.62, -0.02], "size": [0.4, 0.03, 0.01], "color": "text" },
+        { "prim": "box", "at": [-0.95, 1.54, -0.02], "size": [0.5, 0.03, 0.01], "color": "textDim" },
+        { "prim": "box", "at": [-1.05, 1.46, -0.02], "size": [0.3, 0.03, 0.01], "color": "text" },
+        { "prim": "box", "at": [0, 1.5, -0.02], "size": [0.3, 0.3, 0.01], "color": "text",
+          "anim": { "pulse": { "amp": 0.25, "rate": 0.7 } } },
+        { "prim": "box", "at": [0.8, 1.6, -0.02], "size": [0.45, 0.03, 0.01], "color": "textDim" },
+        { "prim": "box", "at": [0.85, 1.52, -0.02], "size": [0.35, 0.03, 0.01], "color": "text" },
+        { "prim": "box", "at": [0.75, 1.44, -0.02], "size": [0.2, 0.03, 0.01], "color": "text",
+          "anim": { "pulse": { "amp": 0.9, "rate": 1.5, "phase": 0.5 } } },
+        { "prim": "blob", "at": [1.25, 2.02, -0.25], "size": [0.1, 0.1, 0.1], "color": "red",
+          "anim": { "pulse": { "amp": 0.5, "rate": 1.0 } } }
+      ],
+      "interact": { "label": "Jack in", "action": "browser" }
+    },
+
+    "fixture.bunker.reactor": {
+      "kind": "object",
+      "label": "Reactor Core",
+      "footprint": { "w": 2, "d": 2 },
+      "height": 2.5,
+      "squash": 0.34,
+      "palette": { "steel": "#3b434b", "steelHi": "#5c666f", "dark": "#1d2126", "core": "#38ff9a", "coreHi": "#c6ffe4", "warn": "#ffb347" },
+      "parts": [
+        { "prim": "cyl", "at": [0, 0.15, 0], "size": [1.9, 0.3, 1.9], "color": "dark" },
+        { "prim": "cyl", "at": [0, 0.36, 0], "size": [1.6, 0.12, 1.6], "color": "steelHi" },
+        { "prim": "cyl", "at": [-0.65, 1.2, -0.65], "size": [0.12, 2.0, 0.12], "color": "steel" },
+        { "prim": "cyl", "at": [0.65, 1.2, -0.65], "size": [0.12, 2.0, 0.12], "color": "steel" },
+        { "prim": "cyl", "at": [-0.65, 1.2, 0.65], "size": [0.12, 2.0, 0.12], "color": "steel" },
+        { "prim": "cyl", "at": [0.65, 1.2, 0.65], "size": [0.12, 2.0, 0.12], "color": "steel" },
+        { "prim": "cyl", "at": [0, 2.25, 0], "size": [1.7, 0.16, 1.7], "color": "steel" },
+        { "prim": "cyl", "at": [0, 2.42, 0], "size": [0.6, 0.2, 0.6], "color": "dark" },
+        { "prim": "cyl", "at": [0, 1.25, 0], "size": [0.5, 1.6, 0.5], "color": "core",
+          "anim": { "pulse": { "amp": 0.12, "rate": 0.8 } } },
+        { "prim": "box", "at": [0, 1.25, 0], "size": [1.1, 0.08, 0.08], "color": "coreHi",
+          "anim": { "spin": { "rate": 0.9 } } },
+        { "prim": "box", "at": [0, 1.0, 0], "size": [1.1, 0.08, 0.08], "rot": [0, 60, 0], "color": "coreHi",
+          "anim": { "spin": { "rate": -0.6 } } },
+        { "prim": "box", "at": [0, 1.55, 0], "size": [1.1, 0.08, 0.08], "rot": [0, 120, 0], "color": "coreHi",
+          "anim": { "spin": { "rate": 1.3 } } },
+        { "prim": "blob", "at": [0, 1.25, 0], "size": [0.35, 0.35, 0.35], "color": "coreHi",
+          "anim": { "pulse": { "amp": 0.35, "rate": 2.2, "phase": 0.3 } } },
+        { "prim": "box", "at": [0, 0.5, 0.82], "size": [0.6, 0.12, 0.04], "color": "warn" },
+        { "prim": "box", "at": [0, 0.5, -0.82], "size": [0.6, 0.12, 0.04], "color": "warn" }
+      ]
+    },
+
+    "fixture.bunker.blast-door": {
+      "kind": "object",
+      "label": "Blast Door",
+      "footprint": { "w": 3, "d": 1, "mask": ["###"] },
+      "height": 2.7,
+      "squash": 0.22,
+      "palette": { "steel": "#3b434b", "steelHi": "#5c666f", "dark": "#1d2126", "stripe": "#ffb347", "red": "#ff4a4a" },
+      "parts": [
+        { "prim": "box", "at": [0, 1.35, 0], "size": [2.96, 2.7, 0.5], "color": "steel" },
+        { "prim": "box", "at": [0, 1.3, 0.26], "size": [2.4, 2.3, 0.04], "color": "steelHi" },
+        { "prim": "box", "at": [-0.9, 1.3, 0.29], "size": [0.2, 2.0, 0.02], "color": "stripe" },
+        { "prim": "box", "at": [-0.5, 1.3, 0.29], "size": [0.2, 2.0, 0.02], "color": "dark" },
+        { "prim": "box", "at": [0.5, 1.3, 0.29], "size": [0.2, 2.0, 0.02], "color": "dark" },
+        { "prim": "box", "at": [0.9, 1.3, 0.29], "size": [0.2, 2.0, 0.02], "color": "stripe" },
+        { "prim": "cyl", "at": [0, 1.3, 0.3], "size": [0.7, 0.06, 0.7], "rot": [90, 0, 0], "color": "dark" },
+        { "prim": "box", "at": [0, 1.3, 0.34], "size": [0.6, 0.08, 0.02], "color": "steelHi" },
+        { "prim": "box", "at": [0, 1.3, 0.34], "size": [0.08, 0.6, 0.02], "color": "steelHi" },
+        { "prim": "blob", "at": [0, 2.5, 0.3], "size": [0.14, 0.14, 0.1], "color": "red",
+          "anim": { "pulse": { "amp": 0.5, "rate": 0.5 } } }
+      ]
+    },
+
+    "fixture.bunker.crt-bank": {
+      "kind": "object",
+      "label": "Monitor Bank",
+      "footprint": { "w": 2, "d": 1, "mask": ["##"] },
+      "height": 1.7,
+      "squash": 0.3,
+      "palette": { "case": "#2c3238", "caseHi": "#3b434b", "screen": "#061a10", "text": "#38ff9a", "static": "#9adcc0", "desk": "#1d2126" },
+      "parts": [
+        { "prim": "box", "at": [0, 0.4, 0], "size": [1.9, 0.8, 0.8], "color": "desk" },
+        { "prim": "box", "at": [-0.5, 1.05, 0], "size": [0.8, 0.5, 0.7], "color": "case" },
+        { "prim": "box", "at": [0.5, 1.05, 0], "size": [0.8, 0.5, 0.7], "color": "caseHi" },
+        { "prim": "box", "at": [0, 1.55, -0.05], "size": [0.8, 0.5, 0.65], "color": "case" },
+        { "prim": "box", "at": [-0.5, 1.05, 0.36], "size": [0.62, 0.36, 0.02], "color": "screen" },
+        { "prim": "box", "at": [0.5, 1.05, 0.36], "size": [0.62, 0.36, 0.02], "color": "screen" },
+        { "prim": "box", "at": [0, 1.55, 0.29], "size": [0.62, 0.36, 0.02], "color": "screen" },
+        { "prim": "box", "at": [-0.6, 1.12, 0.38], "size": [0.3, 0.03, 0.01], "color": "text" },
+        { "prim": "box", "at": [-0.55, 1.04, 0.38], "size": [0.4, 0.03, 0.01], "color": "text" },
+        { "prim": "box", "at": [-0.62, 0.96, 0.38], "size": [0.2, 0.03, 0.01], "color": "text",
+          "anim": { "pulse": { "amp": 0.9, "rate": 1.2 } } },
+        { "prim": "box", "at": [0.5, 1.05, 0.38], "size": [0.58, 0.32, 0.01], "color": "static",
+          "anim": { "pulse": { "amp": 0.06, "rate": 7.0 } } },
+        { "prim": "box", "at": [0, 1.55, 0.31], "size": [0.4, 0.2, 0.01], "color": "text",
+          "anim": { "pulse": { "amp": 0.2, "rate": 0.5, "phase": 0.5 } } }
+      ]
+    },
+
+    "fixture.bunker.exploit-terminal": {
+      "kind": "object",
+      "label": "Exploit Terminal",
+      "footprint": { "w": 1, "d": 1 },
+      "height": 1.35,
+      "squash": 0.3,
+      "palette": { "case": "#2c3238", "dark": "#1d2126", "screen": "#061a10", "text": "#38ff9a", "red": "#ff4a4a", "key": "#3b434b" },
+      "parts": [
+        { "prim": "taper", "at": [0, 0.55, 0], "size": [0.5, 1.1, 0.45], "color": "case" },
+        { "prim": "box", "at": [0, 1.14, 0.05], "rot": [-25, 0, 0], "size": [0.7, 0.1, 0.5], "color": "dark" },
+        { "prim": "box", "at": [0, 1.2, 0.02], "rot": [-25, 0, 0], "size": [0.56, 0.02, 0.3], "color": "screen" },
+        { "prim": "box", "at": [-0.1, 1.215, 0.0], "rot": [-25, 0, 0], "size": [0.3, 0.01, 0.03], "color": "text" },
+        { "prim": "box", "at": [0.05, 1.23, -0.06], "rot": [-25, 0, 0], "size": [0.4, 0.01, 0.03], "color": "text",
+          "anim": { "pulse": { "amp": 0.9, "rate": 2.0 } } },
+        { "prim": "box", "at": [0, 1.19, 0.2], "rot": [-25, 0, 0], "size": [0.6, 0.03, 0.14], "color": "key" },
+        { "prim": "blob", "at": [0.28, 1.12, 0.28], "size": [0.07, 0.07, 0.07], "color": "red",
+          "anim": { "pulse": { "amp": 0.5, "rate": 3.0 } } }
+      ],
+      "state": { "runs": 0, "heat": 0 },
+      "interact": { "label": "Run the exploit", "run": "bunker-exploit.js" }
+    },
+
+    "fixture.bunker.cables": {
+      "kind": "object",
+      "label": "Cable Run",
+      "footprint": { "w": 1, "d": 1, "mask": ["."] },
+      "height": 0.08,
+      "squash": 1.0,
+      "palette": { "black": "#14161a", "blue": "#3060b0", "yellow": "#c9a227" },
+      "parts": [
+        { "prim": "cyl", "at": [-0.15, 0.03, 0], "size": [0.06, 1.0, 0.06], "rot": [90, 0, 0], "color": "black" },
+        { "prim": "cyl", "at": [0.0, 0.03, 0], "size": [0.05, 1.0, 0.05], "rot": [90, 0, 6], "color": "blue" },
+        { "prim": "cyl", "at": [0.15, 0.03, 0], "size": [0.05, 1.0, 0.05], "rot": [90, 0, -4], "color": "yellow" }
+      ]
+    },
+
+    "fixture.bunker.vending": {
+      "kind": "object",
+      "label": "Vending Machine",
+      "footprint": { "w": 1, "d": 1 },
+      "height": 1.95,
+      "squash": 0.3,
+      "palette": { "case": "#2c3238", "glass": "#0c2a3a", "glassHi": "#1c5a6a", "can": "#38ff9a", "canB": "#ffb347", "slot": "#1d2126", "light": "#c6ffe4" },
+      "parts": [
+        { "prim": "box", "at": [0, 0.95, 0], "size": [0.8, 1.9, 0.8], "color": "case" },
+        { "prim": "box", "at": [-0.12, 1.15, 0.41], "size": [0.46, 1.2, 0.02], "color": "glass" },
+        { "prim": "box", "at": [0.26, 1.15, 0.41], "size": [0.2, 1.2, 0.02], "color": "slot" },
+        { "prim": "box", "at": [0.26, 0.6, 0.42], "size": [0.14, 0.14, 0.02], "color": "slot" },
+        { "prim": "cyl", "at": [-0.25, 1.55, 0.4], "size": [0.1, 0.18, 0.1], "color": "can" },
+        { "prim": "cyl", "at": [-0.05, 1.55, 0.4], "size": [0.1, 0.18, 0.1], "color": "canB" },
+        { "prim": "cyl", "at": [-0.25, 1.2, 0.4], "size": [0.1, 0.18, 0.1], "color": "canB" },
+        { "prim": "cyl", "at": [-0.05, 1.2, 0.4], "size": [0.1, 0.18, 0.1], "color": "can" },
+        { "prim": "cyl", "at": [-0.25, 0.85, 0.4], "size": [0.1, 0.18, 0.1], "color": "can" },
+        { "prim": "box", "at": [0, 1.85, 0.41], "size": [0.7, 0.1, 0.02], "color": "light",
+          "anim": { "pulse": { "amp": 0.15, "rate": 0.9 } } },
+        { "prim": "box", "at": [0, 0.2, 0.41], "size": [0.6, 0.25, 0.02], "color": "glassHi" }
+      ],
+      "interact": {
+        "label": "Buy a can of VOLT (8 coins)",
+        "when": { "coins": 8 },
+        "run": "bunker-vend.js"
+      }
+    },
+
+    "kititem.data-shard": {
+      "kind": "item",
+      "label": "Data Shard",
+      "value": 45,
+      "stack": 10,
+      "height": 0.14,
+      "swatch": "#38ff9a",
+      "palette": { "board": "#0e3b26", "trace": "#38ff9a", "gold": "#c9a227" },
+      "parts": [
+        { "prim": "box", "at": [0, 0.03, 0], "size": [0.3, 0.04, 0.2], "color": "board" },
+        { "prim": "box", "at": [0, 0.055, 0], "size": [0.12, 0.03, 0.12], "color": "trace" },
+        { "prim": "box", "at": [-0.1, 0.052, 0.06], "size": [0.05, 0.01, 0.02], "color": "gold" },
+        { "prim": "box", "at": [-0.1, 0.052, -0.06], "size": [0.05, 0.01, 0.02], "color": "gold" },
+        { "prim": "box", "at": [0.1, 0.052, 0.0], "size": [0.05, 0.01, 0.06], "color": "gold" }
+      ]
+    },
+
+    "kititem.keycard": {
+      "kind": "item",
+      "label": "Level 9 Keycard",
+      "value": 200,
+      "stack": 1,
+      "height": 0.08,
+      "swatch": "#ff4a4a",
+      "palette": { "card": "#1d2126", "stripe": "#ff4a4a", "chip": "#c9a227", "text": "#c6ffe4" },
+      "parts": [
+        { "prim": "box", "at": [0, 0.02, 0], "size": [0.34, 0.03, 0.22], "color": "card" },
+        { "prim": "box", "at": [0, 0.04, -0.07], "size": [0.34, 0.01, 0.05], "color": "stripe" },
+        { "prim": "box", "at": [-0.1, 0.04, 0.03], "size": [0.07, 0.01, 0.07], "color": "chip" },
+        { "prim": "box", "at": [0.06, 0.04, 0.05], "size": [0.14, 0.01, 0.02], "color": "text" }
+      ]
+    },
+
+    "kititem.volt-can": {
+      "kind": "item",
+      "label": "Can of VOLT",
+      "value": 8,
+      "stack": 10,
+      "height": 0.2,
+      "swatch": "#38ff9a",
+      "palette": { "can": "#38ff9a", "band": "#0e3b26", "lid": "#c9ced4" },
+      "parts": [
+        { "prim": "cyl", "at": [0, 0.1, 0], "size": [0.14, 0.2, 0.14], "color": "can" },
+        { "prim": "cyl", "at": [0, 0.1, 0], "size": [0.142, 0.05, 0.142], "color": "band" },
+        { "prim": "cyl", "at": [0, 0.205, 0], "size": [0.13, 0.01, 0.13], "color": "lid" }
+      ]
+    },
+
+    "kititem.server-rack": {
+      "kind": "item",
+      "label": "Server Rack (flat-pack)",
+      "value": 700,
+      "stack": 1,
+      "height": 0.18,
+      "swatch": "#2c3238",
+      "furniture": "fixture.bunker.server-rack",
+      "palette": { "wrap": "#d9c7a4", "wrapHi": "#eee1c7", "strap": "#8a6242", "mark": "#38ff9a" }
+    },
+
+    "kititem.crt-bank": {
+      "kind": "item",
+      "label": "Monitor Bank (flat-pack)",
+      "value": 420,
+      "stack": 1,
+      "height": 0.18,
+      "swatch": "#3b434b",
+      "furniture": "fixture.bunker.crt-bank",
+      "palette": { "wrap": "#d9c7a4", "wrapHi": "#eee1c7", "strap": "#8a6242", "mark": "#3b434b" }
+    }
+  }
+}

@@ -48,10 +48,11 @@ import { Friends } from '../src/sim/Friends.js';
 import { grudgeFor, grudgeScripts } from '../src/world/grudge.js';
 import { theftScripts } from '../src/world/theft.js';
 import { closedScripts } from '../src/world/closed.js';
-import { smalltalkScripts, withSmallTalk } from '../src/world/smalltalk.js';
+import { greetingScripts } from '../src/world/greetings.js';
 import { unreachableNodes, END } from '../src/world/dialog.js';
 import { kits } from '../src/world/kits.js';
 import { Fixtures, interactOf } from '../src/sim/Fixtures.js';
+import { CAB_STOPS } from '../src/world/cabService.js';
 
 const STARTS = [
   'worlds/meadowbrook.json', 'worlds/sourwood.json',
@@ -87,10 +88,10 @@ const GLYPH = {
 const OBJ = {
   'building.home': 'H', 'building.store': 'S', 'building.gate': 'G',
   'building.cottage': 'C', 'building.cabin': 'B', 'building.bungalow': 'U',
+  'civic.noticeboard': '!',
   'tree.oak': 'T', 'tree.pine': 'Y', 'tree.palm': 'P', 'rock.small': 'o', 'rock.large': 'O',
   'furn.bed': 'b', 'furn.table': 't', 'furn.chair': 'c', 'furn.shelf': 's',
   'furn.counter': 'n', 'furn.stove': 'v', 'furn.plant': 'p', 'furn.crate': 'x',
-  'furn.stairs': 'u',
 
   // Kit fixtures. Here and not in the kit files because a glyph is a fact about
   // THIS tool's picture, not about the thing -- a kit that shipped its own ASCII
@@ -114,6 +115,10 @@ const ANIMAL = {
 const NPC = {
   'folk.shopkeep': '@', 'folk.villager': '&',
   'folk.gardener': '&', 'folk.fisher': '&', 'folk.tinker': '&',
+  'folk.planner': '&', 'folk.warden': '&', 'folk.mayor': '&', 'folk.exceptions': '&',
+  'folk.cabbie': '&', 'folk.curator': '&', 'folk.tsa': '&', 'folk.doctor': '&', 'folk.secretary': '&',
+  'folk.pitfighter': '%', 'folk.croupier': '&', 'folk.hacker': '&', 'folk.dj': '&',
+  'folk.pilot': '&', 'folk.mystic': '&',
 };
 
 /** Items likewise, and over the animals: a chicken standing on an apple moves. */
@@ -137,6 +142,7 @@ const fail = (msg) => { problems++; console.log(`  !! ${msg}`); };
 /** Every zone found, and every person found, across the whole place graph. */
 const zoneOwners = [];
 const everyone = new Map();   // npc id -> the url it was found in
+const greetingLines = new Map();   // a greeting line -> the npc who says it, for the uniqueness check
 
 /** Flood fill from a tile using the real traversal predicate. */
 function reachable(world, [sx, sz]) {
@@ -338,18 +344,20 @@ function walkScript(npc, script, { bag, friends }) {
     npc.memory = { flags: new Set(), visits: 0 };
     const d = new Dialogue(npc, ctx, script);
     for (const step of path) {
-      if (d.trading) d.closeShop();
+      if (d.gifting) d.selectGift(ctx.inventory.slots.findIndex(Boolean));
+      else if (d.trading) d.closeShop();
       else if (d.choices.length) d.choose(d.choices[step].index);
       else d.advance();
     }
     if (d.done) { ends++; continue; }
 
-    const key = `${d.node?.id}#${d.page}${d.trading ? '/shop' : ''}`
+    const key = `${d.node?.id}#${d.page}${d.trading ? '/shop' : d.gifting ? '/gift' : ''}`
       + `[${[...npc.memory.flags].sort().join(',')}]`;
     if (seen.has(key)) continue;
     seen.add(key);
 
     if (d.trading) { shops++; queue.push([...path, 0]); continue; }
+    if (d.gifting) { queue.push([...path, 0]); continue; }
     // No choices means the page advances by itself, which is one successor.
     // `advance` always pages on, follows `then`, or ends, so a text node can
     // never be a state with nowhere to go -- the dead ends this is looking
@@ -376,15 +384,30 @@ function checkFolk(world) {
     if (!own.ends) fail(`${npc.id}: no path through this dialog ever ends -- the player cannot leave`);
     if (npc.shop && !own.shops) fail(`${npc.id} has a shop no line of dialog opens`);
 
-    // The conversation as the player will actually have it: with a relationship
-    // greeting stitched on the front (world/smalltalk.js). One tier is enough
-    // here -- every exchange in every tier is walked on its own further down --
-    // because what this walk proves is the STITCH: that every rewired exit in
-    // the greeting lands on a real node of this particular authored graph, and
-    // that the way into the shop survives having a hello in front of it.
-    const greeted = walkScript(npc, withSmallTalk(npc, 'stranger', npc.dialog), { bag: stockedBag });
-    if (!greeted.ends) fail(`${npc.id}: the dialog with a greeting stitched on never ends`);
-    if (npc.shop && !greeted.shops) fail(`${npc.id}: the greeting stitch lost the way into the shop`);
+    // The conversation as the player will actually have it: with one of this
+    // person's own greetings stitched on the front (world/greetings.js). Every
+    // line of every tier is walked, because each is its own stitch: what this
+    // proves is that the hello lands on a real node of this particular graph,
+    // and that the way into the shop survives having a hello in front of it.
+    const hellos = greetingScripts(npc);
+    for (const { id, script } of hellos) {
+      const greeted = walkScript(npc, script, { bag: stockedBag });
+      if (!greeted.ends) fail(`${id}: the dialog with this greeting stitched on never ends`);
+      if (npc.shop && !greeted.shops) fail(`${id}: the greeting stitch lost the way into the shop`);
+      for (const line of script.nodes['~hello'].text) {
+        const owner = greetingLines.get(line);
+        if (owner && owner !== npc.id) fail(`${id}: says the same greeting as ${owner}: "${line}"`);
+        greetingLines.set(line, npc.id);
+      }
+    }
+    // Somebody the game would greet, with nothing of their own to say on sight,
+    // is somebody who has silently lost their hello. The shared pool that used
+    // to cover them is gone on purpose.
+    if (!npc.props.noSmallTalk && !hellos.length) fail(`${npc.id}: no "greetings" authored, and not marked noSmallTalk`);
+    else if (hellos.length) {
+      const tiers = Object.entries(npc.dialog.greetings).map(([tier, pool]) => `${tier} ${pool.length}`).join(', ');
+      console.log(`     greetings: ${tiers}`);
+    }
     // Not a failure: a big script legitimately has more states than we walk.
     // Silence would be worse than the note, because a capped walk has NOT
     // proved the thing the uncapped one proves.
@@ -398,7 +421,7 @@ function checkFolk(world) {
  * Walk the conversation this person has after you shoot him.
  *
  * TWICE, with a full bag and an empty one, because the whole script turns on
- * `holding` and one lap can only ever see one side of it: with something in
+ * `carrying` and one lap can only ever see one side of it: with something in
  * hand there is a way to make peace, and with nothing in hand there had better
  * still be a way out of the conversation. A grudge you could not walk away from
  * empty-handed would be a soft lock reachable by one keypress.
@@ -423,8 +446,8 @@ function checkGrudge(npc) {
     }
 
     // The apology itself, driven straight rather than by search: take the
-    // first choice on offer while carrying something, and the feud must be
-    // over and the item must be gone.
+    // first choice on offer while carrying something, select the gift, and the
+    // feud must be over only after the item is gone.
     const friends = feud();
     const inv = stockedBag();
     const before = inv.count('item.apple');
@@ -432,6 +455,10 @@ function checkGrudge(npc) {
     while (!d.done && !d.choices.length) d.advance();
     if (!d.choices.length) fail(`${npc.id}: the severity-${severity} grudge offers no way to apologise`);
     else d.choose(d.choices[0].index);
+    if (!friends.hates(npc.id) || inv.count('item.apple') !== before) {
+      fail(`${npc.id}: opening the severity-${severity} gift picker applied the apology too early`);
+    }
+    d.selectGift(inv.slots.findIndex((slot) => slot?.typeId === 'item.apple'));
     if (friends.hates(npc.id)) fail(`${npc.id}: giving him something did not end the severity-${severity} feud`);
     if (inv.count('item.apple') !== before - 1) fail(`${npc.id}: the severity-${severity} apology cost nothing out of the bag`);
   }
@@ -445,7 +472,7 @@ function stockedBag() {
   return inv;
 }
 
-/** And nothing at all, which is the other half of every `holding` condition. */
+/** And nothing at all, which is the other half of every `carrying` condition. */
 function emptyBag() { return new Inventory(); }
 
 /** Validate one place, and return the interior URLs its doorways point at. */
@@ -623,7 +650,12 @@ function check(url, world) {
 
 // -- walk the place graph ----------------------------------------------------
 const visited = new Set();
-const queue = process.argv.slice(2).length ? process.argv.slice(2) : [...STARTS];
+// The cab's board as well as the towns: those rooms hang off no doorway, so the
+// place graph would never find them, and a stop nobody has validated is a black
+// screen at the end of a fade.
+const queue = process.argv.slice(2).length
+  ? process.argv.slice(2)
+  : [...STARTS, ...CAB_STOPS.map((stop) => stop.url)];
 while (queue.length) {
   const url = queue.shift();
   if (visited.has(url)) continue;
@@ -641,11 +673,12 @@ while (queue.length) {
 
 // -- the generic scripts -----------------------------------------------------
 // The conversations that live in code rather than in any world file: every
-// grudge personality at every severity, every theft-confrontation voice, every
-// way of being shut, and every small-talk exchange at every relationship tier.
-// The per-NPC walk above only ever exercises the voices its hash happens to
-// pick, so this is the only walk that sees ALL of them -- and a dead end in a
-// voice nobody's hash picks today is a dead end in next week's generated town.
+// grudge personality at every severity, every theft-confrontation voice, and
+// every way of being shut. (Greetings are not here: they are per person, in
+// the files, and were walked above.) The per-NPC walk only ever exercises the
+// voices its hash happens to pick, so this is the only walk that sees ALL of
+// them -- and a dead end in a voice nobody's hash picks today is a dead end in
+// next week's generated town.
 {
   const stub = { id: 'generic', name: 'Generic', shop: null, memory: { flags: new Set(), visits: 0 } };
   console.log('\ngeneric scripts:');
@@ -653,7 +686,6 @@ while (queue.length) {
     ['grudge', grudgeScripts().map((script, i) => ({ id: `grudge[${i}]`, script }))],
     ['theft', theftScripts().map((script, i) => ({ id: `theft[${i}]`, script }))],
     ['closed shop', closedScripts().map((script, i) => ({ id: `closed[${i}]`, script }))],
-    ['small talk', smalltalkScripts()],
   ];
   for (const [what, scripts] of suites) {
     for (const { id, script } of scripts) {

@@ -2,6 +2,7 @@
   "format": "tw.world",
   "version": 1,
   "kind": "interior",
+  "kits": ["kits/turnip-catalog.kit.json"],
   "meta": {
     "id": "store.driftwood.interior",
     "name": "Driftwood Stores",
@@ -31,10 +32,10 @@
         "##############",
         "#tttttttttttt#",
         "#tttttttttttt#",
-        "#wwwwwwwwwwww#",
-        "#wwwwwwwwwwww#",
-        "#wwwrrrrrrwww#",
-        "#wwwrrrrrrwww#",
+        "#wwwwwwtttttt#",
+        "#wwwwwwtttttt#",
+        "#rrrwwwwttttt#",
+        "#rrrwwwwttttt#",
         "#wwwwwwwwwwww#",
         "#wwwwwwwwwwww#",
         "######tt######"
@@ -97,7 +98,7 @@
   "objects": [
     {
       "id": "shelf.line",
-      "type": "furn.shelf",
+      "type": "fixture.open-shelving",
       "tile": [
         1,
         1
@@ -121,7 +122,7 @@
       "id": "shelf.found",
       "type": "furn.shelf",
       "tile": [
-        7,
+        8,
         1
       ],
       "props": {
@@ -130,9 +131,9 @@
     },
     {
       "id": "shelf.rope",
-      "type": "furn.shelf",
+      "type": "fixture.sea-chest",
       "tile": [
-        10,
+        11,
         1
       ],
       "props": {
@@ -152,7 +153,7 @@
     },
     {
       "id": "crate.west",
-      "type": "furn.crate",
+      "type": "fixture.bottle-crate",
       "tile": [
         1,
         5
@@ -160,7 +161,7 @@
     },
     {
       "id": "crate.stack",
-      "type": "furn.crate",
+      "type": "fixture.sea-chest",
       "tile": [
         1,
         6
@@ -168,18 +169,18 @@
     },
     {
       "id": "crate.east",
-      "type": "furn.crate",
+      "type": "fixture.aquarium",
       "tile": [
-        12,
-        5
+        11,
+        7
       ]
     },
     {
       "id": "table.sorting",
       "type": "furn.table",
       "tile": [
-        10,
-        7
+        9,
+        5
       ],
       "props": {
         "label": "Sorting Table"
@@ -196,10 +197,10 @@
     },
     {
       "id": "plant",
-      "type": "furn.plant",
+      "type": "fixture.storm-lantern-stand",
       "tile": [
-        1,
-        8
+        12,
+        4
       ]
     }
   ],
@@ -251,6 +252,10 @@
           "item.shell",
           "item.stone",
           "item.stick",
+          "item.turnip",
+          "item.flower",
+          "item.pumpkin",
+          "item.cress",
           "tool.axe",
           "tool.shovel",
           "tool.gun",
@@ -263,6 +268,8 @@
           "tool.map",
           "tool.camera",
           "tool.machinegun",
+          "tool.machine-gun",
+          "item.bullets",
           "tool.rod",
           "item.trout",
           "item.carp"
@@ -348,6 +355,15 @@
             "type": "tool.machinegun",
             "count": 1,
             "price": 1350
+          },
+          {
+            "type": "tool.machine-gun",
+            "count": 1,
+            "price": 3600
+          },
+          {
+            "type": "item.bullets",
+            "count": null
           }
         ]
       },
@@ -412,6 +428,25 @@
           "bye": {
             "text": "Mind the step down. Everyone forgets the step down."
           }
+        },
+        "greetings": {
+          "acquaintance": [
+            "Something new on the shelf. It came in on the tide, so I could not tell you what it is for.",
+            "Coral had a whole net's worth of nothing and sold me the nothing. It is on the left, by the sticks.",
+            "Selkie burns half the shells I would buy. We have an understanding, and it is that we do not talk about it.",
+            "Somebody asked if the apples washed up too. No. The apples are the one thing in here that came by boat on purpose."
+          ],
+          "friend": [
+            "Otto says the whole shop would float if the tide got in. I told him the shelves would go first, then me, then the stock.",
+            "You bring me more pebbles than the beach does. I am not complaining. I am wondering where you keep them.",
+            "Marnie came in from the far shore with a shell as big as her head. Would not sell. Came in to show me.",
+            "Yarrow has not been down in a while. If you are going up, tell him the sticks are still here and so am I."
+          ],
+          "close": [
+            "Step down. Yes, I know you know. I say it to everyone I like.",
+            "Pull a crate up. There is nothing on the tide and I am glad of the company.",
+            "Half of this washed up and the other half you sold me. I am not sure which half I trust more."
+          ]
         }
       }
     }

@@ -1,0 +1,1205 @@
+{
+  "format": "tw.world",
+  "version": 1,
+  "kind": "interior",
+  "kits": [
+    "kits/pit.kit.json",
+    "kits/turnip-catalog.kit.json"
+  ],
+  "meta": {
+    "id": "pit.arena",
+    "name": "The Pit",
+    "note": "An underground fight club. Draw a gun inside the cage and the fighters draw back; floor all of them at once and the house pays."
+  },
+  "grid": {
+    "width": 30,
+    "height": 26,
+    "tileSize": 1
+  },
+  "ambience": {
+    "music": "clothier",
+    "sky": "#050304",
+    "sun": 0.55,
+    "hemi": 1.35,
+    "hemiSky": "#ff9a5a"
+  },
+  "layers": {
+    "surface": {
+      "palette": {
+        "#": "wall.panel",
+        "d": "floor.wood.dark",
+        "s": "sand"
+      },
+      "data": [
+        "##############################",
+        "#dddddddddddddddddddddddddddd#",
+        "#dddddddddddddddddddddddddddd#",
+        "#dddddddddddddddddddddddddddd#",
+        "#dddddddddddddddddddddddddddd#",
+        "#dddddddddddddddddddddddddddd#",
+        "#dddddddddddddddddddddddddddd#",
+        "#ddddddddssssssssssssdddddddd#",
+        "#ddddddddssssssssssssdddddddd#",
+        "#ddddddddssssssssssssdddddddd#",
+        "#ddddddddssssssssssssdddddddd#",
+        "#ddddddddssssssssssssdddddddd#",
+        "#ddddddddssssssssssssdddddddd#",
+        "#ddddddddssssssssssssdddddddd#",
+        "#ddddddddssssssssssssdddddddd#",
+        "#ddddddddssssssssssssdddddddd#",
+        "#ddddddddssssssssssssdddddddd#",
+        "#dddddddddddddddddddddddddddd#",
+        "#dddddddddddddddddddddddddddd#",
+        "#dddddddddddddddddddddddddddd#",
+        "#dddddddddddddddddddddddddddd#",
+        "#dddddddddddddddddddddddddddd#",
+        "#dddddddddddddddddddddddddddd#",
+        "#dddddddddddddddddddddddddddd#",
+        "#dddddddddddddddddddddddddddd#",
+        "##############dd##############"
+      ]
+    },
+    "elevation": {
+      "palette": {
+        "0": "0",
+        "4": "4"
+      },
+      "data": [
+        "444444444444444444444444444444",
+        "400000000000000000000000000004",
+        "400000000000000000000000000004",
+        "400000000000000000000000000004",
+        "400000000000000000000000000004",
+        "400000000000000000000000000004",
+        "400000000000000000000000000004",
+        "400000000000000000000000000004",
+        "400000000000000000000000000004",
+        "400000000000000000000000000004",
+        "400000000000000000000000000004",
+        "400000000000000000000000000004",
+        "400000000000000000000000000004",
+        "400000000000000000000000000004",
+        "400000000000000000000000000004",
+        "400000000000000000000000000004",
+        "400000000000000000000000000004",
+        "400000000000000000000000000004",
+        "400000000000000000000000000004",
+        "400000000000000000000000000004",
+        "400000000000000000000000000004",
+        "400000000000000000000000000004",
+        "400000000000000000000000000004",
+        "400000000000000000000000000004",
+        "400000000000000000000000000004",
+        "444444444444440044444444444444"
+      ]
+    },
+    "flags": {
+      "palette": {
+        ".": "none"
+      },
+      "data": [
+        "..............................",
+        "..............................",
+        "..............................",
+        "..............................",
+        "..............................",
+        "..............................",
+        "..............................",
+        "..............................",
+        "..............................",
+        "..............................",
+        "..............................",
+        "..............................",
+        "..............................",
+        "..............................",
+        "..............................",
+        "..............................",
+        "..............................",
+        "..............................",
+        "..............................",
+        "..............................",
+        "..............................",
+        "..............................",
+        "..............................",
+        "..............................",
+        "..............................",
+        ".............................."
+      ]
+    }
+  },
+  "objects": [
+    {
+      "id": "cage.nw",
+      "type": "fixture.pit.cage-post",
+      "tile": [
+        8,
+        6
+      ]
+    },
+    {
+      "id": "cage.ne",
+      "type": "fixture.pit.cage-post",
+      "tile": [
+        21,
+        6
+      ]
+    },
+    {
+      "id": "cage.sw",
+      "type": "fixture.pit.cage-post",
+      "tile": [
+        8,
+        17
+      ]
+    },
+    {
+      "id": "cage.se",
+      "type": "fixture.pit.cage-post",
+      "tile": [
+        21,
+        17
+      ]
+    },
+    {
+      "id": "cage.n1",
+      "type": "fixture.pit.cage",
+      "tile": [
+        9,
+        6
+      ]
+    },
+    {
+      "id": "cage.n2",
+      "type": "fixture.pit.cage",
+      "tile": [
+        12,
+        6
+      ]
+    },
+    {
+      "id": "cage.n3",
+      "type": "fixture.pit.cage",
+      "tile": [
+        18,
+        6
+      ]
+    },
+    {
+      "id": "cage.s1",
+      "type": "fixture.pit.cage",
+      "tile": [
+        9,
+        17
+      ]
+    },
+    {
+      "id": "cage.s2",
+      "type": "fixture.pit.cage",
+      "tile": [
+        12,
+        17
+      ]
+    },
+    {
+      "id": "cage.s3",
+      "type": "fixture.pit.cage",
+      "tile": [
+        18,
+        17
+      ]
+    },
+    {
+      "id": "cage.w1",
+      "type": "fixture.pit.cage",
+      "tile": [
+        8,
+        7
+      ],
+      "rotation": 90
+    },
+    {
+      "id": "cage.w2",
+      "type": "fixture.pit.cage",
+      "tile": [
+        8,
+        10
+      ],
+      "rotation": 90
+    },
+    {
+      "id": "cage.w3",
+      "type": "fixture.pit.cage",
+      "tile": [
+        8,
+        13
+      ],
+      "rotation": 90
+    },
+    {
+      "id": "cage.w4",
+      "type": "fixture.pit.cage-post",
+      "tile": [
+        8,
+        16
+      ]
+    },
+    {
+      "id": "cage.e1",
+      "type": "fixture.pit.cage",
+      "tile": [
+        21,
+        7
+      ],
+      "rotation": 90
+    },
+    {
+      "id": "cage.e2",
+      "type": "fixture.pit.cage",
+      "tile": [
+        21,
+        10
+      ],
+      "rotation": 90
+    },
+    {
+      "id": "cage.e3",
+      "type": "fixture.pit.cage",
+      "tile": [
+        21,
+        13
+      ],
+      "rotation": 90
+    },
+    {
+      "id": "cage.e4",
+      "type": "fixture.pit.cage-post",
+      "tile": [
+        21,
+        16
+      ]
+    },
+    {
+      "id": "brazier.1",
+      "type": "fixture.pit.brazier",
+      "tile": [
+        6,
+        4
+      ]
+    },
+    {
+      "id": "brazier.2",
+      "type": "fixture.pit.brazier",
+      "tile": [
+        23,
+        4
+      ]
+    },
+    {
+      "id": "brazier.3",
+      "type": "fixture.pit.brazier",
+      "tile": [
+        6,
+        19
+      ]
+    },
+    {
+      "id": "brazier.4",
+      "type": "fixture.pit.brazier",
+      "tile": [
+        23,
+        19
+      ]
+    },
+    {
+      "id": "brazier.5",
+      "type": "fixture.pit.brazier",
+      "tile": [
+        2,
+        8
+      ]
+    },
+    {
+      "id": "brazier.6",
+      "type": "fixture.pit.brazier",
+      "tile": [
+        27,
+        16
+      ]
+    },
+    {
+      "id": "banner.w",
+      "type": "fixture.pit.banner",
+      "tile": [
+        3,
+        1
+      ]
+    },
+    {
+      "id": "banner.e",
+      "type": "fixture.pit.banner",
+      "tile": [
+        25,
+        1
+      ]
+    },
+    {
+      "id": "gong",
+      "type": "fixture.pit.gong",
+      "tile": [
+        13,
+        1
+      ]
+    },
+    {
+      "id": "tally",
+      "type": "fixture.pit.scoreboard",
+      "tile": [
+        18,
+        1
+      ]
+    },
+    {
+      "id": "rack.w",
+      "type": "fixture.pit.rack",
+      "tile": [
+        8,
+        1
+      ]
+    },
+    {
+      "id": "rack.e",
+      "type": "fixture.pit.rack",
+      "tile": [
+        22,
+        1
+      ]
+    },
+    {
+      "id": "bookie.counter",
+      "type": "furn.counter",
+      "tile": [
+        2,
+        10
+      ],
+      "rotation": 90,
+      "props": {
+        "label": "Ledger's Book"
+      }
+    },
+    {
+      "id": "bookie.crate",
+      "type": "furn.crate",
+      "tile": [
+        2,
+        14
+      ]
+    },
+    {
+      "id": "medic.table",
+      "type": "furn.table",
+      "tile": [
+        26,
+        13
+      ],
+      "props": {
+        "label": "Cutman's Table"
+      }
+    },
+    {
+      "id": "medic.crate",
+      "type": "furn.crate",
+      "tile": [
+        27,
+        10
+      ]
+    },
+    {
+      "id": "medic.chair",
+      "type": "furn.chair",
+      "tile": [
+        25,
+        12
+      ]
+    },
+    {
+      "id": "ammo.w",
+      "type": "fixture.pit.ammo-crate",
+      "tile": [
+        10,
+        19
+      ]
+    },
+    {
+      "id": "ammo.e",
+      "type": "fixture.pit.ammo-crate",
+      "tile": [
+        19,
+        19
+      ]
+    },
+    {
+      "id": "bench.1",
+      "type": "fixture.pit.bench",
+      "tile": [
+        2,
+        21
+      ]
+    },
+    {
+      "id": "bench.2",
+      "type": "fixture.pit.bench",
+      "tile": [
+        5,
+        21
+      ]
+    },
+    {
+      "id": "bench.3",
+      "type": "fixture.pit.bench",
+      "tile": [
+        8,
+        21
+      ]
+    },
+    {
+      "id": "bench.4",
+      "type": "fixture.pit.bench",
+      "tile": [
+        19,
+        21
+      ]
+    },
+    {
+      "id": "bench.5",
+      "type": "fixture.pit.bench",
+      "tile": [
+        22,
+        21
+      ]
+    },
+    {
+      "id": "bench.6",
+      "type": "fixture.pit.bench",
+      "tile": [
+        25,
+        21
+      ]
+    },
+    {
+      "id": "bench.7",
+      "type": "fixture.pit.bench",
+      "tile": [
+        2,
+        23
+      ]
+    },
+    {
+      "id": "bench.8",
+      "type": "fixture.pit.bench",
+      "tile": [
+        5,
+        23
+      ]
+    },
+    {
+      "id": "bench.9",
+      "type": "fixture.pit.bench",
+      "tile": [
+        8,
+        23
+      ]
+    },
+    {
+      "id": "bench.10",
+      "type": "fixture.pit.bench",
+      "tile": [
+        19,
+        23
+      ]
+    },
+    {
+      "id": "bench.11",
+      "type": "fixture.pit.bench",
+      "tile": [
+        22,
+        23
+      ]
+    },
+    {
+      "id": "bench.12",
+      "type": "fixture.pit.bench",
+      "tile": [
+        25,
+        23
+      ]
+    },
+    {
+      "id": "sign.rules",
+      "type": "furn.construction-sign",
+      "tile": [
+        11,
+        23
+      ],
+      "props": {
+        "label": "NO GRUDGES PAST THE GATE"
+      }
+    }
+  ],
+  "npcs": [
+    {
+      "id": "pit.knuckles",
+      "type": "folk.pitfighter",
+      "tile": [
+        12,
+        10
+      ],
+      "facing": "east",
+      "props": {
+        "name": "Knuckles Brannock",
+        "title": "Pit Champion",
+        "roam": 3,
+        "noSmallTalk": true,
+        "armedSecurity": true,
+        "sparring": true,
+        "alertLine": "Knuckles Brannock: \"FINALLY.\" Every fighter in the Pit draws.",
+        "skin": "tan",
+        "hair": "black"
+      },
+      "dialog": {
+        "start": "open",
+        "nodes": {
+          "open": {
+            "branch": [
+              {
+                "when": {
+                  "not": {
+                    "flag": "met"
+                  }
+                },
+                "to": "hello"
+              },
+              {
+                "to": "again"
+              }
+            ]
+          },
+          "hello": {
+            "text": [
+              "New meat. Good. The old meat was getting predictable.",
+              "Knuckles. Champion, four seasons. The belt on Ledger's counter is a replica. The real one is on me."
+            ],
+            "do": {
+              "set": "met"
+            },
+            "then": "menu"
+          },
+          "again": {
+            "text": "Back for more, bell kid?",
+            "then": "menu"
+          },
+          "menu": {
+            "text": "Talk fast. I stretch while I listen.",
+            "choices": [
+              {
+                "text": "How does this work?",
+                "to": "rules"
+              },
+              {
+                "text": "You don't look that tough.",
+                "to": "taunted"
+              },
+              {
+                "text": "Later.",
+                "to": "end"
+              }
+            ]
+          },
+          "rules": {
+            "text": "House rules. You draw a gun in here, all three of us draw. Put all three of us on the sand at once and the house pays out. Stitch patches the losers. Nobody keeps a grudge.",
+            "then": "menu"
+          },
+          "taunted": {
+            "text": "That is what the last champion said. He runs a furniture shop now. Nice guy. Draw when you are ready.",
+            "then": "end"
+          }
+        }
+      }
+    },
+    {
+      "id": "pit.vex",
+      "type": "folk.pitfighter",
+      "tile": [
+        17,
+        13
+      ],
+      "facing": "west",
+      "props": {
+        "name": "The Widow Vex",
+        "title": "Undefeated (allegedly)",
+        "roam": 3,
+        "noSmallTalk": true,
+        "armedSecurity": true,
+        "sparring": true,
+        "alertLine": "The Widow Vex: \"FINALLY.\" Every fighter in the Pit draws.",
+        "voice": {
+          "pitch": 1.12,
+          "rate": 26,
+          "timbre": "square"
+        },
+        "hair": "white"
+      },
+      "dialog": {
+        "start": "open",
+        "nodes": {
+          "open": {
+            "branch": [
+              {
+                "when": {
+                  "not": {
+                    "flag": "met"
+                  }
+                },
+                "to": "hello"
+              },
+              {
+                "to": "again"
+              }
+            ]
+          },
+          "hello": {
+            "text": [
+              "Do not stand in the middle of the sand. That is where things happen to people.",
+              "Vex. The \"Widow\" part is a long story and every version of it is true."
+            ],
+            "do": {
+              "set": "met"
+            },
+            "then": "menu"
+          },
+          "again": {
+            "text": "Still upright. I am mildly impressed.",
+            "then": "menu"
+          },
+          "menu": {
+            "text": "Yes?",
+            "choices": [
+              {
+                "text": "How does this work?",
+                "to": "rules"
+              },
+              {
+                "text": "Undefeated? Really?",
+                "to": "taunted"
+              },
+              {
+                "text": "Later.",
+                "to": "end"
+              }
+            ]
+          },
+          "rules": {
+            "text": "House rules. You draw a gun in here, all three of us draw. Put all three of us on the sand at once and the house pays out. Stitch patches the losers. Nobody keeps a grudge.",
+            "then": "menu"
+          },
+          "taunted": {
+            "text": "Allegedly. Knuckles says he put me down once. Knuckles also says the moon is a lamp. Draw and find out.",
+            "then": "end"
+          }
+        }
+      }
+    },
+    {
+      "id": "pit.tiny",
+      "type": "folk.pitfighter",
+      "tile": [
+        14,
+        8
+      ],
+      "facing": "south",
+      "props": {
+        "name": "Tiny",
+        "title": "Not Tiny",
+        "roam": 2,
+        "noSmallTalk": true,
+        "armedSecurity": true,
+        "sparring": true,
+        "alertLine": "Tiny: \"FINALLY.\" Every fighter in the Pit draws.",
+        "voice": {
+          "pitch": 0.6,
+          "rate": 14,
+          "timbre": "sawtooth"
+        }
+      },
+      "dialog": {
+        "start": "open",
+        "nodes": {
+          "open": {
+            "branch": [
+              {
+                "when": {
+                  "not": {
+                    "flag": "met"
+                  }
+                },
+                "to": "hello"
+              },
+              {
+                "to": "again"
+              }
+            ]
+          },
+          "hello": {
+            "text": [
+              "...",
+              "Tiny."
+            ],
+            "do": {
+              "set": "met"
+            },
+            "then": "menu"
+          },
+          "again": {
+            "text": "...",
+            "then": "menu"
+          },
+          "menu": {
+            "text": "Hm.",
+            "choices": [
+              {
+                "text": "How does this work?",
+                "to": "rules"
+              },
+              {
+                "text": "Why do they call you Tiny?",
+                "to": "taunted"
+              },
+              {
+                "text": "Later.",
+                "to": "end"
+              }
+            ]
+          },
+          "rules": {
+            "text": "House rules. You draw a gun in here, all three of us draw. Put all three of us on the sand at once and the house pays out. Stitch patches the losers. Nobody keeps a grudge.",
+            "then": "menu"
+          },
+          "taunted": {
+            "text": "Irony.",
+            "then": "end"
+          }
+        }
+      }
+    },
+    {
+      "id": "pit.barker",
+      "type": "folk.villager",
+      "tile": [
+        16,
+        2
+      ],
+      "facing": "south",
+      "props": {
+        "name": "Barker Quill",
+        "title": "Ringmaster",
+        "noSmallTalk": true,
+        "roam": 1,
+        "voice": {
+          "pitch": 1.05,
+          "rate": 34,
+          "timbre": "square"
+        }
+      },
+      "dialog": {
+        "start": "open",
+        "nodes": {
+          "open": {
+            "branch": [
+              {
+                "when": {
+                  "not": {
+                    "flag": "met"
+                  }
+                },
+                "to": "hello"
+              },
+              {
+                "to": "again"
+              }
+            ]
+          },
+          "hello": {
+            "text": [
+              "LADIES AND GENTLEMEN AND WHATEVER WALKED IN JUST NOW.",
+              "Barker Quill. I run the card, ring the gong, and take no responsibility for anything that happens on the sand."
+            ],
+            "do": {
+              "set": "met"
+            },
+            "then": "menu"
+          },
+          "again": {
+            "text": "The bell kid returns! Crowd goes mild!",
+            "then": "menu"
+          },
+          "menu": {
+            "text": "What do you want to know?",
+            "choices": [
+              {
+                "text": "How do I fight?",
+                "to": "how"
+              },
+              {
+                "text": "What do I win?",
+                "to": "win"
+              },
+              {
+                "text": "Who are they?",
+                "to": "who"
+              },
+              {
+                "text": "Nothing. Just looking.",
+                "to": "end"
+              }
+            ]
+          },
+          "how": {
+            "text": [
+              "Buy a gun off Ledger, or bring your own. Step onto the sand. Draw.",
+              "The moment iron is out, all three fighters come for you. Airsoft, so nobody dies, but five hearts go fast. Holster the gun and they stand down. Cheap trick. Legal trick."
+            ],
+            "then": "menu"
+          },
+          "win": {
+            "text": [
+              "Put all three of them flat at the same time and the house pays fifty a head. Clean sweep, hundred and fifty coins, and I say your name very loudly.",
+              "Get shot up? Stitch is in the corner. He is not cheap and he is not gentle."
+            ],
+            "then": "menu"
+          },
+          "who": {
+            "text": [
+              "Knuckles, the champion. Hits like a door. Vex, who has never lost, allegedly. And Tiny.",
+              "Do not ask Tiny about the name."
+            ],
+            "then": "menu"
+          }
+        }
+      }
+    },
+    {
+      "id": "pit.ledger",
+      "type": "folk.shopkeep",
+      "tile": [
+        1,
+        11
+      ],
+      "facing": "east",
+      "props": {
+        "name": "Ledger",
+        "title": "Bookie & Armourer",
+        "voice": {
+          "pitch": 0.95,
+          "rate": 27,
+          "timbre": "triangle"
+        },
+        "hair": "grey"
+      },
+      "shop": {
+        "name": "Ledger's Book",
+        "markup": 1.4,
+        "buyRate": 0.5,
+        "takes": [
+          "item.shot",
+          "tool.gun",
+          "tool.machinegun",
+          "tool.sword",
+          "tool.hammer",
+          "kititem.brass-knuckles",
+          "kititem.champion-belt",
+          "kititem.pit-banner",
+          "kititem.pit-bench",
+          "item.game"
+        ],
+        "stock": [
+          {
+            "type": "item.shot",
+            "count": null,
+            "always": true
+          },
+          {
+            "type": "tool.gun",
+            "count": 3
+          },
+          {
+            "type": "tool.sword",
+            "count": 1
+          },
+          {
+            "type": "tool.hammer",
+            "count": 2
+          },
+          {
+            "type": "kititem.brass-knuckles",
+            "count": 4
+          },
+          {
+            "type": "kititem.champion-belt",
+            "count": 1,
+            "price": 1500
+          },
+          {
+            "type": "kititem.pit-banner",
+            "count": 2
+          },
+          {
+            "type": "kititem.pit-bench",
+            "count": 6
+          }
+        ]
+      },
+      "dialog": {
+        "start": "open",
+        "nodes": {
+          "open": {
+            "branch": [
+              {
+                "when": {
+                  "not": {
+                    "flag": "met"
+                  }
+                },
+                "to": "hello"
+              },
+              {
+                "to": "menu"
+              }
+            ]
+          },
+          "hello": {
+            "text": [
+              "Ledger. I sell the guns and the BBs and I buy back what the losers drop.",
+              "The belt is a replica. Do not tell Knuckles I said that."
+            ],
+            "do": {
+              "set": "met"
+            },
+            "then": "menu"
+          },
+          "menu": {
+            "text": "Buying or selling?",
+            "choices": [
+              {
+                "text": "Show me the book.",
+                "do": {
+                  "shop": true
+                },
+                "to": "after"
+              },
+              {
+                "text": "Any tips?",
+                "to": "tips"
+              },
+              {
+                "text": "Not today.",
+                "to": "end"
+              }
+            ]
+          },
+          "after": {
+            "text": "Pleasure. Try not to bleed on the counter.",
+            "then": "end"
+          },
+          "tips": {
+            "text": [
+              "Tiny stands still. Vex circles. Knuckles comes straight at you.",
+              "Shoot the one that is coming. Holster when you are down to two hearts. Stitch charges more than I do."
+            ],
+            "then": "menu"
+          }
+        },
+        "greetings": {
+          "acquaintance": [
+            "Book is open. Odds on Knuckles are short, odds on you are whatever I feel like.",
+            "Bought back a hammer off somebody who came in with two and left with none. That is the kind of arithmetic I do.",
+            "Vex has been circling the cage for an hour. She circles when there is nobody in it, too.",
+            "The belt is still on the shelf at fifteen hundred. Still a replica. Still the most looked-at thing in the building."
+          ],
+          "friend": [
+            "Stitch says you owe him. I say you owe me first. He can have what is left when the BBs are paid for.",
+            "You floor all three and the house pays out. I am the house. So understand that my tips come with a small conflict of interest.",
+            "Tiny asked what you are like. I said you shoot the one that is coming. He looked worried. Tiny does not look worried.",
+            "Somebody dropped a sword in the cage and did not come back for it. I priced it. You will like the price less than I did."
+          ],
+          "close": [
+            "Counter is clean. Keep it that way, and if you cannot, bleed on my side, I have the cloth.",
+            "Real odds, since it is you. Knuckles two to one. Vex evens. Tiny does not lose and I do not take money on him.",
+            "Told Knuckles the belt is real. I lie to him, not you. That is the difference between a customer and whatever you are."
+          ]
+        }
+      }
+    },
+    {
+      "id": "pit.stitch",
+      "type": "folk.doctor",
+      "tile": [
+        27,
+        12
+      ],
+      "facing": "west",
+      "props": {
+        "name": "Stitch",
+        "title": "Cutman",
+        "roam": 1,
+        "voice": {
+          "pitch": 0.9,
+          "rate": 20,
+          "timbre": "triangle"
+        }
+      },
+      "dialog": {
+        "start": "open",
+        "nodes": {
+          "open": {
+            "branch": [
+              {
+                "when": {
+                  "hurt": true
+                },
+                "to": "hurt"
+              },
+              {
+                "to": "fine"
+              }
+            ]
+          },
+          "hurt": {
+            "text": "Sit. You are leaking.",
+            "choices": [
+              {
+                "text": "Patch me up. (40 coins)",
+                "when": {
+                  "coins": 40
+                },
+                "do": [
+                  {
+                    "coins": -40
+                  },
+                  {
+                    "heal": true
+                  }
+                ],
+                "to": "patched"
+              },
+              {
+                "text": "I cannot afford it.",
+                "when": {
+                  "not": {
+                    "coins": 40
+                  }
+                },
+                "to": "broke"
+              },
+              {
+                "text": "I will walk it off.",
+                "to": "end"
+              }
+            ]
+          },
+          "patched": {
+            "text": "There. Good as new, apart from the bruise, which is yours to keep.",
+            "then": "end"
+          },
+          "broke": {
+            "text": "Then bleed cheaper. Ledger buys BBs back, if you have any left.",
+            "then": "end"
+          },
+          "fine": {
+            "text": "Nothing to stitch. Come back when there is. There will be.",
+            "then": "end"
+          }
+        },
+        "greetings": {
+          "acquaintance": [
+            "Table is clean. Needle is clean. That is more than most people get in here.",
+            "Ledger sends me the losers. Barker sends me the winners. Same blood, different paperwork.",
+            "The crow keeps stealing my gauze. I have stopped fighting it. It is a better cutman than most.",
+            "Do not sit on the chair unless you are bleeding. It is the only one I have."
+          ],
+          "friend": [
+            "You are the only one who comes back with fewer holes than last time. I take that as a compliment.",
+            "Vex asked me what I charge you. I told her the same as everyone. I lied. Do not tell Ledger.",
+            "Knuckles bled on my table again and called it a scratch. I have a jar for the scratches. It is full.",
+            "Sit down anyway. Nothing to stitch, but those benches are bad for the back."
+          ],
+          "close": [
+            "There you are. Chair is yours whether you are leaking or not.",
+            "Forty coins for everyone else. I have not decided about you. Do not push it.",
+            "I keep a clean rag with your name on it. Do not read anything into that. Read a little."
+          ]
+        }
+      }
+    }
+  ],
+  "animals": [
+    {
+      "id": "pit.crow",
+      "type": "crow",
+      "tile": [
+        24,
+        4
+      ],
+      "props": {
+        "range": 4
+      }
+    }
+  ],
+  "items": [
+    {
+      "id": "loose.shot.1",
+      "type": "item.shot",
+      "tile": [
+        11,
+        18
+      ]
+    },
+    {
+      "id": "loose.shot.2",
+      "type": "item.shot",
+      "tile": [
+        18,
+        18
+      ]
+    },
+    {
+      "id": "loose.stick",
+      "type": "item.stick",
+      "tile": [
+        4,
+        18
+      ]
+    }
+  ],
+  "exits": [
+    {
+      "tile": [
+        14,
+        25
+      ],
+      "label": "Cab stand"
+    },
+    {
+      "tile": [
+        15,
+        25
+      ],
+      "label": "Cab stand"
+    }
+  ],
+  "spawn": {
+    "tile": [
+      14,
+      24
+    ],
+    "facing": "north"
+  }
+}

@@ -54,12 +54,17 @@ export class World {
     this.meta = data.meta;
     this.width = data.width;
     this.height = data.height;
+    this.authoredWidth = data.width;
+    this.authoredHeight = data.height;
     // Runtime terrain is an effective copy. The file arrays remain the baseline
     // so the Urban Planner's saved overlay can be replayed and wholly reverted
     // without allowing one session to leak into the next cached World.
     this.baseSurface = data.surface.slice();
     this.baseElevation = data.elevation.slice();
     this.baseFlags = data.flags.slice();
+    this.authoredSurface = data.surface.slice();
+    this.authoredElevation = data.elevation.slice();
+    this.authoredFlags = data.flags.slice();
     this.surface = data.surface.slice();
     this.elevation = data.elevation.slice();
     this.flags = data.flags.slice();
@@ -68,26 +73,37 @@ export class World {
     // question the game asks ten times a second is "is THIS tile private", and
     // that has to be one array read.
     this.zoneGrid = data.zoneGrid;
+    this.authoredZoneGrid = data.zoneGrid.slice();
     this.zones = data.zones ?? [null];
     this.objects = data.objects;
     this.authoredObjectCount = this.objects.length;
     this.baseObjectTiles = new Map(this.objects.map((obj) => [obj.id, [...obj.tile]]));
+    this.authoredObjectTiles = new Map([...this.baseObjectTiles]
+      .map(([id, tile]) => [id, [...tile]]));
     this.baseObjectRotations = new Map(this.objects.map((obj) => [obj.id, obj.rotation ?? 0]));
     // Where this place's animals START. The live ones belong to sim/Fauna.js:
     // World holds facts derived from the file, and nothing in it is ever ticked.
     this.animals = data.animals ?? [];
+    this.authoredAnimalTiles = new Map(this.animals.map((animal) => [animal.id, [...animal.tile]]));
     // The people of this place, as the file placed them. The live ones -- who
     // remember whether you have met and what is left in their till -- belong to
     // sim/Folk.js, for the same reason the live animals do.
     this.npcs = data.npcs ?? [];
+    this.authoredNpcTiles = new Map(this.npcs.map((npc) => [npc.id, [...npc.tile]]));
+    this.authoredNpcSchedules = new Map(this.npcs.map((npc) => [npc.id,
+      npc.schedule.map((row) => [...row.tile])]));
     // Where this place's loose items START, likewise. Which of them are still
     // lying about -- and what the player has put down since -- belongs to
     // sim/Ground.js: a picked-up apple is not a fact about the file.
     this.items = data.items ?? [];
+    this.authoredItemTiles = new Map(this.items.map((item) => [item.id, [...item.tile]]));
     this.exits = data.exits ?? [];
     this.spawn = data.spawn;
+    this.authoredSpawnTile = [...this.spawn.tile];
     this.kind = data.kind ?? 'exterior';
     this.ambience = data.ambience ?? {};
+    this.architecture = data.architecture ?? { apronDepth: 3.25, groups: [] };
+    this.apronDepth = this.architecture.apronDepth;
 
     // What is off the edge of the map. Null for interiors, whose edge is walls.
     this.form = data.terrain ? formByName(data.terrain.form) : null;
@@ -137,6 +153,7 @@ export class World {
     this.byId.clear();
     this.portals.clear();
     this.#buildCollision();
+    this.#buildLanding();
     this.#buildPortals();
     this.#buildBuckets();
   }
@@ -184,14 +201,26 @@ export class World {
     return true;
   }
 
+  /** Restore one authored object previously removed by an edit. */
+  restoreObject(obj) {
+    if (!obj || !this.felled.delete(obj.id)) return false;
+    // Re-derive rather than filling only this footprint: portals and overlapping
+    // collision are derived facts, and dawn is not a hot path.
+    this.#derive();
+    return true;
+  }
+
   /** Add one player-placed object and rebuild the indices it contributes to. */
   addObject({ id, type, tile, rotation = 0, props = {} }) {
     if (!id || this.byId.has(id) || !objectType(type)) return null;
     const shape = rotateMask(objectType(type).footprint, rotation / 90);
     const [ax, az] = tile;
+    const elevation = this.elevationAt(ax, az);
     for (let dz = 0; dz < shape.d; dz++) {
       for (let dx = 0; dx < shape.w; dx++) {
-        if (!this.inBounds(ax + dx, az + dz) || this.isBlocked(ax + dx, az + dz)) return null;
+        const x = ax + dx, z = az + dz;
+        if (!this.inBounds(x, z) || this.isBlocked(x, z) || this.isReserved(x, z)
+          || this.isRamp(x, z) || this.elevationAt(x, z) !== elevation) return null;
       }
     }
     const obj = { id, type, tile: [ax, az], rotation, props, shape };
@@ -287,6 +316,78 @@ export class World {
     return changed;
   }
 
+  /**
+   * Add dense terrain around an exterior and translate its existing contents.
+   * New ground continues the nearest authored edge; flags and private zones do
+   * not, so an edge ramp or property cannot silently claim a whole new strip.
+   */
+  expand({ north = 0, east = 0, south = 0, west = 0 }) {
+    if (this.kind !== 'exterior'
+      || ![north, east, south, west].every((n) => Number.isInteger(n) && n >= 0)
+      || north + east + south + west === 0) return null;
+
+    const oldWidth = this.width, oldHeight = this.height;
+    const width = oldWidth + west + east, height = oldHeight + north + south;
+    const extend = (source, edge, neutral = null) => {
+      const out = new source.constructor(width * height);
+      for (let z = 0; z < height; z++) for (let x = 0; x < width; x++) {
+        const ox = x - west, oz = z - north;
+        if (ox >= 0 && oz >= 0 && ox < oldWidth && oz < oldHeight) {
+          out[z * width + x] = source[oz * oldWidth + ox];
+        } else if (neutral !== null) out[z * width + x] = neutral;
+        else {
+          const sx = Math.max(0, Math.min(oldWidth - 1, ox));
+          const sz = Math.max(0, Math.min(oldHeight - 1, oz));
+          out[z * width + x] = edge[sz * oldWidth + sx];
+        }
+      }
+      return out;
+    };
+
+    const baseSurface = extend(this.baseSurface, this.baseSurface);
+    const baseElevation = extend(this.baseElevation, this.baseElevation);
+    this.surface = extend(this.surface, this.baseSurface);
+    this.elevation = extend(this.elevation, this.baseElevation);
+    this.flags = extend(this.flags, this.baseFlags, FLAG.NONE);
+    this.zoneGrid = extend(this.zoneGrid, this.zoneGrid, 0);
+    this.baseSurface = baseSurface;
+    this.baseElevation = baseElevation;
+    this.baseFlags = extend(this.baseFlags, this.baseFlags, FLAG.NONE);
+
+    const shift = (tile) => { tile[0] += west; tile[1] += north; };
+    for (const obj of this.objects) shift(obj.tile);
+    for (const tile of this.baseObjectTiles.values()) shift(tile);
+    for (const animal of this.animals) shift(animal.tile);
+    for (const npc of this.npcs) {
+      shift(npc.tile);
+      for (const row of npc.schedule) shift(row.tile);
+    }
+    for (const item of this.items) shift(item.tile);
+    for (const exit of this.exits) shift(exit.tile);
+    shift(this.spawn.tile);
+
+    this.width = width;
+    this.height = height;
+    this.data.width = width;
+    this.data.height = height;
+    this.data.surface = this.baseSurface;
+    this.data.elevation = this.baseElevation;
+    this.data.flags = this.baseFlags;
+    this.data.zoneGrid = this.zoneGrid;
+    this.collision = new Uint8Array(width * height);
+    this.occupant = new Int32Array(width * height).fill(-1);
+
+    const remappedDug = new Set();
+    for (const i of this.dug) {
+      const x = i % oldWidth, z = Math.floor(i / oldWidth);
+      remappedDug.add((z + north) * width + x + west);
+    }
+    this.dug = remappedDug;
+    this.#derive();
+    this.shoal = shoal(this);
+    return { x: west, z: north, north, east, south, west, width, height };
+  }
+
   /** Surface from the world file, before the Urban Planner's overlay. */
   baseSurfaceAt(x, z) {
     return this.inBounds(x, z) ? surfaceById(this.baseSurface[this.idx(x, z)]) : surfaceById(0);
@@ -302,15 +403,39 @@ export class World {
    */
   revert() {
     this.objects.length = this.authoredObjectCount;
+    this.width = this.authoredWidth;
+    this.height = this.authoredHeight;
+    this.baseSurface = this.authoredSurface.slice();
+    this.baseElevation = this.authoredElevation.slice();
+    this.baseFlags = this.authoredFlags.slice();
+    this.surface = this.authoredSurface.slice();
+    this.elevation = this.authoredElevation.slice();
+    this.flags = this.authoredFlags.slice();
+    this.zoneGrid = this.authoredZoneGrid.slice();
+    this.baseObjectTiles = new Map([...this.authoredObjectTiles]
+      .map(([id, tile]) => [id, [...tile]]));
     for (const obj of this.objects) {
-      const tile = this.baseObjectTiles.get(obj.id);
+      const tile = this.authoredObjectTiles.get(obj.id);
       if (tile) obj.tile = [...tile];
       obj.rotation = this.baseObjectRotations.get(obj.id) ?? 0;
       obj.shape = rotateMask(objectType(obj.type).footprint, obj.rotation / 90);
     }
-    this.surface.set(this.baseSurface);
-    this.elevation.set(this.baseElevation);
-    this.flags.set(this.baseFlags);
+    for (const animal of this.animals) animal.tile = [...this.authoredAnimalTiles.get(animal.id)];
+    for (const npc of this.npcs) {
+      npc.tile = [...this.authoredNpcTiles.get(npc.id)];
+      const schedule = this.authoredNpcSchedules.get(npc.id) ?? [];
+      npc.schedule.forEach((row, i) => { row.tile = [...schedule[i]]; });
+    }
+    for (const item of this.items) item.tile = [...this.authoredItemTiles.get(item.id)];
+    this.spawn.tile = [...this.authoredSpawnTile];
+    this.data.width = this.width;
+    this.data.height = this.height;
+    this.data.surface = this.baseSurface;
+    this.data.elevation = this.baseElevation;
+    this.data.flags = this.baseFlags;
+    this.data.zoneGrid = this.zoneGrid;
+    this.collision = new Uint8Array(this.width * this.height);
+    this.occupant = new Int32Array(this.width * this.height).fill(-1);
     this.felled.clear();
     this.dug.clear();
     this.#derive();
@@ -322,6 +447,7 @@ export class World {
     if (!Number.isInteger(stories) || stories < 1 || stories > 3) stories = 1;
     if (this.houseStories === stories) return false;
     this.houseStories = stories;
+    this.#buildLanding();
     this.portals.clear();
     this.#buildPortals();
     return true;
@@ -417,25 +543,56 @@ export class World {
       for (const [dx, dz] of maskCells(obj.shape, CELL.DOOR)) {
         const x = ax + dx, z = az + dz;
         if (!this.inBounds(x, z)) continue;
-        this.portals.set(this.idx(x, z), {
+        this.portals.set(`${x},${z}`, {
           kind: PORTAL.ENTER,
           to: dest,
           objectId: obj.id,
           label: obj.props?.label ?? objectType(obj.type).label,
           tile: [x, z],
           facing,                       // the way you were walking when you went in
-          out: DIR_VEC[facing],         // step this far back out to leave again
+          out: DIR_VEC[facing],          // where returning through this portal lands
         });
       }
     }
 
+    for (const group of this.architectureGroups()) {
+      const portal = group.portal;
+      if (!portal) continue;
+      const [x, z] = portal.tile;
+      const fallback = DIR_VEC[portal.facing];
+      const [outX, outZ] = portal.out ?? [fallback.x, fallback.z];
+      this.portals.set(`${x},${z}`, {
+        kind: PORTAL.ENTER,
+        to: portal.to,
+        objectId: `architecture:${group.id}`,
+        label: portal.label ?? group.id,
+        tile: [x, z],
+        facing: portal.facing,
+        out: { x: outX, z: outZ },
+      });
+    }
+
     for (const exit of this.exits) {
       const [x, z] = exit.tile;
-      this.portals.set(this.idx(x, z), {
+      this.portals.set(`${x},${z}`, {
         kind: PORTAL.EXIT,
         label: exit.label ?? 'Outside',
         tile: [x, z],
       });
+    }
+  }
+
+  #buildLanding() {
+    this.landingOpenings = [];
+    this.landingColumns = new Set();
+    if (this.kind !== 'interior') return;
+    for (let x = 0; x < this.width; x++) {
+      if (!surfaceById(this.surface[this.idx(x, this.height - 1)]).walkable) continue;
+      this.landingOpenings.push(x);
+      this.landingColumns.add(x);
+    }
+    for (const group of this.architectureGroups()) {
+      for (const x of group.landingColumns) this.landingColumns.add(x);
     }
   }
 
@@ -457,11 +614,16 @@ export class World {
   // ---------------------------------------------------------------- reads --
 
   surfaceAt(x, z) {
-    return this.inBounds(x, z) ? surfaceById(this.surface[this.idx(x, z)]) : surfaceById(0);
+    if (this.inBounds(x, z)) return surfaceById(this.surface[this.idx(x, z)]);
+    const source = this.landingSource(x, z);
+    return source === null ? surfaceById(0)
+      : surfaceById(this.surface[this.idx(source, this.height - 1)]);
   }
 
   elevationAt(x, z) {
-    return this.inBounds(x, z) ? this.elevation[this.idx(x, z)] : 0;
+    if (this.inBounds(x, z)) return this.elevation[this.idx(x, z)];
+    const source = this.landingSource(x, z);
+    return source === null ? 0 : this.elevation[this.idx(source, this.height - 1)];
   }
 
   flagAt(x, z) {
@@ -526,14 +688,49 @@ export class World {
 
   /** Where standing on this tile sends you, or null. */
   portalAt(x, z) {
-    if (!this.inBounds(x, z)) return null;
-    return this.portals.get(this.idx(x, z)) ?? null;
+    if (this.isLanding(x, z) && z === this.height + Math.floor(this.apronDepth) - 1
+      && this.exits.some((exit) => exit.tile[0] === x && exit.tile[1] === this.height - 1)) {
+      return { kind: PORTAL.EXIT, label: 'Outside', tile: [x, z] };
+    }
+    const portal = this.portals.get(`${x},${z}`) ?? null;
+    if (portal?.kind === PORTAL.EXIT && z === this.height - 1 && this.landingColumns.size) return null;
+    return portal;
+  }
+
+  /** Walkable authored structure that player furniture must not cover. */
+  isReserved(x, z) {
+    if (!this.inBounds(x, z)) return false;
+    return Boolean(this.objectAt(x, z) || this.portalAt(x, z))
+      || (this.kind === 'interior' && z === this.height - 1 && this.surfaceAt(x, z).walkable);
   }
 
   /** Blocked for any reason (solid object or unwalkable ground). */
   isBlocked(x, z) {
+    if (this.isLanding(x, z)) return false;
     if (!this.inBounds(x, z)) return true;
     return this.collision[this.idx(x, z)] !== 0;
+  }
+
+  landingSource(x, z) {
+    if (!this.isLanding(x, z)) return null;
+    let source = null, distance = Infinity;
+    for (const opening of this.landingOpenings) {
+      const d = Math.abs(opening - x);
+      if (d < distance) { source = opening; distance = d; }
+    }
+    return source;
+  }
+
+  isLanding(x, z) {
+    return Number.isInteger(x) && Number.isInteger(z)
+      && z >= this.height && z < this.height + Math.floor(this.apronDepth)
+      && this.landingColumns?.has(x);
+  }
+
+  /** Architectural groups visible at the current player-home tier. */
+  architectureGroups() {
+    return this.architecture.groups.filter((group) => !group.requiresHouseStories
+      || this.houseStories === null || this.houseStories >= group.requiresHouseStories);
   }
 
   objectAt(x, z) {
@@ -597,9 +794,11 @@ export class World {
   /** Continuous ground height in WORLD units at a float tile position. */
   groundHeight(fx, fz) {
     const tx = Math.floor(fx), tz = Math.floor(fz);
-    if (!this.inBounds(tx, tz)) return 0;
-    const e = this.elevation[this.idx(tx, tz)];
-    const flag = this.flags[this.idx(tx, tz)];
+    const source = this.landingSource(tx, tz);
+    if (!this.inBounds(tx, tz) && source === null) return 0;
+    const sx = source ?? tx, sz = source === null ? tz : this.height - 1;
+    const e = this.elevation[this.idx(sx, sz)];
+    const flag = source === null ? this.flags[this.idx(sx, sz)] : FLAG.NONE;
 
     let h = e;
     if (flag !== FLAG.NONE) {
@@ -610,7 +809,7 @@ export class World {
       else if (flag === FLAG.RAMP_EAST) h = e + lx;
     }
     let y = h * STEP_HEIGHT;
-    if (surfaceById(this.surface[this.idx(tx, tz)]).water) y -= WATER_DROP;
+    if (surfaceById(this.surface[this.idx(sx, sz)]).water) y -= WATER_DROP;
     return y;
   }
 
@@ -643,7 +842,7 @@ export class World {
    * default is false, so nothing gets the ability by forgetting to ask.
    */
   canStep(ax, az, bx, bz, climbing = false) {
-    if (!this.inBounds(bx, bz)) return false;
+    if (!this.inBounds(bx, bz) && !this.isLanding(bx, bz)) return false;
     if (this.isBlocked(bx, bz)) return false;
 
     const dx = bx - ax, dz = bz - az;
@@ -668,7 +867,7 @@ export class World {
    * squeezing through the corner where two blockers meet.
    */
   canOccupy(tx, tz, fromX, fromZ, climbing = false) {
-    if (!this.inBounds(tx, tz)) return false;
+    if (!this.inBounds(tx, tz) && !this.isLanding(tx, tz)) return false;
     if (this.isBlocked(tx, tz)) return false;
     if (tx === fromX && tz === fromZ) return true;
 

@@ -14,7 +14,24 @@
  *
  * A SCRIPT
  * --------
- *   { "start": "greet", "nodes": { "greet": <node>, ... } }
+ *   { "start": "greet", "nodes": { "greet": <node>, ... }, "greetings": {...} }
+ *
+ * GREETINGS are optional and are the one part of a script that is NOT a node:
+ *
+ *   "greetings": {
+ *     "acquaintance": [ "line", ["page", "page"] ],
+ *     "friend":       [ ... ],
+ *     "close":        [ ... ]
+ *   }
+ *
+ * One list per relationship tier (sim/Friends.js), each a pool of things this
+ * person says on seeing you before the conversation proper. The game stitches
+ * one of them onto the front of `start` (world/greetings.js) -- not on the
+ * first meeting, where the script's own opening does the introducing, and not
+ * again within a few hours of the last chat. They live HERE, per person, and
+ * not in a shared pool in code, because a hello is a fact about who is saying
+ * it: the fisher and the mayor do not notice the same things about you.
+ * `stranger` is accepted too, for somebody who has fallen back to nothing.
  *
  * A NODE is one of two things, and never both:
  *
@@ -49,11 +66,14 @@
  *                                         to hand over whatever you are
  *                                         carrying has to ask, and `has` can
  *                                         only ask about a named type
+ *   { "carrying": true }                  there is any item in the player's bag
  *   { "visits": 2 }                       talked to at least twice (this one counts)
  *   { "has": { "type": "item.apple", "count": 3 } }
  *   { "room": { "type": "item.apple" } }  the bag could take one
  *   { "coins": 40 }                       carrying at least this much
+ *   { "hurt": true }                      the player is missing any health
  *   { "houseStories": 2 }                the player's house is exactly this tier
+ *   { "shops24": true }                  round-the-clock trading is enacted
  *   { "not": <cond> } / { "all": [...] } / { "any": [...] }
  *
  * EFFECTS are objects too, singly or as an array, applied in order:
@@ -62,11 +82,13 @@
  *   { "give": { "type": "item.flower", "count": 1 } }
  *   { "take": { "type": "item.apple", "count": 3 } }
  *   { "coins": -25 }                      spend (negative) or earn (positive)
+ *   { "heal": true }                      restore the player's health
  *   { "houseStories": 2 }                upgrade the player's house to this tier
+ *   { "shops24": true }                  enact round-the-clock trading
  *   { "travel": "worlds/interiors/debug-room.json" }  go to another place
  *   { "shop": true }                      open the trade interface
- *   { "gift": true }                      hand over one of whatever is in your
- *                                         hand, whatever it happens to be
+ *   { "gift": true }                      ask the player to choose one item
+ *                                         from the bag to hand over
  *   { "peace": true }                     this NPC stops being angry about
  *                                         having been shot. NOT the same as
  *                                         becoming friends: it ends the feud
@@ -106,9 +128,16 @@ const CONDITIONS = {
   time: 'timeRange',
   shopOpen: 'boolean',
   holding: 'boolean',
+  carrying: 'boolean',
   visits: 'number',
   coins: 'number',
+  hurt: 'boolean',
   houseStories: 'tier',
+  shops24: 'boolean',
+  hasHiredWorker: 'boolean',
+  officeBuilt: 'boolean',
+  thefts: 'number',
+  killings: 'number',
   travel: 'string',
   has: 'itemcount',
   room: 'itemcount',
@@ -124,13 +153,18 @@ const EFFECTS = {
   give: 'itemcount',
   take: 'itemcount',
   coins: 'number',
+  heal: 'boolean',
   houseStories: 'tier',
+  shops24: 'boolean',
+  officeBuilt: 'boolean',
   travel: 'string',
   shop: 'boolean',
   poker: 'boolean',
   gift: 'boolean',
   peace: 'boolean',
   errand: 'errandEffect',
+  work: 'workEffect',
+  logistics: 'logisticsEffect',
   // How a confrontation about stolen goods ends: paid for, handed back, or
   // refused. One of three words rather than three booleans, because they are
   // three answers to one question and a script that could say two of them at
@@ -142,6 +176,8 @@ const EFFECTS = {
 const THEFT_ANSWERS = ['pay', 'return', 'refuse'];
 
 const RELATIONSHIP_TIERS = ['stranger', 'acquaintance', 'friend', 'close'];
+/** The tiers a `greetings` block may key, lowest first. Exported for the stitcher. */
+export const GREETING_TIERS = RELATIONSHIP_TIERS;
 const ERRAND_STATES = ['available', 'active', 'ready', 'completed'];
 
 export class DialogError extends Error {
@@ -183,6 +219,31 @@ function checkStructured(kind, v, path) {
       throw new DialogError('expected { id, action: "accept" | "complete" }', path);
     }
     return { id: v.id, action: v.action };
+  }
+  if (kind === 'workEffect') {
+    if (!['hire', 'dismiss', 'supply'].includes(v.action)
+      || (v.action === 'hire' && !['picker', 'farmer', 'lumberjack', 'miner', 'hunter'].includes(v.job))
+      || (v.action === 'supply' && (!Number.isSafeInteger(v.count) || v.count < 1))) {
+      throw new DialogError('expected hire, dismiss, or supply with a positive BB count', path);
+    }
+    if (v.action === 'hire') return { action: v.action, job: v.job };
+    return v.action === 'supply' ? { action: v.action, count: v.count } : { action: v.action };
+  }
+  if (kind === 'logisticsEffect') {
+    if (v.action === 'disable') return { action: v.action };
+    if (v.action !== 'configure' || typeof v.containerWorldId !== 'string'
+      || typeof v.containerId !== 'string' || ![1, 7].includes(v.intervalDays)) {
+      throw new DialogError(
+        'expected { action: "configure", containerWorldId, containerId, intervalDays: 1 | 7 } or { action: "disable" }',
+        path,
+      );
+    }
+    return {
+      action: v.action,
+      containerWorldId: v.containerWorldId,
+      containerId: v.containerId,
+      intervalDays: v.intervalDays,
+    };
   }
   if (kind === 'timeRange') {
     if (![v.from, v.to].every((n) => typeof n === 'number' && n >= 0 && n <= 24) || v.from === v.to) {
@@ -256,7 +317,9 @@ function checkEffects(raw, path) {
       throw new DialogError(`"${key}" must be one of: ${THEFT_ANSWERS.join(', ')}`, p);
     }
     if (kind === 'itemcount') return { [key]: checkItemRef(v, p) };
-    if (kind === 'errandEffect') return { [key]: checkStructured(kind, v, p) };
+    if (['errandEffect', 'workEffect', 'logisticsEffect'].includes(kind)) {
+      return { [key]: checkStructured(kind, v, p) };
+    }
     return { [key]: v };
   });
 }
@@ -270,6 +333,27 @@ function checkPages(raw, path) {
     }
   }
   return pages;
+}
+
+/**
+ * Validate a `greetings` block: tier -> non-empty list of lines (each a string
+ * or pages). Returns null when there is none, so a script with nothing to say
+ * on sight is simply a script with no greeting stitched to it.
+ */
+function checkGreetings(raw, path) {
+  if (raw === undefined || raw === null) return null;
+  if (!isObj(raw)) throw new DialogError('"greetings" must be an object keyed by relationship tier', path);
+  const out = {};
+  for (const [tier, list] of Object.entries(raw)) {
+    const p = `${path}.${tier}`;
+    if (!GREETING_TIERS.includes(tier)) {
+      throw new DialogError(`unknown tier "${tier}" (known: ${GREETING_TIERS.join(', ')})`, p);
+    }
+    if (!Array.isArray(list) || !list.length) throw new DialogError('a tier must be a non-empty array of lines', p);
+    out[tier] = list.map((line, i) => checkPages(line, `${p}[${i}]`));
+  }
+  if (!Object.keys(out).length) throw new DialogError('"greetings" names no tier at all -- omit it instead', path);
+  return out;
 }
 
 /**
@@ -363,7 +447,78 @@ export function parseDialog(raw, path = 'dialog') {
     nodes[id] = node;
   }
 
-  return { start, nodes };
+  return { start, nodes, greetings: checkGreetings(raw.greetings, `${path}.greetings`) };
+}
+
+/**
+ * Where a choice stitched on from outside belongs: the person's MENU.
+ *
+ * The game hangs two exchanges on ordinary scripts at talk time -- paid work
+ * (sim/Workers.js) and container pickups (sim/Logistics.js) -- and they have
+ * to go on the node where the player is already choosing things. That is not
+ * `start`: for nearly everyone `start` is a branch that picks an opening line,
+ * and the opening line falls through to the menu. So this walks from `start`
+ * through every branch rule and every `then`, and collects the first say-nodes
+ * it meets that offer choices. A script with no menu at all (a neighbour who
+ * says one thing and stops) yields the say-nodes the walk runs out on instead,
+ * so there is always somewhere to put the line.
+ */
+export function menuNodes({ start, nodes }) {
+  const found = [];
+  const seen = new Set();
+  const queue = [start];
+  while (queue.length) {
+    const id = queue.shift();
+    if (id === END || id == null || seen.has(id)) continue;
+    seen.add(id);
+    const node = nodes[id];
+    if (!node) continue;
+    if (node.branch) queue.push(...node.branch.map((r) => r.to));
+    else if (node.choices.length || !node.then) found.push(id);
+    else queue.push(node.then);
+  }
+  return found;
+}
+
+/**
+ * Whether going to `to` closes the conversation without asking anything more:
+ * `end` itself, or a say-node with no choices whose `then` does the same --
+ * "I'll let you get on" answered by "Right you are" and the box closing. The
+ * UI draws such responses as the way out, and the stitchers keep them last.
+ */
+export function endsConversation(nodes, to, seen = new Set()) {
+  if (to === END || to == null) return true;
+  if (seen.has(to)) return false;
+  seen.add(to);
+  const node = nodes[to];
+  if (!node || node.branch || node.choices.length) return false;
+  return endsConversation(nodes, node.then, seen);
+}
+
+/**
+ * A copy of the script with `choice` offered on every menu node.
+ *
+ * It goes in ABOVE the lines that leave, when the menu has them, so the way
+ * out stays last where the eye expects it. A menu node that had no choices at
+ * all gets `leave` too -- a node with choices cannot be advanced past, so
+ * without it the new line would be the only thing the player could say.
+ */
+export function withMenuChoice(script, choice, leave) {
+  const nodes = { ...script.nodes };
+  for (const id of menuNodes(script)) {
+    const node = nodes[id];
+    let choices;
+    if (node.choices.length) {
+      choices = [...node.choices];
+      let at = choices.length;
+      while (at > 0 && endsConversation(nodes, choices[at - 1].to)) at--;
+      choices.splice(at, 0, choice);
+    } else {
+      choices = [choice, { text: leave, when: null, do: [], to: node.then ?? END }];
+    }
+    nodes[id] = { ...node, choices };
+  }
+  return { ...script, nodes };
 }
 
 /**

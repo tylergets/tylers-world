@@ -45,6 +45,8 @@ import { makeRng } from '../core/rng.js';
 
 /** Ground a shovel will go into. Everything else -- paths, floors, water -- will not. */
 export const DIGGABLE = new Set(['grass', 'sand']);
+/** Dug ground that can support crops. Sand remains diggable for buried finds. */
+export const PLANTABLE = new Set(['grass']);
 
 /** The tool block of an item type, or null for an ordinary item. */
 export function toolOf(typeId) {
@@ -217,8 +219,9 @@ const SWEEP = 0.42;
  * refuse instead of the key silently doing nothing.
  */
 function shootTarget({ world, people, fauna, player, tool, inventory, unlimitedAmmo, now, readyAt }) {
-  if (!unlimitedAmmo && inventory && !inventory.count(AMMO)) {
-    return { verb: 'shoot', tile: null, label: null, blocked: 'out of shot' };
+  const ammo = tool.ammo ?? AMMO;
+  if (!unlimitedAmmo && inventory && !inventory.count(ammo)) {
+    return { verb: 'shoot', tile: null, label: null, blocked: ammo === AMMO ? 'out of BBs' : 'out of bullets' };
   }
   if (now < readyAt) {
     return { verb: 'shoot', tile: null, label: null, blocked: 'reloading' };
@@ -251,7 +254,7 @@ function shootTarget({ world, people, fauna, player, tool, inventory, unlimitedA
   }
 
   for (const n of (people?.npcs ?? [])) {
-    if (n.downed > 0) continue;
+    if (n.dead || n.downed > 0) continue;
     const dx = n.x - px, dz = n.z - pz;
     const t = dx * ox + dz * oz;
     if (t <= 0 || t >= bestT) continue;
@@ -513,14 +516,18 @@ function chopTarget(world, edits, tool, x, z) {
   const obj = world.objectAt(x, z);
   if (!obj) return null;
   const type = objectType(obj.type);
-  if (type.category !== 'tree') return null;
+  if (type.category !== 'tree' && type.category !== 'furniture') return null;
+  const furniture = type.category === 'furniture';
   return {
     verb: 'chop',
     tile: [x, z],
     object: obj,
     label: obj.props?.label ?? type.label,
     hits: edits.hitsOn(obj.id),
-    swings: tool.swings,
+    // An axe can eventually reduce furniture to splinters, but it is a very
+    // poor substitute for the hammer: 21 blows for a chair, 30 for larger work.
+    swings: furniture ? tool.swings * (obj.shape.w * obj.shape.d > 1 ? 10 : 7) : tool.swings,
+    furniture,
     blocked: null,
   };
 }
@@ -528,11 +535,10 @@ function chopTarget(world, edits, tool, x, z) {
 /**
  * What a pickaxe would break, or null.
  *
- * `chopTarget` with one word changed, and they stay two functions on purpose:
- * the category test is the ONLY thing either of them does, so folding them into
- * one resolver with the category passed in would produce a tool whose verb is
- * "break the thing in front of me" -- which is a game where owning the axe and
- * owning the pick are the same fact.
+ * Kept separate from `chopTarget` because a pickaxe still has exactly one job:
+ * folding both into a generic object-breaker would make owning the axe and the
+ * pick the same fact. The axe's slow furniture damage is its one deliberate
+ * exception, and still never lets it mine rock.
  *
  * A boulder is 2x2 and `objectAt` answers for every cell of a footprint, so the
  * corner you happen to be standing at makes no difference to what you hit.

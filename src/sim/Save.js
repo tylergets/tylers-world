@@ -42,8 +42,8 @@
  * playing; a failed read is a save that was not there.
  */
 
-/** Bumped when the shape below changes incompatibly. Older saves are refused. */
-export const SAVE_VERSION = 1;
+/** Current shape. Version one is migrated on read; unknown versions are refused. */
+export const SAVE_VERSION = 2;
 /** Generated saves require the exact generator revision that built their baseline. */
 export const GENERATED_WORLD_VERSION = 1;
 
@@ -52,6 +52,7 @@ const INDEX_KEY = 'tw.saves';
 /** Which save this session is writing to, so a reload carries on where it left off. */
 const SESSION_KEY = 'tw.session';
 const slotKey = (id) => `tw.save.${id}`;
+const previewKey = (id) => `tw.save-preview.${id}`;
 
 /** How many saves to keep. The oldest is dropped when a new one would exceed it. */
 export const MAX_SAVES = 12;
@@ -92,8 +93,11 @@ export function listSaves() {
 
 export function readSave(id) {
   const snap = read(slotKey(id));
-  if (!snap || snap.v !== SAVE_VERSION
+  if (!snap || ![1, SAVE_VERSION].includes(snap.v)
     || snap.source?.kind === 'seed' && snap.source.generator !== GENERATED_WORLD_VERSION) return null;
+  // Edits.restore owns the v1 single-stack -> slot-array migration. Marking the
+  // in-memory snapshot current ensures its first autosave completes the upgrade.
+  snap.v = SAVE_VERSION;
   return snap;
 }
 
@@ -123,7 +127,11 @@ export function writeSave(snap) {
 
   // Oldest out first. Dropping the slot as well as the index row, or the
   // storage fills with saves nothing can list and nothing can delete.
-  while (index.length > MAX_SAVES) drop(slotKey(index.pop().id));
+  while (index.length > MAX_SAVES) {
+    const id = index.pop().id;
+    drop(slotKey(id));
+    drop(previewKey(id));
+  }
 
   write(INDEX_KEY, index);
   return true;
@@ -131,8 +139,21 @@ export function writeSave(snap) {
 
 export function deleteSave(id) {
   drop(slotKey(id));
+  drop(previewKey(id));
   write(INDEX_KEY, listSaves().filter((e) => e.id !== id));
   if (sessionSaveId() === id) setSessionSaveId(null);
+}
+
+/** The latest small rendered view of a save, kept outside its simulation data. */
+export function readSavePreview(id) {
+  try { return id ? localStorage.getItem(previewKey(id)) : null; } catch { return null; }
+}
+
+export function writeSavePreview(id, url) {
+  try {
+    localStorage.setItem(previewKey(id), url);
+    return true;
+  } catch { return false; }
 }
 
 /** The save this session is attached to -- what an autosave overwrites. */
@@ -172,20 +193,28 @@ export function newSaveId() {
  */
 export const STARTERS = [
   { id: 'meadowbrook', name: 'Meadowbrook', url: 'worlds/meadowbrook.json',
+    form: 'Island', size: '128 × 128 blocks',
     note: 'An island. A bluff over the town, and a beach all the way round.' },
   { id: 'sourwood', name: 'Sourwood Holler', url: 'worlds/sourwood.json',
+    form: 'Holler', size: '84 × 168 blocks',
     note: 'A valley. A creek in the bottom, benches climbing both walls.' },
   { id: 'tidewrack', name: 'Tidewrack Atoll', url: 'worlds/tidewrack.json',
+    form: 'Atoll', size: '136 × 136 blocks',
     note: 'A ring of land round a lagoon. Everyone lives on a different side of it.' },
   { id: 'thistledown', name: 'Thistledown Gap', url: 'worlds/thistledown.json',
+    form: 'Gap', size: '88 × 156 blocks',
     note: 'A pass, open at both ends. Sheep on one wall, goats on the other.' },
   { id: 'rimrock', name: 'Rimrock Mesa', url: 'worlds/rimrock.json',
+    form: 'Mesa', size: '124 × 124 blocks',
     note: 'A table in the sky. Two lookouts, one seep, and a very long way down.' },
   { id: 'ashkettle', name: 'Ashkettle Caldera', url: 'worlds/ashkettle.json',
+    form: 'Caldera', size: '148 × 148 blocks',
     note: 'A crater. A warm lake in the middle and no way out in any direction.' },
   { id: 'sedgewater', name: 'Sedgewater Fen', url: 'worlds/sedgewater.json',
+    form: 'Fen', size: '128 × 128 blocks',
     note: 'Sedge, channels and boardwalks. Stay on the boards until you know it.' },
   { id: 'bellrock', name: 'Bellrock Coast', url: 'worlds/bellrock.json',
+    form: 'Coast', size: '120 × 136 blocks',
     note: 'A beach at the bottom of the town and downs stepping up behind it.' },
 ];
 

@@ -44,6 +44,11 @@
  *                      question for the running game (sim/Ground.js), not for
  *                      the file that opened the place.
  *
+ *   ARCHITECTURE       Built-in, place-specific construction. Groups contain
+ *                      primitive boxes plus their landing/portal semantics.
+ *                      Unlike an object type, this is authored by the room: a
+ *                      staircase is not movable furniture wearing a portal.
+ *
  *   PRIVATE (`zones`)  Whose floor you are standing on. DENSE, like surface and
  *                      elevation, because "is this tile someone's" is a question
  *                      about every tile -- and because a char grid is the only
@@ -343,6 +348,101 @@ function dialogOpensShop({ nodes }) {
     opens(n.do) || (n.choices ?? []).some((c) => opens(c.do)));
 }
 
+function parseArchitecture(raw, kind, width, height) {
+  const source = raw ?? {};
+  if (!source || typeof source !== 'object' || Array.isArray(source)) {
+    throw new WorldFileError('"architecture" must be an object', 'architecture');
+  }
+  if (raw !== undefined && kind !== 'interior') {
+    throw new WorldFileError('scene architecture is currently interior-only', 'architecture');
+  }
+
+  const apronDepth = source.apronDepth ?? 3.25;
+  if (!Number.isFinite(apronDepth) || apronDepth < 1 || apronDepth > 8) {
+    throw new WorldFileError('"apronDepth" must be a number from 1 to 8', 'architecture.apronDepth');
+  }
+  const rawGroups = source.groups ?? [];
+  if (!Array.isArray(rawGroups)) throw new WorldFileError('"groups" must be an array', 'architecture.groups');
+
+  const ids = new Set();
+  const groups = rawGroups.map((group, i) => {
+    const path = `architecture.groups[${i}]`;
+    if (!group || typeof group !== 'object' || Array.isArray(group)) {
+      throw new WorldFileError('an architecture group must be an object', path);
+    }
+    const id = req(group, 'id', path);
+    if (typeof id !== 'string' || !id || ids.has(id)) {
+      throw new WorldFileError('"id" must be a unique non-empty string', path);
+    }
+    ids.add(id);
+
+    const required = group.requiresHouseStories;
+    if (required !== undefined && (!Number.isInteger(required) || required < 1 || required > 3)) {
+      throw new WorldFileError('"requiresHouseStories" must be a house tier from 1 to 3', path);
+    }
+
+    const landingColumns = group.landingColumns ?? [];
+    if (!Array.isArray(landingColumns) || landingColumns.some((x) => !Number.isInteger(x) || x < 0 || x >= width)) {
+      throw new WorldFileError(`"landingColumns" must contain columns inside the ${width}-tile grid`, path);
+    }
+
+    const rawParts = req(group, 'parts', path);
+    if (!Array.isArray(rawParts) || !rawParts.length) {
+      throw new WorldFileError('"parts" must be a non-empty array', path);
+    }
+    const parts = rawParts.map((part, j) => {
+      const partPath = `${path}.parts[${j}]`;
+      if (!part || typeof part !== 'object' || Array.isArray(part) || part.primitive !== 'box') {
+        throw new WorldFileError('an architecture part must use primitive "box"', partPath);
+      }
+      const at = req(part, 'at', partPath);
+      const size = req(part, 'size', partPath);
+      const rotation = part.rotation ?? [0, 0, 0];
+      if (!Array.isArray(at) || at.length !== 3 || !at.every(Number.isFinite)) {
+        throw new WorldFileError('"at" must be three finite coordinates', partPath);
+      }
+      if (!Array.isArray(size) || size.length !== 3 || !size.every((n) => Number.isFinite(n) && n > 0)) {
+        throw new WorldFileError('"size" must be three positive dimensions', partPath);
+      }
+      if (!Array.isArray(rotation) || rotation.length !== 3 || !rotation.every(Number.isFinite)) {
+        throw new WorldFileError('"rotation" must be three finite degree values', partPath);
+      }
+      if (typeof part.color !== 'string' || !/^#[0-9a-f]{6}$/i.test(part.color)) {
+        throw new WorldFileError('"color" must be a six-digit hex string', partPath);
+      }
+      return { primitive: 'box', at: [...at], size: [...size], rotation: [...rotation], color: Number(`0x${part.color.slice(1)}`) };
+    });
+
+    let portal = null;
+    if (group.portal !== undefined) {
+      const p = `${path}.portal`;
+      const tile = req(group.portal, 'tile', p);
+      const to = req(group.portal, 'to', p);
+      const facingName = group.portal.facing ?? 'south';
+      const out = group.portal.out ?? null;
+      if (!Array.isArray(tile) || tile.length !== 2 || !tile.every(Number.isInteger)) {
+        throw new WorldFileError('"tile" must be [x, z] integers', p);
+      }
+      const [x, z] = tile;
+      if (x < 0 || x >= width || z < 0 || z >= height + Math.floor(apronDepth)) {
+        throw new WorldFileError('portal tile lies outside the scene and its landing', p);
+      }
+      if (typeof to !== 'string' || !to) throw new WorldFileError('"to" must be a place URL', p);
+      if (DIR_FROM_NAME[facingName] === undefined) throw new WorldFileError(`unknown facing "${facingName}"`, p);
+      if (out !== null && (!Array.isArray(out) || out.length !== 2 || !out.every(Number.isInteger))) {
+        throw new WorldFileError('"out" must be [x, z] integers', p);
+      }
+      portal = { tile: [...tile], to, facing: DIR_FROM_NAME[facingName], out: out ? [...out] : null, label: group.portal.label ?? null };
+    }
+    return {
+      id, requiresHouseStories: required ?? null,
+      landingColumns: [...new Set(landingColumns)], parts, portal,
+    };
+  });
+
+  return { apronDepth, groups };
+}
+
 /**
  * Parse and validate a raw world JSON object into a normalised WorldData.
  * Throws WorldFileError with a human-readable path on any problem, because
@@ -412,6 +512,7 @@ export function parseWorldFile(raw) {
   if (!Number.isInteger(width) || !Number.isInteger(height) || width < 1 || height < 1) {
     throw new WorldFileError('width/height must be positive integers', 'grid');
   }
+  const architecture = parseArchitecture(raw.architecture, kind, width, height);
 
   const layers = raw.layers ?? {};
 
@@ -548,7 +649,6 @@ export function parseWorldFile(raw) {
     if (props.playerHome !== undefined && typeof props.playerHome !== 'boolean') {
       throw new WorldFileError('"props.playerHome" must be true or false', path);
     }
-
     objects.push({
       id, type, rotation,
       tile: [ax, az],
@@ -740,8 +840,8 @@ export function parseWorldFile(raw) {
       throw new WorldFileError('"tile" must be [x, z] integers', p);
     }
     const [ex, ez] = tile;
-    if (ex < 0 || ez < 0 || ex >= width || ez >= height) {
-      throw new WorldFileError(`tile [${ex}, ${ez}] is outside the ${width}x${height} grid`, p);
+    if (ex < 0 || ez < 0 || ex >= width || ez >= height + 3) {
+      throw new WorldFileError(`tile [${ex}, ${ez}] is outside the place and its entrance landing`, p);
     }
     return { tile: [ex, ez], label: e.label ?? null };
   });
@@ -760,6 +860,7 @@ export function parseWorldFile(raw) {
     terrain,
     width, height,
     surface, elevation, flags,
+    architecture,
     zones, zoneGrid,
     objects,
     animals,

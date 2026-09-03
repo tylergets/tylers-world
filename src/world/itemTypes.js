@@ -170,6 +170,7 @@ export const ITEM_TYPES = {
     label: 'Turnip',
     stack: 10,
     value: 16,
+    food: { nutrition: 15 },
     height: 0.22,
     swatch: 0xece4d4,
     palette: { root: 0xece4d4, rootHi: 0xf7f2e7, crown: 0xa87cc0, leaf: 0x4f9e3f },
@@ -180,6 +181,7 @@ export const ITEM_TYPES = {
     // whose single fruit is worth the wait it took.
     stack: 4,
     value: 110,
+    food: { nutrition: 40 },
     height: 0.3,
     swatch: 0xd97f2e,
     palette: { skin: 0xd97f2e, skinHi: 0xeda04f, rib: 0xb5661f, stem: 0x6b4a30 },
@@ -188,6 +190,7 @@ export const ITEM_TYPES = {
     label: 'Marsh Cress',
     stack: 10,
     value: 20,
+    food: { nutrition: 10 },
     height: 0.18,
     swatch: 0x3f9e6a,
     palette: { leaf: 0x3f9e6a, leafHi: 0x5cba85, sprig: 0xd9e8c4, tie: 0xb98d5f },
@@ -373,19 +376,19 @@ export const ITEM_TYPES = {
   // shot, what it hits, what falls out of it -- is a rule of the simulation
   // and lives in sim/tools.js.
   'tool.gun': {
-    label: 'Gun',
+    label: 'Airsoft Gun',
     stack: 1,
     value: 320,
     height: 0.3,
     swatch: 0x6b5a4a,
-    palette: { stock: 0x6b4a30, stockHi: 0x8a6242, barrel: 0x585f66, barrelHi: 0x8f969c, band: 0x3a3f45 },
+    palette: { stock: 0x6b4a30, stockHi: 0x8a6242, barrel: 0x585f66, barrelHi: 0x8f969c, band: 0x3a3f45, tip: 0xff6a1a },
     tool: { verb: 'shoot', range: 8, cooldown: 0.9 },
   },
   // The axe's opposite number. `mine` and not a second `chop`, because a verb
   // in this registry names a RULE in sim/tools.js and those two rules differ in
-  // what they will act on: chop refuses everything that is not a tree and mine
-  // refuses everything that is not a rock. One verb with a category test inside
-  // it would mean a pickaxe that fells oaks and an axe that splits boulders,
+  // what they will act on: chop fells trees and can only very slowly splinter
+  // furniture, while mine refuses everything that is not a rock. One generic
+  // verb would mean a pickaxe that fells oaks and an axe that splits boulders,
   // which is the whole reason to own two.
   'tool.pickaxe': {
     label: 'Pickaxe',
@@ -426,13 +429,22 @@ export const ITEM_TYPES = {
   // rules had to learn what a machine gun is. See main.js, where the tool key
   // is read as an edge and -- for this one flag -- also as a held state.
   'tool.machinegun': {
-    label: 'Machine Gun',
+    label: 'Automatic Airsoft Gun',
     stack: 1,
     value: 900,
     height: 0.3,
     swatch: 0x4a5058,
-    palette: { stock: 0x3f454b, stockHi: 0x5e666e, barrel: 0x4a5058, barrelHi: 0x9aa0a6, band: 0x2b2f34 },
+    palette: { stock: 0x3f454b, stockHi: 0x5e666e, barrel: 0x4a5058, barrelHi: 0x9aa0a6, band: 0x2b2f34, tip: 0xff6a1a },
     tool: { verb: 'shoot', range: 10, cooldown: 0.11, auto: true },
+  },
+  'tool.machine-gun': {
+    label: 'Machine Gun',
+    stack: 1,
+    value: 2400,
+    height: 0.3,
+    swatch: 0x252a2f,
+    palette: { stock: 0x252a2f, stockHi: 0x3c434a, barrel: 0x171a1d, barrelHi: 0x626a72, band: 0x101214 },
+    tool: { verb: 'shoot', range: 11, cooldown: 0.16, auto: true, lethal: true, ammo: 'item.bullets' },
   },
 
   // ------------------------------------------------------------- carried --
@@ -504,12 +516,20 @@ export const ITEM_TYPES = {
   // shot is the first recurring reason to have coins, and it is what makes
   // each shot a decision rather than a key that is always available.
   'item.shot': {
-    label: 'Shot',
+    label: 'BBs',
     stack: 40,
     value: 6,
     height: 0.12,
-    swatch: 0xb08d3f,
-    palette: { brass: 0xb08d3f, brassHi: 0xd8b45e, wad: 0xc8402f },
+    swatch: 0xf2f3ee,
+    palette: { bottle: 0x79aeca, bottleHi: 0xa9d3e5, cap: 0x3d5968, bb: 0xf2f3ee },
+  },
+  'item.bullets': {
+    label: 'Bullets',
+    stack: 40,
+    value: 20,
+    height: 0.12,
+    swatch: 0xc99a45,
+    palette: { brass: 0xc99a45, brassHi: 0xf0c96b, lead: 0x8d7a62 },
   },
   // And the other half of that loop: what a shot animal is worth over a
   // counter. Ammunition is the sink, game is the source, and the shop prices
@@ -1093,6 +1113,9 @@ export function itemType(typeId) {
   if (!t) throw new Error(`Unknown item type: "${typeId}"`);
   return t;
 }
+
+/** Food metadata for future eating and cooking systems, or null when inedible. */
+export function foodOf(typeId) { return ITEM_TYPES[typeId]?.food ?? null; }
 
 /** The flat-pack item that assembles into an object type, or null. */
 export function furnitureItemFor(objectTypeId) {

@@ -88,7 +88,9 @@ export class Fixtures {
     if (!obj || this.world.felled.has(obj.id)) return null;
     const interact = interactOf(obj.type);
     if (!interact) return null;
-    if (!isReady()) return null;   // engine still loading; the prompt would lie
+    // Built-in documents need no script engine. Kit interactions still wait
+    // until their source can run, or the prompt would promise a dead action.
+    if (!interact.document && !interact.action && !isReady()) return null;
     const state = this.state.get(obj.id) ?? objectType(obj.type).state;
     if (!testCond(interact.when, { ...ctx, state })) return null;
     return { object: obj, label: interact.label };
@@ -101,6 +103,7 @@ export class Fixtures {
    */
   use(obj, ctx) {
     const interact = interactOf(obj.type);
+    if (interact?.document || interact?.action) return { ok: true, lines: [] };
     if (!interact?.source) return { ok: false, lines: [], error: 'nothing to run' };
 
     const state = this.stateOf(obj);

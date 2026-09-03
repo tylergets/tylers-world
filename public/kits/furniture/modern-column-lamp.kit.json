@@ -1,0 +1,53 @@
+{
+  "format": "tw.kit",
+  "version": 1,
+  "meta": {
+    "id": "turnip.modern-column-lamp",
+    "name": "Hollowmilk Modern Column Lamp"
+  },
+  "types": {
+    "fixture.modern-column-lamp": {
+      "kind": "object",
+      "label": "Hollowmilk Modern Column Lamp",
+      "footprint": { "w": 1, "d": 1 },
+      "height": 2.47,
+      "squash": 0.22,
+      "palette": {
+        "pale": "#ffffff",
+        "metal": "#b6bcc1",
+        "glass": "#dceaf4"
+      },
+      "parts": [
+        { "prim": "cyl", "at": [0, 0.06, 0], "size": [0.3, 0.12, 0.3], "color": "metal" },
+        { "prim": "taper", "at": [0, 1.204, 0], "size": [0.09, 2.25, 0.09], "color": "metal" },
+        { "prim": "cyl", "at": [0, 0.471, 0], "size": [0.11, 0.08, 0.11], "color": "metal" },
+        { "prim": "cyl", "at": [0, 1.413, 0], "size": [0.085, 0.05, 0.085], "color": "metal" },
+        { "prim": "blob", "at": [0, 2.266, 0], "size": [0.2, 0.2, 0.2], "color": "glass" },
+        { "prim": "cyl", "at": [0, 2.096, 0], "size": [0.14, 0.07, 0.14], "color": "metal" },
+        { "prim": "blob", "at": [0, 2.226, 0], "size": [0.105, 0.13, 0.105], "color": "pale", "anim": { "pulse": { "amp": 0.12, "rate": 0.7 } } }
+      ],
+      "light": {
+        "color": "#e5f3ff",
+        "height": 2.16,
+        "range": 8,
+        "intensity": 14
+      }
+    },
+    "kititem.modern-column-lamp": {
+      "kind": "item",
+      "label": "Hollowmilk Modern Column Lamp",
+      "value": 935,
+      "stack": 1,
+      "swatch": "#8c918a",
+      "badge": "crate",
+      "furniture": "fixture.modern-column-lamp",
+      "site": "outdoors",
+      "palette": {
+        "wrap": "#d9c7a4",
+        "wrapHi": "#eee1c7",
+        "strap": "#8a6242",
+        "mark": "#8c918a"
+      }
+    }
+  }
+}
