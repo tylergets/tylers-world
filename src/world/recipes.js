@@ -21,66 +21,75 @@
 
 import { Draft } from './draft.js';
 
-export const HOUSE_PRICE = { 2: 1800, 3: 3600 };
-
 const TOWN_HALL = { label: 'Town Hall', interior: 'worlds/interiors/town-hall.json' };
 
 function addTownHall(d, x, z, allow = ['g', 'c'], radius = 20, level = '0') {
   return d.placeNear('town.hall', 'building.townhall', x, z, allow, radius, TOWN_HALL, level);
 }
 
-/** Place a recipe-specific housewright on the proven-open approach to the home. */
-function addHousewright(d, home, { id, name, title, voice, flavor }) {
-  const candidates = [
-    [home[0] + 2, home[1] + 3], [home[0], home[1] + 3],
-    [home[0] + 3, home[1] + 3], [home[0] + 2, home[1] + 4],
-  ];
-  const tile = candidates.find(([x, z]) => d.free(x, z, 1, 1, ['g', 'c', 's']));
-  if (!tile) throw new Error(`${id}: no open tile beside the player home`);
+const NEIGHBOR_DOOR_X = {
+  'building.cottage': 1,
+  'building.cabin': 2,
+  'building.bungalow': 2,
+};
 
-  d.person({
-    id, type: 'folk.villager', tile, facing: 'north',
-    props: { name, title, voice },
-    dialog: {
-      start: 'hello',
-      nodes: {
-        hello: { text: flavor, then: 'menu' },
-        menu: {
-          text: 'The footprint stays exactly where it is. We build upward, and every new floor is yours to use.',
-          choices: [
-            {
-              text: `Add a second story — ${HOUSE_PRICE[2]} coin.`,
-              when: { houseStories: 1, coins: HOUSE_PRICE[2] },
-              do: [{ coins: -HOUSE_PRICE[2] }, { houseStories: 2 }],
-              to: 'second',
-            },
-            {
-              text: `I need ${HOUSE_PRICE[2]} coin for the second story.`,
-              when: { all: [{ houseStories: 1 }, { not: { coins: HOUSE_PRICE[2] } }] },
-              to: 'short',
-            },
-            {
-              text: `Add a third story — ${HOUSE_PRICE[3]} coin.`,
-              when: { houseStories: 2, coins: HOUSE_PRICE[3] },
-              do: [{ coins: -HOUSE_PRICE[3] }, { houseStories: 3 }],
-              to: 'third',
-            },
-            {
-              text: `I need ${HOUSE_PRICE[3]} coin for the third story.`,
-              when: { all: [{ houseStories: 2 }, { not: { coins: HOUSE_PRICE[3] } }] },
-              to: 'short',
-            },
-            { text: 'Is the house finished?', when: { houseStories: 3 }, to: 'complete' },
-            { text: 'Not today.', to: 'endline' },
-          ],
-        },
-        second: { text: 'Two stories, sound and square. The new stair is ready inside.', then: 'end' },
-        third: { text: 'Three stories. Roof raised, chimney drawn, top floor ready. That house is complete.', then: 'end' },
-        complete: { text: 'Complete at three stories. Any higher and it stops being a house and starts arguing with the weather.', then: 'end' },
-        short: { text: 'Keep the plan. Come back when the purse is ready; the ground will not move.', then: 'end' },
-        endline: { text: 'No harm done. A measured house waits better than people do.', then: 'end' },
-      },
+const NEIGHBOR_HOME = {
+  cottage: ['building.cottage', 'Cottage'],
+  cabin: ['building.cabin', 'Cabin'],
+  bungalow: ['building.bungalow', 'Bungalow'],
+};
+
+function neighbor(id, name, title, style, tile, extra = {}) {
+  const [type, home] = NEIGHBOR_HOME[style];
+  let hash = 0;
+  for (const char of id) hash = (hash * 31 + char.charCodeAt(0)) >>> 0;
+  return {
+    id, name, title, type, home, tile,
+    voice: {
+      pitch: 0.78 + (hash % 40) / 100,
+      rate: 19 + (hash % 7),
+      timbre: ['sine', 'triangle', 'square', 'sawtooth'][hash % 4],
     },
+    greeting: `${name}. Around here I am the ${title.toLowerCase()}.`,
+    again: `${title} work does not finish itself.`,
+    ...extra,
+  };
+}
+
+/** Add owned homes before scenery is scattered, then join each doorstep to town. */
+function addNeighbors(d, specs, connect) {
+  return specs.map((spec) => {
+    const house = d.placeNear(
+      `home.${spec.id}`,
+      spec.type,
+      spec.tile[0],
+      spec.tile[1],
+      spec.allow ?? ['g'],
+      spec.radius ?? 12,
+      {
+        label: `${spec.name}'s ${spec.home}`,
+        interior: `worlds/interiors/home-${spec.id}.json`,
+        owner: `folk.${spec.id}`,
+      },
+      spec.level ?? '0',
+    );
+    const doorstep = [house[0] + NEIGHBOR_DOOR_X[spec.type], house[1] + 3];
+    connect(doorstep, spec, house);
+    d.person({
+      id: `folk.${spec.id}`,
+      type: 'folk.villager',
+      tile: doorstep,
+      facing: 'south',
+      props: { name: spec.name, title: spec.title, roam: 5, voice: spec.voice },
+      dialog: {
+        start: 'hello',
+        nodes: {
+          hello: { text: `${spec.greeting} That's my place behind me. Come say hello before you let yourself in.`, then: 'again' },
+          again: { text: spec.again },
+        },
+      },
+    });
+    return house;
   });
 }
 
@@ -180,6 +189,20 @@ export function meadowbrook({
   const bungalow = d.placeNear('home.tobin', 'building.bungalow', cx + 15, cz + 8, ['g'], 10,
     { label: "Tobin's Bungalow", interior: 'worlds/interiors/home-tobin.json', owner: 'folk.tobin' }, '0');
   const hall = addTownHall(d, cx - 4, cz + 8, ['g', 'c'], 18);
+  addNeighbors(d, [
+    {
+      id: 'lark', name: 'Lark', title: 'Hedge Binder', home: 'Cabin', type: 'building.cabin',
+      tile: [cx - 18, cz + 7], allow: ['g', 's'], voice: { pitch: 1.12, rate: 22, timbre: 'triangle' },
+      greeting: 'Lark. I keep the west hedges from swallowing the lane.',
+      again: 'The hedge is winning today, but only by inches.', road: [cx - 10, cz + 12],
+    },
+    {
+      id: 'juniper', name: 'Juniper', title: 'Orchard Keeper', home: 'Bungalow', type: 'building.bungalow',
+      tile: [cx + 16, cz + 15], allow: ['g', 's'], voice: { pitch: 0.91, rate: 20, timbre: 'sine' },
+      greeting: 'Juniper. The young fruit trees east of the square are mine to worry over.',
+      again: 'No blossom yet. Ask me again after warmer rain.', road: [cx + 12, cz + 14],
+    },
+  ], (door, spec) => d.pathL(...door, ...spec.road, { level: '0' }));
 
   // Approaches, drawn AFTER placement so a building that had to shuffle takes
   // its path with it. Doors face south, so the approach starts below them.
@@ -192,11 +215,6 @@ export function meadowbrook({
   d.pathL(bungalow[0] + 2, bungalow[1] + 3, cx + 11, cz + 12, { level: '0' });
   d.pathL(hall[0] + 4, hall[1] + 6, cx, cz + 12, { level: '0' });
   d.pathL(lookout[0] + 2, lookout[1] + 2, cx - 1, cz - 13, { level: '1' });
-  addHousewright(d, home, {
-    id: 'folk.renna', name: 'Renna', title: 'Meadowbrook Housewright',
-    voice: { pitch: 1.08, rate: 23, timbre: 'triangle' },
-    flavor: 'Renna. I set rafters by the wind off the meadow. Your foundations will carry two floors more without stealing another inch of garden.',
-  });
 
   // The people, standing on their own doorsteps -- the tile directly south of
   // the door, which is the one tile outside every house that placement has
@@ -898,6 +916,26 @@ export function sourwood({
   const clothier = d.placeNear('store.clothier', 'building.clothier', furniture[0] + 7, furniture[1], ['g'], 12,
     { label: 'Cuff & Collar', interior: 'worlds/interiors/store-clothier.json' }, '0');
   const hall = addTownHall(d, Math.round(creek(spawnRow)) - 11, spawnRow, ['g', 'c'], 24);
+  addNeighbors(d, [
+    {
+      id: 'alder', name: 'Alder', title: 'Creek Reader', home: 'Cottage', type: 'building.cottage',
+      tile: [Math.round(creek(18)) - 8, 18], voice: { pitch: 0.8, rate: 19, timbre: 'sawtooth' },
+      greeting: 'Alder. I read the creek by what it leaves on the gravel.',
+      again: 'Water is low. The stones are saying so plainly.',
+    },
+    {
+      id: 'fern', name: 'Fern', title: 'Basket Maker', home: 'Cabin', type: 'building.cabin',
+      tile: [Math.round(creek(50)) - 9, 50], voice: { pitch: 1.17, rate: 23, timbre: 'triangle' },
+      greeting: 'Fern. Every useful basket in the holler starts as a wet switch in my yard.',
+      again: 'The willow is soaking. Tomorrow it will listen.',
+    },
+    {
+      id: 'hollis', name: 'Hollis', title: 'Ford Tender', home: 'Bungalow', type: 'building.bungalow',
+      tile: [Math.round(creek(72)) - 9, 72], voice: { pitch: 0.96, rate: 25, timbre: 'square' },
+      greeting: 'Hollis. I reset the ford after every hard rain.',
+      again: 'The crossing is sound enough if you place your feet.',
+    },
+  ], (door) => d.pathL(...door, Math.round(creek(door[1] + 1)) + 4, door[1] + 1, { level: '0' }));
 
   // Each door out to the road. The road is the only through-line in a holler,
   // so everything hangs off it.
@@ -907,11 +945,6 @@ export function sourwood({
   d.pathL(clothier[0] + 2, clothier[1] + 4, Math.round(creek(clothier[1] + 5)) + 4, clothier[1] + 5, { level: '0' });
   d.pathL(hall[0] + 4, hall[1] + 6, Math.round(creek(hall[1] + 7)) + 4, hall[1] + 7, { level: '0' });
   d.pathL(gate[0] + 2, gate[1] + 2, Math.round(creek(gate[1] + 3)) + 4, gate[1] + 3, { level: '0' });
-  addHousewright(d, home, {
-    id: 'folk.eldra', name: 'Eldra', title: 'Holler Carpenter',
-    voice: { pitch: 0.82, rate: 19, timbre: 'sawtooth' },
-    flavor: 'Eldra. Old holler timber talks before it breaks. Yours says the stone is deep and the house can climb without spreading into the creek.',
-  });
 
   const counts = {
     boulder: d.scatter('boulder', 'rock.large', 18, ['g', 's'], 4200, '0'),
@@ -1075,6 +1108,23 @@ export function tidewrack({
   const cottage = d.placeNear('home.marnie', 'building.cottage', cx - out(0.57), cz - 3, ['g'], 10,
     { label: "Marnie's Cottage", interior: 'worlds/interiors/home-marnie.json', owner: 'folk.marnie' }, '0');
   const hall = addTownHall(d, cx + out(0.35), cz + out(0.22), ['g', 'c'], 22);
+  addNeighbors(d, [
+    {
+      id: 'coral', name: 'Coral', title: 'Net Mender', home: 'Cottage', type: 'building.cottage',
+      tile: [cx - out(0.42), cz - out(0.42)], allow: ['g', 's'], voice: { pitch: 1.15, rate: 24, timbre: 'triangle' },
+      greeting: 'Coral. Nets come to me after the sea has finished arguing with them.',
+      again: "This knot will hold. The next one is the sea's concern.",
+    },
+    {
+      id: 'selkie', name: 'Selkie', title: 'Shell Lime Burner', home: 'Cabin', type: 'building.cabin',
+      tile: [cx + out(0.40), cz + out(0.42)], allow: ['g', 's'], voice: { pitch: 0.87, rate: 21, timbre: 'sine' },
+      greeting: 'Selkie. I burn broken shell into lime and keep the whole ring whitewashed.',
+      again: 'Stand upwind of the kiln. That advice is free.',
+    },
+  ], (door) => {
+    const a = Math.atan2(door[1] - cz, door[0] - cx);
+    d.pathL(...door, Math.round(cx + Math.cos(a) * ringR), Math.round(cz + Math.sin(a) * ringR), { level: '0' });
+  });
 
   // Doors face south, so every approach starts below its door and runs to the
   // nearest point of the ring road.
@@ -1086,11 +1136,6 @@ export function tidewrack({
   d.pathL(hall[0] + 4, hall[1] + 6, cx + out(0.38), cz + out(0.28), { level: '0' });
   d.pathL(landing[0] + 2, landing[1] + 2, cx, cz + out(0.6), { level: '0' });
   d.pathL(lookout[0] + 2, lookout[1] + 2, cx - 1, cz + dune[1] + 2, { level: '1' });
-  addHousewright(d, home, {
-    id: 'folk.calder', name: 'Calder', title: 'Storm-frame Builder',
-    voice: { pitch: 0.96, rate: 25, timbre: 'square' },
-    flavor: 'Calder. Salt tests every joint for free. I can raise your house in the same footprint and brace each new floor against a Tidewrack gale.',
-  });
 
   // THE PEOPLE. Three of them, one per arm of the ring, and none of them
   // visible from either of the others -- which on a map with a lake in the
@@ -1576,6 +1621,26 @@ export function thistledown({
   const croft = d.placeNear('home.nan', 'building.cottage', road - 8, 24, ['g'], 11,
     { label: "Nan's Croft", interior: 'worlds/interiors/home-nan.json', owner: 'folk.nan' }, '0');
   const hall = addTownHall(d, road - 13, spawnRow, ['g', 'c'], 24);
+  addNeighbors(d, [
+    {
+      id: 'heather', name: 'Heather', title: 'Wool Carder', home: 'Cottage', type: 'building.cottage',
+      tile: [road + 6, 17], voice: { pitch: 1.08, rate: 21, timbre: 'triangle' },
+      greeting: 'Heather. I card the burrs and weather out of downland wool.',
+      again: 'Clean fleece first, clever work second.',
+    },
+    {
+      id: 'gale', name: 'Gale', title: 'Milestone Cutter', home: 'Cabin', type: 'building.cabin',
+      tile: [road - 10, 42], voice: { pitch: 0.78, rate: 20, timbre: 'square' },
+      greeting: 'Gale. I cut the stones that tell travellers how much farther they regret coming.',
+      again: 'The next marker says twelve. It does not say twelve what.',
+    },
+    {
+      id: 'briar', name: 'Briar', title: 'Goatherd', home: 'Bungalow', type: 'building.bungalow',
+      tile: [road + 6, 68], voice: { pitch: 0.99, rate: 24, timbre: 'sawtooth' },
+      greeting: 'Briar. The goats know every path through the gap and approve of none.',
+      again: 'If one follows you, it was already planning to.',
+    },
+  ], (door) => d.pathL(...door, road, door[1] + 1, { level: '0' }));
 
   d.pathL(home[0] + 1, home[1] + 3, road, home[1] + 4, { level: '0' });
   d.pathL(store[0] + 2, store[1] + 4, road, store[1] + 5, { level: '0' });
@@ -1585,11 +1650,6 @@ export function thistledown({
   d.pathL(hall[0] + 4, hall[1] + 6, road, hall[1] + 7, { level: '0' });
   d.pathL(north[0] + 2, north[1] + 2, road, north[1] + 3, { level: '0' });
   d.pathL(south[0] + 2, south[1] + 2, road, south[1] + 3, { level: '0' });
-  addHousewright(d, home, {
-    id: 'folk.moss', name: 'Moss', title: 'Pass Mason',
-    voice: { pitch: 1.16, rate: 20, timbre: 'triangle' },
-    flavor: 'Moss. The pass has taught me to build narrow and high. Your walls are plumb; I can give them another floor or two without widening the path.',
-  });
 
   // THE PEOPLE. Three, spread the length of the road, and one of them
   // deliberately at the top of a trail: a bench you have climbed for the view
@@ -2079,6 +2139,26 @@ export function rimrock({
   const cottage = d.placeNear('home.pike', 'building.cottage', cx - 16, cz + 13, ['g', 's'], 11,
     { label: "Pike's Place", interior: 'worlds/interiors/home-pike.json', owner: 'folk.pike' }, '0');
   const hall = addTownHall(d, cx - 4, cz + 12, ['g', 's', 'c'], 20);
+  addNeighbors(d, [
+    {
+      id: 'mesa', name: 'Mesa', title: 'Rain Jar Keeper', home: 'Cottage', type: 'building.cottage',
+      tile: [cx - 19, cz + 2], allow: ['g', 's'], voice: { pitch: 1.04, rate: 22, timbre: 'sine' },
+      greeting: 'Mesa. I keep rain by the jar because the sky seldom keeps appointments.',
+      again: 'Three jars full. That counts as a wet season here.', road: [cx - 12, cz + 8],
+    },
+    {
+      id: 'flint', name: 'Flint', title: 'Slickrock Polisher', home: 'Cabin', type: 'building.cabin',
+      tile: [cx + 16, cz + 15], allow: ['g', 's'], voice: { pitch: 0.76, rate: 19, timbre: 'square' },
+      greeting: 'Flint. I polish stone until it admits the sky was there first.',
+      again: 'That shine is honest work, not water.', road: [cx + 10, cz + 10],
+    },
+    {
+      id: 'sora', name: 'Sora', title: 'Juniper Distiller', home: 'Bungalow', type: 'building.bungalow',
+      tile: [cx + 15, cz - 1], allow: ['g', 's'], voice: { pitch: 1.21, rate: 25, timbre: 'triangle' },
+      greeting: 'Sora. I make bitter oil from the juniper that survives the rim.',
+      again: 'A drop is medicine. Two drops are a lesson.', road: [cx + 8, cz + 8],
+    },
+  ], (door, spec) => d.pathL(...door, ...spec.road, { level: '0' }));
 
   d.pathL(home[0] + 1, home[1] + 3, cx - 1, cz + 8, { level: '0' });
   d.pathL(store[0] + 2, store[1] + 4, cx, cz + 8, { level: '0' });
@@ -2088,11 +2168,6 @@ export function rimrock({
   d.pathL(hall[0] + 4, hall[1] + 6, cx, cz + 10, { level: '0' });
   d.pathL(head[0] + 2, head[1] + 2, cx - 1, cz - 13, { level: '1' });
   d.pathL(lip[0] + 2, lip[1] + 2, cx - 1, cz + 21, { level: '0' });
-  addHousewright(d, home, {
-    id: 'folk.iona', name: 'Iona', title: 'Mesa Framer',
-    voice: { pitch: 0.9, rate: 27, timbre: 'sawtooth' },
-    flavor: 'Iona. Out here a roof has nowhere to hide. I can lift yours one story at a time, keep the footprint, and pin the frame hard to the rimrock.',
-  });
 
   // THE PEOPLE. Three, and every one of them is somewhere with a view, because
   // on a mesa that is the only geography there is: no valley to be up or down
@@ -2510,6 +2585,23 @@ export function ashkettle({
     { label: "Vesper's", interior: 'worlds/interiors/home-vesper.json', owner: 'folk.vesper' }, '0');
   const [thx, thz] = at(1.3, 0.58);
   const hall = addTownHall(d, thx - 4, thz, ['g', 'c'], 26);
+  addNeighbors(d, [
+    {
+      id: 'ember', name: 'Ember', title: 'Ash Glazier', home: 'Cottage', type: 'building.cottage',
+      tile: at(4.65, 0.60), allow: ['g', 'c', 's'], voice: { pitch: 1.14, rate: 23, timbre: 'triangle' },
+      greeting: 'Ember. Kettle ash makes green glass if you keep the heat patient.',
+      again: 'The bubbles are part of it. Perfect glass belongs elsewhere.',
+    },
+    {
+      id: 'basalt', name: 'Basalt', title: 'Warm-Stone Baker', home: 'Cabin', type: 'building.cabin',
+      tile: at(5.45, 0.59), allow: ['g', 'c', 's'], voice: { pitch: 0.73, rate: 20, timbre: 'square' },
+      greeting: 'Basalt. I bake on stone the ground warms for nothing.',
+      again: 'The loaf is ready when the crust sounds hollow.',
+    },
+  ], (door) => {
+    const [rx, rz] = at(Math.atan2(door[1] - cz, door[0] - cx), ring);
+    d.pathL(...door, rx, rz, { level: '0' });
+  });
 
   // Every door out to the ring road, which is the only through-line there is.
   const toRing = (door, dz) => {
@@ -2523,11 +2615,6 @@ export function ashkettle({
   toRing([cottage[0] + 1, cottage[1]], 3);
   toRing([hall[0] + 4, hall[1]], 6);
   toRing([quay[0] + 2, quay[1]], 2);
-  addHousewright(d, home, {
-    id: 'folk.brin', name: 'Brin', title: 'Caldera Joiner',
-    voice: { pitch: 1.03, rate: 22, timbre: 'square' },
-    flavor: 'Brin. Ash dries timber mean and straight. Your house can rise twice over on its own floor plan, with joints cut for the kettle winds.',
-  });
 
   // THE PEOPLE. One on the floor, one at the water, one up on a terrace -- the
   // three heights the place has, which is the only way a bowl can spread
@@ -2920,6 +3007,23 @@ export function sedgewater({
   const cottage = d.placeNear('home.quill', 'building.cottage', qx - 1, qz, ['g'], 12,
     { label: "Quill's Hut", interior: 'worlds/interiors/home-quill.json', owner: 'folk.quill' }, '0');
   const hall = addTownHall(d, cx - 4, cz + toft[1] + 7, ['g', 'c'], 26);
+  addNeighbors(d, [
+    {
+      id: 'reed', name: 'Reed', title: 'Thatch Layer', home: 'Cottage', type: 'building.cottage',
+      tile: at(0.98, 0.48), allow: ['g', 's'], voice: { pitch: 0.94, rate: 21, timbre: 'sine' },
+      greeting: 'Reed. I cut thatch where the sedge grows straight and quiet.',
+      again: 'Dry stems above, wet roots below. Keep them that way.', walk: [0.98, 0.48],
+    },
+    {
+      id: 'marsh', name: 'Marsh', title: 'Eel Basket Weaver', home: 'Cabin', type: 'building.cabin',
+      tile: at(2.23, 0.48), allow: ['g', 's'], voice: { pitch: 0.81, rate: 19, timbre: 'sawtooth' },
+      greeting: 'Marsh. I weave traps with openings an eel understands too late.',
+      again: 'Nothing in the basket yet. That is how waiting looks.', walk: [2.23, 0.48],
+    },
+  ], (door, spec) => {
+    const [wx, wz] = at(...spec.walk);
+    d.pathL(...door, wx, wz, { level: '0' });
+  });
 
   // Every door back to the boardwalk that serves its wedge -- and back to the
   // NEAREST point of it, which is the point the house was wished at. Aiming
@@ -2937,11 +3041,6 @@ export function sedgewater({
   toWalk([cottage[0] + 1, cottage[1]], 3, sites.cottage, 0.50);
   d.pathL(hall[0] + 4, hall[1] + 6, cx, cz + toft[1] + 8, { level: '0' });
   d.pathL(staithe[0] + 2, staithe[1] + 2, cx - 1, cz + toft[1] + 2, { level: '1' });
-  addHousewright(d, home, {
-    id: 'folk.fenna', name: 'Fenna', title: 'Fen Pilewright',
-    voice: { pitch: 1.2, rate: 24, timbre: 'triangle' },
-    flavor: 'Fenna. In Sedgewater we trust the piles and spare the reeds. Yours will bear two more levels directly upward, no wider than it stands today.',
-  });
 
   // THE PEOPLE. One on the toft, because it is the only place you can see the
   // shape of a fen from; one at the far end of a boardwalk; one at home.
@@ -3309,6 +3408,26 @@ export function bellrock({
   const cottage = d.placeNear('home.sennen', 'building.cottage', road + 16, townRow(sites.cottage), ['g'], 12,
     { label: "Sennen's Cottage", interior: 'worlds/interiors/home-sennen.json', owner: 'folk.sennen' }, '0');
   const hall = addTownHall(d, road - 4, townRow(0.5), ['g', 'c'], 24);
+  addNeighbors(d, [
+    {
+      id: 'kelp', name: 'Kelp', title: 'Rope Walker', home: 'Cottage', type: 'building.cottage',
+      tile: [road - 23, townRow(0.72)], voice: { pitch: 0.86, rate: 22, timbre: 'sawtooth' },
+      greeting: 'Kelp. I stretch new rope between the road posts until it forgets how to kink.',
+      again: 'Step over the line, not on it.', lane: road - 16,
+    },
+    {
+      id: 'chalk', name: 'Chalk', title: 'Wall Limner', home: 'Cabin', type: 'building.cabin',
+      tile: [road + 20, townRow(0.72)], voice: { pitch: 1.18, rate: 24, timbre: 'triangle' },
+      greeting: 'Chalk. I mark boats, walls, and anything else expected to be found in fog.',
+      again: 'White first. Color after the weather agrees.', lane: road + 15,
+    },
+    {
+      id: 'morrow', name: 'Morrow', title: 'Bell Caster', home: 'Bungalow', type: 'building.bungalow',
+      tile: [road - 21, townRow(0.28)], voice: { pitch: 0.7, rate: 18, timbre: 'square' },
+      greeting: 'Morrow. I cast small bells for doors too far inland to hear the rock.',
+      again: 'A clear note needs room around it.', lane: road - 14,
+    },
+  ], (door, spec) => d.pathL(...door, spec.lane, roadZ, { level: '0' }));
 
   d.pathL(home[0] + 1, home[1] + 3, road - 6, roadZ, { level: '0' });
   d.pathL(store[0] + 2, store[1] + 4, road + 4, roadZ, { level: '0' });
@@ -3317,11 +3436,6 @@ export function bellrock({
   d.pathL(cottage[0] + 1, cottage[1] + 3, road + 12, roadZ, { level: '0' });
   d.pathL(hall[0] + 4, hall[1] + 6, road, roadZ, { level: '0' });
   d.pathL(quay[0] + 2, quay[1] + 2, road, quay[1] + 3, { level: '0' });
-  addHousewright(d, home, {
-    id: 'folk.ors', name: 'Ors', title: 'Downland Builder',
-    voice: { pitch: 0.76, rate: 21, timbre: 'square' },
-    flavor: 'Ors. Bellrock bells tell me which way a frame is leaning. Yours is honest. I can stack two useful floors above it and leave every outside tile alone.',
-  });
 
   // THE PEOPLE. One at the quay with the sea behind him, one up on the top
   // bench with the land behind her, and one in the middle who has to look at

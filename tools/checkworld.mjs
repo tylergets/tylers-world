@@ -45,7 +45,10 @@ import { Dialogue } from '../src/sim/Dialogue.js';
 import { Inventory } from '../src/sim/Inventory.js';
 import { Purse } from '../src/sim/Purse.js';
 import { Friends } from '../src/sim/Friends.js';
-import { grudgeFor } from '../src/world/grudge.js';
+import { grudgeFor, grudgeScripts } from '../src/world/grudge.js';
+import { theftScripts } from '../src/world/theft.js';
+import { closedScripts } from '../src/world/closed.js';
+import { smalltalkScripts, withSmallTalk } from '../src/world/smalltalk.js';
 import { unreachableNodes, END } from '../src/world/dialog.js';
 import { kits } from '../src/world/kits.js';
 import { Fixtures, interactOf } from '../src/sim/Fixtures.js';
@@ -372,6 +375,16 @@ function checkFolk(world) {
       + `${npc.shop ? `, ${own.shops} ways into the shop` : ''}${own.truncated ? ' (walk capped)' : ''}`);
     if (!own.ends) fail(`${npc.id}: no path through this dialog ever ends -- the player cannot leave`);
     if (npc.shop && !own.shops) fail(`${npc.id} has a shop no line of dialog opens`);
+
+    // The conversation as the player will actually have it: with a relationship
+    // greeting stitched on the front (world/smalltalk.js). One tier is enough
+    // here -- every exchange in every tier is walked on its own further down --
+    // because what this walk proves is the STITCH: that every rewired exit in
+    // the greeting lands on a real node of this particular authored graph, and
+    // that the way into the shop survives having a hello in front of it.
+    const greeted = walkScript(npc, withSmallTalk(npc, 'stranger', npc.dialog), { bag: stockedBag });
+    if (!greeted.ends) fail(`${npc.id}: the dialog with a greeting stitched on never ends`);
+    if (npc.shop && !greeted.shops) fail(`${npc.id}: the greeting stitch lost the way into the shop`);
     // Not a failure: a big script legitimately has more states than we walk.
     // Silence would be worse than the note, because a capped walk has NOT
     // proved the thing the uncapped one proves.
@@ -396,28 +409,33 @@ function checkFolk(world) {
  * man angry is the one bug in here that reads, on screen, as nothing happening.
  */
 function checkGrudge(npc) {
-  const script = grudgeFor(npc);
   const feud = () => { const f = new Friends(); f.anger(npc.id, 1); return f; };
 
-  for (const [what, bag] of [['carrying', stockedBag], ['empty-handed', emptyBag]]) {
-    const walk = walkScript(npc, script, { bag, friends: feud });
-    if (!walk.ends) fail(`${npc.id}: the grudge script never ends when ${what} -- shooting him is a soft lock`);
-    if (walk.shops) fail(`${npc.id}: an angry man is opening his shop`);
-  }
+  // Every severity this person can reach, because a repeat attack swaps in a
+  // harsher script and a soft lock hiding in tier three is still a soft lock.
+  for (let severity = 1; severity <= 3; severity++) {
+    const script = grudgeFor(npc, severity);
 
-  // The apology itself, driven straight rather than by search: take the first
-  // choice on offer while carrying something, and the feud must be over and
-  // the item must be gone.
-  const friends = feud();
-  const inv = stockedBag();
-  const before = inv.count('item.apple');
-  const d = new Dialogue(npc, { inventory: inv, purse: new Purse(0), friends }, script);
-  while (!d.done && !d.choices.length) d.advance();
-  if (!d.choices.length) fail(`${npc.id}: the grudge script offers no way to apologise`);
-  else d.choose(d.choices[0].index);
-  if (friends.hates(npc.id)) fail(`${npc.id}: giving him something did not end the feud`);
-  if (inv.count('item.apple') !== before - 1) fail(`${npc.id}: the apology cost nothing out of the bag`);
-  console.log(`     grudge: ${Object.keys(script.nodes).length} nodes, walked with and without a gift`);
+    for (const [what, bag] of [['carrying', stockedBag], ['empty-handed', emptyBag]]) {
+      const walk = walkScript(npc, script, { bag, friends: feud });
+      if (!walk.ends) fail(`${npc.id}: the severity-${severity} grudge never ends when ${what} -- shooting him is a soft lock`);
+      if (walk.shops) fail(`${npc.id}: an angry man is opening his shop`);
+    }
+
+    // The apology itself, driven straight rather than by search: take the
+    // first choice on offer while carrying something, and the feud must be
+    // over and the item must be gone.
+    const friends = feud();
+    const inv = stockedBag();
+    const before = inv.count('item.apple');
+    const d = new Dialogue(npc, { inventory: inv, purse: new Purse(0), friends }, script);
+    while (!d.done && !d.choices.length) d.advance();
+    if (!d.choices.length) fail(`${npc.id}: the severity-${severity} grudge offers no way to apologise`);
+    else d.choose(d.choices[0].index);
+    if (friends.hates(npc.id)) fail(`${npc.id}: giving him something did not end the severity-${severity} feud`);
+    if (inv.count('item.apple') !== before - 1) fail(`${npc.id}: the severity-${severity} apology cost nothing out of the bag`);
+  }
+  console.log('     grudge: all three severities walked, with and without a gift');
 }
 
 /** A bag with a few of everything, so conditional lines can be walked. */
@@ -619,6 +637,37 @@ while (queue.length) {
     continue;
   }
   for (const next of check(url, world)) if (!visited.has(next)) queue.push(next);
+}
+
+// -- the generic scripts -----------------------------------------------------
+// The conversations that live in code rather than in any world file: every
+// grudge personality at every severity, every theft-confrontation voice, every
+// way of being shut, and every small-talk exchange at every relationship tier.
+// The per-NPC walk above only ever exercises the voices its hash happens to
+// pick, so this is the only walk that sees ALL of them -- and a dead end in a
+// voice nobody's hash picks today is a dead end in next week's generated town.
+{
+  const stub = { id: 'generic', name: 'Generic', shop: null, memory: { flags: new Set(), visits: 0 } };
+  console.log('\ngeneric scripts:');
+  const suites = [
+    ['grudge', grudgeScripts().map((script, i) => ({ id: `grudge[${i}]`, script }))],
+    ['theft', theftScripts().map((script, i) => ({ id: `theft[${i}]`, script }))],
+    ['closed shop', closedScripts().map((script, i) => ({ id: `closed[${i}]`, script }))],
+    ['small talk', smalltalkScripts()],
+  ];
+  for (const [what, scripts] of suites) {
+    for (const { id, script } of scripts) {
+      const orphans = unreachableNodes(script);
+      if (orphans.length) fail(`${id}: nodes never reachable from start: ${orphans.join(', ')}`);
+      // Both bags, because these scripts turn on `holding` and `has` and one
+      // lap can only ever see one side of each.
+      for (const bag of [stockedBag, emptyBag]) {
+        const walk = walkScript(stub, script, { bag });
+        if (!walk.ends) fail(`${id}: no path through this script ever ends`);
+      }
+    }
+    console.log(`  ${what}: ${scripts.length} scripts, each walked full-handed and empty-handed`);
+  }
 }
 
 // Owners, once every file has been seen. A zone points at a person by id and

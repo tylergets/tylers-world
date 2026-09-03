@@ -18,6 +18,8 @@
  */
 
 import { Animal } from './Animal.js';
+import { animalType } from '../world/animalTypes.js';
+import { makeRng } from '../core/rng.js';
 
 export class Fauna {
   constructor(world) {
@@ -104,6 +106,55 @@ export class Fauna {
     }
     if (back) this.version++;
     return back;
+  }
+
+  count(type) { return this.animals.filter((a) => a.typeId === type && a.dying === null).length; }
+
+  /** Bring selected species to explicit office targets, immediately. */
+  reconcile(targets) {
+    if (!targets?.size) return 0;
+    let changed = 0;
+    for (const [type, target] of targets) {
+      let indices = this.animals.map((a, i) => a.typeId === type ? i : -1).filter((i) => i >= 0);
+      while (indices.length > target) {
+        this.animals.splice(indices.pop(), 1);
+        changed++;
+      }
+      const occupied = new Set(this.animals.map((a) => a.id));
+      for (let n = indices.length; n < target; n++) {
+        let serial = n + 1;
+        while (occupied.has(`office.${type}.${serial}`)) serial++;
+        const id = `office.${type}.${serial}`;
+        const tile = this.#stockTile(type, id);
+        if (!tile) break;
+        this.animals.push(new Animal(this.world, { id, type, tile, props: { range: 7 } }));
+        occupied.add(id);
+        changed++;
+      }
+    }
+    if (changed) this.version++;
+    return changed;
+  }
+
+  /** Rebuild membership after the planner changes land and water. */
+  rebuild(culled, targets) {
+    this.animals = this.world.spawns().map((spec) => new Animal(this.world, spec));
+    this.version++;
+    this.sync(culled);
+    this.reconcile(targets);
+  }
+
+  #stockTile(type, id) {
+    const swims = animalType(type).swims === true;
+    const candidates = [];
+    for (let z = 0; z < this.world.height; z++) {
+      for (let x = 0; x < this.world.width; x++) {
+        if (swims ? this.world.isOpenWater(x, z) : !this.world.isBlocked(x, z)) candidates.push([x, z]);
+      }
+    }
+    if (!candidates.length) return null;
+    const rng = makeRng(`office-stock:${this.world.meta.id}:${id}`);
+    return candidates[Math.floor(rng() * candidates.length)];
   }
 
   /**

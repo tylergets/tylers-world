@@ -428,12 +428,330 @@ function carp(p) {
 
 const BUILDERS = { chicken, duck, rabbit, sheep, goat, cat, crow, trout, carp };
 
+// ------------------------------------------------------------- the figures --
+// The nine named builders above are hand-modelled essays, and they stay that
+// way. Everything that arrived with the big registry expansion builds through
+// one of the four FIGURE builders below instead: a species declares a body plan
+// (`fig.form` in animalTypes.js) and the proportions that make it itself, and
+// the figure interprets them. Eighty hand-modelled species would be eighty
+// near-copies of the essays above; a parameterised anatomy is what a registry
+// that size actually needs, and the essays are still the reference the numbers
+// were derived from.
+
+/**
+ * Any fish, on the trout's waterline (see `trout` above for the argument).
+ *
+ * `len`/`deep`/`wide` scale the spindle; `flat` lies it down into a flounder;
+ * the rest are the marks -- dorsal, adipose, barbels, spots -- that make one
+ * species not another at six tiles' distance.
+ */
+function fishFigure(p, fig) {
+  const flat = fig.flat === true;
+  const L = fig.len ?? 1;
+  const D = (fig.deep ?? 1) * (flat ? 0.45 : 1);
+  const W = (fig.wide ?? 1) * (flat ? 2.1 : 1);
+  const snout = fig.snout ?? 0;
+
+  const body = new GeoBuilder();
+  body.addGeometry(BLOB, trs(0, -0.035 * D, -0.01 * L, 0, 0, 0, 0.052 * W, 0.062 * D, 0.16 * L), p.body);
+  body.addGeometry(BLOB, trs(0, -0.055 * D, 0.02 * L, 0, 0, 0, 0.042 * W, 0.04 * D, 0.1 * L), p.belly);
+  body.addGeometry(BLOB, trs(0, 0.004 * D, -0.02 * L, 0, 0, 0, 0.032 * W, 0.03 * D, 0.13 * L), p.back);
+  // Head, drawn out to a beak on anything with `snout` (a garfish is mostly it).
+  body.addGeometry(BLOB, trs(0, -0.03 * D, 0.15 * L, 0, 0, 0, 0.038 * W, 0.042 * D, 0.055 * L * (1 + snout * 0.7)), p.body);
+  body.addGeometry(NUB, trs(0, -0.03 * D, (0.195 + snout * 0.1) * L, 0, 0, 0, 0.022 * W, 0.026 * D, 0.03 * L * (1 + snout * 1.5)), p.back);
+  for (const sx of [-1, 1]) {
+    body.addGeometry(NUB, trs(sx * 0.032 * W, -0.012 * D, 0.175 * L, 0, 0, 0, 0.011, 0.011, 0.011), p.eye);
+    body.addGeometry(BOX, trs(sx * 0.05 * W, -0.045 * D, 0.075 * L, 0.2, sx * -0.5, 0, 0.05 * W, 0.008, 0.035), p.fin);
+    if (fig.barbels) {
+      body.addGeometry(CYL, trs(sx * 0.03 * W, -0.06 * D, (0.2 + snout * 0.05) * L, 1.15, sx * 0.35, 0, 0.005, 0.05, 0.005), p.barbel ?? p.fin);
+    }
+  }
+
+  const dorsal = fig.dorsal ?? 'blade';
+  if (dorsal === 'blade') {
+    body.addGeometry(CONE, trs(0, 0.038 * D, -0.03 * L, -0.35, 0, 0, 0.009, 0.062 * D, 0.05), p.fin);
+  } else if (dorsal === 'sail') {
+    // The perch rig: a spined sail standing the length of the shoulder.
+    body.addGeometry(BOX, trs(0, 0.045 * D, -0.005 * L, -0.15, 0, 0, 0.01, 0.075 * D, 0.1 * L), p.fin);
+  } else if (dorsal === 'low') {
+    body.addGeometry(BOX, trs(0, 0.035 * D, -0.045 * L, -0.1, 0, 0, 0.012, 0.045 * D, 0.19 * L), p.fin);
+  }
+  if (fig.adipose) body.addGeometry(NUB, trs(0, 0.022 * D, -0.115 * L, 0, 0, 0, 0.007, 0.016, 0.018), p.fin);
+
+  const marks = fig.marks ?? 'none';
+  if (marks === 'spots') {
+    for (const [dx, dz] of [[0.022, 0.06], [-0.026, 0.015], [0.018, -0.05], [-0.02, -0.09]]) {
+      body.addGeometry(NUB, trs(dx * W, 0.012 * D, dz * L, 0, 0, 0, 0.011, 0.006, 0.011), p.mark);
+    }
+  } else if (marks === 'scales') {
+    for (const [dx, dz] of [[0.026, 0.05], [-0.028, 0.0], [0.024, -0.06], [-0.026, -0.11]]) {
+      body.addGeometry(NUB, trs(dx * W, 0.014 * D, dz * L, 0, 0, 0, 0.02, 0.007, 0.024), p.mark);
+    }
+  } else if (marks === 'stripes') {
+    for (const dz of [0.07, 0.01, -0.05, -0.11]) {
+      body.addGeometry(BOX, trs(0, 0.012 * D, dz * L, 0, 0, 0, 0.062 * W, 0.006, 0.016 * L), p.mark);
+    }
+  }
+
+  const tail = new GeoBuilder();
+  tail.addGeometry(BLOB, trs(0, -0.02 * D, -0.035 * L, 0, 0, 0, 0.02 * W, 0.028 * D, 0.05 * L), p.body);
+  if (fig.rounded) {
+    // One paddle rather than a fork: the tench and everything eel-shaped.
+    tail.addGeometry(NUB, trs(0, -0.02 * D, -0.105 * L, 0, 0, 0, 0.008, 0.055 * D, 0.05 * L), p.fin);
+  } else {
+    tail.addGeometry(CONE, trs(0, 0.005 * D, -0.1 * L, -1.9, 0, 0, 0.008, 0.075 * D, 0.055), p.fin);
+    tail.addGeometry(CONE, trs(0, -0.05 * D, -0.095 * L, -1.35, 0, 0, 0.008, 0.06 * D, 0.045), p.fin);
+  }
+
+  return { body, head: tail, neckY: -0.02 * D, neckZ: -0.15 * L };
+}
+
+/**
+ * Any ground bird, on the chicken's chassis.
+ *
+ * `s` scales the whole animal, `plump`/`neck`/`legLen` reproportion it, and the
+ * tail is the species: a fan is a turkey, a train is a peacock, a long flat
+ * wedge is a magpie leaving.
+ */
+function birdFigure(p, fig) {
+  const s = fig.s ?? 1;
+  const plump = fig.plump ?? 1;
+  const neck = fig.neck ?? 1;
+  const legLen = fig.legLen ?? 1;
+  const legH = 0.12 * s * legLen;
+  const bodyY = legH + 0.13 * s * plump;
+
+  const body = new GeoBuilder();
+  body.addGeometry(BLOB, trs(0, bodyY, -0.01 * s, -0.12, 0, 0, 0.155 * s * plump, 0.15 * s * plump, 0.2 * s), p.body);
+
+  const tail = fig.tail ?? 'wedge';
+  if (tail === 'fan') {
+    body.addGeometry(NUB, trs(0, bodyY + 0.13 * s, -0.17 * s, 0.55, 0, 0, 0.16 * s, 0.17 * s, 0.035 * s), p.tail);
+  } else if (tail === 'long') {
+    body.addGeometry(BOX, trs(0, bodyY + 0.02 * s, -0.3 * s, 0.14, 0, 0, 0.055 * s, 0.02 * s, 0.28 * s), p.tail);
+  } else if (tail === 'train') {
+    body.addGeometry(BOX, trs(0, bodyY + 0.01 * s, -0.33 * s, 0.1, 0, 0, 0.13 * s, 0.02 * s, 0.34 * s), p.tail);
+    for (const [dx, dz] of [[0.04, -0.26], [-0.04, -0.32], [0.0, -0.42]]) {
+      body.addGeometry(NUB, trs(dx * s, bodyY + 0.025 * s, dz * s, 0, 0, 0, 0.02 * s, 0.008 * s, 0.025 * s), p.mark ?? p.body);
+    }
+  } else {
+    body.addGeometry(CONE, trs(0, bodyY + 0.06 * s, -0.21 * s, -2.2, 0, 0, 0.05 * s, 0.14 * s, 0.09 * s), p.tail);
+  }
+
+  for (const sx of [-1, 1]) {
+    body.addGeometry(NUB, trs(sx * 0.14 * s * plump, bodyY + 0.02 * s, -0.01 * s, 0, 0, sx * 0.2, 0.05 * s, 0.1 * s, 0.15 * s), p.bodyShade);
+    if (fig.flash) {
+      body.addGeometry(BOX, trs(sx * 0.15 * s * plump, bodyY + 0.03 * s, -0.08 * s, 0, 0, 0, 0.03 * s, 0.04 * s, 0.07 * s), p.flash);
+    }
+  }
+  if (fig.breast) {
+    body.addGeometry(NUB, trs(0, bodyY - 0.02 * s, 0.16 * s, 0, 0, 0, 0.09 * s, 0.1 * s, 0.06 * s), p.breast);
+  }
+  for (const sx of [-1, 1]) {
+    body.addGeometry(CYL, trs(sx * 0.06 * s, legH / 2, 0.01 * s, 0, 0, 0, 0.018 * s, legH, 0.018 * s), p.leg);
+    body.addGeometry(BOX, trs(sx * 0.06 * s, 0.012, 0.04 * s, 0, 0, 0, 0.06 * s, 0.024, 0.09 * s), p.leg);
+  }
+
+  const head = new GeoBuilder();
+  const neckLen = 0.23 * s * neck;
+  const headY = neckLen * 0.95;
+  const headTint = fig.collar && p.head ? p.head : p.body;
+  head.addGeometry(CYL, trs(0, neckLen * 0.45, -0.005, 0.2, 0, 0, 0.042 * s, neckLen, 0.042 * s), p.body);
+  if (fig.collar) head.addGeometry(CYL, trs(0, neckLen * 0.72, 0.01 * s, 0.2, 0, 0, 0.048 * s, 0.022 * s, 0.048 * s), p.collar);
+  head.addGeometry(BLOB, trs(0, headY, 0.02 * s, 0, 0, 0, 0.075 * s, 0.075 * s, 0.08 * s), headTint);
+
+  const bill = fig.bill ?? 'peck';
+  if (bill === 'flat') {
+    head.addGeometry(BOX, trs(0, headY - 0.02 * s, 0.13 * s, 0.08, 0, 0, 0.06 * s, 0.028 * s, 0.115 * s), p.bill);
+  } else if (bill === 'long') {
+    head.addGeometry(CONE, trs(0, headY - 0.005 * s, 0.14 * s, Math.PI / 2, 0, 0, 0.022 * s, 0.16 * s, 0.026 * s), p.bill);
+  } else if (bill === 'hook') {
+    head.addGeometry(CONE, trs(0, headY - 0.01 * s, 0.09 * s, Math.PI / 2 + 0.5, 0, 0, 0.028 * s, 0.06 * s, 0.03 * s), p.bill);
+  } else {
+    head.addGeometry(CONE, trs(0, headY - 0.005 * s, 0.105 * s, Math.PI / 2, 0, 0, 0.035 * s, 0.08 * s, 0.035 * s), p.bill);
+  }
+  if (fig.crest) head.addGeometry(BOX, trs(0, headY + 0.07 * s, 0.0, 0, 0, 0, 0.024 * s, 0.045 * s, 0.06 * s), p.crest ?? p.bodyShade);
+  if (fig.wattle) head.addGeometry(NUB, trs(0, headY - 0.055 * s, 0.06 * s, 0, 0, 0, 0.024 * s, 0.045 * s, 0.024 * s), p.comb ?? p.bill);
+  for (const sx of [-1, 1]) {
+    head.addGeometry(NUB, trs(sx * 0.05 * s, headY + 0.02 * s, 0.055 * s, 0, 0, 0, 0.016, 0.016, 0.016), p.eye);
+  }
+
+  return { body, head, neckY: bodyY - 0.03 * s, neckZ: 0.07 * s };
+}
+
+/**
+ * Any quadruped, on the goat's frame.
+ *
+ * `bulk` is a pig against a fox on the same skeleton; `legLen` is a deer
+ * against a badger. The tail and the ears carry the overhead read, which is
+ * why both come in more varieties than anything else here.
+ */
+function quadFigure(p, fig) {
+  const s = fig.s ?? 1;
+  const bulk = fig.bulk ?? 1;
+  const legLen = fig.legLen ?? 1;
+  const long = fig.long ? 1.3 : 1;
+  const legH = 0.24 * s * legLen;
+  const bodyY = legH + 0.115 * s * bulk;
+  const bodyR = { x: 0.185 * s * bulk, y: 0.175 * s * bulk, z: 0.29 * s * long };
+  const shade = p.bodyShade ?? p.body;
+
+  const body = new GeoBuilder();
+  body.addGeometry(BLOB, trs(0, bodyY, -0.02 * s, 0, 0, 0, bodyR.x, bodyR.y, bodyR.z), p.body);
+  if (p.belly) body.addGeometry(NUB, trs(0, bodyY - 0.08 * s * bulk, 0.0, 0, 0, 0, bodyR.x * 0.8, bodyR.y * 0.55, bodyR.z * 0.7), p.belly);
+  if (fig.patches) {
+    for (const [sx, dz] of [[1, 0.08], [-1, -0.1], [1, -0.16]]) {
+      body.addGeometry(NUB, trs(sx * bodyR.x * 0.6, bodyY + 0.05 * s, dz * s, 0, 0, 0, 0.08 * s, 0.05 * s, 0.09 * s), p.patch);
+    }
+  }
+  if (fig.stripes) {
+    body.addGeometry(BOX, trs(0, bodyY + bodyR.y * 0.82, -0.02 * s, 0, 0, 0, 0.06 * s, 0.02 * s, bodyR.z * 1.5), p.stripe);
+  }
+  if (fig.mane) {
+    body.addGeometry(BOX, trs(0, bodyY + bodyR.y * 0.75, 0.1 * s * long, -0.25, 0, 0, 0.035 * s, 0.09 * s, 0.16 * s), p.mane ?? shade);
+  }
+
+  for (const sx of [-1, 1]) {
+    for (const sz of [-1, 1]) {
+      body.addGeometry(CYL, trs(sx * 0.115 * s * bulk, legH / 2, sz * 0.17 * s * long, 0, 0, 0, 0.026 * s, legH, 0.026 * s), p.leg ?? shade);
+      if (p.hoof) body.addGeometry(BOX, trs(sx * 0.115 * s * bulk, 0.018, sz * 0.17 * s * long, 0, 0, 0, 0.055 * s, 0.036, 0.07 * s), p.hoof);
+    }
+  }
+
+  const tail = fig.tail ?? 'down';
+  const rump = -bodyR.z - 0.0 * s;
+  if (tail === 'up') {
+    body.addGeometry(CONE, trs(0, bodyY + 0.14 * s, rump * 0.92, -0.6, 0, 0, 0.03 * s, 0.14 * s, 0.03 * s), p.tail ?? shade);
+  } else if (tail === 'bush') {
+    body.addGeometry(NUB, trs(0, bodyY + 0.04 * s, rump - 0.06 * s, 0.4, 0, 0, 0.05 * s, 0.06 * s, 0.14 * s), p.tail ?? shade);
+    if (p.tip) body.addGeometry(NUB, trs(0, bodyY + 0.02 * s, rump - 0.18 * s, 0, 0, 0, 0.035 * s, 0.04 * s, 0.045 * s), p.tip);
+  } else if (tail === 'curl') {
+    body.addGeometry(NUB, trs(0, bodyY + 0.1 * s, rump * 0.95, 0, 0, 0, 0.025 * s, 0.035 * s, 0.025 * s), p.tail ?? shade);
+  } else if (tail === 'brush') {
+    body.addGeometry(CYL, trs(0, bodyY - 0.04 * s, rump * 0.98, 0.25, 0, 0, 0.02 * s, 0.2 * s, 0.02 * s), p.mane ?? shade);
+  } else if (tail === 'ring') {
+    body.addGeometry(CYL, trs(0, bodyY + 0.05 * s, rump - 0.08 * s, 1.1, 0, 0, 0.032 * s, 0.2 * s, 0.032 * s), p.tail ?? shade);
+    body.addGeometry(CYL, trs(0, bodyY + 0.08 * s, rump - 0.12 * s, 1.1, 0, 0, 0.034 * s, 0.03 * s, 0.034 * s), p.ring ?? p.stripe ?? shade);
+  } else if (tail === 'taper') {
+    body.addGeometry(CONE, trs(0, bodyY - 0.01 * s, rump - 0.12 * s, Math.PI / 2 + 0.15, 0, 0, 0.03 * s, 0.24 * s, 0.03 * s), p.tail ?? shade);
+  } else if (tail === 'down') {
+    body.addGeometry(CONE, trs(0, bodyY + 0.06 * s, rump * 0.95, Math.PI - 0.25, 0, 0, 0.022 * s, 0.11 * s, 0.022 * s), shade);
+  }
+
+  const head = new GeoBuilder();
+  const snout = fig.snout ?? 0.5;
+  head.addGeometry(CYL, trs(0, 0.06 * s, 0.075 * s, 0.5, 0, 0, 0.05 * s * bulk, 0.19 * s, 0.055 * s * bulk), p.body);
+  head.addGeometry(BLOB, trs(0, 0.1 * s, 0.19 * s, 0.3, 0, 0, 0.062 * s * bulk, 0.065 * s * bulk, 0.115 * s), p.face ?? p.body);
+  head.addGeometry(NUB, trs(0, 0.06 * s, (0.27 + snout * 0.05) * s, 0, 0, 0, 0.042 * s * bulk, 0.04 * s * bulk, (0.04 + snout * 0.045) * s), p.face ?? p.body);
+  if (p.nose) head.addGeometry(NUB, trs(0, 0.065 * s, (0.3 + snout * 0.07) * s, 0, 0, 0, 0.022 * s, 0.02 * s, 0.016 * s), p.nose);
+  if (fig.mask) head.addGeometry(BOX, trs(0, 0.135 * s, 0.21 * s, 0.25, 0, 0, 0.11 * s * bulk, 0.028 * s, 0.05 * s), p.mask);
+
+  const ears = fig.ears ?? 'up';
+  for (const sx of [-1, 1]) {
+    if (ears === 'up') {
+      head.addGeometry(CONE, trs(sx * 0.05 * s * bulk, 0.19 * s, 0.11 * s, -0.15, 0, sx * 0.3, 0.028 * s, 0.08 * s, 0.02 * s), p.ear ?? shade);
+    } else if (ears === 'tall') {
+      head.addGeometry(BOX, trs(sx * 0.045 * s * bulk, 0.24 * s, 0.09 * s, -0.2, 0, sx * 0.25, 0.03 * s, 0.17 * s, 0.02 * s), p.ear ?? shade);
+    } else if (ears === 'side') {
+      head.addGeometry(NUB, trs(sx * 0.09 * s * bulk, 0.13 * s, 0.16 * s, 0, 0, sx * 0.6, 0.06 * s, 0.02 * s, 0.035 * s), p.ear ?? shade);
+    } else if (ears === 'flop') {
+      head.addGeometry(NUB, trs(sx * 0.07 * s * bulk, 0.135 * s, 0.15 * s, 0.3, 0, sx * 0.9, 0.05 * s, 0.02 * s, 0.045 * s), p.ear ?? shade);
+    } else if (ears === 'round') {
+      head.addGeometry(NUB, trs(sx * 0.055 * s * bulk, 0.17 * s, 0.13 * s, 0, 0, 0, 0.028 * s, 0.028 * s, 0.016 * s), p.ear ?? shade);
+    }
+    head.addGeometry(NUB, trs(sx * 0.05 * s * bulk, 0.14 * s, 0.245 * s, 0, 0, 0, 0.015, 0.015, 0.015), p.eye);
+  }
+
+  const horns = fig.horns ?? 'none';
+  if (horns === 'short') {
+    for (const sx of [-1, 1]) {
+      head.addGeometry(CONE, trs(sx * 0.055 * s * bulk, 0.2 * s, 0.1 * s, -0.5, 0, sx * 0.5, 0.02 * s, 0.09 * s, 0.02 * s), p.horn);
+    }
+  } else if (horns === 'antler') {
+    for (const sx of [-1, 1]) {
+      head.addGeometry(CYL, trs(sx * 0.05 * s, 0.26 * s, 0.09 * s, -0.3, 0, sx * 0.35, 0.012 * s, 0.16 * s, 0.012 * s), p.horn);
+      head.addGeometry(CYL, trs(sx * 0.09 * s, 0.29 * s, 0.1 * s, -0.15, 0, sx * 1.1, 0.009 * s, 0.09 * s, 0.009 * s), p.horn);
+    }
+  }
+  if (fig.tusks) {
+    for (const sx of [-1, 1]) {
+      head.addGeometry(CONE, trs(sx * 0.05 * s, 0.045 * s, 0.28 * s, -0.5, 0, sx * 0.3, 0.011 * s, 0.05 * s, 0.011 * s), p.tusk);
+    }
+  }
+
+  return { body, head, neckY: bodyY + 0.03 * s, neckZ: 0.11 * s * long };
+}
+
+/**
+ * Anything small and quick, on the rabbit's plan: haunches, lump of head, and
+ * one oversized mark -- spikes, a shell, a plume of tail -- that survives being
+ * twenty tiles away.
+ */
+function critterFigure(p, fig) {
+  const s = fig.s ?? 1;
+  const squat = fig.squat ? 1.5 : 1;
+  const body = new GeoBuilder();
+  body.addGeometry(BLOB, trs(0, 0.145 * s, -0.01 * s, -0.15, 0, 0, 0.115 * s * squat, 0.115 * s / squat + (squat > 1 ? 0.02 : 0), 0.17 * s), p.body);
+  body.addGeometry(NUB, trs(0, 0.11 * s, 0.03 * s, 0, 0, 0, 0.09 * s * squat, 0.07 * s, 0.1 * s), p.belly);
+  for (const sx of [-1, 1]) {
+    body.addGeometry(NUB, trs(sx * 0.085 * s * squat, 0.125 * s, -0.08 * s, 0, 0, 0, 0.06 * s, 0.085 * s / squat, 0.1 * s), p.bodyShade);
+    body.addGeometry(BOX, trs(sx * 0.075 * s * squat, 0.022 * s, -0.03 * s, 0, 0, 0, 0.05 * s, 0.044 * s, 0.14 * s), p.body);
+    body.addGeometry(CYL, trs(sx * 0.055 * s, 0.05 * s, 0.085 * s, 0, 0, 0, 0.016 * s, 0.1 * s, 0.016 * s), p.body);
+  }
+  if (fig.spikes) {
+    for (const [dx, dz, c] of [[0, -0.02, p.spike], [0.05, -0.09, p.spikeHi], [-0.05, -0.08, p.spikeHi], [0.04, 0.03, p.spikeHi], [-0.04, 0.04, p.spike], [0, -0.13, p.spike]]) {
+      body.addGeometry(CONE, trs(dx * s, 0.23 * s, dz * s, -0.3, 0, dx * 3, 0.02 * s, 0.07 * s, 0.02 * s), c);
+    }
+  }
+  if (fig.shell) {
+    body.addGeometry(BLOB, trs(0, 0.17 * s, -0.02 * s, 0, 0, 0, 0.125 * s, 0.1 * s, 0.16 * s), p.shell);
+    for (const [dx, dz] of [[0, 0.04], [0.05, -0.05], [-0.05, -0.04], [0, -0.11]]) {
+      body.addGeometry(NUB, trs(dx * s, 0.245 * s, dz * s, 0, 0, 0, 0.026 * s, 0.012 * s, 0.03 * s), p.shellHi);
+    }
+  }
+
+  const tail = fig.tail ?? 'puff';
+  if (tail === 'puff') {
+    body.addGeometry(NUB, trs(0, 0.175 * s, -0.175 * s, 0, 0, 0, 0.055 * s, 0.055 * s, 0.05 * s), p.tail);
+  } else if (tail === 'plume') {
+    body.addGeometry(CYL, trs(0, 0.22 * s, -0.19 * s, -0.35, 0, 0, 0.03 * s, 0.22 * s, 0.03 * s), p.tail);
+    body.addGeometry(NUB, trs(0, 0.34 * s, -0.16 * s, 0, 0, 0, 0.05 * s, 0.07 * s, 0.05 * s), p.tail);
+  } else if (tail === 'string') {
+    body.addGeometry(CYL, trs(0, 0.09 * s, -0.22 * s, Math.PI / 2 - 0.25, 0, 0, 0.008 * s, 0.16 * s, 0.008 * s), p.tail);
+  }
+
+  const head = new GeoBuilder();
+  head.addGeometry(BLOB, trs(0, 0.075 * s, 0.035 * s, 0, 0, 0, 0.075 * s * squat, 0.072 * s, 0.085 * s), p.body);
+  head.addGeometry(NUB, trs(0, 0.052 * s, 0.11 * s, 0, 0, 0, 0.045 * s, 0.04 * s, 0.045 * s), p.belly);
+  head.addGeometry(NUB, trs(0, 0.058 * s, 0.145 * s, 0, 0, 0, 0.016 * s, 0.014 * s, 0.014 * s), p.nose);
+  const ears = fig.ears ?? 'round';
+  for (const sx of [-1, 1]) {
+    if (ears === 'tall') {
+      head.addGeometry(BOX, trs(sx * 0.042 * s, 0.19 * s, -0.02 * s, -0.12, 0, sx * 0.16, 0.032 * s, 0.18 * s, 0.02 * s), p.ear);
+      head.addGeometry(BOX, trs(sx * 0.042 * s, 0.185 * s, -0.005 * s, -0.12, 0, sx * 0.16, 0.019 * s, 0.145 * s, 0.014 * s), p.earInner);
+    } else if (ears === 'tuft') {
+      head.addGeometry(CONE, trs(sx * 0.045 * s, 0.16 * s, 0.0, -0.1, 0, sx * 0.2, 0.024 * s, 0.06 * s, 0.016 * s), p.ear);
+    } else if (ears === 'round') {
+      head.addGeometry(NUB, trs(sx * 0.05 * s, 0.135 * s, 0.01 * s, 0, 0, 0, 0.028 * s, 0.028 * s, 0.014 * s), p.ear);
+      head.addGeometry(NUB, trs(sx * 0.05 * s, 0.133 * s, 0.018 * s, 0, 0, 0, 0.016 * s, 0.016 * s, 0.008 * s), p.earInner);
+    }
+    head.addGeometry(NUB, trs(sx * 0.062 * s, 0.095 * s, 0.06 * s, 0, 0, 0, 0.015, 0.015, 0.015), p.eye);
+  }
+
+  return { body, head, neckY: 0.17 * s, neckZ: 0.06 * s };
+}
+
+const FIGURES = { fish: fishFigure, bird: birdFigure, quad: quadFigure, critter: critterFigure };
+
 function modelFor(typeId) {
   let m = MODELS.get(typeId);
   if (m) return m;
 
   const type = animalType(typeId);
-  const build = BUILDERS[typeId];
+  const build = BUILDERS[typeId]
+    ?? (type.fig && FIGURES[type.fig.form]
+      ? (palette) => FIGURES[type.fig.form](palette, type.fig)
+      : null);
   if (!build) throw new Error(`No mesh builder for animal type "${typeId}"`);
 
   const { body, head, neckY, neckZ } = build(type.palette);

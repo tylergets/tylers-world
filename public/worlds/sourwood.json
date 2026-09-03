@@ -54,12 +54,12 @@
           "ggggggggggggggggggggggggggggggggggggggggggggsswwwwssggggccccgggggggggggggggggggggggg",
           "ggggggggggggggggggggggggggggggggggggggggggggsswwwwssggggccccgggggggggggggggggggggggg",
           "ggggggggggggggggggggggggggggggggggggggggggggsswwwwssggggccccgggggggggggggggggggggggg",
-          "ggggggggggggggggggggggggggggggggggggggggggggsswwwwssggggccccgggggggggggggggggggggggg",
-          "ggggggggggggggggggggggggggggggggggggggggggggsswwwwssggggccccgggggggggggggggggggggggg",
-          "ggggggggggggggggggggggggggggggggggggggggggggsswwwwwwggggccccgggggggggggggggggggggggg",
-          "ggggggggggggggggggggggggggggggggggggggggggggsswwwwwwggggccccgggggggggggggggggggggggg",
-          "ggggggggggggggggggggggggggggggggggggggggggggsswwwwwwggggccccgggggggggggggggggggggggg",
-          "ggggggggggggggggggggggggggggggggggggggggggggsswwwwwwggggccccgggggggggggggggggggggggg",
+          "ggggggggggggggggggggggggggggggggggccccggggggsswwwwssggggccccgggggggggggggggggggggggg",
+          "ggggggggggggggggggggggggggggggggggccccggggggsswwwwssggggccccgggggggggggggggggggggggg",
+          "ggggggggggggggggggggggggggggggggggccccccccccccwwwwwwccccccccgggggggggggggggggggggggg",
+          "ggggggggggggggggggggggggggggggggggccccccccccccwwwwwwccccccccgggggggggggggggggggggggg",
+          "ggggggggggggggggggggggggggggggggggccccccccccccwwwwwwccccccccgggggggggggggggggggggggg",
+          "ggggggggggggggggggggggggggggggggggccccccccccccwwwwwwccccccccgggggggggggggggggggggggg",
           "ggggggggggggggggggggggggccccccccccccccccccccssssssssccccccccgggggggggggggggggggggggg",
           "ggggggggggggggggggggggggccccccccccccccccccccssssssssccccccccgggggggggggggggggggggggg",
           "ggggggggggggggggggggggggccccccccccccccccccccssssssssccccccccgggggggggggggggggggggggg",
@@ -136,12 +136,12 @@
           "ggggggggggggggggggggggggggggggggsswwwwssggggccccgggggggggggggggggggggggggggggggggggg",
           "ggggggggggggggggggggggggggggggggsswwwwwwggggccccgggggggggggggggggggggggggggggggggggg",
           "ggggggggggggggggggggggggggggggggsswwwwwwggggccccgggggggggggggggggggggggggggggggggggg",
-          "ggggggggggggggggggggggggggggggggggsswwwwssggggccccgggggggggggggggggggggggggggggggggg",
-          "ggggggggggggggggggggggggggggggggggsswwwwssggggccccgggggggggggggggggggggggggggggggggg",
-          "ggggggggggggggggggggggggggggggggggsswwwwssggggccccgggggggggggggggggggggggggggggggggg",
-          "ggggggggggggggggggggggggggggggggggsswwwwssggggccccgggggggggggggggggggggggggggggggggg",
-          "ggggggggggggggggggggccccccccccccccssssssssccccccccccccccccccccccgggggggggggggggggggg",
-          "ggggggggggggggggggggccccccccccccccssssssssccccccccccccccccccccccgggggggggggggggggggg",
+          "ggggggggggggggggggggggggggggccccggsswwwwssggggccccgggggggggggggggggggggggggggggggggg",
+          "ggggggggggggggggggggggggggggccccggsswwwwssggggccccgggggggggggggggggggggggggggggggggg",
+          "ggggggggggggggggggggggggggggccccccccwwwwccccccccccgggggggggggggggggggggggggggggggggg",
+          "ggggggggggggggggggggggggggggccccccccwwwwccccccccccgggggggggggggggggggggggggggggggggg",
+          "ggggggggggggggggggggccccccccccccccccccccccccccccccccccccccccccccgggggggggggggggggggg",
+          "ggggggggggggggggggggccccccccccccccccccccccccccccccccccccccccccccgggggggggggggggggggg",
           "ggggggggggggggggggccccccccccccccccssssssssccccccccccccccccccccccccgggggggggggggggggg",
           "ggggggggggggggggggccccccccccccccccssssssssccccccccccccccccccccccccgggggggggggggggggg",
           "ggggggggggggggggggggggggggggggggggggwwwwwwssggccccccccccgggggggggggggggggggggggggggg",
@@ -162,12 +162,12 @@
           "ggggggggggggggggggggggggggggggggggggsswwwwwwggggccccgggggggggggggggggggggggggggggggg",
           "ggggggggggggggggggggggggggggggggggggggwwwwwwssggccccccggggggggggggggccccgggggggggggg",
           "ggggggggggggggggggggggggggggggggggggggwwwwwwssggccccccggggggggggggggccccgggggggggggg",
-          "ggggggggggggggggggggggggggggggggggggggsswwwwssggccccccccccccccccccccccccgggggggggggg",
-          "ggggggggggggggggggggggggggggggggggggggsswwwwssggccccccccccccccccccccccccgggggggggggg",
-          "ggggggggggggggggggggggggggggggggggggggsswwwwssggccccccccccccccccccccccgggggggggggggg",
-          "ggggggggggggggggggggggggggggggggggggggsswwwwssggccccccccccccccccccccccgggggggggggggg",
-          "ccccccccccccccccccccccccccccccccccccccsssssssscccccccccccccccccccccccccccccccccccccc",
-          "ccccccccccccccccccccccccccccccccccccccsssssssscccccccccccccccccccccccccccccccccccccc",
+          "ggggggggggggggggggggggggggccccggggggggsswwwwssggccccccccccccccccccccccccgggggggggggg",
+          "ggggggggggggggggggggggggggccccggggggggsswwwwssggccccccccccccccccccccccccgggggggggggg",
+          "ggggggggggggggggggggggggggccccccccccccccwwwwccccccccccccccccccccccccccgggggggggggggg",
+          "ggggggggggggggggggggggggggccccccccccccccwwwwccccccccccccccccccccccccccgggggggggggggg",
+          "cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc",
+          "cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc",
           "ccccccccccccccccccccccccccccccccccccccsssssssscccccccccccccccccccccccccccccccccccccc",
           "ccccccccccccccccccccccccccccccccccccccsssssssscccccccccccccccccccccccccccccccccccccc",
           "ggggggggggggggggggggggggggggggggggggggggwwwwwwssggggccccgggggggggggggggggggggggggggg",
@@ -536,328 +536,373 @@
     {"id":"store.furniture","type":"building.furniture","tile":[52,132],"props":{"label":"Turnip & Timber","interior":"worlds/interiors/store-furniture.json"}},
     {"id":"store.clothier","type":"building.clothier","tile":[64,140],"props":{"label":"Cuff & Collar","interior":"worlds/interiors/store-clothier.json"}},
     {"id":"town.hall","type":"building.townhall","tile":[38,84],"props":{"label":"Town Hall","interior":"worlds/interiors/town-hall.json"}},
+    {"id":"home.alder","type":"building.cottage","tile":[32,36],"props":{"label":"Alder's Cottage","interior":"worlds/interiors/home-alder.json","owner":"folk.alder"}},
+    {"id":"home.fern","type":"building.cabin","tile":[24,118],"props":{"label":"Fern's Cabin","interior":"worlds/interiors/home-fern.json","owner":"folk.fern"}},
+    {"id":"home.hollis","type":"building.bungalow","tile":[22,144],"props":{"label":"Hollis's Bungalow","interior":"worlds/interiors/home-hollis.json","owner":"folk.hollis"}},
     {"id":"boulder.0","type":"rock.large","tile":[34,100],"rotation":270},
     {"id":"boulder.1","type":"rock.large","tile":[80,158]},
     {"id":"boulder.2","type":"rock.large","tile":[24,26],"rotation":90},
-    {"id":"boulder.3","type":"rock.large","tile":[30,32],"rotation":180},
-    {"id":"boulder.4","type":"rock.large","tile":[16,140],"rotation":180},
-    {"id":"boulder.5","type":"rock.large","tile":[34,160],"rotation":270},
-    {"id":"boulder.6","type":"rock.large","tile":[30,144]},
-    {"id":"boulder.7","type":"rock.large","tile":[4,148],"rotation":270},
-    {"id":"boulder.8","type":"rock.large","tile":[50,34],"rotation":270},
-    {"id":"boulder.9","type":"rock.large","tile":[26,66],"rotation":180},
-    {"id":"boulder.10","type":"rock.large","tile":[30,40],"rotation":270},
-    {"id":"boulder.11","type":"rock.large","tile":[28,158],"rotation":90},
-    {"id":"boulder.12","type":"rock.large","tile":[42,132],"rotation":90},
-    {"id":"boulder.13","type":"rock.large","tile":[76,164],"rotation":180},
-    {"id":"boulder.14","type":"rock.large","tile":[24,98],"rotation":270},
-    {"id":"boulder.15","type":"rock.large","tile":[20,148],"rotation":270},
-    {"id":"boulder.16","type":"rock.large","tile":[32,124],"rotation":180},
-    {"id":"boulder.17","type":"rock.large","tile":[26,136]},
-    {"id":"pine.0","type":"tree.pine","tile":[68,4]},
-    {"id":"pine.1","type":"tree.pine","tile":[76,42],"rotation":270},
-    {"id":"pine.2","type":"tree.pine","tile":[62,68],"rotation":180},
-    {"id":"pine.3","type":"tree.pine","tile":[82,140]},
-    {"id":"pine.4","type":"tree.pine","tile":[10,70]},
-    {"id":"pine.5","type":"tree.pine","tile":[66,124],"rotation":90},
-    {"id":"pine.6","type":"tree.pine","tile":[16,124],"rotation":90},
-    {"id":"pine.7","type":"tree.pine","tile":[42,6],"rotation":90},
-    {"id":"pine.8","type":"tree.pine","tile":[24,124],"rotation":270},
-    {"id":"pine.9","type":"tree.pine","tile":[70,58],"rotation":180},
-    {"id":"pine.10","type":"tree.pine","tile":[60,22],"rotation":180},
-    {"id":"pine.11","type":"tree.pine","tile":[40,114],"rotation":180},
-    {"id":"pine.12","type":"tree.pine","tile":[72,116],"rotation":180},
-    {"id":"pine.13","type":"tree.pine","tile":[40,54],"rotation":90},
-    {"id":"pine.14","type":"tree.pine","tile":[68,84],"rotation":270},
-    {"id":"pine.15","type":"tree.pine","tile":[46,74],"rotation":270},
-    {"id":"pine.16","type":"tree.pine","tile":[14,162],"rotation":180},
-    {"id":"pine.17","type":"tree.pine","tile":[66,30],"rotation":90},
-    {"id":"pine.18","type":"tree.pine","tile":[66,50],"rotation":180},
-    {"id":"pine.19","type":"tree.pine","tile":[4,134],"rotation":90},
-    {"id":"pine.20","type":"tree.pine","tile":[56,2],"rotation":270},
-    {"id":"pine.21","type":"tree.pine","tile":[60,78],"rotation":180},
-    {"id":"pine.22","type":"tree.pine","tile":[36,40]},
-    {"id":"pine.23","type":"tree.pine","tile":[66,94],"rotation":90},
-    {"id":"pine.24","type":"tree.pine","tile":[6,76]},
-    {"id":"pine.25","type":"tree.pine","tile":[22,68],"rotation":90},
-    {"id":"pine.26","type":"tree.pine","tile":[8,122],"rotation":270},
-    {"id":"pine.27","type":"tree.pine","tile":[52,2]},
-    {"id":"pine.28","type":"tree.pine","tile":[38,12],"rotation":180},
-    {"id":"pine.29","type":"tree.pine","tile":[16,28],"rotation":90},
-    {"id":"pine.30","type":"tree.pine","tile":[8,84],"rotation":90},
-    {"id":"pine.31","type":"tree.pine","tile":[20,124],"rotation":90},
-    {"id":"pine.32","type":"tree.pine","tile":[22,106],"rotation":90},
-    {"id":"pine.33","type":"tree.pine","tile":[22,44],"rotation":180},
-    {"id":"pine.34","type":"tree.pine","tile":[36,148],"rotation":90},
-    {"id":"pine.35","type":"tree.pine","tile":[6,40],"rotation":90},
-    {"id":"pine.36","type":"tree.pine","tile":[76,88],"rotation":270},
-    {"id":"pine.37","type":"tree.pine","tile":[66,80],"rotation":180},
-    {"id":"pine.38","type":"tree.pine","tile":[14,24]},
-    {"id":"pine.39","type":"tree.pine","tile":[62,34],"rotation":180},
-    {"id":"pine.40","type":"tree.pine","tile":[48,14],"rotation":180},
-    {"id":"pine.41","type":"tree.pine","tile":[70,126],"rotation":90},
-    {"id":"pine.42","type":"tree.pine","tile":[80,96],"rotation":90},
-    {"id":"pine.43","type":"tree.pine","tile":[72,14]},
-    {"id":"pine.44","type":"tree.pine","tile":[6,36],"rotation":180},
-    {"id":"pine.45","type":"tree.pine","tile":[54,16],"rotation":90},
-    {"id":"pine.46","type":"tree.pine","tile":[6,94],"rotation":270},
-    {"id":"pine.47","type":"tree.pine","tile":[28,114]},
-    {"id":"pine.48","type":"tree.pine","tile":[66,68],"rotation":270},
-    {"id":"pine.49","type":"tree.pine","tile":[2,12],"rotation":270},
-    {"id":"pine.50","type":"tree.pine","tile":[16,2],"rotation":90},
-    {"id":"pine.51","type":"tree.pine","tile":[70,166],"rotation":90},
-    {"id":"pine.52","type":"tree.pine","tile":[0,20]},
-    {"id":"pine.53","type":"tree.pine","tile":[0,150],"rotation":90},
-    {"id":"pine.54","type":"tree.pine","tile":[4,110],"rotation":180},
-    {"id":"pine.55","type":"tree.pine","tile":[80,56]},
-    {"id":"pine.56","type":"tree.pine","tile":[0,102],"rotation":180},
-    {"id":"pine.57","type":"tree.pine","tile":[2,46],"rotation":270},
-    {"id":"pine.58","type":"tree.pine","tile":[40,34]},
-    {"id":"pine.59","type":"tree.pine","tile":[10,22],"rotation":180},
-    {"id":"pine.60","type":"tree.pine","tile":[54,40],"rotation":270},
-    {"id":"pine.61","type":"tree.pine","tile":[48,18],"rotation":180},
-    {"id":"pine.62","type":"tree.pine","tile":[16,96],"rotation":90},
-    {"id":"pine.63","type":"tree.pine","tile":[80,14],"rotation":180},
-    {"id":"pine.64","type":"tree.pine","tile":[18,22],"rotation":90},
-    {"id":"pine.65","type":"tree.pine","tile":[10,2]},
-    {"id":"pine.66","type":"tree.pine","tile":[4,22],"rotation":270},
-    {"id":"pine.67","type":"tree.pine","tile":[56,68],"rotation":180},
-    {"id":"pine.68","type":"tree.pine","tile":[80,52],"rotation":180},
-    {"id":"pine.69","type":"tree.pine","tile":[10,66]},
-    {"id":"pine.70","type":"tree.pine","tile":[12,148],"rotation":270},
-    {"id":"pine.71","type":"tree.pine","tile":[16,92],"rotation":90},
-    {"id":"pine.72","type":"tree.pine","tile":[34,8]},
-    {"id":"pine.73","type":"tree.pine","tile":[60,146],"rotation":270},
-    {"id":"pine.74","type":"tree.pine","tile":[10,136]},
-    {"id":"pine.75","type":"tree.pine","tile":[20,100],"rotation":270},
-    {"id":"pine.76","type":"tree.pine","tile":[44,0],"rotation":180},
-    {"id":"pine.77","type":"tree.pine","tile":[26,82],"rotation":180},
-    {"id":"pine.78","type":"tree.pine","tile":[72,136],"rotation":90},
-    {"id":"pine.79","type":"tree.pine","tile":[10,32],"rotation":270},
-    {"id":"pine.80","type":"tree.pine","tile":[0,118],"rotation":180},
-    {"id":"pine.81","type":"tree.pine","tile":[78,138],"rotation":90},
-    {"id":"pine.82","type":"tree.pine","tile":[16,74]},
-    {"id":"pine.83","type":"tree.pine","tile":[50,22],"rotation":180},
-    {"id":"pine.84","type":"tree.pine","tile":[38,28]},
-    {"id":"pine.85","type":"tree.pine","tile":[14,42],"rotation":90},
-    {"id":"pine.86","type":"tree.pine","tile":[54,10],"rotation":270},
-    {"id":"pine.87","type":"tree.pine","tile":[22,32],"rotation":180},
-    {"id":"pine.88","type":"tree.pine","tile":[54,98],"rotation":270},
-    {"id":"pine.89","type":"tree.pine","tile":[62,26],"rotation":270},
-    {"id":"pine.90","type":"tree.pine","tile":[6,140]},
-    {"id":"pine.91","type":"tree.pine","tile":[14,82],"rotation":180},
-    {"id":"pine.92","type":"tree.pine","tile":[8,100],"rotation":270},
-    {"id":"pine.93","type":"tree.pine","tile":[0,40]},
-    {"id":"pine.94","type":"tree.pine","tile":[82,116],"rotation":270},
-    {"id":"pine.95","type":"tree.pine","tile":[24,18],"rotation":270},
-    {"id":"pine.96","type":"tree.pine","tile":[52,166],"rotation":270},
-    {"id":"pine.97","type":"tree.pine","tile":[10,92]},
-    {"id":"pine.98","type":"tree.pine","tile":[48,6],"rotation":270},
-    {"id":"pine.99","type":"tree.pine","tile":[82,38],"rotation":270},
-    {"id":"pine.100","type":"tree.pine","tile":[28,12],"rotation":180},
-    {"id":"pine.101","type":"tree.pine","tile":[52,76]},
-    {"id":"pine.102","type":"tree.pine","tile":[20,16],"rotation":90},
-    {"id":"pine.103","type":"tree.pine","tile":[60,50],"rotation":270},
-    {"id":"pine.104","type":"tree.pine","tile":[54,44],"rotation":180},
-    {"id":"pine.105","type":"tree.pine","tile":[80,32],"rotation":180},
-    {"id":"pine.106","type":"tree.pine","tile":[64,76],"rotation":180},
-    {"id":"pine.107","type":"tree.pine","tile":[16,64],"rotation":180},
-    {"id":"pine.108","type":"tree.pine","tile":[74,120]},
-    {"id":"pine.109","type":"tree.pine","tile":[6,160],"rotation":180},
-    {"id":"pine.110","type":"tree.pine","tile":[58,74],"rotation":270},
-    {"id":"pine.111","type":"tree.pine","tile":[10,38],"rotation":90},
-    {"id":"pine.112","type":"tree.pine","tile":[72,70],"rotation":180},
-    {"id":"pine.113","type":"tree.pine","tile":[58,10],"rotation":90},
-    {"id":"pine.114","type":"tree.pine","tile":[0,126],"rotation":90},
-    {"id":"pine.115","type":"tree.pine","tile":[18,38],"rotation":180},
-    {"id":"pine.116","type":"tree.pine","tile":[80,130],"rotation":270},
-    {"id":"pine.117","type":"tree.pine","tile":[20,78]},
-    {"id":"pine.118","type":"tree.pine","tile":[60,96],"rotation":90},
-    {"id":"pine.119","type":"tree.pine","tile":[6,12],"rotation":270},
-    {"id":"pine.120","type":"tree.pine","tile":[26,4],"rotation":180},
-    {"id":"pine.121","type":"tree.pine","tile":[26,22]},
-    {"id":"pine.122","type":"tree.pine","tile":[6,8],"rotation":270},
-    {"id":"pine.123","type":"tree.pine","tile":[74,150],"rotation":90},
-    {"id":"pine.124","type":"tree.pine","tile":[8,46]},
-    {"id":"pine.125","type":"tree.pine","tile":[26,166],"rotation":90},
-    {"id":"pine.126","type":"tree.pine","tile":[66,60],"rotation":270},
-    {"id":"pine.127","type":"tree.pine","tile":[10,76],"rotation":270},
-    {"id":"pine.128","type":"tree.pine","tile":[60,114]},
-    {"id":"pine.129","type":"tree.pine","tile":[64,0],"rotation":180},
-    {"id":"pine.130","type":"tree.pine","tile":[10,42],"rotation":180},
-    {"id":"pine.131","type":"tree.pine","tile":[16,16]},
-    {"id":"pine.132","type":"tree.pine","tile":[60,4]},
-    {"id":"pine.133","type":"tree.pine","tile":[10,104]},
-    {"id":"pine.134","type":"tree.pine","tile":[78,36],"rotation":90},
-    {"id":"pine.135","type":"tree.pine","tile":[16,70],"rotation":180},
-    {"id":"pine.136","type":"tree.pine","tile":[66,44]},
-    {"id":"pine.137","type":"tree.pine","tile":[10,8],"rotation":270},
-    {"id":"pine.138","type":"tree.pine","tile":[30,28],"rotation":270},
-    {"id":"pine.139","type":"tree.pine","tile":[10,26],"rotation":90},
-    {"id":"oak.0","type":"tree.oak","tile":[30,20],"rotation":270},
-    {"id":"oak.1","type":"tree.oak","tile":[32,64],"rotation":270},
-    {"id":"oak.2","type":"tree.oak","tile":[0,122],"rotation":90},
-    {"id":"oak.3","type":"tree.oak","tile":[8,164],"rotation":270},
-    {"id":"oak.4","type":"tree.oak","tile":[16,34],"rotation":90},
-    {"id":"oak.5","type":"tree.oak","tile":[18,110],"rotation":180},
-    {"id":"oak.6","type":"tree.oak","tile":[56,116]},
+    {"id":"boulder.3","type":"rock.large","tile":[42,34],"rotation":270},
+    {"id":"boulder.4","type":"rock.large","tile":[80,150],"rotation":180},
+    {"id":"boulder.5","type":"rock.large","tile":[4,148],"rotation":270},
+    {"id":"boulder.6","type":"rock.large","tile":[50,34],"rotation":270},
+    {"id":"boulder.7","type":"rock.large","tile":[26,66],"rotation":180},
+    {"id":"boulder.8","type":"rock.large","tile":[22,136],"rotation":90},
+    {"id":"boulder.9","type":"rock.large","tile":[28,158],"rotation":90},
+    {"id":"boulder.10","type":"rock.large","tile":[42,132],"rotation":90},
+    {"id":"boulder.11","type":"rock.large","tile":[76,164],"rotation":180},
+    {"id":"boulder.12","type":"rock.large","tile":[24,98],"rotation":270},
+    {"id":"boulder.13","type":"rock.large","tile":[28,44],"rotation":90},
+    {"id":"boulder.14","type":"rock.large","tile":[22,160],"rotation":90},
+    {"id":"boulder.15","type":"rock.large","tile":[40,54],"rotation":90},
+    {"id":"boulder.16","type":"rock.large","tile":[48,64],"rotation":270},
+    {"id":"boulder.17","type":"rock.large","tile":[50,110],"rotation":270},
+    {"id":"pine.0","type":"tree.pine","tile":[18,138],"rotation":180},
+    {"id":"pine.1","type":"tree.pine","tile":[18,96],"rotation":180},
+    {"id":"pine.2","type":"tree.pine","tile":[56,2],"rotation":270},
+    {"id":"pine.3","type":"tree.pine","tile":[60,78],"rotation":180},
+    {"id":"pine.4","type":"tree.pine","tile":[8,132],"rotation":180},
+    {"id":"pine.5","type":"tree.pine","tile":[24,14],"rotation":90},
+    {"id":"pine.6","type":"tree.pine","tile":[12,44],"rotation":90},
+    {"id":"pine.7","type":"tree.pine","tile":[36,18],"rotation":180},
+    {"id":"pine.8","type":"tree.pine","tile":[70,98]},
+    {"id":"pine.9","type":"tree.pine","tile":[52,2]},
+    {"id":"pine.10","type":"tree.pine","tile":[38,12],"rotation":180},
+    {"id":"pine.11","type":"tree.pine","tile":[74,40]},
+    {"id":"pine.12","type":"tree.pine","tile":[70,84],"rotation":90},
+    {"id":"pine.13","type":"tree.pine","tile":[78,112],"rotation":180},
+    {"id":"pine.14","type":"tree.pine","tile":[8,84],"rotation":90},
+    {"id":"pine.15","type":"tree.pine","tile":[20,124],"rotation":90},
+    {"id":"pine.16","type":"tree.pine","tile":[22,106],"rotation":90},
+    {"id":"pine.17","type":"tree.pine","tile":[34,144],"rotation":90},
+    {"id":"pine.18","type":"tree.pine","tile":[22,94],"rotation":270},
+    {"id":"pine.19","type":"tree.pine","tile":[76,74],"rotation":270},
+    {"id":"pine.20","type":"tree.pine","tile":[20,72],"rotation":270},
+    {"id":"pine.21","type":"tree.pine","tile":[72,152],"rotation":180},
+    {"id":"pine.22","type":"tree.pine","tile":[82,132],"rotation":90},
+    {"id":"pine.23","type":"tree.pine","tile":[70,8],"rotation":270},
+    {"id":"pine.24","type":"tree.pine","tile":[14,24]},
+    {"id":"pine.25","type":"tree.pine","tile":[62,34],"rotation":180},
+    {"id":"pine.26","type":"tree.pine","tile":[66,78],"rotation":180},
+    {"id":"pine.27","type":"tree.pine","tile":[6,102],"rotation":270},
+    {"id":"pine.28","type":"tree.pine","tile":[62,52],"rotation":270},
+    {"id":"pine.29","type":"tree.pine","tile":[72,14]},
+    {"id":"pine.30","type":"tree.pine","tile":[6,36],"rotation":180},
+    {"id":"pine.31","type":"tree.pine","tile":[54,16],"rotation":90},
+    {"id":"pine.32","type":"tree.pine","tile":[6,94],"rotation":270},
+    {"id":"pine.33","type":"tree.pine","tile":[28,114]},
+    {"id":"pine.34","type":"tree.pine","tile":[4,74],"rotation":270},
+    {"id":"pine.35","type":"tree.pine","tile":[2,12],"rotation":270},
+    {"id":"pine.36","type":"tree.pine","tile":[16,2],"rotation":90},
+    {"id":"pine.37","type":"tree.pine","tile":[80,94]},
+    {"id":"pine.38","type":"tree.pine","tile":[74,94]},
+    {"id":"pine.39","type":"tree.pine","tile":[70,166],"rotation":90},
+    {"id":"pine.40","type":"tree.pine","tile":[0,20]},
+    {"id":"pine.41","type":"tree.pine","tile":[0,150],"rotation":90},
+    {"id":"pine.42","type":"tree.pine","tile":[4,110],"rotation":180},
+    {"id":"pine.43","type":"tree.pine","tile":[80,56]},
+    {"id":"pine.44","type":"tree.pine","tile":[0,102],"rotation":180},
+    {"id":"pine.45","type":"tree.pine","tile":[2,46],"rotation":270},
+    {"id":"pine.46","type":"tree.pine","tile":[10,106],"rotation":180},
+    {"id":"pine.47","type":"tree.pine","tile":[48,18],"rotation":180},
+    {"id":"pine.48","type":"tree.pine","tile":[74,116]},
+    {"id":"pine.49","type":"tree.pine","tile":[80,14],"rotation":180},
+    {"id":"pine.50","type":"tree.pine","tile":[18,22],"rotation":90},
+    {"id":"pine.51","type":"tree.pine","tile":[10,2]},
+    {"id":"pine.52","type":"tree.pine","tile":[4,22],"rotation":270},
+    {"id":"pine.53","type":"tree.pine","tile":[56,68],"rotation":180},
+    {"id":"pine.54","type":"tree.pine","tile":[80,52],"rotation":180},
+    {"id":"pine.55","type":"tree.pine","tile":[10,66]},
+    {"id":"pine.56","type":"tree.pine","tile":[12,148],"rotation":270},
+    {"id":"pine.57","type":"tree.pine","tile":[16,92],"rotation":90},
+    {"id":"pine.58","type":"tree.pine","tile":[34,8]},
+    {"id":"pine.59","type":"tree.pine","tile":[60,146],"rotation":270},
+    {"id":"pine.60","type":"tree.pine","tile":[70,60]},
+    {"id":"pine.61","type":"tree.pine","tile":[68,18],"rotation":180},
+    {"id":"pine.62","type":"tree.pine","tile":[20,42],"rotation":180},
+    {"id":"pine.63","type":"tree.pine","tile":[8,90]},
+    {"id":"pine.64","type":"tree.pine","tile":[40,120]},
+    {"id":"pine.65","type":"tree.pine","tile":[72,124]},
+    {"id":"pine.66","type":"tree.pine","tile":[72,136],"rotation":90},
+    {"id":"pine.67","type":"tree.pine","tile":[18,142]},
+    {"id":"pine.68","type":"tree.pine","tile":[16,132],"rotation":270},
+    {"id":"pine.69","type":"tree.pine","tile":[6,2],"rotation":180},
+    {"id":"pine.70","type":"tree.pine","tile":[68,70]},
+    {"id":"pine.71","type":"tree.pine","tile":[36,32],"rotation":90},
+    {"id":"pine.72","type":"tree.pine","tile":[38,28]},
+    {"id":"pine.73","type":"tree.pine","tile":[36,110]},
+    {"id":"pine.74","type":"tree.pine","tile":[82,24]},
+    {"id":"pine.75","type":"tree.pine","tile":[22,32],"rotation":180},
+    {"id":"pine.76","type":"tree.pine","tile":[70,2],"rotation":180},
+    {"id":"pine.77","type":"tree.pine","tile":[62,26],"rotation":270},
+    {"id":"pine.78","type":"tree.pine","tile":[6,140]},
+    {"id":"pine.79","type":"tree.pine","tile":[14,82],"rotation":180},
+    {"id":"pine.80","type":"tree.pine","tile":[72,30],"rotation":270},
+    {"id":"pine.81","type":"tree.pine","tile":[0,40]},
+    {"id":"pine.82","type":"tree.pine","tile":[82,116],"rotation":270},
+    {"id":"pine.83","type":"tree.pine","tile":[20,102],"rotation":90},
+    {"id":"pine.84","type":"tree.pine","tile":[52,166],"rotation":270},
+    {"id":"pine.85","type":"tree.pine","tile":[2,160],"rotation":270},
+    {"id":"pine.86","type":"tree.pine","tile":[58,166]},
+    {"id":"pine.87","type":"tree.pine","tile":[76,84]},
+    {"id":"pine.88","type":"tree.pine","tile":[28,12],"rotation":180},
+    {"id":"pine.89","type":"tree.pine","tile":[52,76]},
+    {"id":"pine.90","type":"tree.pine","tile":[38,116],"rotation":270},
+    {"id":"pine.91","type":"tree.pine","tile":[8,70],"rotation":90},
+    {"id":"pine.92","type":"tree.pine","tile":[80,120],"rotation":90},
+    {"id":"pine.93","type":"tree.pine","tile":[80,60],"rotation":90},
+    {"id":"pine.94","type":"tree.pine","tile":[20,66],"rotation":180},
+    {"id":"pine.95","type":"tree.pine","tile":[22,84],"rotation":180},
+    {"id":"pine.96","type":"tree.pine","tile":[36,160]},
+    {"id":"pine.97","type":"tree.pine","tile":[16,64],"rotation":180},
+    {"id":"pine.98","type":"tree.pine","tile":[34,148],"rotation":270},
+    {"id":"pine.99","type":"tree.pine","tile":[60,2],"rotation":180},
+    {"id":"pine.100","type":"tree.pine","tile":[38,24],"rotation":270},
+    {"id":"pine.101","type":"tree.pine","tile":[44,4]},
+    {"id":"pine.102","type":"tree.pine","tile":[58,74],"rotation":270},
+    {"id":"pine.103","type":"tree.pine","tile":[10,38],"rotation":90},
+    {"id":"pine.104","type":"tree.pine","tile":[72,70],"rotation":180},
+    {"id":"pine.105","type":"tree.pine","tile":[58,10],"rotation":90},
+    {"id":"pine.106","type":"tree.pine","tile":[0,126],"rotation":90},
+    {"id":"pine.107","type":"tree.pine","tile":[18,38],"rotation":180},
+    {"id":"pine.108","type":"tree.pine","tile":[82,138],"rotation":270},
+    {"id":"pine.109","type":"tree.pine","tile":[24,88],"rotation":90},
+    {"id":"pine.110","type":"tree.pine","tile":[52,8],"rotation":90},
+    {"id":"pine.111","type":"tree.pine","tile":[20,78]},
+    {"id":"pine.112","type":"tree.pine","tile":[60,96],"rotation":90},
+    {"id":"pine.113","type":"tree.pine","tile":[6,12],"rotation":270},
+    {"id":"pine.114","type":"tree.pine","tile":[26,4],"rotation":180},
+    {"id":"pine.115","type":"tree.pine","tile":[26,22]},
+    {"id":"pine.116","type":"tree.pine","tile":[22,152],"rotation":180},
+    {"id":"pine.117","type":"tree.pine","tile":[52,40],"rotation":90},
+    {"id":"pine.118","type":"tree.pine","tile":[14,28]},
+    {"id":"pine.119","type":"tree.pine","tile":[76,98],"rotation":90},
+    {"id":"pine.120","type":"tree.pine","tile":[8,46]},
+    {"id":"pine.121","type":"tree.pine","tile":[26,166],"rotation":90},
+    {"id":"pine.122","type":"tree.pine","tile":[66,60],"rotation":270},
+    {"id":"pine.123","type":"tree.pine","tile":[10,76],"rotation":270},
+    {"id":"pine.124","type":"tree.pine","tile":[64,82],"rotation":180},
+    {"id":"pine.125","type":"tree.pine","tile":[64,0],"rotation":180},
+    {"id":"pine.126","type":"tree.pine","tile":[4,40],"rotation":90},
+    {"id":"pine.127","type":"tree.pine","tile":[14,74],"rotation":180},
+    {"id":"pine.128","type":"tree.pine","tile":[78,36],"rotation":90},
+    {"id":"pine.129","type":"tree.pine","tile":[16,70],"rotation":180},
+    {"id":"pine.130","type":"tree.pine","tile":[68,50],"rotation":180},
+    {"id":"pine.131","type":"tree.pine","tile":[64,132],"rotation":90},
+    {"id":"pine.132","type":"tree.pine","tile":[18,14],"rotation":90},
+    {"id":"pine.133","type":"tree.pine","tile":[10,8],"rotation":270},
+    {"id":"pine.134","type":"tree.pine","tile":[30,28],"rotation":270},
+    {"id":"pine.135","type":"tree.pine","tile":[10,26],"rotation":90},
+    {"id":"pine.136","type":"tree.pine","tile":[30,20],"rotation":270},
+    {"id":"pine.137","type":"tree.pine","tile":[32,64],"rotation":270},
+    {"id":"pine.138","type":"tree.pine","tile":[0,122],"rotation":90},
+    {"id":"pine.139","type":"tree.pine","tile":[8,164],"rotation":270},
+    {"id":"oak.0","type":"tree.oak","tile":[60,112]},
+    {"id":"oak.1","type":"tree.oak","tile":[16,42],"rotation":270},
+    {"id":"oak.2","type":"tree.oak","tile":[74,36],"rotation":180},
+    {"id":"oak.3","type":"tree.oak","tile":[42,78],"rotation":180},
+    {"id":"oak.4","type":"tree.oak","tile":[56,116]},
+    {"id":"oak.5","type":"tree.oak","tile":[56,98],"rotation":90},
+    {"id":"oak.6","type":"tree.oak","tile":[64,74],"rotation":90},
     {"id":"oak.7","type":"tree.oak","tile":[0,138]},
-    {"id":"oak.8","type":"tree.oak","tile":[66,20],"rotation":270},
-    {"id":"oak.9","type":"tree.oak","tile":[62,84],"rotation":180},
+    {"id":"oak.8","type":"tree.oak","tile":[26,84],"rotation":270},
+    {"id":"oak.9","type":"tree.oak","tile":[10,144],"rotation":270},
     {"id":"oak.10","type":"tree.oak","tile":[12,120],"rotation":180},
-    {"id":"oak.11","type":"tree.oak","tile":[78,74]},
-    {"id":"oak.12","type":"tree.oak","tile":[62,58],"rotation":270},
+    {"id":"oak.11","type":"tree.oak","tile":[8,124],"rotation":90},
+    {"id":"oak.12","type":"tree.oak","tile":[66,126]},
     {"id":"oak.13","type":"tree.oak","tile":[8,18],"rotation":270},
     {"id":"oak.14","type":"tree.oak","tile":[40,42],"rotation":180},
     {"id":"oak.15","type":"tree.oak","tile":[54,60]},
     {"id":"oak.16","type":"tree.oak","tile":[52,26],"rotation":90},
     {"id":"oak.17","type":"tree.oak","tile":[66,118]},
     {"id":"oak.18","type":"tree.oak","tile":[20,26],"rotation":180},
-    {"id":"oak.19","type":"tree.oak","tile":[44,126],"rotation":180},
-    {"id":"oak.20","type":"tree.oak","tile":[22,164],"rotation":90},
-    {"id":"oak.21","type":"tree.oak","tile":[78,134],"rotation":180},
-    {"id":"oak.22","type":"tree.oak","tile":[70,94]},
+    {"id":"oak.19","type":"tree.oak","tile":[82,76],"rotation":270},
+    {"id":"oak.20","type":"tree.oak","tile":[66,114],"rotation":270},
+    {"id":"oak.21","type":"tree.oak","tile":[46,22],"rotation":90},
+    {"id":"oak.22","type":"tree.oak","tile":[12,112]},
     {"id":"oak.23","type":"tree.oak","tile":[82,144]},
-    {"id":"oak.24","type":"tree.oak","tile":[36,166]},
-    {"id":"oak.25","type":"tree.oak","tile":[68,110],"rotation":90},
-    {"id":"oak.26","type":"tree.oak","tile":[34,46],"rotation":180},
-    {"id":"oak.27","type":"tree.oak","tile":[26,42],"rotation":90},
-    {"id":"oak.28","type":"tree.oak","tile":[44,14]},
-    {"id":"oak.29","type":"tree.oak","tile":[78,22]},
-    {"id":"oak.30","type":"tree.oak","tile":[82,72]},
-    {"id":"oak.31","type":"tree.oak","tile":[32,152],"rotation":270},
-    {"id":"oak.32","type":"tree.oak","tile":[8,80],"rotation":180},
-    {"id":"oak.33","type":"tree.oak","tile":[72,66]},
-    {"id":"oak.34","type":"tree.oak","tile":[20,82],"rotation":180},
-    {"id":"oak.35","type":"tree.oak","tile":[14,8]},
-    {"id":"oak.36","type":"tree.oak","tile":[4,32],"rotation":270},
-    {"id":"oak.37","type":"tree.oak","tile":[12,140]},
-    {"id":"oak.38","type":"tree.oak","tile":[64,136]},
-    {"id":"oak.39","type":"tree.oak","tile":[76,128],"rotation":270},
-    {"id":"oak.40","type":"tree.oak","tile":[42,30],"rotation":270},
-    {"id":"oak.41","type":"tree.oak","tile":[42,38]},
-    {"id":"oak.42","type":"tree.oak","tile":[80,122],"rotation":180},
-    {"id":"oak.43","type":"tree.oak","tile":[70,20]},
-    {"id":"oak.44","type":"tree.oak","tile":[70,46],"rotation":270},
-    {"id":"oak.45","type":"tree.oak","tile":[38,108],"rotation":270},
-    {"id":"oak.46","type":"tree.oak","tile":[74,50],"rotation":180},
-    {"id":"oak.47","type":"tree.oak","tile":[16,152],"rotation":180},
-    {"id":"oak.48","type":"tree.oak","tile":[8,50],"rotation":180},
-    {"id":"oak.49","type":"tree.oak","tile":[66,88],"rotation":270},
-    {"id":"oak.50","type":"tree.oak","tile":[74,78]},
-    {"id":"oak.51","type":"tree.oak","tile":[58,166],"rotation":90},
-    {"id":"oak.52","type":"tree.oak","tile":[60,62],"rotation":180},
-    {"id":"oak.53","type":"tree.oak","tile":[30,8],"rotation":90},
-    {"id":"oak.54","type":"tree.oak","tile":[22,72]},
-    {"id":"oak.55","type":"tree.oak","tile":[62,162],"rotation":90},
-    {"id":"oak.56","type":"tree.oak","tile":[0,70],"rotation":180},
-    {"id":"oak.57","type":"tree.oak","tile":[68,40],"rotation":180},
-    {"id":"oak.58","type":"tree.oak","tile":[78,70],"rotation":180},
-    {"id":"oak.59","type":"tree.oak","tile":[60,54],"rotation":180},
-    {"id":"oak.60","type":"tree.oak","tile":[0,146],"rotation":90},
-    {"id":"oak.61","type":"tree.oak","tile":[0,80],"rotation":90},
-    {"id":"oak.62","type":"tree.oak","tile":[0,8]},
-    {"id":"oak.63","type":"tree.oak","tile":[74,22]},
-    {"id":"oak.64","type":"tree.oak","tile":[8,116],"rotation":180},
-    {"id":"oak.65","type":"tree.oak","tile":[10,128],"rotation":270},
-    {"id":"oak.66","type":"tree.oak","tile":[64,98],"rotation":180},
-    {"id":"oak.67","type":"tree.oak","tile":[4,90]},
-    {"id":"oak.68","type":"tree.oak","tile":[6,66],"rotation":180},
-    {"id":"oak.69","type":"tree.oak","tile":[32,138],"rotation":90},
-    {"id":"oak.70","type":"tree.oak","tile":[18,128],"rotation":270},
-    {"id":"oak.71","type":"tree.oak","tile":[68,160],"rotation":270},
-    {"id":"oak.72","type":"tree.oak","tile":[12,50],"rotation":270},
-    {"id":"oak.73","type":"tree.oak","tile":[38,66],"rotation":180},
-    {"id":"oak.74","type":"tree.oak","tile":[4,84]},
-    {"id":"oak.75","type":"tree.oak","tile":[20,116],"rotation":180},
-    {"id":"oak.76","type":"tree.oak","tile":[74,36],"rotation":90},
-    {"id":"oak.77","type":"tree.oak","tile":[42,58],"rotation":90},
-    {"id":"oak.78","type":"tree.oak","tile":[22,94],"rotation":270},
-    {"id":"oak.79","type":"tree.oak","tile":[68,54],"rotation":90},
-    {"id":"rock.0","type":"rock.small","tile":[76,6],"rotation":90},
-    {"id":"rock.1","type":"rock.small","tile":[38,118],"rotation":270},
-    {"id":"rock.2","type":"rock.small","tile":[60,30]},
-    {"id":"rock.3","type":"rock.small","tile":[22,8],"rotation":90},
-    {"id":"rock.4","type":"rock.small","tile":[82,126],"rotation":90},
-    {"id":"rock.5","type":"rock.small","tile":[66,166],"rotation":90},
-    {"id":"rock.6","type":"rock.small","tile":[66,34],"rotation":180},
-    {"id":"rock.7","type":"rock.small","tile":[52,30]},
-    {"id":"rock.8","type":"rock.small","tile":[24,118],"rotation":180},
-    {"id":"rock.9","type":"rock.small","tile":[28,92],"rotation":180},
-    {"id":"rock.10","type":"rock.small","tile":[80,64],"rotation":270},
-    {"id":"rock.11","type":"rock.small","tile":[2,26],"rotation":90},
-    {"id":"rock.12","type":"rock.small","tile":[50,68],"rotation":180},
-    {"id":"rock.13","type":"rock.small","tile":[22,90],"rotation":90},
-    {"id":"rock.14","type":"rock.small","tile":[26,86]},
-    {"id":"rock.15","type":"rock.small","tile":[68,136]},
-    {"id":"rock.16","type":"rock.small","tile":[24,14],"rotation":90},
-    {"id":"rock.17","type":"rock.small","tile":[14,104],"rotation":90},
-    {"id":"rock.18","type":"rock.small","tile":[82,22],"rotation":270},
-    {"id":"rock.19","type":"rock.small","tile":[30,16],"rotation":270},
-    {"id":"rock.20","type":"rock.small","tile":[76,58]},
-    {"id":"rock.21","type":"rock.small","tile":[40,126],"rotation":270},
-    {"id":"rock.22","type":"rock.small","tile":[0,94]},
-    {"id":"rock.23","type":"rock.small","tile":[0,164],"rotation":90},
-    {"id":"rock.24","type":"rock.small","tile":[4,122],"rotation":90},
-    {"id":"rock.25","type":"rock.small","tile":[68,114]},
-    {"id":"rock.26","type":"rock.small","tile":[46,150],"rotation":90},
-    {"id":"rock.27","type":"rock.small","tile":[78,28],"rotation":180},
-    {"id":"rock.28","type":"rock.small","tile":[62,120]},
-    {"id":"rock.29","type":"rock.small","tile":[42,18],"rotation":90},
-    {"id":"rock.30","type":"rock.small","tile":[80,112],"rotation":270},
-    {"id":"rock.31","type":"rock.small","tile":[0,64],"rotation":90},
-    {"id":"rock.32","type":"rock.small","tile":[46,110]},
-    {"id":"rock.33","type":"rock.small","tile":[2,50]},
-    {"id":"rock.34","type":"rock.small","tile":[40,2]},
-    {"id":"rock.35","type":"rock.small","tile":[18,50],"rotation":90},
-    {"id":"rock.36","type":"rock.small","tile":[4,116]},
-    {"id":"rock.37","type":"rock.small","tile":[0,84],"rotation":90},
-    {"id":"rock.38","type":"rock.small","tile":[62,16],"rotation":180},
-    {"id":"rock.39","type":"rock.small","tile":[82,60],"rotation":180},
-    {"id":"rock.40","type":"rock.small","tile":[62,90],"rotation":180},
-    {"id":"rock.41","type":"rock.small","tile":[62,126],"rotation":270},
-    {"id":"rock.42","type":"rock.small","tile":[78,78]},
-    {"id":"rock.43","type":"rock.small","tile":[72,90],"rotation":90},
-    {"id":"rock.44","type":"rock.small","tile":[38,8],"rotation":270},
-    {"id":"rock.45","type":"rock.small","tile":[62,38],"rotation":180},
-    {"id":"rock.46","type":"rock.small","tile":[6,2],"rotation":180},
-    {"id":"rock.47","type":"rock.small","tile":[8,62],"rotation":270},
-    {"id":"rock.48","type":"rock.small","tile":[76,84],"rotation":90},
-    {"id":"rock.49","type":"rock.small","tile":[2,158],"rotation":180},
-    {"id":"rock.50","type":"rock.small","tile":[46,162]},
-    {"id":"rock.51","type":"rock.small","tile":[42,26],"rotation":180},
-    {"id":"rock.52","type":"rock.small","tile":[72,98],"rotation":90},
-    {"id":"rock.53","type":"rock.small","tile":[82,88]}
+    {"id":"oak.24","type":"tree.oak","tile":[22,166]},
+    {"id":"oak.25","type":"tree.oak","tile":[82,20],"rotation":270},
+    {"id":"oak.26","type":"tree.oak","tile":[54,54],"rotation":90},
+    {"id":"oak.27","type":"tree.oak","tile":[30,8]},
+    {"id":"oak.28","type":"tree.oak","tile":[46,110],"rotation":90},
+    {"id":"oak.29","type":"tree.oak","tile":[24,126],"rotation":90},
+    {"id":"oak.30","type":"tree.oak","tile":[44,14]},
+    {"id":"oak.31","type":"tree.oak","tile":[42,0]},
+    {"id":"oak.32","type":"tree.oak","tile":[82,72]},
+    {"id":"oak.33","type":"tree.oak","tile":[44,74],"rotation":180},
+    {"id":"oak.34","type":"tree.oak","tile":[38,66],"rotation":270},
+    {"id":"oak.35","type":"tree.oak","tile":[70,162],"rotation":90},
+    {"id":"oak.36","type":"tree.oak","tile":[8,80],"rotation":180},
+    {"id":"oak.37","type":"tree.oak","tile":[72,66]},
+    {"id":"oak.38","type":"tree.oak","tile":[70,114],"rotation":270},
+    {"id":"oak.39","type":"tree.oak","tile":[16,126],"rotation":90},
+    {"id":"oak.40","type":"tree.oak","tile":[4,32],"rotation":270},
+    {"id":"oak.41","type":"tree.oak","tile":[12,140]},
+    {"id":"oak.42","type":"tree.oak","tile":[64,136]},
+    {"id":"oak.43","type":"tree.oak","tile":[62,56],"rotation":90},
+    {"id":"oak.44","type":"tree.oak","tile":[72,46],"rotation":180},
+    {"id":"oak.45","type":"tree.oak","tile":[76,128],"rotation":270},
+    {"id":"oak.46","type":"tree.oak","tile":[42,30],"rotation":270},
+    {"id":"oak.47","type":"tree.oak","tile":[6,8]},
+    {"id":"oak.48","type":"tree.oak","tile":[80,84]},
+    {"id":"oak.49","type":"tree.oak","tile":[16,152],"rotation":180},
+    {"id":"oak.50","type":"tree.oak","tile":[8,50],"rotation":180},
+    {"id":"oak.51","type":"tree.oak","tile":[2,118],"rotation":90},
+    {"id":"oak.52","type":"tree.oak","tile":[2,134],"rotation":180},
+    {"id":"oak.53","type":"tree.oak","tile":[76,148],"rotation":90},
+    {"id":"oak.54","type":"tree.oak","tile":[12,116]},
+    {"id":"oak.55","type":"tree.oak","tile":[76,48],"rotation":90},
+    {"id":"oak.56","type":"tree.oak","tile":[10,22],"rotation":180},
+    {"id":"oak.57","type":"tree.oak","tile":[62,22],"rotation":90},
+    {"id":"oak.58","type":"tree.oak","tile":[60,62],"rotation":180},
+    {"id":"oak.59","type":"tree.oak","tile":[72,120],"rotation":90},
+    {"id":"oak.60","type":"tree.oak","tile":[18,116],"rotation":90},
+    {"id":"oak.61","type":"tree.oak","tile":[62,162],"rotation":90},
+    {"id":"oak.62","type":"tree.oak","tile":[0,70],"rotation":180},
+    {"id":"oak.63","type":"tree.oak","tile":[68,40],"rotation":180},
+    {"id":"oak.64","type":"tree.oak","tile":[78,70],"rotation":180},
+    {"id":"oak.65","type":"tree.oak","tile":[76,8],"rotation":180},
+    {"id":"oak.66","type":"tree.oak","tile":[28,140]},
+    {"id":"oak.67","type":"tree.oak","tile":[78,24],"rotation":270},
+    {"id":"oak.68","type":"tree.oak","tile":[0,146],"rotation":90},
+    {"id":"oak.69","type":"tree.oak","tile":[62,48],"rotation":270},
+    {"id":"oak.70","type":"tree.oak","tile":[0,8]},
+    {"id":"oak.71","type":"tree.oak","tile":[24,46],"rotation":90},
+    {"id":"oak.72","type":"tree.oak","tile":[8,116],"rotation":180},
+    {"id":"oak.73","type":"tree.oak","tile":[10,128],"rotation":270},
+    {"id":"oak.74","type":"tree.oak","tile":[64,98],"rotation":180},
+    {"id":"oak.75","type":"tree.oak","tile":[4,90]},
+    {"id":"oak.76","type":"tree.oak","tile":[28,34]},
+    {"id":"oak.77","type":"tree.oak","tile":[82,164],"rotation":90},
+    {"id":"oak.78","type":"tree.oak","tile":[6,66],"rotation":180},
+    {"id":"oak.79","type":"tree.oak","tile":[32,138],"rotation":90},
+    {"id":"rock.0","type":"rock.small","tile":[78,20]},
+    {"id":"rock.1","type":"rock.small","tile":[24,132],"rotation":180},
+    {"id":"rock.2","type":"rock.small","tile":[4,84]},
+    {"id":"rock.3","type":"rock.small","tile":[60,82],"rotation":180},
+    {"id":"rock.4","type":"rock.small","tile":[60,30]},
+    {"id":"rock.5","type":"rock.small","tile":[22,8],"rotation":90},
+    {"id":"rock.6","type":"rock.small","tile":[82,126],"rotation":90},
+    {"id":"rock.7","type":"rock.small","tile":[66,166],"rotation":90},
+    {"id":"rock.8","type":"rock.small","tile":[66,34],"rotation":180},
+    {"id":"rock.9","type":"rock.small","tile":[16,8],"rotation":180},
+    {"id":"rock.10","type":"rock.small","tile":[6,106]},
+    {"id":"rock.11","type":"rock.small","tile":[12,48],"rotation":90},
+    {"id":"rock.12","type":"rock.small","tile":[82,30],"rotation":180},
+    {"id":"rock.13","type":"rock.small","tile":[28,92],"rotation":180},
+    {"id":"rock.14","type":"rock.small","tile":[10,100]},
+    {"id":"rock.15","type":"rock.small","tile":[2,26],"rotation":90},
+    {"id":"rock.16","type":"rock.small","tile":[8,136],"rotation":270},
+    {"id":"rock.17","type":"rock.small","tile":[58,158],"rotation":90},
+    {"id":"rock.18","type":"rock.small","tile":[40,162],"rotation":180},
+    {"id":"rock.19","type":"rock.small","tile":[14,104],"rotation":90},
+    {"id":"rock.20","type":"rock.small","tile":[30,134],"rotation":90},
+    {"id":"rock.21","type":"rock.small","tile":[64,16],"rotation":180},
+    {"id":"rock.22","type":"rock.small","tile":[54,12],"rotation":180},
+    {"id":"rock.23","type":"rock.small","tile":[0,0],"rotation":90},
+    {"id":"rock.24","type":"rock.small","tile":[50,22],"rotation":90},
+    {"id":"rock.25","type":"rock.small","tile":[0,164],"rotation":90},
+    {"id":"rock.26","type":"rock.small","tile":[4,122],"rotation":90},
+    {"id":"rock.27","type":"rock.small","tile":[74,62]},
+    {"id":"rock.28","type":"rock.small","tile":[2,130],"rotation":90},
+    {"id":"rock.29","type":"rock.small","tile":[78,132]},
+    {"id":"rock.30","type":"rock.small","tile":[8,62],"rotation":270},
+    {"id":"rock.31","type":"rock.small","tile":[78,28],"rotation":180},
+    {"id":"rock.32","type":"rock.small","tile":[62,120]},
+    {"id":"rock.33","type":"rock.small","tile":[42,18],"rotation":90},
+    {"id":"rock.34","type":"rock.small","tile":[6,158],"rotation":270},
+    {"id":"rock.35","type":"rock.small","tile":[16,100]},
+    {"id":"rock.36","type":"rock.small","tile":[62,42],"rotation":270},
+    {"id":"rock.37","type":"rock.small","tile":[2,50]},
+    {"id":"rock.38","type":"rock.small","tile":[60,66],"rotation":180},
+    {"id":"rock.39","type":"rock.small","tile":[62,116],"rotation":90},
+    {"id":"rock.40","type":"rock.small","tile":[74,110],"rotation":90},
+    {"id":"rock.41","type":"rock.small","tile":[72,50]},
+    {"id":"rock.42","type":"rock.small","tile":[62,90],"rotation":180},
+    {"id":"rock.43","type":"rock.small","tile":[62,126],"rotation":270},
+    {"id":"rock.44","type":"rock.small","tile":[44,124]},
+    {"id":"rock.45","type":"rock.small","tile":[0,78],"rotation":90},
+    {"id":"rock.46","type":"rock.small","tile":[78,78]},
+    {"id":"rock.47","type":"rock.small","tile":[18,50]},
+    {"id":"rock.48","type":"rock.small","tile":[38,8],"rotation":270},
+    {"id":"rock.49","type":"rock.small","tile":[62,38],"rotation":180},
+    {"id":"rock.50","type":"rock.small","tile":[24,18],"rotation":90},
+    {"id":"rock.51","type":"rock.small","tile":[66,26]},
+    {"id":"rock.52","type":"rock.small","tile":[66,162],"rotation":270},
+    {"id":"rock.53","type":"rock.small","tile":[42,26],"rotation":180},
+    {"id":"home.acorn","type":"building.cabin","tile":[58,4],"props":{"label":"Acorn's Cabin","interior":"worlds/interiors/home-acorn.json","owner":"folk.acorn"}},
+    {"id":"home.birch","type":"building.bungalow","tile":[4,27],"props":{"label":"Birch's Bungalow","interior":"worlds/interiors/home-birch.json","owner":"folk.birch"}},
+    {"id":"home.burl","type":"building.cottage","tile":[34,3],"props":{"label":"Burl's Cottage","interior":"worlds/interiors/home-burl.json","owner":"folk.burl"}},
+    {"id":"home.cedar","type":"building.cabin","tile":[51,94],"props":{"label":"Cedar's Cabin","interior":"worlds/interiors/home-cedar.json","owner":"folk.cedar"}},
+    {"id":"home.chestnut","type":"building.bungalow","tile":[76,88],"props":{"label":"Chestnut's Bungalow","interior":"worlds/interiors/home-chestnut.json","owner":"folk.chestnut"}},
+    {"id":"home.hickory","type":"building.cottage","tile":[51,104],"props":{"label":"Hickory's Cottage","interior":"worlds/interiors/home-hickory.json","owner":"folk.hickory"}},
+    {"id":"home.knot","type":"building.cabin","tile":[78,7],"props":{"label":"Knot's Cabin","interior":"worlds/interiors/home-knot.json","owner":"folk.knot"}},
+    {"id":"home.larch","type":"building.bungalow","tile":[39,37],"props":{"label":"Larch's Bungalow","interior":"worlds/interiors/home-larch.json","owner":"folk.larch"}},
+    {"id":"home.maple","type":"building.cottage","tile":[70,34],"props":{"label":"Maple's Cottage","interior":"worlds/interiors/home-maple.json","owner":"folk.maple"}},
+    {"id":"home.moss","type":"building.cabin","tile":[78,48],"props":{"label":"Moss's Cabin","interior":"worlds/interiors/home-moss.json","owner":"folk.moss"}},
+    {"id":"home.resin","type":"building.bungalow","tile":[48,84],"props":{"label":"Resin's Bungalow","interior":"worlds/interiors/home-resin.json","owner":"folk.resin"}},
+    {"id":"home.rowan","type":"building.cottage","tile":[44,103],"props":{"label":"Rowan's Cottage","interior":"worlds/interiors/home-rowan.json","owner":"folk.rowan"}},
+    {"id":"home.sylva","type":"building.cabin","tile":[51,113],"props":{"label":"Sylva's Cabin","interior":"worlds/interiors/home-sylva.json","owner":"folk.sylva"}},
+    {"id":"home.spruce","type":"building.bungalow","tile":[28,144],"props":{"label":"Spruce's Bungalow","interior":"worlds/interiors/home-spruce.json","owner":"folk.spruce"}},
+    {"id":"home.tamarack","type":"building.cottage","tile":[3,98],"props":{"label":"Tamarack's Cottage","interior":"worlds/interiors/home-tamarack.json","owner":"folk.tamarack"}},
+    {"id":"home.thorn","type":"building.cabin","tile":[51,98],"props":{"label":"Thorn's Cabin","interior":"worlds/interiors/home-thorn.json","owner":"folk.thorn"}},
+    {"id":"home.timber","type":"building.bungalow","tile":[2,14],"props":{"label":"Timber's Bungalow","interior":"worlds/interiors/home-timber.json","owner":"folk.timber"}},
+    {"id":"home.walnut","type":"building.cottage","tile":[31,32],"props":{"label":"Walnut's Cottage","interior":"worlds/interiors/home-walnut.json","owner":"folk.walnut"}},
+    {"id":"home.wicker","type":"building.cabin","tile":[35,61],"props":{"label":"Wicker's Cabin","interior":"worlds/interiors/home-wicker.json","owner":"folk.wicker"}},
+    {"id":"home.yew","type":"building.bungalow","tile":[33,57],"props":{"label":"Yew's Bungalow","interior":"worlds/interiors/home-yew.json","owner":"folk.yew"}},
+    {"id":"home.bracken","type":"building.cottage","tile":[14,161],"props":{"label":"Bracken's Cottage","interior":"worlds/interiors/home-bracken.json","owner":"folk.bracken"}},
+    {"id":"home.holly","type":"building.cabin","tile":[19,4],"props":{"label":"Holly's Cabin","interior":"worlds/interiors/home-holly.json","owner":"folk.holly"}},
+    {"id":"home.laurel","type":"building.bungalow","tile":[77,38],"props":{"label":"Laurel's Bungalow","interior":"worlds/interiors/home-laurel.json","owner":"folk.laurel"}},
+    {"id":"home.tupelo","type":"building.cottage","tile":[2,53],"props":{"label":"Tupelo's Cottage","interior":"worlds/interiors/home-tupelo.json","owner":"folk.tupelo"}},
+    {"id":"home.galax","type":"building.cabin","tile":[60,8],"props":{"label":"Galax's Cabin","interior":"worlds/interiors/home-galax.json","owner":"folk.galax"}}
   ],
   "animals": [
-    {"id":"chicken.0","type":"chicken","tile":[32,78]},
-    {"id":"chicken.1","type":"chicken","tile":[28,80]},
-    {"id":"chicken.2","type":"chicken","tile":[28,78]},
-    {"id":"sheep.0","type":"sheep","tile":[26,60]},
-    {"id":"sheep.1","type":"sheep","tile":[34,64]},
-    {"id":"sheep.2","type":"sheep","tile":[38,56]},
-    {"id":"goat.0","type":"goat","tile":[68,90]},
-    {"id":"goat.1","type":"goat","tile":[52,98]},
-    {"id":"crow.0","type":"crow","tile":[28,40]},
-    {"id":"crow.1","type":"crow","tile":[36,44]},
-    {"id":"crow.2","type":"crow","tile":[32,28]},
-    {"id":"duck.0","type":"duck","tile":[36,94]},
-    {"id":"duck.1","type":"duck","tile":[22,100]}
+    {"id":"chicken.0","type":"chicken","tile":[28,78]},
+    {"id":"chicken.1","type":"chicken","tile":[28,84]},
+    {"id":"chicken.2","type":"chicken","tile":[28,88]},
+    {"id":"sheep.0","type":"sheep","tile":[34,74]},
+    {"id":"sheep.1","type":"sheep","tile":[36,68]},
+    {"id":"sheep.2","type":"sheep","tile":[20,60]},
+    {"id":"goat.0","type":"goat","tile":[70,96]},
+    {"id":"goat.1","type":"goat","tile":[62,86]},
+    {"id":"crow.0","type":"crow","tile":[42,32]},
+    {"id":"crow.1","type":"crow","tile":[40,26]},
+    {"id":"crow.2","type":"crow","tile":[54,36]},
+    {"id":"duck.0","type":"duck","tile":[24,104]},
+    {"id":"duck.1","type":"duck","tile":[34,98]},
+    {"id":"wild.boar.0","type":"boar","tile":[77,62]},
+    {"id":"wild.boar.1","type":"boar","tile":[6,118]},
+    {"id":"wild.deer.0","type":"deer","tile":[79,78]},
+    {"id":"wild.deer.1","type":"deer","tile":[27,136]},
+    {"id":"wild.fox.0","type":"fox","tile":[49,106]},
+    {"id":"wild.fox.1","type":"fox","tile":[59,80]},
+    {"id":"wild.squirrel.0","type":"squirrel","tile":[71,21]},
+    {"id":"wild.squirrel.1","type":"squirrel","tile":[71,12]},
+    {"id":"wild.owl.0","type":"owl","tile":[27,165]},
+    {"id":"wild.owl.1","type":"owl","tile":[47,14]},
+    {"id":"wild.turkey.0","type":"turkey","tile":[19,65]},
+    {"id":"wild.turkey.1","type":"turkey","tile":[76,4]},
+    {"id":"wild.badger.0","type":"badger","tile":[3,113]},
+    {"id":"wild.badger.1","type":"badger","tile":[14,65]},
+    {"id":"wild.mouse.0","type":"mouse","tile":[17,134]},
+    {"id":"wild.mouse.1","type":"mouse","tile":[48,3]}
   ],
   "npcs": [
     {
-      "id": "folk.eldra",
+      "id": "folk.alder",
       "type": "folk.villager",
       "tile": [
-        30,
-        78
+        34,
+        42
       ],
-      "facing": "north",
+      "facing": "south",
       "props": {
-        "name": "Eldra",
-        "title": "Holler Carpenter",
+        "name": "Alder",
+        "title": "Creek Reader",
+        "roam": 5,
         "voice": {
-          "pitch": 0.82,
+          "pitch": 0.8,
           "rate": 19,
           "timbre": "sawtooth"
         }
@@ -866,185 +911,925 @@
         "start": "hello",
         "nodes": {
           "hello": {
-            "text": "Eldra. Old holler timber talks before it breaks. Yours says the stone is deep and the house can climb without spreading into the creek.",
-            "then": "menu"
+            "text": "Alder. I read the creek by what it leaves on the gravel. That's my place behind me. Come say hello before you let yourself in.",
+            "then": "again"
           },
-          "menu": {
-            "text": "The footprint stays exactly where it is. We build upward, and every new floor is yours to use.",
-            "choices": [
-              {
-                "text": "Add a second story — 1800 coin.",
-                "when": {
-                  "houseStories": 1,
-                  "coins": 1800
-                },
-                "do": [
-                  {
-                    "coins": -1800
-                  },
-                  {
-                    "houseStories": 2
-                  }
-                ],
-                "to": "second"
-              },
-              {
-                "text": "I need 1800 coin for the second story.",
-                "when": {
-                  "all": [
-                    {
-                      "houseStories": 1
-                    },
-                    {
-                      "not": {
-                        "coins": 1800
-                      }
-                    }
-                  ]
-                },
-                "to": "short"
-              },
-              {
-                "text": "Add a third story — 3600 coin.",
-                "when": {
-                  "houseStories": 2,
-                  "coins": 3600
-                },
-                "do": [
-                  {
-                    "coins": -3600
-                  },
-                  {
-                    "houseStories": 3
-                  }
-                ],
-                "to": "third"
-              },
-              {
-                "text": "I need 3600 coin for the third story.",
-                "when": {
-                  "all": [
-                    {
-                      "houseStories": 2
-                    },
-                    {
-                      "not": {
-                        "coins": 3600
-                      }
-                    }
-                  ]
-                },
-                "to": "short"
-              },
-              {
-                "text": "Is the house finished?",
-                "when": {
-                  "houseStories": 3
-                },
-                "to": "complete"
-              },
-              {
-                "text": "Not today.",
-                "to": "endline"
-              }
-            ]
+          "again": {
+            "text": "Water is low. The stones are saying so plainly."
+          }
+        }
+      }
+    },
+    {
+      "id": "folk.fern",
+      "type": "folk.villager",
+      "tile": [
+        28,
+        124
+      ],
+      "facing": "south",
+      "props": {
+        "name": "Fern",
+        "title": "Basket Maker",
+        "roam": 5,
+        "voice": {
+          "pitch": 1.17,
+          "rate": 23,
+          "timbre": "triangle"
+        }
+      },
+      "dialog": {
+        "start": "hello",
+        "nodes": {
+          "hello": {
+            "text": "Fern. Every useful basket in the holler starts as a wet switch in my yard. That's my place behind me. Come say hello before you let yourself in.",
+            "then": "again"
           },
-          "second": {
-            "text": "Two stories, sound and square. The new stair is ready inside.",
-            "then": "end"
+          "again": {
+            "text": "The willow is soaking. Tomorrow it will listen."
+          }
+        }
+      }
+    },
+    {
+      "id": "folk.hollis",
+      "type": "folk.villager",
+      "tile": [
+        26,
+        150
+      ],
+      "facing": "south",
+      "props": {
+        "name": "Hollis",
+        "title": "Ford Tender",
+        "roam": 5,
+        "voice": {
+          "pitch": 0.96,
+          "rate": 25,
+          "timbre": "square"
+        }
+      },
+      "dialog": {
+        "start": "hello",
+        "nodes": {
+          "hello": {
+            "text": "Hollis. I reset the ford after every hard rain. That's my place behind me. Come say hello before you let yourself in.",
+            "then": "again"
           },
-          "third": {
-            "text": "Three stories. Roof raised, chimney drawn, top floor ready. That house is complete.",
-            "then": "end"
+          "again": {
+            "text": "The crossing is sound enough if you place your feet."
+          }
+        }
+      }
+    },
+    {
+      "id": "folk.acorn",
+      "type": "folk.gardener",
+      "tile": [
+        60,
+        7
+      ],
+      "facing": "south",
+      "props": {
+        "name": "Acorn",
+        "title": "Sap Boiler",
+        "roam": 5,
+        "voice": {
+          "pitch": 1.06,
+          "rate": 18,
+          "timbre": "sawtooth"
+        }
+      },
+      "dialog": {
+        "start": "hello",
+        "nodes": {
+          "hello": {
+            "text": "Acorn. Sap Boiler, up and down this holler my whole life. That's my roof through the trees.",
+            "then": "again"
           },
-          "complete": {
-            "text": "Complete at three stories. Any higher and it stops being a house and starts arguing with the weather.",
-            "then": "end"
+          "again": {
+            "text": "Heard an owl at noon. Make of that what you like."
+          }
+        }
+      }
+    },
+    {
+      "id": "folk.birch",
+      "type": "folk.fisher",
+      "tile": [
+        6,
+        30
+      ],
+      "facing": "south",
+      "props": {
+        "name": "Birch",
+        "title": "Stump Splitter",
+        "roam": 6,
+        "voice": {
+          "pitch": 1.01,
+          "rate": 18,
+          "timbre": "square"
+        }
+      },
+      "dialog": {
+        "start": "hello",
+        "nodes": {
+          "hello": {
+            "text": "Don't get many strangers this deep in the wood. Birch -- Stump Splitter. The path forks; my door doesn't.",
+            "then": "again"
           },
-          "short": {
-            "text": "Keep the plan. Come back when the purse is ready; the ground will not move.",
-            "then": "end"
+          "again": {
+            "text": "A straight plank is a small miracle."
+          }
+        }
+      }
+    },
+    {
+      "id": "folk.burl",
+      "type": "folk.tinker",
+      "tile": [
+        35,
+        6
+      ],
+      "facing": "south",
+      "props": {
+        "name": "Burl",
+        "title": "Bark Peeler",
+        "roam": 4,
+        "voice": {
+          "pitch": 0.96,
+          "rate": 18,
+          "timbre": "triangle"
+        }
+      },
+      "dialog": {
+        "start": "hello",
+        "nodes": {
+          "hello": {
+            "text": "Burl. I work the slope as Bark Peeler. The trees talk, if you stand still long enough to be rude to.",
+            "then": "again"
           },
-          "endline": {
-            "text": "No harm done. A measured house waits better than people do.",
-            "then": "end"
+          "again": {
+            "text": "The holler floor eats hats. Hold onto yours."
+          }
+        }
+      }
+    },
+    {
+      "id": "folk.cedar",
+      "type": "folk.villager",
+      "tile": [
+        53,
+        97
+      ],
+      "facing": "south",
+      "props": {
+        "name": "Cedar",
+        "title": "Charcoal Burner",
+        "roam": 5,
+        "voice": {
+          "pitch": 0.91,
+          "rate": 18,
+          "timbre": "sawtooth"
+        }
+      },
+      "dialog": {
+        "start": "hello",
+        "nodes": {
+          "hello": {
+            "text": "Easy on the roots there. Cedar, Charcoal Burner. The holler keeps its own hours and so do I.",
+            "then": "again"
+          },
+          "again": {
+            "text": "Sap's running slow. Cold spring."
+          }
+        }
+      }
+    },
+    {
+      "id": "folk.chestnut",
+      "type": "folk.gardener",
+      "tile": [
+        78,
+        91
+      ],
+      "facing": "south",
+      "props": {
+        "name": "Chestnut",
+        "title": "Trail Blazer",
+        "roam": 6,
+        "voice": {
+          "pitch": 0.87,
+          "rate": 18,
+          "timbre": "square"
+        }
+      },
+      "dialog": {
+        "start": "hello",
+        "nodes": {
+          "hello": {
+            "text": "Chestnut, Trail Blazer. Everything here is uphill from something. You get used to it.",
+            "then": "again"
+          },
+          "again": {
+            "text": "You can't hurry a woodpile."
+          }
+        }
+      }
+    },
+    {
+      "id": "folk.hickory",
+      "type": "folk.fisher",
+      "tile": [
+        52,
+        107
+      ],
+      "facing": "south",
+      "props": {
+        "name": "Hickory",
+        "title": "Mast Gatherer",
+        "roam": 4,
+        "voice": {
+          "pitch": 0.82,
+          "rate": 18,
+          "timbre": "triangle"
+        }
+      },
+      "dialog": {
+        "start": "hello",
+        "nodes": {
+          "hello": {
+            "text": "Well now. Hickory. Been Mast Gatherer since the big oak came down. Come by; the kettle's always on the edge of boiling.",
+            "then": "again"
+          },
+          "again": {
+            "text": "The ridge fog burns off by ten. Usually."
+          }
+        }
+      }
+    },
+    {
+      "id": "folk.knot",
+      "type": "folk.tinker",
+      "tile": [
+        80,
+        10
+      ],
+      "facing": "south",
+      "props": {
+        "name": "Knot",
+        "title": "Shingle Riever",
+        "roam": 5,
+        "voice": {
+          "pitch": 1.27,
+          "rate": 18,
+          "timbre": "sawtooth"
+        }
+      },
+      "dialog": {
+        "start": "hello",
+        "nodes": {
+          "hello": {
+            "text": "Knot. Shingle Riever, up and down this holler my whole life. That's my roof through the trees.",
+            "then": "again"
+          },
+          "again": {
+            "text": "Heard an owl at noon. Make of that what you like."
+          }
+        }
+      }
+    },
+    {
+      "id": "folk.larch",
+      "type": "folk.villager",
+      "tile": [
+        41,
+        40
+      ],
+      "facing": "south",
+      "props": {
+        "name": "Larch",
+        "title": "Gall Collector",
+        "roam": 6,
+        "voice": {
+          "pitch": 1.22,
+          "rate": 18,
+          "timbre": "square"
+        }
+      },
+      "dialog": {
+        "start": "hello",
+        "nodes": {
+          "hello": {
+            "text": "Don't get many strangers this deep in the wood. Larch -- Gall Collector. The path forks; my door doesn't.",
+            "then": "again"
+          },
+          "again": {
+            "text": "A straight plank is a small miracle."
+          }
+        }
+      }
+    },
+    {
+      "id": "folk.maple",
+      "type": "folk.gardener",
+      "tile": [
+        71,
+        37
+      ],
+      "facing": "south",
+      "props": {
+        "name": "Maple",
+        "title": "Ridge Runner",
+        "roam": 4,
+        "voice": {
+          "pitch": 1.17,
+          "rate": 18,
+          "timbre": "triangle"
+        }
+      },
+      "dialog": {
+        "start": "hello",
+        "nodes": {
+          "hello": {
+            "text": "Maple. I work the slope as Ridge Runner. The trees talk, if you stand still long enough to be rude to.",
+            "then": "again"
+          },
+          "again": {
+            "text": "The holler floor eats hats. Hold onto yours."
+          }
+        }
+      }
+    },
+    {
+      "id": "folk.moss",
+      "type": "folk.fisher",
+      "tile": [
+        80,
+        51
+      ],
+      "facing": "south",
+      "props": {
+        "name": "Moss",
+        "title": "Holler Warden",
+        "roam": 5,
+        "voice": {
+          "pitch": 1.12,
+          "rate": 18,
+          "timbre": "sawtooth"
+        }
+      },
+      "dialog": {
+        "start": "hello",
+        "nodes": {
+          "hello": {
+            "text": "Easy on the roots there. Moss, Holler Warden. The holler keeps its own hours and so do I.",
+            "then": "again"
+          },
+          "again": {
+            "text": "Sap's running slow. Cold spring."
+          }
+        }
+      }
+    },
+    {
+      "id": "folk.resin",
+      "type": "folk.tinker",
+      "tile": [
+        50,
+        87
+      ],
+      "facing": "south",
+      "props": {
+        "name": "Resin",
+        "title": "Kindling Bundler",
+        "roam": 6,
+        "voice": {
+          "pitch": 1.07,
+          "rate": 18,
+          "timbre": "square"
+        }
+      },
+      "dialog": {
+        "start": "hello",
+        "nodes": {
+          "hello": {
+            "text": "Resin, Kindling Bundler. Everything here is uphill from something. You get used to it.",
+            "then": "again"
+          },
+          "again": {
+            "text": "You can't hurry a woodpile."
+          }
+        }
+      }
+    },
+    {
+      "id": "folk.rowan",
+      "type": "folk.villager",
+      "tile": [
+        45,
+        106
+      ],
+      "facing": "south",
+      "props": {
+        "name": "Rowan",
+        "title": "Deadfall Clearer",
+        "roam": 4,
+        "voice": {
+          "pitch": 1.02,
+          "rate": 18,
+          "timbre": "triangle"
+        }
+      },
+      "dialog": {
+        "start": "hello",
+        "nodes": {
+          "hello": {
+            "text": "Well now. Rowan. Been Deadfall Clearer since the big oak came down. Come by; the kettle's always on the edge of boiling.",
+            "then": "again"
+          },
+          "again": {
+            "text": "The ridge fog burns off by ten. Usually."
+          }
+        }
+      }
+    },
+    {
+      "id": "folk.sylva",
+      "type": "folk.gardener",
+      "tile": [
+        53,
+        116
+      ],
+      "facing": "south",
+      "props": {
+        "name": "Sylva",
+        "title": "Sap Boiler",
+        "roam": 5,
+        "voice": {
+          "pitch": 0.98,
+          "rate": 18,
+          "timbre": "sawtooth"
+        }
+      },
+      "dialog": {
+        "start": "hello",
+        "nodes": {
+          "hello": {
+            "text": "Sylva. Sap Boiler, up and down this holler my whole life. That's my roof through the trees.",
+            "then": "again"
+          },
+          "again": {
+            "text": "Heard an owl at noon. Make of that what you like."
+          }
+        }
+      }
+    },
+    {
+      "id": "folk.spruce",
+      "type": "folk.fisher",
+      "tile": [
+        30,
+        147
+      ],
+      "facing": "south",
+      "props": {
+        "name": "Spruce",
+        "title": "Stump Splitter",
+        "roam": 6,
+        "voice": {
+          "pitch": 0.93,
+          "rate": 18,
+          "timbre": "square"
+        }
+      },
+      "dialog": {
+        "start": "hello",
+        "nodes": {
+          "hello": {
+            "text": "Don't get many strangers this deep in the wood. Spruce -- Stump Splitter. The path forks; my door doesn't.",
+            "then": "again"
+          },
+          "again": {
+            "text": "A straight plank is a small miracle."
+          }
+        }
+      }
+    },
+    {
+      "id": "folk.tamarack",
+      "type": "folk.tinker",
+      "tile": [
+        4,
+        101
+      ],
+      "facing": "south",
+      "props": {
+        "name": "Tamarack",
+        "title": "Bark Peeler",
+        "roam": 4,
+        "voice": {
+          "pitch": 0.88,
+          "rate": 18,
+          "timbre": "triangle"
+        }
+      },
+      "dialog": {
+        "start": "hello",
+        "nodes": {
+          "hello": {
+            "text": "Tamarack. I work the slope as Bark Peeler. The trees talk, if you stand still long enough to be rude to.",
+            "then": "again"
+          },
+          "again": {
+            "text": "The holler floor eats hats. Hold onto yours."
+          }
+        }
+      }
+    },
+    {
+      "id": "folk.thorn",
+      "type": "folk.villager",
+      "tile": [
+        53,
+        101
+      ],
+      "facing": "south",
+      "props": {
+        "name": "Thorn",
+        "title": "Charcoal Burner",
+        "roam": 5,
+        "voice": {
+          "pitch": 0.83,
+          "rate": 18,
+          "timbre": "sawtooth"
+        }
+      },
+      "dialog": {
+        "start": "hello",
+        "nodes": {
+          "hello": {
+            "text": "Easy on the roots there. Thorn, Charcoal Burner. The holler keeps its own hours and so do I.",
+            "then": "again"
+          },
+          "again": {
+            "text": "Sap's running slow. Cold spring."
+          }
+        }
+      }
+    },
+    {
+      "id": "folk.timber",
+      "type": "folk.gardener",
+      "tile": [
+        4,
+        17
+      ],
+      "facing": "south",
+      "props": {
+        "name": "Timber",
+        "title": "Trail Blazer",
+        "roam": 6,
+        "voice": {
+          "pitch": 0.78,
+          "rate": 18,
+          "timbre": "square"
+        }
+      },
+      "dialog": {
+        "start": "hello",
+        "nodes": {
+          "hello": {
+            "text": "Timber, Trail Blazer. Everything here is uphill from something. You get used to it.",
+            "then": "again"
+          },
+          "again": {
+            "text": "You can't hurry a woodpile."
+          }
+        }
+      }
+    },
+    {
+      "id": "folk.walnut",
+      "type": "folk.fisher",
+      "tile": [
+        32,
+        35
+      ],
+      "facing": "south",
+      "props": {
+        "name": "Walnut",
+        "title": "Mast Gatherer",
+        "roam": 4,
+        "voice": {
+          "pitch": 1.23,
+          "rate": 18,
+          "timbre": "triangle"
+        }
+      },
+      "dialog": {
+        "start": "hello",
+        "nodes": {
+          "hello": {
+            "text": "Well now. Walnut. Been Mast Gatherer since the big oak came down. Come by; the kettle's always on the edge of boiling.",
+            "then": "again"
+          },
+          "again": {
+            "text": "The ridge fog burns off by ten. Usually."
+          }
+        }
+      }
+    },
+    {
+      "id": "folk.wicker",
+      "type": "folk.tinker",
+      "tile": [
+        37,
+        64
+      ],
+      "facing": "south",
+      "props": {
+        "name": "Wicker",
+        "title": "Shingle Riever",
+        "roam": 5,
+        "voice": {
+          "pitch": 1.18,
+          "rate": 18,
+          "timbre": "sawtooth"
+        }
+      },
+      "dialog": {
+        "start": "hello",
+        "nodes": {
+          "hello": {
+            "text": "Wicker. Shingle Riever, up and down this holler my whole life. That's my roof through the trees.",
+            "then": "again"
+          },
+          "again": {
+            "text": "Heard an owl at noon. Make of that what you like."
+          }
+        }
+      }
+    },
+    {
+      "id": "folk.yew",
+      "type": "folk.villager",
+      "tile": [
+        35,
+        60
+      ],
+      "facing": "south",
+      "props": {
+        "name": "Yew",
+        "title": "Gall Collector",
+        "roam": 6,
+        "voice": {
+          "pitch": 1.13,
+          "rate": 18,
+          "timbre": "square"
+        }
+      },
+      "dialog": {
+        "start": "hello",
+        "nodes": {
+          "hello": {
+            "text": "Don't get many strangers this deep in the wood. Yew -- Gall Collector. The path forks; my door doesn't.",
+            "then": "again"
+          },
+          "again": {
+            "text": "A straight plank is a small miracle."
+          }
+        }
+      }
+    },
+    {
+      "id": "folk.bracken",
+      "type": "folk.gardener",
+      "tile": [
+        15,
+        164
+      ],
+      "facing": "south",
+      "props": {
+        "name": "Bracken",
+        "title": "Ridge Runner",
+        "roam": 4,
+        "voice": {
+          "pitch": 1.08,
+          "rate": 18,
+          "timbre": "triangle"
+        }
+      },
+      "dialog": {
+        "start": "hello",
+        "nodes": {
+          "hello": {
+            "text": "Bracken. I work the slope as Ridge Runner. The trees talk, if you stand still long enough to be rude to.",
+            "then": "again"
+          },
+          "again": {
+            "text": "The holler floor eats hats. Hold onto yours."
+          }
+        }
+      }
+    },
+    {
+      "id": "folk.holly",
+      "type": "folk.fisher",
+      "tile": [
+        21,
+        7
+      ],
+      "facing": "south",
+      "props": {
+        "name": "Holly",
+        "title": "Holler Warden",
+        "roam": 5,
+        "voice": {
+          "pitch": 1.04,
+          "rate": 18,
+          "timbre": "sawtooth"
+        }
+      },
+      "dialog": {
+        "start": "hello",
+        "nodes": {
+          "hello": {
+            "text": "Easy on the roots there. Holly, Holler Warden. The holler keeps its own hours and so do I.",
+            "then": "again"
+          },
+          "again": {
+            "text": "Sap's running slow. Cold spring."
+          }
+        }
+      }
+    },
+    {
+      "id": "folk.laurel",
+      "type": "folk.tinker",
+      "tile": [
+        79,
+        41
+      ],
+      "facing": "south",
+      "props": {
+        "name": "Laurel",
+        "title": "Kindling Bundler",
+        "roam": 6,
+        "voice": {
+          "pitch": 0.99,
+          "rate": 18,
+          "timbre": "square"
+        }
+      },
+      "dialog": {
+        "start": "hello",
+        "nodes": {
+          "hello": {
+            "text": "Laurel, Kindling Bundler. Everything here is uphill from something. You get used to it.",
+            "then": "again"
+          },
+          "again": {
+            "text": "You can't hurry a woodpile."
+          }
+        }
+      }
+    },
+    {
+      "id": "folk.tupelo",
+      "type": "folk.villager",
+      "tile": [
+        3,
+        56
+      ],
+      "facing": "south",
+      "props": {
+        "name": "Tupelo",
+        "title": "Deadfall Clearer",
+        "roam": 4,
+        "voice": {
+          "pitch": 0.94,
+          "rate": 18,
+          "timbre": "triangle"
+        }
+      },
+      "dialog": {
+        "start": "hello",
+        "nodes": {
+          "hello": {
+            "text": "Well now. Tupelo. Been Deadfall Clearer since the big oak came down. Come by; the kettle's always on the edge of boiling.",
+            "then": "again"
+          },
+          "again": {
+            "text": "The ridge fog burns off by ten. Usually."
+          }
+        }
+      }
+    },
+    {
+      "id": "folk.galax",
+      "type": "folk.gardener",
+      "tile": [
+        62,
+        11
+      ],
+      "facing": "south",
+      "props": {
+        "name": "Galax",
+        "title": "Sap Boiler",
+        "roam": 5,
+        "voice": {
+          "pitch": 0.89,
+          "rate": 18,
+          "timbre": "sawtooth"
+        }
+      },
+      "dialog": {
+        "start": "hello",
+        "nodes": {
+          "hello": {
+            "text": "Galax. Sap Boiler, up and down this holler my whole life. That's my roof through the trees.",
+            "then": "again"
+          },
+          "again": {
+            "text": "Heard an owl at noon. Make of that what you like."
           }
         }
       }
     }
   ],
   "items": [
-    {"id":"stick.0","type":"item.stick","tile":[8,148]},
-    {"id":"stick.1","type":"item.stick","tile":[4,160]},
-    {"id":"stick.2","type":"item.stick","tile":[40,20]},
-    {"id":"stick.3","type":"item.stick","tile":[26,38]},
-    {"id":"stick.4","type":"item.stick","tile":[44,108]},
-    {"id":"stick.5","type":"item.stick","tile":[48,20]},
-    {"id":"stick.6","type":"item.stick","tile":[74,0]},
-    {"id":"stick.7","type":"item.stick","tile":[80,46]},
-    {"id":"stick.8","type":"item.stick","tile":[60,60]},
-    {"id":"stick.9","type":"item.stick","tile":[68,118]},
-    {"id":"stick.10","type":"item.stick","tile":[76,130]},
-    {"id":"stick.11","type":"item.stick","tile":[62,50]},
-    {"id":"stick.12","type":"item.stick","tile":[60,108]},
-    {"id":"stick.13","type":"item.stick","tile":[64,36]},
-    {"id":"stick.14","type":"item.stick","tile":[64,166]},
-    {"id":"stick.15","type":"item.stick","tile":[70,78]},
-    {"id":"stick.16","type":"item.stick","tile":[72,128]},
-    {"id":"stick.17","type":"item.stick","tile":[36,152]},
-    {"id":"stick.18","type":"item.stick","tile":[36,106]},
-    {"id":"stick.19","type":"item.stick","tile":[36,70]},
-    {"id":"mushroom.0","type":"item.mushroom","tile":[58,98]},
-    {"id":"mushroom.1","type":"item.mushroom","tile":[12,88]},
-    {"id":"mushroom.2","type":"item.mushroom","tile":[38,60]},
-    {"id":"mushroom.3","type":"item.mushroom","tile":[18,96]},
+    {"id":"stick.0","type":"item.stick","tile":[60,48]},
+    {"id":"stick.1","type":"item.stick","tile":[20,104]},
+    {"id":"stick.2","type":"item.stick","tile":[8,148]},
+    {"id":"stick.3","type":"item.stick","tile":[4,160]},
+    {"id":"stick.4","type":"item.stick","tile":[40,20]},
+    {"id":"stick.5","type":"item.stick","tile":[26,38]},
+    {"id":"stick.6","type":"item.stick","tile":[44,108]},
+    {"id":"stick.7","type":"item.stick","tile":[48,20]},
+    {"id":"stick.8","type":"item.stick","tile":[74,0]},
+    {"id":"stick.9","type":"item.stick","tile":[80,46]},
+    {"id":"stick.10","type":"item.stick","tile":[60,60]},
+    {"id":"stick.11","type":"item.stick","tile":[68,118]},
+    {"id":"stick.12","type":"item.stick","tile":[76,130]},
+    {"id":"stick.13","type":"item.stick","tile":[62,50]},
+    {"id":"stick.14","type":"item.stick","tile":[60,108]},
+    {"id":"stick.15","type":"item.stick","tile":[64,36]},
+    {"id":"stick.16","type":"item.stick","tile":[64,166]},
+    {"id":"stick.17","type":"item.stick","tile":[70,78]},
+    {"id":"stick.18","type":"item.stick","tile":[72,128]},
+    {"id":"stick.19","type":"item.stick","tile":[36,106]},
+    {"id":"mushroom.0","type":"item.mushroom","tile":[36,70]},
+    {"id":"mushroom.1","type":"item.mushroom","tile":[58,98]},
+    {"id":"mushroom.2","type":"item.mushroom","tile":[12,88]},
+    {"id":"mushroom.3","type":"item.mushroom","tile":[38,60]},
     {"id":"mushroom.4","type":"item.mushroom","tile":[76,80]},
-    {"id":"mushroom.5","type":"item.mushroom","tile":[62,116]},
-    {"id":"mushroom.6","type":"item.mushroom","tile":[16,116]},
-    {"id":"mushroom.7","type":"item.mushroom","tile":[44,140]},
-    {"id":"mushroom.8","type":"item.mushroom","tile":[30,30]},
-    {"id":"mushroom.9","type":"item.mushroom","tile":[58,148]},
-    {"id":"mushroom.10","type":"item.mushroom","tile":[80,124]},
-    {"id":"mushroom.11","type":"item.mushroom","tile":[22,136]},
-    {"id":"mushroom.12","type":"item.mushroom","tile":[38,4]},
-    {"id":"mushroom.13","type":"item.mushroom","tile":[36,22]},
-    {"id":"mushroom.14","type":"item.mushroom","tile":[20,106]},
-    {"id":"mushroom.15","type":"item.mushroom","tile":[22,120]},
+    {"id":"mushroom.5","type":"item.mushroom","tile":[16,116]},
+    {"id":"mushroom.6","type":"item.mushroom","tile":[44,140]},
+    {"id":"mushroom.7","type":"item.mushroom","tile":[30,30]},
+    {"id":"mushroom.8","type":"item.mushroom","tile":[58,148]},
+    {"id":"mushroom.9","type":"item.mushroom","tile":[80,124]},
+    {"id":"mushroom.10","type":"item.mushroom","tile":[38,4]},
+    {"id":"mushroom.11","type":"item.mushroom","tile":[66,94]},
+    {"id":"mushroom.12","type":"item.mushroom","tile":[36,22]},
+    {"id":"mushroom.13","type":"item.mushroom","tile":[20,106]},
+    {"id":"mushroom.14","type":"item.mushroom","tile":[22,120]},
+    {"id":"mushroom.15","type":"item.mushroom","tile":[16,74]},
     {"id":"stone.0","type":"item.stone","tile":[40,124]},
-    {"id":"stone.1","type":"item.stone","tile":[44,44]},
-    {"id":"stone.2","type":"item.stone","tile":[50,42]},
-    {"id":"stone.3","type":"item.stone","tile":[42,166]},
-    {"id":"stone.4","type":"item.stone","tile":[50,58]},
-    {"id":"stone.5","type":"item.stone","tile":[38,152]},
-    {"id":"stone.6","type":"item.stone","tile":[50,24]},
-    {"id":"stone.7","type":"item.stone","tile":[28,90]},
-    {"id":"stone.8","type":"item.stone","tile":[36,128]},
-    {"id":"stone.9","type":"item.stone","tile":[42,144]},
-    {"id":"stone.10","type":"item.stone","tile":[34,94]},
-    {"id":"stone.11","type":"item.stone","tile":[28,108]},
-    {"id":"stone.12","type":"item.stone","tile":[44,50]},
-    {"id":"stone.13","type":"item.stone","tile":[38,156]},
-    {"id":"stone.14","type":"item.stone","tile":[36,146]},
-    {"id":"flower.0","type":"item.flower","tile":[12,36]},
-    {"id":"flower.1","type":"item.flower","tile":[16,52]},
-    {"id":"flower.2","type":"item.flower","tile":[18,16]},
-    {"id":"flower.3","type":"item.flower","tile":[34,30]},
-    {"id":"flower.4","type":"item.flower","tile":[58,18]},
-    {"id":"flower.5","type":"item.flower","tile":[16,138]},
-    {"id":"flower.6","type":"item.flower","tile":[8,16]},
-    {"id":"flower.7","type":"item.flower","tile":[62,134]},
-    {"id":"flower.8","type":"item.flower","tile":[66,72]},
-    {"id":"flower.9","type":"item.flower","tile":[38,18]},
-    {"id":"flower.10","type":"item.flower","tile":[36,12]},
-    {"id":"flower.11","type":"item.flower","tile":[36,34]},
-    {"id":"flower.12","type":"item.flower","tile":[16,82]},
-    {"id":"apple.0","type":"item.apple","tile":[24,78]},
-    {"id":"apple.1","type":"item.apple","tile":[20,88]},
-    {"id":"apple.2","type":"item.apple","tile":[22,74]},
-    {"id":"apple.3","type":"item.apple","tile":[20,86]},
-    {"id":"apple.4","type":"item.apple","tile":[34,70]},
-    {"id":"apple.5","type":"item.apple","tile":[20,74]},
-    {"id":"apple.6","type":"item.apple","tile":[42,78]}
+    {"id":"stone.1","type":"item.stone","tile":[50,42]},
+    {"id":"stone.2","type":"item.stone","tile":[42,166]},
+    {"id":"stone.3","type":"item.stone","tile":[50,58]},
+    {"id":"stone.4","type":"item.stone","tile":[50,24]},
+    {"id":"stone.5","type":"item.stone","tile":[28,90]},
+    {"id":"stone.6","type":"item.stone","tile":[42,144]},
+    {"id":"stone.7","type":"item.stone","tile":[34,94]},
+    {"id":"stone.8","type":"item.stone","tile":[28,108]},
+    {"id":"stone.9","type":"item.stone","tile":[44,50]},
+    {"id":"stone.10","type":"item.stone","tile":[38,156]},
+    {"id":"stone.11","type":"item.stone","tile":[36,146]},
+    {"id":"stone.12","type":"item.stone","tile":[30,90]},
+    {"id":"stone.13","type":"item.stone","tile":[32,90]},
+    {"id":"stone.14","type":"item.stone","tile":[42,136]},
+    {"id":"flower.0","type":"item.flower","tile":[6,126]},
+    {"id":"flower.1","type":"item.flower","tile":[64,4]},
+    {"id":"flower.2","type":"item.flower","tile":[16,34]},
+    {"id":"flower.3","type":"item.flower","tile":[38,114]},
+    {"id":"flower.4","type":"item.flower","tile":[80,134]},
+    {"id":"flower.5","type":"item.flower","tile":[76,72]},
+    {"id":"flower.6","type":"item.flower","tile":[34,20]},
+    {"id":"flower.7","type":"item.flower","tile":[56,118]},
+    {"id":"flower.8","type":"item.flower","tile":[58,80]},
+    {"id":"flower.9","type":"item.flower","tile":[36,64]},
+    {"id":"flower.10","type":"item.flower","tile":[10,62]},
+    {"id":"flower.11","type":"item.flower","tile":[10,78]},
+    {"id":"flower.12","type":"item.flower","tile":[68,162]},
+    {"id":"apple.0","type":"item.apple","tile":[18,72]},
+    {"id":"apple.1","type":"item.apple","tile":[16,78]},
+    {"id":"apple.2","type":"item.apple","tile":[22,72]},
+    {"id":"apple.3","type":"item.apple","tile":[30,66]},
+    {"id":"apple.4","type":"item.apple","tile":[20,88]},
+    {"id":"apple.5","type":"item.apple","tile":[20,70]},
+    {"id":"apple.6","type":"item.apple","tile":[20,82]}
   ],
   "spawn": {"tile":[44,84],"facing":"south"},
   "ambience": {"fog":[18,58]}

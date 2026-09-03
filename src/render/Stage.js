@@ -852,6 +852,15 @@ export class Stage {
 
   /** Re-mesh the live place after a player adds permanent furniture to it. */
   rebuildWorld(world) {
+    this.invalidateWorld(world);
+    this.setWorld(world);
+    if (this.liveDigs) this.liveDigs.version = -1;
+    if (this.livePlants) this.livePlants.version = -1;
+    this.#syncEdits();
+  }
+
+  /** Dispose one cached place without changing which place is live. */
+  invalidateWorld(world) {
     const group = this.built.get(world.meta.id);
     if (group) {
       group.traverse((o) => {
@@ -861,10 +870,6 @@ export class Stage {
       group.parent?.remove(group);
       this.built.delete(world.meta.id);
     }
-    this.setWorld(world);
-    if (this.liveDigs) this.liveDigs.version = -1;
-    if (this.livePlants) this.livePlants.version = -1;
-    this.#syncEdits();
   }
 
   /**

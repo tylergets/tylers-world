@@ -395,6 +395,42 @@ function carp(p) {
   return g;
 }
 
+/**
+ * Any of the other fifty fish on the bank: the trout's pose, parameterised.
+ *
+ * The trout and carp above are the hand-authored references; every species the
+ * big registry expansion added lands here instead, laid on its side and scaled
+ * by the same figure hints its swimming model uses (`fish` on the item type,
+ * written by itemTypes.js from the animal registry). What distinguishes one
+ * catch from another at forty pixels is length, depth, colour and the marks --
+ * which is exactly the set of things the hints carry.
+ */
+function bankFish(fish) {
+  return (p) => {
+    const s = fish.size ?? 1;
+    const L = fish.len ?? 1;
+    const D = (fish.deep ?? 1) * (fish.flat ? 0.7 : 1);
+    const g = new GeoBuilder();
+    g.addGeometry(BLOB, trs(0, 0.055 * s, -0.01, 0, 0.35, Math.PI / 2, 0.055 * s * D, 0.05 * s, 0.155 * s * L), p.body);
+    g.addGeometry(BLOB, trs(-0.035 * s, 0.06 * s, 0.015 * s, 0, 0.35, Math.PI / 2, 0.04 * s * D, 0.026 * s, 0.1 * s * L), p.belly);
+    g.addGeometry(BLOB, trs(0.05 * s * L, 0.055 * s, -0.055 * s, 0, 0.35, Math.PI / 2, 0.036 * s * D, 0.035 * s, 0.05 * s), p.back);
+    // The tail, forked or paddled away from the body, flat on the ground.
+    g.addGeometry(CONE, trs(-0.16 * s * L, 0.045 * s, 0.055 * s, Math.PI / 2, 1.92, 0, 0.07 * s * D, 0.09 * s, 0.008), p.fin);
+    // The dorsal, fallen sideways with the rest of it.
+    g.addGeometry(BOX, trs(0.02 * s, 0.048 * s, -0.055 * s * D, 0, 0.35, 0, 0.05 * s * L, 0.01, 0.06 * s * D), p.fin);
+    if (fish.marks === 'spots' || fish.marks === 'scales' || fish.marks === 'stripes') {
+      for (const [dx, dz] of [[0.06, 0.02], [0.0, -0.02], [-0.06, -0.045]]) {
+        g.addGeometry(BLOB, trs(dx * s * L, 0.055 * s + 0.05 * s * D, dz * s, 0, 0, 0, 0.016 * s, 0.007, 0.016 * s), p.mark);
+      }
+    }
+    if (fish.barbels) {
+      g.addGeometry(CYL, trs(0.13 * s * L, 0.03 * s, 0.02 * s, 0.3, 0.35, Math.PI / 2, 0.004, 0.04 * s, 0.004), p.barbel ?? p.fin);
+    }
+    g.addGeometry(BLOB, trs(0.115 * s * L, 0.055 * s + 0.02 * s * D, -0.045 * s, 0, 0, 0, 0.012 * s, 0.012 * s, 0.012 * s), p.eye);
+    return g;
+  };
+}
+
 /** Game: a wrapped joint, dark with a pale bound edge. */
 function game(p) {
   const g = new GeoBuilder();
@@ -531,6 +567,7 @@ function kitParts(type) {
 function builderFor(typeId, type) {
   const built = BUILDERS[typeId];
   if (built) return built;
+  if (type.fish) return bankFish(type.fish);
   if (type.parts?.length) return () => kitParts(type);
   if (type.furniture) return furniture;
   throw new Error(`No mesh builder for item type "${typeId}"`);

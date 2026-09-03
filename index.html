@@ -485,7 +485,9 @@
   /* The key list. Two columns rather than a paragraph per line: the whole
      value of a keymap is that you can find one key without reading the others,
      and prose defeats that. Only keys that do something in the world are on
-     it -- the diagnostic keys live behind the gear, with the panel they drive. */
+     it -- the diagnostic keys live behind the gear, with the panel they drive.
+     The card itself is hidden until asked for: `K`, or "Keymap" in the
+     settings drawer, toggles it. */
   .keys {
     display: grid; grid-template-columns: auto 1fr; gap: 4px 10px;
     align-items: baseline; font-size: 11.5px; color: var(--dim);
@@ -658,6 +660,85 @@
     border-radius: 5px; padding: 3px 5px; margin-right: 3px;
   }
   .ms-dim { opacity: 0.5; margin: 0 3px; }
+
+  /* ------------------------------------------------------- Town Hall desks --
+     A civic work surface rather than another conversation box: the map and
+     population ledger need room, but the light backdrop keeps the office and
+     the official visible behind the paperwork. */
+  .town-office {
+    position: fixed; inset: 0; z-index: 20;
+    display: grid; place-items: center; pointer-events: auto;
+    background: rgba(5, 7, 10, 0.52);
+  }
+  .town-office[hidden] { display: none; }
+  .to-card {
+    display: flex; flex-direction: column; overflow: hidden;
+    width: min(920px, calc(100vw - 32px)); max-height: calc(100vh - 32px);
+    background: var(--panel); border: 1px solid var(--edge); border-radius: 15px;
+    box-shadow: 0 20px 60px rgba(0,0,0,.6);
+  }
+  .town-office[data-office="planner"] .to-card {
+    width: calc(100vw - 20px); height: calc(100vh - 20px); max-height: none;
+  }
+  .town-office[data-office="planner"] .to-body { display: flex; flex-direction: column; flex: 1; overflow: hidden; }
+  .town-office[data-office="planner"] .to-planner {
+    flex: 1; min-height: 0; grid-template-rows: minmax(0,1fr) auto;
+  }
+  .to-head { display: flex; align-items: center; gap: 16px; padding: 17px 18px 13px; border-bottom: 1px solid var(--edge); }
+  .to-head h2 { margin: 2px 0 0; font-size: 21px; letter-spacing: -.025em; }
+  .to-kicker { color: var(--dim); font: 650 10px/1 var(--mono); letter-spacing: .14em; text-transform: uppercase; }
+  .to-close { margin-left: auto; color: var(--ink); background: rgba(255,255,255,.08); border: 1px solid var(--edge); border-radius: 8px; padding: 7px 11px; cursor: pointer; }
+  .to-body { min-height: 0; overflow: auto; padding: 16px 18px 18px; }
+  .to-intro { color: var(--dim); font-size: 13px; line-height: 1.5; margin-bottom: 14px; }
+  .to-intro b { color: var(--ink); }
+  .to-planner { display: grid; grid-template-columns: 126px minmax(0,1fr); gap: 12px; }
+  .to-tools { display: flex; flex-direction: column; gap: 7px; }
+  .to-tools button, .to-species button {
+    color: var(--dim); background: rgba(255,255,255,.06); border: 1px solid var(--edge);
+    border-radius: 8px; cursor: pointer;
+  }
+  .to-tools button { display: flex; align-items: center; gap: 8px; padding: 8px; text-align: left; }
+  .to-tools button:hover, .to-tools button.selected { color: var(--ink); background: rgba(255,255,255,.13); }
+  .to-tools button.selected { border-color: rgba(127,212,168,.7); }
+  .to-tools i { width: 15px; height: 15px; border-radius: 4px; background: var(--swatch); box-shadow: inset 0 0 0 1px rgba(0,0,0,.22); }
+  .to-tool-label { margin-top: 7px; color: var(--dim); font: 650 9px/1 var(--mono); letter-spacing: .12em; text-transform: uppercase; }
+  .to-brushes { display: grid; grid-template-columns: repeat(3, 1fr); gap: 5px; }
+  .to-brushes button { justify-content: center; padding: 7px 4px; font-family: var(--mono); }
+  .to-map-wrap { min-height: 360px; display: grid; place-items: center; overflow: auto; padding: 10px; background: #0a0e14; border: 1px solid var(--edge); border-radius: 10px; }
+  .to-map { max-width: 100%; image-rendering: pixelated; cursor: crosshair; touch-action: none; }
+  .to-status { grid-column: 1 / -1; min-height: 18px; color: #9fd8b8; font: 550 11px/1.45 var(--mono); }
+  .to-wildlife { display: grid; grid-template-columns: repeat(2, minmax(0,1fr)); gap: 8px; }
+  .to-species { display: grid; grid-template-columns: minmax(0,1fr) 32px 34px 32px; align-items: center; gap: 6px; padding: 10px; background: rgba(255,255,255,.045); border: 1px solid var(--edge); border-radius: 9px; }
+  .to-species-name { min-width: 0; display: flex; flex-direction: column; gap: 3px; }
+  .to-species-name b { font-size: 13px; }
+  .to-species-name span { color: var(--dim); font-size: 10px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .to-species button { width: 32px; height: 30px; font-size: 18px; }
+  .to-species button:hover { color: var(--ink); background: rgba(255,255,255,.13); }
+  .to-species output { text-align: center; font: 650 13px/1 var(--mono); }
+  .to-wildlife + .to-status { margin-top: 12px; }
+  .to-cheats { display: grid; grid-template-columns: repeat(2, minmax(0,1fr)); gap: 9px; }
+  .to-cheat {
+    display: flex; align-items: center; gap: 12px; min-height: 68px; padding: 11px 13px;
+    color: var(--ink); text-align: left; background: rgba(255,255,255,.045);
+    border: 1px solid var(--edge); border-radius: 10px; cursor: pointer;
+  }
+  .to-cheat:hover { background: rgba(255,255,255,.1); }
+  .to-cheat.active { border-color: #70f0da; background: rgba(112,240,218,.09); }
+  .to-cheat span { display: flex; flex: 1; flex-direction: column; gap: 5px; }
+  .to-cheat b { font-size: 13px; }
+  .to-cheat small { color: var(--dim); font-size: 10.5px; line-height: 1.35; }
+  .to-cheat strong { color: #70f0da; font: 700 10px/1 var(--mono); letter-spacing: .08em; }
+  .to-cheats + .to-status { margin-top: 12px; }
+  .to-foot { padding: 10px 18px; color: var(--dim); border-top: 1px solid var(--edge); font-size: 10.5px; }
+  .to-foot b { color: var(--ink); font-family: var(--mono); }
+  @media (max-width: 680px) {
+    .to-planner { grid-template-columns: 1fr; }
+    .to-tools { flex-direction: row; overflow-x: auto; }
+    .to-tools button { flex: 0 0 auto; }
+    .to-map-wrap { min-height: 280px; }
+    .to-wildlife { grid-template-columns: 1fr; }
+    .to-cheats { grid-template-columns: 1fr; }
+  }
 
   /* ---------------------------------------------- the camera's photo view --
      Same panel language as the map screen, sized to the picture instead of to

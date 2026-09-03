@@ -143,6 +143,9 @@ export function bakeTiles(world, data) {
  */
 const BAKES = new WeakMap();
 
+/** Drop a place's static map after an approved terrain edit. */
+export function invalidatePlaceBake(world) { BAKES.delete(world); }
+
 /**
  * The static picture of a place, one pixel per tile, made once and kept.
  * `bakeTiles` does the painting; this is the canvas it lives on.

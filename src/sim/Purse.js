@@ -31,16 +31,25 @@ export const START_COINS = 10000;
 export class Purse {
   constructor(coins = START_COINS) {
     this.coins = coins;
+    this.unlimited = false;
     /** Bumped on every change, so the HUD can skip redrawing for nothing. */
     this.version = 0;
   }
 
-  canAfford(n) { return n <= this.coins; }
+  canAfford(n) { return this.unlimited || n <= this.coins; }
+
+  setUnlimited(enabled) {
+    const next = enabled === true;
+    if (this.unlimited === next) return false;
+    this.unlimited = next;
+    this.version++;
+    return true;
+  }
 
   /** Spend `n`. Returns false and changes nothing if it would overdraw. */
   pay(n) {
     if (n < 0 || !this.canAfford(n)) return false;
-    this.coins -= n;
+    if (!this.unlimited) this.coins -= n;
     this.version++;
     return true;
   }

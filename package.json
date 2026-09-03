@@ -13,6 +13,8 @@
     "catalog": "node tools/catalog.mjs",
     "catalog:new": "node tools/make-catalog.mjs",
     "genworld": "node tools/genworld.mjs",
+    "genneighbors": "node tools/genneighbors.mjs",
+    "genhomes": "node tools/genhomes.mjs",
     "checkworld": "node tools/checkworld.mjs",
     "shoot": "node tools/shoot.mjs"
   },

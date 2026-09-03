@@ -76,42 +76,42 @@
           "ssssssssssssssssggggggggggggggggggggggggggggggggggggggggggggccccggggggggggggggggggggggggggggggggggggggggggggggssssssssssssss",
           "ssssssssssssssssggggggggggggggggggggggggggggggggggggggggggggccccggggggggggggggggggggggggggggggggggggggggggggggssssssssssssss",
           "ssssssssssssssssggggggggggggggggggggggggggggggggggggggggggggccccggggggggggggggggggggggggggggggggggggggggggggggssssssssssssss",
-          "ssssssssssssssssssggggggggggggggggggggggggggggggggggggggggggccccggggggggggggggggggggggggggggggggggggggggggggggssssssssssssss",
-          "ssssssssssssssssssggggggggggggggggggggggggggggggggggggggggggccccggggggggggggggggggggggggggggggggggggggggggggggssssssssssssss",
-          "ssssssssssssssssssggggggggggggggggggggggggggggggggggggggggggccccggggggggggggggggggggggggggggggggggggggggggggssssssssssssssss",
-          "ssssssssssssssssssggggggggggggggggggggggggggggggggggggggggggccccggggggggggggggggggggggggggggggggggggggggggggssssssssssssssss",
-          "ssssssssssssssssssggggggggggggggggggggggggggggggggggggggggggccccggggggggggggggggggggggggggggggggggggggggggggssssssssssssssss",
-          "ssssssssssssssssssggggggggggggggggggggggggggggggggggggggggggccccggggggggggggggggggggggggggggggggggggggggggggssssssssssssssss",
-          "ssssssssssssssssssggggggggggggggggggggggccccggggggggggggggggccccggggggggggggggggggggggggggggggggggggggggggggssssssssssssssss",
-          "ssssssssssssssssssggggggggggggggggggggggccccggggggggggggggggccccggggggggggggggggggggggggggggggggggggggggggggssssssssssssssss",
-          "ssssssssssssssssssggggggggggggggggggggggccccggggggggggggggggccccggggggggggggggggggggggggggggggggggggggggggggssssssssssssssss",
-          "ssssssssssssssssssggggggggggggggggggggggccccggggggggggggggggccccggggggggggggggggggggggggggggggggggggggggggggssssssssssssssss",
-          "ssssssssssssssssssggggggggggggggggggggggccccggggggggggggggggccccggggggggggggggggggggccccggggggggggccccggggggssssccccssssssss",
-          "ssssssssssssssssssggggggggggggggggggggggccccggggggggggggggggccccggggggggggggggggggggccccggggggggggccccggggggssssccccssssssss",
-          "ssssssssssssssssssggggggggggggggggggccccccccccccccccccccccccccccccccccccccccccccccccccccccggggggggccccggggggssssccccssssssss",
-          "ssssssssssssssssssggggggggggggggggggccccccccccccccccccccccccccccccccccccccccccccccccccccccggggggggccccggggggssssccccssssssss",
-          "ssssssssssssssssssggggggggggggggggggccccccccccccccccccccccccccccccccccccccccccccccccccccccggggggggccccggggggssssccccssssssss",
-          "ssssssssssssssssssggggggggggggggggggccccccccccccccccccccccccccccccccccccccccccccccccccccccggggggggccccggggggssssccccssssssss",
-          "ssssssssssssssssssggggggggggggggggggccccccccccccccccccccccccccccccccccccccccccccccccccccccggggggggccccggggggssssccccssssssss",
-          "ssssssssssssssssssggggggggggggggggggccccccccccccccccccccccccccccccccccccccccccccccccccccccggggggggccccggggggssssccccssssssss",
+          "ssssssssssssssssssggggggggggggggggggggggggggggggggggggggggggccccggggggggggggggggggggggggggggggccccggggggggggggssssssssssssss",
+          "ssssssssssssssssssggggggggggggggggggggggggggggggggggggggggggccccggggggggggggggggggggggggggggggccccggggggggggggssssssssssssss",
+          "ssssssssssssssssssggggggggggggggggggggggggggggggggggggggggggccccggggggggggggggggggggggggggggggccccggggggggggssssssssssssssss",
+          "ssssssssssssssssssggggggggggggggggggggggggggggggggggggggggggccccggggggggggggggggggggggggggggggccccggggggggggssssssssssssssss",
+          "ssssssssssssssssssggggggggggggggggggggggggggggggggggggggggggccccggggggggggggggggggggggggggggggccccggggggggggssssssssssssssss",
+          "ssssssssssssssssssggggggggggggggggggggggggggggggggggggggggggccccggggggggggggggggggggggggggggggccccggggggggggssssssssssssssss",
+          "ssssssssssssssssssggggggggggggggggggggggccccggggggggggggggggccccggggggggggggggggggggggggggggggccccggggggggggssssssssssssssss",
+          "ssssssssssssssssssggggggggggggggggggggggccccggggggggggggggggccccggggggggggggggggggggggggggggggccccggggggggggssssssssssssssss",
+          "ssssssssssssssssssggggggggccccggggggggggccccggggggggggggggggccccggggggggggggggggggggggggggggggccccggggggggggssssssssssssssss",
+          "ssssssssssssssssssggggggggccccggggggggggccccggggggggggggggggccccggggggggggggggggggggggggggggggccccggggggggggssssssssssssssss",
+          "ssssssssssssssssssggggggggccccggggggggggccccggggggggggggggggccccggggggggggggggggggggccccggggggccccccccggggggssssccccssssssss",
+          "ssssssssssssssssssggggggggccccggggggggggccccggggggggggggggggccccggggggggggggggggggggccccggggggccccccccggggggssssccccssssssss",
+          "ssssssssssssssssssggggggggccccggggggccccccccccccccccccccccccccccccccccccccccccccccccccccccggggccccccccggggggssssccccssssssss",
+          "ssssssssssssssssssggggggggccccggggggccccccccccccccccccccccccccccccccccccccccccccccccccccccggggccccccccggggggssssccccssssssss",
+          "ssssssssssssssssssggggggggccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccggggggssssccccssssssss",
+          "ssssssssssssssssssggggggggccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccggggggssssccccssssssss",
+          "ssssssssssssssssssggggggggccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccggccccggggggssssccccssssssss",
+          "ssssssssssssssssssggggggggccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccggccccggggggssssccccssssssss",
           "ssssssssssssssssssggggggggggggggggggccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccggggssssssccccssssssss",
           "ssssssssssssssssssggggggggggggggggggccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccggggssssssccccssssssss",
-          "ssssssssssssssssssggggggggggggggggggccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccggggggssssssccccssssssss",
-          "ssssssssssssssssssggggggggggggggggggccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccggggggssssssccccssssssss",
+          "ssssssssssssssssssggggggggggggggggggccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccggggssssssccccssssssss",
+          "ssssssssssssssssssggggggggggggggggggccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccggggssssssccccssssssss",
           "ssssssssssssssssssggggggggggggggccccccccccccccccccccccccccccwwwwccccccccccccccccccccccccccccccccccccccccccccccccccccssssssss",
           "ssssssssssssssssssggggggggggggggccccccccccccccccccccccccccccwwwwccccccccccccccccccccccccccccccccccccccccccccccccccccssssssss",
           "ssssssssssssssssssggggggggggggggccccccccccccccccccccccccwwwwwwwwwwwwccccccccccccccccccccccccccccccccccccccccccccccssssssssss",
           "ssssssssssssssssssggggggggggggggccccccccccccccccccccccccwwwwwwwwwwwwccccccccccccccccccccccccccccccccccccccccccccccssssssssss",
-          "ssssssssssssssssssggggggggggggggccccggggggggggggggggsssswwwwwwwwwwwwssssggggggggggggggggggggggggggggggggggssssssssssssssssss",
-          "ssssssssssssssssssggggggggggggggccccggggggggggggggggsssswwwwwwwwwwwwssssggggggggggggggggggggggggggggggggggssssssssssssssssss",
-          "ssssssssssssssssssggggggggggggggccccggggggggggggggggsswwwwwwwwwwwwwwwwssggggggggggggggggggggggggggggggggggssssssssssssssssss",
-          "ssssssssssssssssssggggggggggggggccccggggggggggggggggsswwwwwwwwwwwwwwwwssggggggggggggggggggggggggggggggggggssssssssssssssssss",
-          "ssssssssssssssssssggggggggggggggccccggggggggggggggggsswwwwwwwwwwwwwwwwssggggggggggggggggggggggggggggggggggssssssssssssssssss",
-          "ssssssssssssssssssggggggggggggggccccggggggggggggggggsswwwwwwwwwwwwwwwwssggggggggggggggggggggggggggggggggggssssssssssssssssss",
-          "ssssssssssssssssssggggggggggggggggggggggggggggggggggsssswwwwwwwwwwwwssssggggggggggggggggggggggggggggggggggssssssssssssssssss",
-          "ssssssssssssssssssggggggggggggggggggggggggggggggggggsssswwwwwwwwwwwwssssggggggggggggggggggggggggggggggggggssssssssssssssssss",
-          "ssssssssssssssssssggggggggggggggggggggggggggggggggggggsswwwwwwwwwwwwssggggggggggggggggggggggggggggggggggggssssssssssssssssss",
-          "ssssssssssssssssssggggggggggggggggggggggggggggggggggggsswwwwwwwwwwwwssggggggggggggggggggggggggggggggggggggssssssssssssssssss",
+          "ssssssssssssssssssggggggggggggggccccggggggggggggggggsssswwwwwwwwwwwwssssggggggggggggggggggggggggggccccggggssssssssssssssssss",
+          "ssssssssssssssssssggggggggggggggccccggggggggggggggggsssswwwwwwwwwwwwssssggggggggggggggggggggggggggccccggggssssssssssssssssss",
+          "ssssssssssssssssssggggggggggggggccccggggggggggggggggsswwwwwwwwwwwwwwwwssggggggggggggggggggggggggggccccggggssssssssssssssssss",
+          "ssssssssssssssssssggggggggggggggccccggggggggggggggggsswwwwwwwwwwwwwwwwssggggggggggggggggggggggggggccccggggssssssssssssssssss",
+          "ssssssssssssssssssggggggggggggggccccggggggggggggggggsswwwwwwwwwwwwwwwwssggggggggggggggggggggggggggccccggggssssssssssssssssss",
+          "ssssssssssssssssssggggggggggggggccccggggggggggggggggsswwwwwwwwwwwwwwwwssggggggggggggggggggggggggggccccggggssssssssssssssssss",
+          "ssssssssssssssssssggggggggggggggggggggggggggggggggggsssswwwwwwwwwwwwssssggggggggggggggggggggggggggccccggggssssssssssssssssss",
+          "ssssssssssssssssssggggggggggggggggggggggggggggggggggsssswwwwwwwwwwwwssssggggggggggggggggggggggggggccccggggssssssssssssssssss",
+          "ssssssssssssssssssggggggggggggggggggggggggggggggggggggsswwwwwwwwwwwwssggggggggggggggggggggggggggggccccggggssssssssssssssssss",
+          "ssssssssssssssssssggggggggggggggggggggggggggggggggggggsswwwwwwwwwwwwssggggggggggggggggggggggggggggccccggggssssssssssssssssss",
           "ssssssssssssssssssggggggggggggggggggggggggggggggggggggggsssswwwwssssssggggggggggggggggggggggggggggggggggggssssssssssssssssss",
           "ssssssssssssssssssggggggggggggggggggggggggggggggggggggggsssswwwwssssssggggggggggggggggggggggggggggggggggggssssssssssssssssss",
           "ssssssssssssssssssggggggggggggggggggggggggggggggggggggggggssccccssssggggggggggggggggggggggggggggggggggggggssssssssssssssssss",
@@ -406,6 +406,9 @@
     {"id":"store.clothier","type":"building.clothier","tile":[108,66],"props":{"label":"Cuff & Collar","interior":"worlds/interiors/store-clothier.json"}},
     {"id":"home.pike","type":"building.cottage","tile":[30,88],"props":{"label":"Pike's Place","interior":"worlds/interiors/home-pike.json","owner":"folk.pike"}},
     {"id":"town.hall","type":"building.townhall","tile":[64,76],"props":{"label":"Town Hall","interior":"worlds/interiors/town-hall.json"}},
+    {"id":"home.mesa","type":"building.cottage","tile":[24,66],"props":{"label":"Mesa's Cottage","interior":"worlds/interiors/home-mesa.json","owner":"folk.mesa"}},
+    {"id":"home.flint","type":"building.cabin","tile":[94,92],"props":{"label":"Flint's Cabin","interior":"worlds/interiors/home-flint.json","owner":"folk.flint"}},
+    {"id":"home.sora","type":"building.bungalow","tile":[90,58],"props":{"label":"Sora's Bungalow","interior":"worlds/interiors/home-sora.json","owner":"folk.sora"}},
     {"id":"boulder.0","type":"rock.large","tile":[58,4],"rotation":180},
     {"id":"boulder.1","type":"rock.large","tile":[74,0],"rotation":90},
     {"id":"boulder.2","type":"rock.large","tile":[112,26],"rotation":90},
@@ -414,25 +417,25 @@
     {"id":"boulder.5","type":"rock.large","tile":[78,116],"rotation":90},
     {"id":"boulder.6","type":"rock.large","tile":[6,84],"rotation":270},
     {"id":"boulder.7","type":"rock.large","tile":[70,108],"rotation":180},
-    {"id":"boulder.8","type":"rock.large","tile":[94,92]},
-    {"id":"boulder.9","type":"rock.large","tile":[22,86],"rotation":90},
-    {"id":"boulder.10","type":"rock.large","tile":[98,58],"rotation":180},
-    {"id":"boulder.11","type":"rock.large","tile":[48,44],"rotation":270},
-    {"id":"boulder.12","type":"rock.large","tile":[2,30],"rotation":180},
-    {"id":"boulder.13","type":"rock.large","tile":[108,12],"rotation":270},
-    {"id":"boulder.14","type":"rock.large","tile":[40,90],"rotation":90},
-    {"id":"boulder.15","type":"rock.large","tile":[44,18],"rotation":270},
-    {"id":"boulder.16","type":"rock.large","tile":[30,20],"rotation":180},
-    {"id":"boulder.17","type":"rock.large","tile":[8,60],"rotation":180},
-    {"id":"boulder.18","type":"rock.large","tile":[66,50],"rotation":270},
-    {"id":"boulder.19","type":"rock.large","tile":[18,38],"rotation":180},
-    {"id":"boulder.20","type":"rock.large","tile":[50,100]},
-    {"id":"boulder.21","type":"rock.large","tile":[58,116]},
+    {"id":"boulder.8","type":"rock.large","tile":[90,22],"rotation":180},
+    {"id":"boulder.9","type":"rock.large","tile":[48,44],"rotation":270},
+    {"id":"boulder.10","type":"rock.large","tile":[2,30],"rotation":180},
+    {"id":"boulder.11","type":"rock.large","tile":[108,12],"rotation":270},
+    {"id":"boulder.12","type":"rock.large","tile":[40,90],"rotation":90},
+    {"id":"boulder.13","type":"rock.large","tile":[44,18],"rotation":270},
+    {"id":"boulder.14","type":"rock.large","tile":[30,20],"rotation":180},
+    {"id":"boulder.15","type":"rock.large","tile":[8,60],"rotation":180},
+    {"id":"boulder.16","type":"rock.large","tile":[66,50],"rotation":270},
+    {"id":"boulder.17","type":"rock.large","tile":[18,38],"rotation":180},
+    {"id":"boulder.18","type":"rock.large","tile":[50,100]},
+    {"id":"boulder.19","type":"rock.large","tile":[58,116]},
+    {"id":"boulder.20","type":"rock.large","tile":[82,12]},
+    {"id":"boulder.21","type":"rock.large","tile":[72,42]},
     {"id":"pine.0","type":"tree.pine","tile":[78,90],"rotation":270},
     {"id":"pine.1","type":"tree.pine","tile":[54,60],"rotation":90},
     {"id":"pine.2","type":"tree.pine","tile":[74,102],"rotation":180},
     {"id":"pine.3","type":"tree.pine","tile":[66,62],"rotation":90},
-    {"id":"pine.4","type":"tree.pine","tile":[74,42]},
+    {"id":"pine.4","type":"tree.pine","tile":[24,86],"rotation":270},
     {"id":"pine.5","type":"tree.pine","tile":[22,100],"rotation":90},
     {"id":"pine.6","type":"tree.pine","tile":[46,52],"rotation":180},
     {"id":"pine.7","type":"tree.pine","tile":[20,22],"rotation":270},
@@ -443,303 +446,306 @@
     {"id":"pine.12","type":"tree.pine","tile":[68,18],"rotation":270},
     {"id":"pine.13","type":"tree.pine","tile":[54,56],"rotation":270},
     {"id":"pine.14","type":"tree.pine","tile":[66,72]},
-    {"id":"pine.15","type":"tree.pine","tile":[26,78]},
-    {"id":"pine.16","type":"tree.pine","tile":[82,102],"rotation":180},
-    {"id":"pine.17","type":"tree.pine","tile":[82,50]},
-    {"id":"pine.18","type":"tree.pine","tile":[38,96],"rotation":180},
-    {"id":"pine.19","type":"tree.pine","tile":[48,66],"rotation":270},
-    {"id":"pine.20","type":"tree.pine","tile":[18,56],"rotation":270},
-    {"id":"pine.21","type":"tree.pine","tile":[96,26],"rotation":90},
-    {"id":"pine.22","type":"tree.pine","tile":[58,70],"rotation":90},
-    {"id":"pine.23","type":"tree.pine","tile":[18,74]},
-    {"id":"pine.24","type":"tree.pine","tile":[20,62],"rotation":180},
-    {"id":"pine.25","type":"tree.pine","tile":[76,60]},
-    {"id":"pine.26","type":"tree.pine","tile":[34,100],"rotation":90},
-    {"id":"pine.27","type":"tree.pine","tile":[32,66],"rotation":270},
-    {"id":"pine.28","type":"tree.pine","tile":[42,28],"rotation":180},
-    {"id":"pine.29","type":"tree.pine","tile":[104,58],"rotation":90},
-    {"id":"pine.30","type":"tree.pine","tile":[42,52]},
-    {"id":"pine.31","type":"tree.pine","tile":[54,66],"rotation":270},
-    {"id":"pine.32","type":"tree.pine","tile":[42,40]},
-    {"id":"pine.33","type":"tree.pine","tile":[90,46],"rotation":270},
-    {"id":"pine.34","type":"tree.pine","tile":[104,80],"rotation":180},
-    {"id":"pine.35","type":"tree.pine","tile":[88,56],"rotation":90},
-    {"id":"pine.36","type":"tree.pine","tile":[90,38],"rotation":270},
-    {"id":"pine.37","type":"tree.pine","tile":[44,60],"rotation":90},
-    {"id":"pine.38","type":"tree.pine","tile":[38,22],"rotation":180},
-    {"id":"pine.39","type":"tree.pine","tile":[100,34],"rotation":270},
-    {"id":"pine.40","type":"tree.pine","tile":[46,26],"rotation":270},
-    {"id":"pine.41","type":"tree.pine","tile":[14,56],"rotation":270},
-    {"id":"pine.42","type":"tree.pine","tile":[74,54],"rotation":90},
-    {"id":"pine.43","type":"tree.pine","tile":[52,108]},
-    {"id":"pine.44","type":"tree.pine","tile":[48,58],"rotation":180},
-    {"id":"pine.45","type":"tree.pine","tile":[20,32]},
-    {"id":"pine.46","type":"tree.pine","tile":[96,46],"rotation":180},
-    {"id":"pine.47","type":"tree.pine","tile":[78,34],"rotation":90},
-    {"id":"pine.48","type":"tree.pine","tile":[34,52],"rotation":270},
-    {"id":"pine.49","type":"tree.pine","tile":[94,100]},
-    {"id":"pine.50","type":"tree.pine","tile":[34,46],"rotation":270},
-    {"id":"pine.51","type":"tree.pine","tile":[70,72]},
-    {"id":"pine.52","type":"tree.pine","tile":[16,44],"rotation":270},
-    {"id":"pine.53","type":"tree.pine","tile":[60,16],"rotation":270},
-    {"id":"pine.54","type":"tree.pine","tile":[54,72],"rotation":180},
-    {"id":"pine.55","type":"tree.pine","tile":[84,38],"rotation":90},
-    {"id":"pine.56","type":"tree.pine","tile":[34,58],"rotation":270},
-    {"id":"pine.57","type":"tree.pine","tile":[40,58]},
-    {"id":"pine.58","type":"tree.pine","tile":[56,20]},
-    {"id":"pine.59","type":"tree.pine","tile":[18,98],"rotation":180},
-    {"id":"pine.60","type":"tree.pine","tile":[22,80],"rotation":90},
-    {"id":"pine.61","type":"tree.pine","tile":[72,36],"rotation":180},
-    {"id":"oak.0","type":"tree.oak","tile":[46,94]},
-    {"id":"oak.1","type":"tree.oak","tile":[50,38],"rotation":270},
-    {"id":"oak.2","type":"tree.oak","tile":[46,106],"rotation":90},
-    {"id":"oak.3","type":"tree.oak","tile":[74,72],"rotation":180},
-    {"id":"oak.4","type":"tree.oak","tile":[74,28],"rotation":90},
-    {"id":"oak.5","type":"tree.oak","tile":[70,62],"rotation":90},
-    {"id":"oak.6","type":"tree.oak","tile":[62,20],"rotation":90},
-    {"id":"oak.7","type":"tree.oak","tile":[102,90],"rotation":90},
-    {"id":"oak.8","type":"tree.oak","tile":[52,52],"rotation":180},
-    {"id":"oak.9","type":"tree.oak","tile":[102,40]},
-    {"id":"oak.10","type":"tree.oak","tile":[30,36],"rotation":90},
-    {"id":"oak.11","type":"tree.oak","tile":[96,78],"rotation":180},
-    {"id":"oak.12","type":"tree.oak","tile":[30,42]},
-    {"id":"oak.13","type":"tree.oak","tile":[94,20],"rotation":90},
-    {"id":"oak.14","type":"tree.oak","tile":[84,58],"rotation":90},
-    {"id":"oak.15","type":"tree.oak","tile":[56,44],"rotation":270},
-    {"id":"oak.16","type":"tree.oak","tile":[80,28],"rotation":270},
-    {"id":"oak.17","type":"tree.oak","tile":[98,30],"rotation":270},
-    {"id":"oak.18","type":"tree.oak","tile":[52,20],"rotation":270},
-    {"id":"oak.19","type":"tree.oak","tile":[28,46],"rotation":90},
-    {"id":"rock.0","type":"rock.small","tile":[56,52],"rotation":180},
-    {"id":"rock.1","type":"rock.small","tile":[90,60],"rotation":270},
-    {"id":"rock.2","type":"rock.small","tile":[82,44],"rotation":270},
-    {"id":"rock.3","type":"rock.small","tile":[72,8],"rotation":180},
-    {"id":"rock.4","type":"rock.small","tile":[108,76],"rotation":90},
-    {"id":"rock.5","type":"rock.small","tile":[120,112],"rotation":270},
-    {"id":"rock.6","type":"rock.small","tile":[90,106],"rotation":90},
-    {"id":"rock.7","type":"rock.small","tile":[0,20]},
-    {"id":"rock.8","type":"rock.small","tile":[4,118],"rotation":90},
-    {"id":"rock.9","type":"rock.small","tile":[6,94],"rotation":180},
-    {"id":"rock.10","type":"rock.small","tile":[10,78],"rotation":270},
-    {"id":"rock.11","type":"rock.small","tile":[38,106],"rotation":270},
-    {"id":"rock.12","type":"rock.small","tile":[102,8],"rotation":270},
-    {"id":"rock.13","type":"rock.small","tile":[118,96],"rotation":90},
-    {"id":"rock.14","type":"rock.small","tile":[14,68],"rotation":90},
-    {"id":"rock.15","type":"rock.small","tile":[30,120],"rotation":180},
-    {"id":"rock.16","type":"rock.small","tile":[120,90],"rotation":90},
-    {"id":"rock.17","type":"rock.small","tile":[16,22],"rotation":270},
-    {"id":"rock.18","type":"rock.small","tile":[14,50]},
-    {"id":"rock.19","type":"rock.small","tile":[122,66],"rotation":270},
-    {"id":"rock.20","type":"rock.small","tile":[118,80],"rotation":270},
-    {"id":"rock.21","type":"rock.small","tile":[112,96],"rotation":270},
-    {"id":"rock.22","type":"rock.small","tile":[94,110],"rotation":270},
-    {"id":"rock.23","type":"rock.small","tile":[8,112],"rotation":270},
-    {"id":"rock.24","type":"rock.small","tile":[64,116]},
-    {"id":"rock.25","type":"rock.small","tile":[18,10],"rotation":270},
-    {"id":"rock.26","type":"rock.small","tile":[12,72]},
-    {"id":"rock.27","type":"rock.small","tile":[68,116],"rotation":90},
-    {"id":"rock.28","type":"rock.small","tile":[84,114],"rotation":180},
-    {"id":"rock.29","type":"rock.small","tile":[118,24],"rotation":180},
-    {"id":"rock.30","type":"rock.small","tile":[22,74],"rotation":270},
-    {"id":"rock.31","type":"rock.small","tile":[82,6]},
-    {"id":"rock.32","type":"rock.small","tile":[82,32]},
-    {"id":"rock.33","type":"rock.small","tile":[88,2],"rotation":180},
-    {"id":"rock.34","type":"rock.small","tile":[110,118],"rotation":180},
-    {"id":"rock.35","type":"rock.small","tile":[94,116],"rotation":180},
-    {"id":"rock.36","type":"rock.small","tile":[2,98]},
-    {"id":"rock.37","type":"rock.small","tile":[72,46],"rotation":270},
-    {"id":"rock.38","type":"rock.small","tile":[20,122],"rotation":270},
-    {"id":"rock.39","type":"rock.small","tile":[104,46]},
-    {"id":"rock.40","type":"rock.small","tile":[122,48],"rotation":180},
-    {"id":"rock.41","type":"rock.small","tile":[120,18],"rotation":270},
-    {"id":"rock.42","type":"rock.small","tile":[68,44]},
-    {"id":"rock.43","type":"rock.small","tile":[14,40]},
-    {"id":"rock.44","type":"rock.small","tile":[74,20],"rotation":90},
-    {"id":"rock.45","type":"rock.small","tile":[44,122],"rotation":90},
-    {"id":"rock.46","type":"rock.small","tile":[112,62]},
-    {"id":"rock.47","type":"rock.small","tile":[34,112],"rotation":270},
-    {"id":"rock.48","type":"rock.small","tile":[110,108],"rotation":270},
-    {"id":"rock.49","type":"rock.small","tile":[8,44]},
-    {"id":"rock.50","type":"rock.small","tile":[2,8],"rotation":270},
-    {"id":"rock.51","type":"rock.small","tile":[58,60],"rotation":90},
-    {"id":"rock.52","type":"rock.small","tile":[44,72],"rotation":270},
-    {"id":"rock.53","type":"rock.small","tile":[96,50]},
-    {"id":"rock.54","type":"rock.small","tile":[44,2],"rotation":90},
-    {"id":"rock.55","type":"rock.small","tile":[40,118],"rotation":270},
-    {"id":"rock.56","type":"rock.small","tile":[82,22],"rotation":270},
-    {"id":"rock.57","type":"rock.small","tile":[6,50],"rotation":180},
-    {"id":"rock.58","type":"rock.small","tile":[0,16]},
-    {"id":"rock.59","type":"rock.small","tile":[30,10],"rotation":270},
-    {"id":"rock.60","type":"rock.small","tile":[106,18],"rotation":90},
-    {"id":"rock.61","type":"rock.small","tile":[90,52],"rotation":270},
-    {"id":"rock.62","type":"rock.small","tile":[120,10],"rotation":270},
-    {"id":"rock.63","type":"rock.small","tile":[78,38],"rotation":90},
-    {"id":"rock.64","type":"rock.small","tile":[38,10],"rotation":180},
-    {"id":"rock.65","type":"rock.small","tile":[108,98]},
-    {"id":"rock.66","type":"rock.small","tile":[26,8],"rotation":270},
-    {"id":"rock.67","type":"rock.small","tile":[102,2],"rotation":180},
-    {"id":"rock.68","type":"rock.small","tile":[38,110]},
-    {"id":"rock.69","type":"rock.small","tile":[106,122]},
-    {"id":"rock.70","type":"rock.small","tile":[12,32],"rotation":90},
-    {"id":"rock.71","type":"rock.small","tile":[24,34],"rotation":90},
-    {"id":"rock.72","type":"rock.small","tile":[28,68]},
-    {"id":"rock.73","type":"rock.small","tile":[104,54],"rotation":90},
-    {"id":"rock.74","type":"rock.small","tile":[18,114],"rotation":90},
-    {"id":"rock.75","type":"rock.small","tile":[88,42]},
-    {"id":"rock.76","type":"rock.small","tile":[18,0]},
-    {"id":"rock.77","type":"rock.small","tile":[40,102]},
-    {"id":"rock.78","type":"rock.small","tile":[94,38],"rotation":90},
-    {"id":"rock.79","type":"rock.small","tile":[104,36],"rotation":90},
-    {"id":"rock.80","type":"rock.small","tile":[70,100],"rotation":180},
-    {"id":"rock.81","type":"rock.small","tile":[88,90],"rotation":270},
-    {"id":"rock.82","type":"rock.small","tile":[104,22],"rotation":180},
-    {"id":"rock.83","type":"rock.small","tile":[26,14],"rotation":90},
-    {"id":"rock.84","type":"rock.small","tile":[122,108],"rotation":270},
-    {"id":"rock.85","type":"rock.small","tile":[86,52]},
-    {"id":"rock.86","type":"rock.small","tile":[12,86],"rotation":90},
-    {"id":"rock.87","type":"rock.small","tile":[84,28]},
-    {"id":"rock.88","type":"rock.small","tile":[20,92],"rotation":180},
-    {"id":"rock.89","type":"rock.small","tile":[10,66],"rotation":180}
+    {"id":"pine.15","type":"tree.pine","tile":[82,50]},
+    {"id":"pine.16","type":"tree.pine","tile":[38,96],"rotation":180},
+    {"id":"pine.17","type":"tree.pine","tile":[48,66],"rotation":270},
+    {"id":"pine.18","type":"tree.pine","tile":[18,56],"rotation":270},
+    {"id":"pine.19","type":"tree.pine","tile":[96,26],"rotation":90},
+    {"id":"pine.20","type":"tree.pine","tile":[58,70],"rotation":90},
+    {"id":"pine.21","type":"tree.pine","tile":[18,74]},
+    {"id":"pine.22","type":"tree.pine","tile":[20,62],"rotation":180},
+    {"id":"pine.23","type":"tree.pine","tile":[76,60]},
+    {"id":"pine.24","type":"tree.pine","tile":[34,100],"rotation":90},
+    {"id":"pine.25","type":"tree.pine","tile":[32,66],"rotation":270},
+    {"id":"pine.26","type":"tree.pine","tile":[42,28],"rotation":180},
+    {"id":"pine.27","type":"tree.pine","tile":[104,58],"rotation":90},
+    {"id":"pine.28","type":"tree.pine","tile":[42,52]},
+    {"id":"pine.29","type":"tree.pine","tile":[54,66],"rotation":270},
+    {"id":"pine.30","type":"tree.pine","tile":[42,40]},
+    {"id":"pine.31","type":"tree.pine","tile":[90,46],"rotation":270},
+    {"id":"pine.32","type":"tree.pine","tile":[104,80],"rotation":180},
+    {"id":"pine.33","type":"tree.pine","tile":[44,60],"rotation":90},
+    {"id":"pine.34","type":"tree.pine","tile":[38,22],"rotation":180},
+    {"id":"pine.35","type":"tree.pine","tile":[100,34],"rotation":270},
+    {"id":"pine.36","type":"tree.pine","tile":[46,26],"rotation":270},
+    {"id":"pine.37","type":"tree.pine","tile":[14,56],"rotation":270},
+    {"id":"pine.38","type":"tree.pine","tile":[74,54],"rotation":90},
+    {"id":"pine.39","type":"tree.pine","tile":[52,108]},
+    {"id":"pine.40","type":"tree.pine","tile":[48,58],"rotation":180},
+    {"id":"pine.41","type":"tree.pine","tile":[20,32]},
+    {"id":"pine.42","type":"tree.pine","tile":[96,46],"rotation":180},
+    {"id":"pine.43","type":"tree.pine","tile":[78,34],"rotation":90},
+    {"id":"pine.44","type":"tree.pine","tile":[34,52],"rotation":270},
+    {"id":"pine.45","type":"tree.pine","tile":[94,100]},
+    {"id":"pine.46","type":"tree.pine","tile":[34,46],"rotation":270},
+    {"id":"pine.47","type":"tree.pine","tile":[70,72]},
+    {"id":"pine.48","type":"tree.pine","tile":[16,44],"rotation":270},
+    {"id":"pine.49","type":"tree.pine","tile":[60,16],"rotation":270},
+    {"id":"pine.50","type":"tree.pine","tile":[54,72],"rotation":180},
+    {"id":"pine.51","type":"tree.pine","tile":[84,38],"rotation":90},
+    {"id":"pine.52","type":"tree.pine","tile":[34,58],"rotation":270},
+    {"id":"pine.53","type":"tree.pine","tile":[40,58]},
+    {"id":"pine.54","type":"tree.pine","tile":[56,20]},
+    {"id":"pine.55","type":"tree.pine","tile":[18,98],"rotation":180},
+    {"id":"pine.56","type":"tree.pine","tile":[22,80],"rotation":90},
+    {"id":"pine.57","type":"tree.pine","tile":[72,36],"rotation":180},
+    {"id":"pine.58","type":"tree.pine","tile":[46,94]},
+    {"id":"pine.59","type":"tree.pine","tile":[50,38],"rotation":270},
+    {"id":"pine.60","type":"tree.pine","tile":[46,106],"rotation":90},
+    {"id":"pine.61","type":"tree.pine","tile":[74,72],"rotation":180},
+    {"id":"oak.0","type":"tree.oak","tile":[74,28],"rotation":90},
+    {"id":"oak.1","type":"tree.oak","tile":[70,62],"rotation":90},
+    {"id":"oak.2","type":"tree.oak","tile":[62,20],"rotation":90},
+    {"id":"oak.3","type":"tree.oak","tile":[88,52],"rotation":90},
+    {"id":"oak.4","type":"tree.oak","tile":[30,36],"rotation":90},
+    {"id":"oak.5","type":"tree.oak","tile":[86,62],"rotation":180},
+    {"id":"oak.6","type":"tree.oak","tile":[54,50]},
+    {"id":"oak.7","type":"tree.oak","tile":[104,90],"rotation":270},
+    {"id":"oak.8","type":"tree.oak","tile":[80,28],"rotation":270},
+    {"id":"oak.9","type":"tree.oak","tile":[98,30],"rotation":270},
+    {"id":"oak.10","type":"tree.oak","tile":[52,20],"rotation":270},
+    {"id":"oak.11","type":"tree.oak","tile":[28,46],"rotation":90},
+    {"id":"oak.12","type":"tree.oak","tile":[46,90],"rotation":90},
+    {"id":"oak.13","type":"tree.oak","tile":[76,48],"rotation":270},
+    {"id":"oak.14","type":"tree.oak","tile":[38,18],"rotation":270},
+    {"id":"oak.15","type":"tree.oak","tile":[108,60],"rotation":270},
+    {"id":"oak.16","type":"tree.oak","tile":[28,40],"rotation":180},
+    {"id":"oak.17","type":"tree.oak","tile":[90,38],"rotation":180},
+    {"id":"oak.18","type":"tree.oak","tile":[64,58],"rotation":90},
+    {"id":"oak.19","type":"tree.oak","tile":[102,52],"rotation":90},
+    {"id":"rock.0","type":"rock.small","tile":[64,116]},
+    {"id":"rock.1","type":"rock.small","tile":[18,10],"rotation":270},
+    {"id":"rock.2","type":"rock.small","tile":[12,72]},
+    {"id":"rock.3","type":"rock.small","tile":[68,116],"rotation":90},
+    {"id":"rock.4","type":"rock.small","tile":[84,114],"rotation":180},
+    {"id":"rock.5","type":"rock.small","tile":[118,24],"rotation":180},
+    {"id":"rock.6","type":"rock.small","tile":[22,74],"rotation":270},
+    {"id":"rock.7","type":"rock.small","tile":[82,6]},
+    {"id":"rock.8","type":"rock.small","tile":[82,32]},
+    {"id":"rock.9","type":"rock.small","tile":[88,2],"rotation":180},
+    {"id":"rock.10","type":"rock.small","tile":[110,118],"rotation":180},
+    {"id":"rock.11","type":"rock.small","tile":[94,116],"rotation":180},
+    {"id":"rock.12","type":"rock.small","tile":[2,98]},
+    {"id":"rock.13","type":"rock.small","tile":[96,20],"rotation":270},
+    {"id":"rock.14","type":"rock.small","tile":[118,104],"rotation":90},
+    {"id":"rock.15","type":"rock.small","tile":[12,96]},
+    {"id":"rock.16","type":"rock.small","tile":[122,48],"rotation":180},
+    {"id":"rock.17","type":"rock.small","tile":[120,18],"rotation":270},
+    {"id":"rock.18","type":"rock.small","tile":[68,44]},
+    {"id":"rock.19","type":"rock.small","tile":[14,40]},
+    {"id":"rock.20","type":"rock.small","tile":[74,20],"rotation":90},
+    {"id":"rock.21","type":"rock.small","tile":[44,122],"rotation":90},
+    {"id":"rock.22","type":"rock.small","tile":[112,62]},
+    {"id":"rock.23","type":"rock.small","tile":[34,112],"rotation":270},
+    {"id":"rock.24","type":"rock.small","tile":[110,108],"rotation":270},
+    {"id":"rock.25","type":"rock.small","tile":[8,44]},
+    {"id":"rock.26","type":"rock.small","tile":[2,8],"rotation":270},
+    {"id":"rock.27","type":"rock.small","tile":[58,60],"rotation":90},
+    {"id":"rock.28","type":"rock.small","tile":[44,72],"rotation":270},
+    {"id":"rock.29","type":"rock.small","tile":[96,50]},
+    {"id":"rock.30","type":"rock.small","tile":[44,2],"rotation":90},
+    {"id":"rock.31","type":"rock.small","tile":[40,118],"rotation":270},
+    {"id":"rock.32","type":"rock.small","tile":[82,22],"rotation":270},
+    {"id":"rock.33","type":"rock.small","tile":[6,50],"rotation":180},
+    {"id":"rock.34","type":"rock.small","tile":[0,16]},
+    {"id":"rock.35","type":"rock.small","tile":[30,10],"rotation":270},
+    {"id":"rock.36","type":"rock.small","tile":[106,18],"rotation":90},
+    {"id":"rock.37","type":"rock.small","tile":[106,120]},
+    {"id":"rock.38","type":"rock.small","tile":[38,10],"rotation":180},
+    {"id":"rock.39","type":"rock.small","tile":[118,112],"rotation":180},
+    {"id":"rock.40","type":"rock.small","tile":[12,48],"rotation":180},
+    {"id":"rock.41","type":"rock.small","tile":[24,18]},
+    {"id":"rock.42","type":"rock.small","tile":[26,8],"rotation":270},
+    {"id":"rock.43","type":"rock.small","tile":[102,2],"rotation":180},
+    {"id":"rock.44","type":"rock.small","tile":[110,100],"rotation":270},
+    {"id":"rock.45","type":"rock.small","tile":[40,102],"rotation":90},
+    {"id":"rock.46","type":"rock.small","tile":[38,110]},
+    {"id":"rock.47","type":"rock.small","tile":[24,34],"rotation":90},
+    {"id":"rock.48","type":"rock.small","tile":[6,36]},
+    {"id":"rock.49","type":"rock.small","tile":[114,54],"rotation":180},
+    {"id":"rock.50","type":"rock.small","tile":[18,0]},
+    {"id":"rock.51","type":"rock.small","tile":[22,94],"rotation":90},
+    {"id":"rock.52","type":"rock.small","tile":[32,28],"rotation":180},
+    {"id":"rock.53","type":"rock.small","tile":[104,36],"rotation":90},
+    {"id":"rock.54","type":"rock.small","tile":[70,100],"rotation":180},
+    {"id":"rock.55","type":"rock.small","tile":[88,90],"rotation":270},
+    {"id":"rock.56","type":"rock.small","tile":[104,22],"rotation":180},
+    {"id":"rock.57","type":"rock.small","tile":[96,110],"rotation":180},
+    {"id":"rock.58","type":"rock.small","tile":[84,42],"rotation":270},
+    {"id":"rock.59","type":"rock.small","tile":[26,14],"rotation":90},
+    {"id":"rock.60","type":"rock.small","tile":[56,46]},
+    {"id":"rock.61","type":"rock.small","tile":[30,58],"rotation":180},
+    {"id":"rock.62","type":"rock.small","tile":[122,108],"rotation":270},
+    {"id":"rock.63","type":"rock.small","tile":[118,12],"rotation":180},
+    {"id":"rock.64","type":"rock.small","tile":[66,66]},
+    {"id":"rock.65","type":"rock.small","tile":[24,108],"rotation":90},
+    {"id":"rock.66","type":"rock.small","tile":[120,32]},
+    {"id":"rock.67","type":"rock.small","tile":[98,10]},
+    {"id":"rock.68","type":"rock.small","tile":[74,94],"rotation":180},
+    {"id":"rock.69","type":"rock.small","tile":[16,22],"rotation":90},
+    {"id":"rock.70","type":"rock.small","tile":[22,8],"rotation":270},
+    {"id":"rock.71","type":"rock.small","tile":[40,106]},
+    {"id":"rock.72","type":"rock.small","tile":[6,66],"rotation":90},
+    {"id":"rock.73","type":"rock.small","tile":[64,40]},
+    {"id":"rock.74","type":"rock.small","tile":[4,46],"rotation":270},
+    {"id":"rock.75","type":"rock.small","tile":[0,110],"rotation":270},
+    {"id":"rock.76","type":"rock.small","tile":[122,100]},
+    {"id":"rock.77","type":"rock.small","tile":[26,90],"rotation":270},
+    {"id":"rock.78","type":"rock.small","tile":[50,50]},
+    {"id":"rock.79","type":"rock.small","tile":[122,116],"rotation":180},
+    {"id":"rock.80","type":"rock.small","tile":[12,112]},
+    {"id":"rock.81","type":"rock.small","tile":[80,112],"rotation":270},
+    {"id":"rock.82","type":"rock.small","tile":[60,112],"rotation":270},
+    {"id":"rock.83","type":"rock.small","tile":[6,16],"rotation":90},
+    {"id":"rock.84","type":"rock.small","tile":[44,98],"rotation":270},
+    {"id":"rock.85","type":"rock.small","tile":[62,0],"rotation":90},
+    {"id":"rock.86","type":"rock.small","tile":[72,16],"rotation":90},
+    {"id":"rock.87","type":"rock.small","tile":[92,14]},
+    {"id":"rock.88","type":"rock.small","tile":[90,42],"rotation":270},
+    {"id":"rock.89","type":"rock.small","tile":[20,108],"rotation":180},
+    {"id":"home.agate","type":"building.cabin","tile":[91,48],"props":{"label":"Agate's Cabin","interior":"worlds/interiors/home-agate.json","owner":"folk.agate"}},
+    {"id":"home.bluff","type":"building.bungalow","tile":[102,54],"props":{"label":"Bluff's Bungalow","interior":"worlds/interiors/home-bluff.json","owner":"folk.bluff"}},
+    {"id":"home.chert","type":"building.cottage","tile":[82,55],"props":{"label":"Chert's Cottage","interior":"worlds/interiors/home-chert.json","owner":"folk.chert"}},
+    {"id":"home.cobble","type":"building.cabin","tile":[92,42],"props":{"label":"Cobble's Cabin","interior":"worlds/interiors/home-cobble.json","owner":"folk.cobble"}},
+    {"id":"home.crag","type":"building.bungalow","tile":[38,32],"props":{"label":"Crag's Bungalow","interior":"worlds/interiors/home-crag.json","owner":"folk.crag"}},
+    {"id":"home.dusty","type":"building.cottage","tile":[77,18],"props":{"label":"Dusty's Cottage","interior":"worlds/interiors/home-dusty.json","owner":"folk.dusty"}},
+    {"id":"home.feldspar","type":"building.cabin","tile":[99,100],"props":{"label":"Feldspar's Cabin","interior":"worlds/interiors/home-feldspar.json","owner":"folk.feldspar"}},
+    {"id":"home.garnet","type":"building.bungalow","tile":[23,56],"props":{"label":"Garnet's Bungalow","interior":"worlds/interiors/home-garnet.json","owner":"folk.garnet"}},
+    {"id":"home.gneiss","type":"building.cottage","tile":[37,45],"props":{"label":"Gneiss's Cottage","interior":"worlds/interiors/home-gneiss.json","owner":"folk.gneiss"}},
+    {"id":"home.gypsum","type":"building.cabin","tile":[51,52],"props":{"label":"Gypsum's Cabin","interior":"worlds/interiors/home-gypsum.json","owner":"folk.gypsum"}},
+    {"id":"home.jasper","type":"building.bungalow","tile":[98,22],"props":{"label":"Jasper's Bungalow","interior":"worlds/interiors/home-jasper.json","owner":"folk.jasper"}},
+    {"id":"home.ledge","type":"building.cottage","tile":[74,67],"props":{"label":"Ledge's Cottage","interior":"worlds/interiors/home-ledge.json","owner":"folk.ledge"}},
+    {"id":"home.marl","type":"building.cabin","tile":[84,48],"props":{"label":"Marl's Cabin","interior":"worlds/interiors/home-marl.json","owner":"folk.marl"}},
+    {"id":"home.onyx","type":"building.bungalow","tile":[34,25],"props":{"label":"Onyx's Bungalow","interior":"worlds/interiors/home-onyx.json","owner":"folk.onyx"}},
+    {"id":"home.opal","type":"building.cottage","tile":[103,96],"props":{"label":"Opal's Cottage","interior":"worlds/interiors/home-opal.json","owner":"folk.opal"}},
+    {"id":"home.pumice","type":"building.cabin","tile":[89,62],"props":{"label":"Pumice's Cabin","interior":"worlds/interiors/home-pumice.json","owner":"folk.pumice"}},
+    {"id":"home.quartz","type":"building.bungalow","tile":[30,54],"props":{"label":"Quartz's Bungalow","interior":"worlds/interiors/home-quartz.json","owner":"folk.quartz"}},
+    {"id":"home.ridge","type":"building.cottage","tile":[42,100],"props":{"label":"Ridge's Cottage","interior":"worlds/interiors/home-ridge.json","owner":"folk.ridge"}},
+    {"id":"home.scree","type":"building.cabin","tile":[17,52],"props":{"label":"Scree's Cabin","interior":"worlds/interiors/home-scree.json","owner":"folk.scree"}},
+    {"id":"home.shard","type":"building.bungalow","tile":[76,22],"props":{"label":"Shard's Bungalow","interior":"worlds/interiors/home-shard.json","owner":"folk.shard"}},
+    {"id":"home.slate","type":"building.cottage","tile":[52,40],"props":{"label":"Slate's Cottage","interior":"worlds/interiors/home-slate.json","owner":"folk.slate"}},
+    {"id":"home.talus","type":"building.cabin","tile":[32,69],"props":{"label":"Talus's Cabin","interior":"worlds/interiors/home-talus.json","owner":"folk.talus"}},
+    {"id":"home.terra","type":"building.bungalow","tile":[99,61],"props":{"label":"Terra's Bungalow","interior":"worlds/interiors/home-terra.json","owner":"folk.terra"}},
+    {"id":"home.tor","type":"building.cottage","tile":[25,94],"props":{"label":"Tor's Cottage","interior":"worlds/interiors/home-tor.json","owner":"folk.tor"}},
+    {"id":"home.mica","type":"building.cabin","tile":[85,31],"props":{"label":"Mica's Cabin","interior":"worlds/interiors/home-mica.json","owner":"folk.mica"}}
   ],
   "animals": [
-    {"id":"goat.0","type":"goat","tile":[84,54]},
-    {"id":"goat.1","type":"goat","tile":[72,42]},
-    {"id":"goat.2","type":"goat","tile":[80,42]},
-    {"id":"goat.lip.0","type":"goat","tile":[34,96]},
-    {"id":"goat.lip.1","type":"goat","tile":[30,108]},
-    {"id":"crow.0","type":"crow","tile":[92,64]},
-    {"id":"crow.1","type":"crow","tile":[90,44]},
-    {"id":"crow.2","type":"crow","tile":[78,46]},
-    {"id":"crow.3","type":"crow","tile":[100,54]},
-    {"id":"rabbit.0","type":"rabbit","tile":[52,74]},
-    {"id":"rabbit.1","type":"rabbit","tile":[52,90]},
-    {"id":"rabbit.2","type":"rabbit","tile":[58,72]},
-    {"id":"cat.0","type":"cat","tile":[82,82]}
+    {"id":"goat.0","type":"goat","tile":[82,36]},
+    {"id":"goat.1","type":"goat","tile":[86,42]},
+    {"id":"goat.2","type":"goat","tile":[80,50]},
+    {"id":"goat.lip.0","type":"goat","tile":[30,86]},
+    {"id":"goat.lip.1","type":"goat","tile":[38,100]},
+    {"id":"crow.0","type":"crow","tile":[98,52]},
+    {"id":"crow.1","type":"crow","tile":[88,40]},
+    {"id":"crow.2","type":"crow","tile":[106,44]},
+    {"id":"crow.3","type":"crow","tile":[88,56]},
+    {"id":"rabbit.0","type":"rabbit","tile":[64,74]},
+    {"id":"rabbit.1","type":"rabbit","tile":[68,70]},
+    {"id":"rabbit.2","type":"rabbit","tile":[54,74]},
+    {"id":"cat.0","type":"cat","tile":[78,74]},
+    {"id":"wild.tortoise.0","type":"tortoise","tile":[65,42]},
+    {"id":"wild.tortoise.1","type":"tortoise","tile":[105,73]},
+    {"id":"wild.donkey.0","type":"donkey","tile":[29,31]},
+    {"id":"wild.donkey.1","type":"donkey","tile":[74,26]},
+    {"id":"wild.owl.0","type":"owl","tile":[38,19]},
+    {"id":"wild.owl.1","type":"owl","tile":[31,59]},
+    {"id":"wild.magpie.0","type":"magpie","tile":[77,16]},
+    {"id":"wild.magpie.1","type":"magpie","tile":[56,56]},
+    {"id":"wild.fox.0","type":"fox","tile":[24,36]},
+    {"id":"wild.fox.1","type":"fox","tile":[46,21]},
+    {"id":"wild.mouse.0","type":"mouse","tile":[31,98]},
+    {"id":"wild.mouse.1","type":"mouse","tile":[34,97]}
   ],
   "npcs": [
     {
-      "id": "folk.iona",
+      "id": "folk.mesa",
       "type": "folk.villager",
       "tile": [
-        42,
-        70
+        26,
+        72
       ],
-      "facing": "north",
+      "facing": "south",
       "props": {
-        "name": "Iona",
-        "title": "Mesa Framer",
+        "name": "Mesa",
+        "title": "Rain Jar Keeper",
+        "roam": 5,
         "voice": {
-          "pitch": 0.9,
-          "rate": 27,
-          "timbre": "sawtooth"
+          "pitch": 1.04,
+          "rate": 22,
+          "timbre": "sine"
         }
       },
       "dialog": {
         "start": "hello",
         "nodes": {
           "hello": {
-            "text": "Iona. Out here a roof has nowhere to hide. I can lift yours one story at a time, keep the footprint, and pin the frame hard to the rimrock.",
-            "then": "menu"
+            "text": "Mesa. I keep rain by the jar because the sky seldom keeps appointments. That's my place behind me. Come say hello before you let yourself in.",
+            "then": "again"
           },
-          "menu": {
-            "text": "The footprint stays exactly where it is. We build upward, and every new floor is yours to use.",
-            "choices": [
-              {
-                "text": "Add a second story — 1800 coin.",
-                "when": {
-                  "houseStories": 1,
-                  "coins": 1800
-                },
-                "do": [
-                  {
-                    "coins": -1800
-                  },
-                  {
-                    "houseStories": 2
-                  }
-                ],
-                "to": "second"
-              },
-              {
-                "text": "I need 1800 coin for the second story.",
-                "when": {
-                  "all": [
-                    {
-                      "houseStories": 1
-                    },
-                    {
-                      "not": {
-                        "coins": 1800
-                      }
-                    }
-                  ]
-                },
-                "to": "short"
-              },
-              {
-                "text": "Add a third story — 3600 coin.",
-                "when": {
-                  "houseStories": 2,
-                  "coins": 3600
-                },
-                "do": [
-                  {
-                    "coins": -3600
-                  },
-                  {
-                    "houseStories": 3
-                  }
-                ],
-                "to": "third"
-              },
-              {
-                "text": "I need 3600 coin for the third story.",
-                "when": {
-                  "all": [
-                    {
-                      "houseStories": 2
-                    },
-                    {
-                      "not": {
-                        "coins": 3600
-                      }
-                    }
-                  ]
-                },
-                "to": "short"
-              },
-              {
-                "text": "Is the house finished?",
-                "when": {
-                  "houseStories": 3
-                },
-                "to": "complete"
-              },
-              {
-                "text": "Not today.",
-                "to": "endline"
-              }
-            ]
+          "again": {
+            "text": "Three jars full. That counts as a wet season here."
+          }
+        }
+      }
+    },
+    {
+      "id": "folk.flint",
+      "type": "folk.villager",
+      "tile": [
+        98,
+        98
+      ],
+      "facing": "south",
+      "props": {
+        "name": "Flint",
+        "title": "Slickrock Polisher",
+        "roam": 5,
+        "voice": {
+          "pitch": 0.76,
+          "rate": 19,
+          "timbre": "square"
+        }
+      },
+      "dialog": {
+        "start": "hello",
+        "nodes": {
+          "hello": {
+            "text": "Flint. I polish stone until it admits the sky was there first. That's my place behind me. Come say hello before you let yourself in.",
+            "then": "again"
           },
-          "second": {
-            "text": "Two stories, sound and square. The new stair is ready inside.",
-            "then": "end"
+          "again": {
+            "text": "That shine is honest work, not water."
+          }
+        }
+      }
+    },
+    {
+      "id": "folk.sora",
+      "type": "folk.villager",
+      "tile": [
+        94,
+        64
+      ],
+      "facing": "south",
+      "props": {
+        "name": "Sora",
+        "title": "Juniper Distiller",
+        "roam": 5,
+        "voice": {
+          "pitch": 1.21,
+          "rate": 25,
+          "timbre": "triangle"
+        }
+      },
+      "dialog": {
+        "start": "hello",
+        "nodes": {
+          "hello": {
+            "text": "Sora. I make bitter oil from the juniper that survives the rim. That's my place behind me. Come say hello before you let yourself in.",
+            "then": "again"
           },
-          "third": {
-            "text": "Three stories. Roof raised, chimney drawn, top floor ready. That house is complete.",
-            "then": "end"
-          },
-          "complete": {
-            "text": "Complete at three stories. Any higher and it stops being a house and starts arguing with the weather.",
-            "then": "end"
-          },
-          "short": {
-            "text": "Keep the plan. Come back when the purse is ready; the ground will not move.",
-            "then": "end"
-          },
-          "endline": {
-            "text": "No harm done. A measured house waits better than people do.",
-            "then": "end"
+          "again": {
+            "text": "A drop is medicine. Two drops are a lesson."
           }
         }
       }
@@ -1082,88 +1088,863 @@
           }
         }
       }
+    },
+    {
+      "id": "folk.agate",
+      "type": "folk.villager",
+      "tile": [
+        93,
+        51
+      ],
+      "facing": "south",
+      "props": {
+        "name": "Agate",
+        "title": "Stone Stacker",
+        "roam": 5,
+        "voice": {
+          "pitch": 0.9,
+          "rate": 18,
+          "timbre": "sawtooth"
+        }
+      },
+      "dialog": {
+        "start": "hello",
+        "nodes": {
+          "hello": {
+            "text": "Agate. Stone Stacker up here on the rim. The view's free; the shade costs you a conversation.",
+            "then": "again"
+          },
+          "again": {
+            "text": "A good wall wants no mortar and no hurry."
+          }
+        }
+      }
+    },
+    {
+      "id": "folk.bluff",
+      "type": "folk.gardener",
+      "tile": [
+        104,
+        57
+      ],
+      "facing": "south",
+      "props": {
+        "name": "Bluff",
+        "title": "Dust Sweeper",
+        "roam": 6,
+        "voice": {
+          "pitch": 0.85,
+          "rate": 18,
+          "timbre": "square"
+        }
+      },
+      "dialog": {
+        "start": "hello",
+        "nodes": {
+          "hello": {
+            "text": "You climbed the whole way -- good. Bluff, Dust Sweeper. Mine's the house holding that wall up.",
+            "then": "again"
+          },
+          "again": {
+            "text": "It's not the heat, it's the geology."
+          }
+        }
+      }
+    },
+    {
+      "id": "folk.chert",
+      "type": "folk.fisher",
+      "tile": [
+        83,
+        58
+      ],
+      "facing": "south",
+      "props": {
+        "name": "Chert",
+        "title": "Cairn Keeper",
+        "roam": 4,
+        "voice": {
+          "pitch": 0.8,
+          "rate": 18,
+          "timbre": "triangle"
+        }
+      },
+      "dialog": {
+        "start": "hello",
+        "nodes": {
+          "hello": {
+            "text": "Chert. I keep at it as Cairn Keeper. The mesa was here first and it doesn't let you forget.",
+            "then": "again"
+          },
+          "again": {
+            "text": "Every stone in that wall has a name. I was bored."
+          }
+        }
+      }
+    },
+    {
+      "id": "folk.cobble",
+      "type": "folk.tinker",
+      "tile": [
+        94,
+        45
+      ],
+      "facing": "south",
+      "props": {
+        "name": "Cobble",
+        "title": "Echo Counter",
+        "roam": 5,
+        "voice": {
+          "pitch": 1.26,
+          "rate": 18,
+          "timbre": "sawtooth"
+        }
+      },
+      "dialog": {
+        "start": "hello",
+        "nodes": {
+          "hello": {
+            "text": "Mind the scree past my fence. Cobble -- Echo Counter. Water's in the shade barrel if you need it.",
+            "then": "again"
+          },
+          "again": {
+            "text": "The rim glows red at sundown. Never gets old."
+          }
+        }
+      }
+    },
+    {
+      "id": "folk.crag",
+      "type": "folk.villager",
+      "tile": [
+        40,
+        35
+      ],
+      "facing": "south",
+      "props": {
+        "name": "Crag",
+        "title": "Ridge Walker",
+        "roam": 6,
+        "voice": {
+          "pitch": 1.21,
+          "rate": 18,
+          "timbre": "square"
+        }
+      },
+      "dialog": {
+        "start": "hello",
+        "nodes": {
+          "hello": {
+            "text": "Crag, Ridge Walker. Everything up here is either rock or on its way to being rock.",
+            "then": "again"
+          },
+          "again": {
+            "text": "Found a fossil shaped like a smile. Kept it."
+          }
+        }
+      }
+    },
+    {
+      "id": "folk.dusty",
+      "type": "folk.gardener",
+      "tile": [
+        78,
+        21
+      ],
+      "facing": "south",
+      "props": {
+        "name": "Dusty",
+        "title": "Fossil Sifter",
+        "roam": 4,
+        "voice": {
+          "pitch": 1.16,
+          "rate": 18,
+          "timbre": "triangle"
+        }
+      },
+      "dialog": {
+        "start": "hello",
+        "nodes": {
+          "hello": {
+            "text": "Well met. Dusty. Been Fossil Sifter since the last rockfall rearranged the road.",
+            "then": "again"
+          },
+          "again": {
+            "text": "The wind up here has opinions."
+          }
+        }
+      }
+    },
+    {
+      "id": "folk.feldspar",
+      "type": "folk.fisher",
+      "tile": [
+        101,
+        103
+      ],
+      "facing": "south",
+      "props": {
+        "name": "Feldspar",
+        "title": "Wall Trimmer",
+        "roam": 5,
+        "voice": {
+          "pitch": 1.11,
+          "rate": 18,
+          "timbre": "sawtooth"
+        }
+      },
+      "dialog": {
+        "start": "hello",
+        "nodes": {
+          "hello": {
+            "text": "Feldspar. Wall Trimmer up here on the rim. The view's free; the shade costs you a conversation.",
+            "then": "again"
+          },
+          "again": {
+            "text": "A good wall wants no mortar and no hurry."
+          }
+        }
+      }
+    },
+    {
+      "id": "folk.garnet",
+      "type": "folk.tinker",
+      "tile": [
+        25,
+        59
+      ],
+      "facing": "south",
+      "props": {
+        "name": "Garnet",
+        "title": "Sun Marker",
+        "roam": 6,
+        "voice": {
+          "pitch": 1.06,
+          "rate": 18,
+          "timbre": "square"
+        }
+      },
+      "dialog": {
+        "start": "hello",
+        "nodes": {
+          "hello": {
+            "text": "You climbed the whole way -- good. Garnet, Sun Marker. Mine's the house holding that wall up.",
+            "then": "again"
+          },
+          "again": {
+            "text": "It's not the heat, it's the geology."
+          }
+        }
+      }
+    },
+    {
+      "id": "folk.gneiss",
+      "type": "folk.villager",
+      "tile": [
+        38,
+        48
+      ],
+      "facing": "south",
+      "props": {
+        "name": "Gneiss",
+        "title": "Gravel Rater",
+        "roam": 4,
+        "voice": {
+          "pitch": 1.01,
+          "rate": 18,
+          "timbre": "triangle"
+        }
+      },
+      "dialog": {
+        "start": "hello",
+        "nodes": {
+          "hello": {
+            "text": "Gneiss. I keep at it as Gravel Rater. The mesa was here first and it doesn't let you forget.",
+            "then": "again"
+          },
+          "again": {
+            "text": "Every stone in that wall has a name. I was bored."
+          }
+        }
+      }
+    },
+    {
+      "id": "folk.gypsum",
+      "type": "folk.gardener",
+      "tile": [
+        53,
+        55
+      ],
+      "facing": "south",
+      "props": {
+        "name": "Gypsum",
+        "title": "Mesa Warden",
+        "roam": 5,
+        "voice": {
+          "pitch": 0.96,
+          "rate": 18,
+          "timbre": "sawtooth"
+        }
+      },
+      "dialog": {
+        "start": "hello",
+        "nodes": {
+          "hello": {
+            "text": "Mind the scree past my fence. Gypsum -- Mesa Warden. Water's in the shade barrel if you need it.",
+            "then": "again"
+          },
+          "again": {
+            "text": "The rim glows red at sundown. Never gets old."
+          }
+        }
+      }
+    },
+    {
+      "id": "folk.jasper",
+      "type": "folk.fisher",
+      "tile": [
+        100,
+        25
+      ],
+      "facing": "south",
+      "props": {
+        "name": "Jasper",
+        "title": "Wind Gauger",
+        "roam": 6,
+        "voice": {
+          "pitch": 0.91,
+          "rate": 18,
+          "timbre": "square"
+        }
+      },
+      "dialog": {
+        "start": "hello",
+        "nodes": {
+          "hello": {
+            "text": "Jasper, Wind Gauger. Everything up here is either rock or on its way to being rock.",
+            "then": "again"
+          },
+          "again": {
+            "text": "Found a fossil shaped like a smile. Kept it."
+          }
+        }
+      }
+    },
+    {
+      "id": "folk.ledge",
+      "type": "folk.tinker",
+      "tile": [
+        75,
+        70
+      ],
+      "facing": "south",
+      "props": {
+        "name": "Ledge",
+        "title": "Ore Sniffer",
+        "roam": 4,
+        "voice": {
+          "pitch": 0.87,
+          "rate": 18,
+          "timbre": "triangle"
+        }
+      },
+      "dialog": {
+        "start": "hello",
+        "nodes": {
+          "hello": {
+            "text": "Well met. Ledge. Been Ore Sniffer since the last rockfall rearranged the road.",
+            "then": "again"
+          },
+          "again": {
+            "text": "The wind up here has opinions."
+          }
+        }
+      }
+    },
+    {
+      "id": "folk.marl",
+      "type": "folk.villager",
+      "tile": [
+        86,
+        51
+      ],
+      "facing": "south",
+      "props": {
+        "name": "Marl",
+        "title": "Stone Stacker",
+        "roam": 5,
+        "voice": {
+          "pitch": 0.82,
+          "rate": 18,
+          "timbre": "sawtooth"
+        }
+      },
+      "dialog": {
+        "start": "hello",
+        "nodes": {
+          "hello": {
+            "text": "Marl. Stone Stacker up here on the rim. The view's free; the shade costs you a conversation.",
+            "then": "again"
+          },
+          "again": {
+            "text": "A good wall wants no mortar and no hurry."
+          }
+        }
+      }
+    },
+    {
+      "id": "folk.onyx",
+      "type": "folk.gardener",
+      "tile": [
+        36,
+        28
+      ],
+      "facing": "south",
+      "props": {
+        "name": "Onyx",
+        "title": "Dust Sweeper",
+        "roam": 6,
+        "voice": {
+          "pitch": 1.27,
+          "rate": 18,
+          "timbre": "square"
+        }
+      },
+      "dialog": {
+        "start": "hello",
+        "nodes": {
+          "hello": {
+            "text": "You climbed the whole way -- good. Onyx, Dust Sweeper. Mine's the house holding that wall up.",
+            "then": "again"
+          },
+          "again": {
+            "text": "It's not the heat, it's the geology."
+          }
+        }
+      }
+    },
+    {
+      "id": "folk.opal",
+      "type": "folk.fisher",
+      "tile": [
+        104,
+        99
+      ],
+      "facing": "south",
+      "props": {
+        "name": "Opal",
+        "title": "Cairn Keeper",
+        "roam": 4,
+        "voice": {
+          "pitch": 1.22,
+          "rate": 18,
+          "timbre": "triangle"
+        }
+      },
+      "dialog": {
+        "start": "hello",
+        "nodes": {
+          "hello": {
+            "text": "Opal. I keep at it as Cairn Keeper. The mesa was here first and it doesn't let you forget.",
+            "then": "again"
+          },
+          "again": {
+            "text": "Every stone in that wall has a name. I was bored."
+          }
+        }
+      }
+    },
+    {
+      "id": "folk.pumice",
+      "type": "folk.tinker",
+      "tile": [
+        91,
+        65
+      ],
+      "facing": "south",
+      "props": {
+        "name": "Pumice",
+        "title": "Echo Counter",
+        "roam": 5,
+        "voice": {
+          "pitch": 1.17,
+          "rate": 18,
+          "timbre": "sawtooth"
+        }
+      },
+      "dialog": {
+        "start": "hello",
+        "nodes": {
+          "hello": {
+            "text": "Mind the scree past my fence. Pumice -- Echo Counter. Water's in the shade barrel if you need it.",
+            "then": "again"
+          },
+          "again": {
+            "text": "The rim glows red at sundown. Never gets old."
+          }
+        }
+      }
+    },
+    {
+      "id": "folk.quartz",
+      "type": "folk.villager",
+      "tile": [
+        32,
+        57
+      ],
+      "facing": "south",
+      "props": {
+        "name": "Quartz",
+        "title": "Ridge Walker",
+        "roam": 6,
+        "voice": {
+          "pitch": 1.12,
+          "rate": 18,
+          "timbre": "square"
+        }
+      },
+      "dialog": {
+        "start": "hello",
+        "nodes": {
+          "hello": {
+            "text": "Quartz, Ridge Walker. Everything up here is either rock or on its way to being rock.",
+            "then": "again"
+          },
+          "again": {
+            "text": "Found a fossil shaped like a smile. Kept it."
+          }
+        }
+      }
+    },
+    {
+      "id": "folk.ridge",
+      "type": "folk.gardener",
+      "tile": [
+        43,
+        103
+      ],
+      "facing": "south",
+      "props": {
+        "name": "Ridge",
+        "title": "Fossil Sifter",
+        "roam": 4,
+        "voice": {
+          "pitch": 1.07,
+          "rate": 18,
+          "timbre": "triangle"
+        }
+      },
+      "dialog": {
+        "start": "hello",
+        "nodes": {
+          "hello": {
+            "text": "Well met. Ridge. Been Fossil Sifter since the last rockfall rearranged the road.",
+            "then": "again"
+          },
+          "again": {
+            "text": "The wind up here has opinions."
+          }
+        }
+      }
+    },
+    {
+      "id": "folk.scree",
+      "type": "folk.fisher",
+      "tile": [
+        19,
+        55
+      ],
+      "facing": "south",
+      "props": {
+        "name": "Scree",
+        "title": "Wall Trimmer",
+        "roam": 5,
+        "voice": {
+          "pitch": 1.02,
+          "rate": 18,
+          "timbre": "sawtooth"
+        }
+      },
+      "dialog": {
+        "start": "hello",
+        "nodes": {
+          "hello": {
+            "text": "Scree. Wall Trimmer up here on the rim. The view's free; the shade costs you a conversation.",
+            "then": "again"
+          },
+          "again": {
+            "text": "A good wall wants no mortar and no hurry."
+          }
+        }
+      }
+    },
+    {
+      "id": "folk.shard",
+      "type": "folk.tinker",
+      "tile": [
+        78,
+        25
+      ],
+      "facing": "south",
+      "props": {
+        "name": "Shard",
+        "title": "Sun Marker",
+        "roam": 6,
+        "voice": {
+          "pitch": 0.98,
+          "rate": 18,
+          "timbre": "square"
+        }
+      },
+      "dialog": {
+        "start": "hello",
+        "nodes": {
+          "hello": {
+            "text": "You climbed the whole way -- good. Shard, Sun Marker. Mine's the house holding that wall up.",
+            "then": "again"
+          },
+          "again": {
+            "text": "It's not the heat, it's the geology."
+          }
+        }
+      }
+    },
+    {
+      "id": "folk.slate",
+      "type": "folk.villager",
+      "tile": [
+        53,
+        43
+      ],
+      "facing": "south",
+      "props": {
+        "name": "Slate",
+        "title": "Gravel Rater",
+        "roam": 4,
+        "voice": {
+          "pitch": 0.93,
+          "rate": 18,
+          "timbre": "triangle"
+        }
+      },
+      "dialog": {
+        "start": "hello",
+        "nodes": {
+          "hello": {
+            "text": "Slate. I keep at it as Gravel Rater. The mesa was here first and it doesn't let you forget.",
+            "then": "again"
+          },
+          "again": {
+            "text": "Every stone in that wall has a name. I was bored."
+          }
+        }
+      }
+    },
+    {
+      "id": "folk.talus",
+      "type": "folk.gardener",
+      "tile": [
+        34,
+        72
+      ],
+      "facing": "south",
+      "props": {
+        "name": "Talus",
+        "title": "Mesa Warden",
+        "roam": 5,
+        "voice": {
+          "pitch": 0.88,
+          "rate": 18,
+          "timbre": "sawtooth"
+        }
+      },
+      "dialog": {
+        "start": "hello",
+        "nodes": {
+          "hello": {
+            "text": "Mind the scree past my fence. Talus -- Mesa Warden. Water's in the shade barrel if you need it.",
+            "then": "again"
+          },
+          "again": {
+            "text": "The rim glows red at sundown. Never gets old."
+          }
+        }
+      }
+    },
+    {
+      "id": "folk.terra",
+      "type": "folk.fisher",
+      "tile": [
+        101,
+        64
+      ],
+      "facing": "south",
+      "props": {
+        "name": "Terra",
+        "title": "Wind Gauger",
+        "roam": 6,
+        "voice": {
+          "pitch": 0.83,
+          "rate": 18,
+          "timbre": "square"
+        }
+      },
+      "dialog": {
+        "start": "hello",
+        "nodes": {
+          "hello": {
+            "text": "Terra, Wind Gauger. Everything up here is either rock or on its way to being rock.",
+            "then": "again"
+          },
+          "again": {
+            "text": "Found a fossil shaped like a smile. Kept it."
+          }
+        }
+      }
+    },
+    {
+      "id": "folk.tor",
+      "type": "folk.tinker",
+      "tile": [
+        26,
+        97
+      ],
+      "facing": "south",
+      "props": {
+        "name": "Tor",
+        "title": "Ore Sniffer",
+        "roam": 4,
+        "voice": {
+          "pitch": 0.78,
+          "rate": 18,
+          "timbre": "triangle"
+        }
+      },
+      "dialog": {
+        "start": "hello",
+        "nodes": {
+          "hello": {
+            "text": "Well met. Tor. Been Ore Sniffer since the last rockfall rearranged the road.",
+            "then": "again"
+          },
+          "again": {
+            "text": "The wind up here has opinions."
+          }
+        }
+      }
+    },
+    {
+      "id": "folk.mica",
+      "type": "folk.villager",
+      "tile": [
+        87,
+        34
+      ],
+      "facing": "south",
+      "props": {
+        "name": "Mica",
+        "title": "Stone Stacker",
+        "roam": 5,
+        "voice": {
+          "pitch": 1.23,
+          "rate": 18,
+          "timbre": "sawtooth"
+        }
+      },
+      "dialog": {
+        "start": "hello",
+        "nodes": {
+          "hello": {
+            "text": "Mica. Stone Stacker up here on the rim. The view's free; the shade costs you a conversation.",
+            "then": "again"
+          },
+          "again": {
+            "text": "A good wall wants no mortar and no hurry."
+          }
+        }
+      }
     }
   ],
   "items": [
-    {"id":"stone.0","type":"item.stone","tile":[22,104]},
-    {"id":"stone.1","type":"item.stone","tile":[10,72]},
-    {"id":"stone.2","type":"item.stone","tile":[28,12]},
-    {"id":"stone.3","type":"item.stone","tile":[30,112]},
-    {"id":"stone.4","type":"item.stone","tile":[104,16]},
-    {"id":"stone.5","type":"item.stone","tile":[110,112]},
-    {"id":"stone.6","type":"item.stone","tile":[118,4]},
-    {"id":"stone.7","type":"item.stone","tile":[18,110]},
-    {"id":"stone.8","type":"item.stone","tile":[18,2]},
-    {"id":"stone.9","type":"item.stone","tile":[6,24]},
-    {"id":"stone.10","type":"item.stone","tile":[26,112]},
-    {"id":"stone.11","type":"item.stone","tile":[110,100]},
-    {"id":"stone.12","type":"item.stone","tile":[82,118]},
-    {"id":"stone.13","type":"item.stone","tile":[2,38]},
-    {"id":"stone.14","type":"item.stone","tile":[2,42]},
-    {"id":"stone.15","type":"item.stone","tile":[2,118]},
-    {"id":"stone.16","type":"item.stone","tile":[14,72]},
-    {"id":"stone.17","type":"item.stone","tile":[2,68]},
-    {"id":"stone.18","type":"item.stone","tile":[52,122]},
-    {"id":"stone.19","type":"item.stone","tile":[6,10]},
-    {"id":"stone.20","type":"item.stone","tile":[110,64]},
-    {"id":"stone.21","type":"item.stone","tile":[44,10]},
-    {"id":"stone.22","type":"item.stone","tile":[36,12]},
-    {"id":"stone.23","type":"item.stone","tile":[62,122]},
-    {"id":"stone.24","type":"item.stone","tile":[120,62]},
-    {"id":"stone.25","type":"item.stone","tile":[90,114]},
-    {"id":"stone.26","type":"item.stone","tile":[74,110]},
-    {"id":"stone.27","type":"item.stone","tile":[94,122]},
-    {"id":"stone.28","type":"item.stone","tile":[22,120]},
-    {"id":"stone.29","type":"item.stone","tile":[120,24]},
-    {"id":"stick.0","type":"item.stick","tile":[50,106]},
-    {"id":"stick.1","type":"item.stick","tile":[78,70]},
-    {"id":"stick.2","type":"item.stick","tile":[66,70]},
-    {"id":"stick.3","type":"item.stick","tile":[66,74]},
-    {"id":"stick.4","type":"item.stick","tile":[90,36]},
-    {"id":"stick.5","type":"item.stick","tile":[26,44]},
-    {"id":"stick.6","type":"item.stick","tile":[40,18]},
-    {"id":"stick.7","type":"item.stick","tile":[78,64]},
-    {"id":"stick.8","type":"item.stick","tile":[44,50]},
-    {"id":"stick.9","type":"item.stick","tile":[74,92]},
-    {"id":"stick.10","type":"item.stick","tile":[44,42]},
-    {"id":"stick.11","type":"item.stick","tile":[44,46]},
-    {"id":"stick.12","type":"item.stick","tile":[96,90]},
-    {"id":"stick.13","type":"item.stick","tile":[72,18]},
-    {"id":"stick.14","type":"item.stick","tile":[68,46]},
-    {"id":"stick.15","type":"item.stick","tile":[24,66]},
-    {"id":"stick.16","type":"item.stick","tile":[68,62]},
-    {"id":"stick.17","type":"item.stick","tile":[72,56]},
-    {"id":"stick.18","type":"item.stick","tile":[94,46]},
-    {"id":"stick.19","type":"item.stick","tile":[76,36]},
-    {"id":"flower.0","type":"item.flower","tile":[40,38]},
-    {"id":"flower.1","type":"item.flower","tile":[26,84]},
-    {"id":"flower.2","type":"item.flower","tile":[52,18]},
-    {"id":"flower.3","type":"item.flower","tile":[30,76]},
-    {"id":"flower.4","type":"item.flower","tile":[106,72]},
-    {"id":"flower.5","type":"item.flower","tile":[88,96]},
-    {"id":"flower.6","type":"item.flower","tile":[70,64]},
-    {"id":"flower.7","type":"item.flower","tile":[78,92]},
-    {"id":"flower.8","type":"item.flower","tile":[30,64]},
-    {"id":"flower.9","type":"item.flower","tile":[32,32]},
-    {"id":"flower.10","type":"item.flower","tile":[72,70]},
-    {"id":"flower.11","type":"item.flower","tile":[84,42]},
-    {"id":"flower.12","type":"item.flower","tile":[94,28]},
-    {"id":"flower.13","type":"item.flower","tile":[96,80]},
-    {"id":"mushroom.0","type":"item.mushroom","tile":[72,96]},
-    {"id":"mushroom.1","type":"item.mushroom","tile":[54,98]},
-    {"id":"mushroom.2","type":"item.mushroom","tile":[64,100]},
-    {"id":"mushroom.3","type":"item.mushroom","tile":[50,94]},
-    {"id":"mushroom.4","type":"item.mushroom","tile":[52,94]},
-    {"id":"mushroom.5","type":"item.mushroom","tile":[60,110]},
-    {"id":"mushroom.6","type":"item.mushroom","tile":[76,90]},
-    {"id":"mushroom.7","type":"item.mushroom","tile":[70,94]},
-    {"id":"mushroom.8","type":"item.mushroom","tile":[72,94]},
-    {"id":"apple.0","type":"item.apple","tile":[46,74]},
-    {"id":"apple.1","type":"item.apple","tile":[50,68]},
-    {"id":"apple.2","type":"item.apple","tile":[34,80]},
-    {"id":"apple.3","type":"item.apple","tile":[34,72]},
-    {"id":"apple.4","type":"item.apple","tile":[48,62]},
-    {"id":"apple.5","type":"item.apple","tile":[52,72]}
+    {"id":"stone.0","type":"item.stone","tile":[26,112]},
+    {"id":"stone.1","type":"item.stone","tile":[82,118]},
+    {"id":"stone.2","type":"item.stone","tile":[2,38]},
+    {"id":"stone.3","type":"item.stone","tile":[2,42]},
+    {"id":"stone.4","type":"item.stone","tile":[2,118]},
+    {"id":"stone.5","type":"item.stone","tile":[14,72]},
+    {"id":"stone.6","type":"item.stone","tile":[2,68]},
+    {"id":"stone.7","type":"item.stone","tile":[52,122]},
+    {"id":"stone.8","type":"item.stone","tile":[6,10]},
+    {"id":"stone.9","type":"item.stone","tile":[110,64]},
+    {"id":"stone.10","type":"item.stone","tile":[44,10]},
+    {"id":"stone.11","type":"item.stone","tile":[36,12]},
+    {"id":"stone.12","type":"item.stone","tile":[62,122]},
+    {"id":"stone.13","type":"item.stone","tile":[120,62]},
+    {"id":"stone.14","type":"item.stone","tile":[90,114]},
+    {"id":"stone.15","type":"item.stone","tile":[74,110]},
+    {"id":"stone.16","type":"item.stone","tile":[94,122]},
+    {"id":"stone.17","type":"item.stone","tile":[22,120]},
+    {"id":"stone.18","type":"item.stone","tile":[120,24]},
+    {"id":"stone.19","type":"item.stone","tile":[68,100]},
+    {"id":"stone.20","type":"item.stone","tile":[76,104]},
+    {"id":"stone.21","type":"item.stone","tile":[26,116]},
+    {"id":"stone.22","type":"item.stone","tile":[24,120]},
+    {"id":"stone.23","type":"item.stone","tile":[114,102]},
+    {"id":"stone.24","type":"item.stone","tile":[120,104]},
+    {"id":"stone.25","type":"item.stone","tile":[2,24]},
+    {"id":"stone.26","type":"item.stone","tile":[114,106]},
+    {"id":"stone.27","type":"item.stone","tile":[106,24]},
+    {"id":"stone.28","type":"item.stone","tile":[70,2]},
+    {"id":"stone.29","type":"item.stone","tile":[116,0]},
+    {"id":"stick.0","type":"item.stick","tile":[66,74]},
+    {"id":"stick.1","type":"item.stick","tile":[90,36]},
+    {"id":"stick.2","type":"item.stick","tile":[26,44]},
+    {"id":"stick.3","type":"item.stick","tile":[40,18]},
+    {"id":"stick.4","type":"item.stick","tile":[78,64]},
+    {"id":"stick.5","type":"item.stick","tile":[44,50]},
+    {"id":"stick.6","type":"item.stick","tile":[74,92]},
+    {"id":"stick.7","type":"item.stick","tile":[44,42]},
+    {"id":"stick.8","type":"item.stick","tile":[44,46]},
+    {"id":"stick.9","type":"item.stick","tile":[96,90]},
+    {"id":"stick.10","type":"item.stick","tile":[72,18]},
+    {"id":"stick.11","type":"item.stick","tile":[68,46]},
+    {"id":"stick.12","type":"item.stick","tile":[68,62]},
+    {"id":"stick.13","type":"item.stick","tile":[72,56]},
+    {"id":"stick.14","type":"item.stick","tile":[94,46]},
+    {"id":"stick.15","type":"item.stick","tile":[76,36]},
+    {"id":"stick.16","type":"item.stick","tile":[40,38]},
+    {"id":"stick.17","type":"item.stick","tile":[26,84]},
+    {"id":"stick.18","type":"item.stick","tile":[52,18]},
+    {"id":"stick.19","type":"item.stick","tile":[30,76]},
+    {"id":"flower.0","type":"item.flower","tile":[106,72]},
+    {"id":"flower.1","type":"item.flower","tile":[88,96]},
+    {"id":"flower.2","type":"item.flower","tile":[70,64]},
+    {"id":"flower.3","type":"item.flower","tile":[78,92]},
+    {"id":"flower.4","type":"item.flower","tile":[30,64]},
+    {"id":"flower.5","type":"item.flower","tile":[32,32]},
+    {"id":"flower.6","type":"item.flower","tile":[72,70]},
+    {"id":"flower.7","type":"item.flower","tile":[94,28]},
+    {"id":"flower.8","type":"item.flower","tile":[96,80]},
+    {"id":"flower.9","type":"item.flower","tile":[86,44]},
+    {"id":"flower.10","type":"item.flower","tile":[24,44]},
+    {"id":"flower.11","type":"item.flower","tile":[88,34]},
+    {"id":"flower.12","type":"item.flower","tile":[70,16]},
+    {"id":"flower.13","type":"item.flower","tile":[98,64]},
+    {"id":"mushroom.0","type":"item.mushroom","tile":[56,104]},
+    {"id":"mushroom.1","type":"item.mushroom","tile":[54,102]},
+    {"id":"mushroom.2","type":"item.mushroom","tile":[70,104]},
+    {"id":"mushroom.3","type":"item.mushroom","tile":[56,108]},
+    {"id":"mushroom.4","type":"item.mushroom","tile":[64,100]},
+    {"id":"mushroom.5","type":"item.mushroom","tile":[54,98]},
+    {"id":"mushroom.6","type":"item.mushroom","tile":[78,94]},
+    {"id":"mushroom.7","type":"item.mushroom","tile":[74,90]},
+    {"id":"mushroom.8","type":"item.mushroom","tile":[72,90]},
+    {"id":"apple.0","type":"item.apple","tile":[46,70]},
+    {"id":"apple.1","type":"item.apple","tile":[30,68]},
+    {"id":"apple.2","type":"item.apple","tile":[32,68]},
+    {"id":"apple.3","type":"item.apple","tile":[44,58]},
+    {"id":"apple.4","type":"item.apple","tile":[34,68]},
+    {"id":"apple.5","type":"item.apple","tile":[36,66]}
   ],
   "spawn": {"tile":[60,64],"facing":"south"},
   "ambience": {"fog":[40,120],"sky":14214382}

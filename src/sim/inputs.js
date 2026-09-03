@@ -92,6 +92,10 @@ export class FreeInput {
           return { vx: 0, vz: 0 };
         }
 
+        // Face the walk, same as a held key does below. The pointer only
+        // steers the body while it stands still (see Game.facePointer), so a
+        // route that did not turn would slide to its destination sideways.
+        player.turnToward(yawFromVec(dx / dist, dz / dist), dt, 12);
         return { vx: (dx / dist) * speed, vz: (dz / dist) * speed };
       }
       return { vx: 0, vz: 0 };

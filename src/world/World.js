@@ -18,7 +18,7 @@
  */
 
 import { STEP_HEIGHT, WATER_DROP, DIR, DIR_VEC } from '../core/constants.js';
-import { surfaceById } from './surfaces.js';
+import { SURFACES, surfaceById } from './surfaces.js';
 import { formByName } from './forms.js';
 import { shoal } from './shoals.js';
 import { objectType, rotateMask, maskCells, CELL } from './objectTypes.js';
@@ -54,9 +54,15 @@ export class World {
     this.meta = data.meta;
     this.width = data.width;
     this.height = data.height;
-    this.surface = data.surface;
-    this.elevation = data.elevation;
-    this.flags = data.flags;
+    // Runtime terrain is an effective copy. The file arrays remain the baseline
+    // so the Urban Planner's saved overlay can be replayed and wholly reverted
+    // without allowing one session to leak into the next cached World.
+    this.baseSurface = data.surface.slice();
+    this.baseElevation = data.elevation.slice();
+    this.baseFlags = data.flags.slice();
+    this.surface = data.surface.slice();
+    this.elevation = data.elevation.slice();
+    this.flags = data.flags.slice();
     // Whose floor each tile is: an index into `zones`, where 0 is public. Held
     // as the raw grid plus the table rather than resolved per tile, because the
     // question the game asks ten times a second is "is THIS tile private", and
@@ -105,13 +111,7 @@ export class World {
 
     this.#derive();
 
-    /**
-     * The fish this place's water holds, as animal specs (world/shoals.js).
-     *
-     * Derived ONCE, here, and not in `#derive`: it is a fact about where the
-     * water is, and no edit the player can make moves water. `revert` re-derives
-     * everything an axe and a shovel can touch, and deliberately not this.
-     */
+    /** Fish specs derived from effective water; repopulated after planning edits. */
     this.shoal = shoal(this);
   }
 
@@ -141,8 +141,8 @@ export class World {
 
   // ----------------------------------------------------------- mutation --
   //
-  // The three calls below are the ONLY way anything in here changes, and they
-  // exist because an axe and a shovel exist. Everything else on this class is
+  // The calls below are the ONLY way anything in here changes, and they exist
+  // for tools and approved planning edits. Everything else on this class is
   // derivation: build it from the file and it is correct by construction.
   //
   // They are all reversible, and that is the point. A World is still a fact
@@ -216,6 +216,33 @@ export class World {
     return true;
   }
 
+  /** Paint one ground tile and refresh every fact derived from terrain. */
+  setSurface(x, z, surfaceId) {
+    return this.setSurfaces([[x, z]], surfaceId).length > 0;
+  }
+
+  /** Paint a brush stroke and re-derive terrain once for the whole stroke. */
+  setSurfaces(tiles, surfaceId) {
+    if (!Number.isInteger(surfaceId) || !SURFACES[surfaceId]) return [];
+    const changed = [];
+    for (const [x, z] of tiles) {
+      if (!this.inBounds(x, z)) continue;
+      const i = this.idx(x, z);
+      if (this.surface[i] === surfaceId) continue;
+      this.surface[i] = surfaceId;
+      changed.push([x, z]);
+    }
+    if (!changed.length) return changed;
+    this.#derive();
+    this.shoal = shoal(this);
+    return changed;
+  }
+
+  /** Surface from the world file, before the Urban Planner's overlay. */
+  baseSurfaceAt(x, z) {
+    return this.inBounds(x, z) ? surfaceById(this.baseSurface[this.idx(x, z)]) : surfaceById(0);
+  }
+
   /**
    * Put the place back the way its file describes it.
    *
@@ -226,9 +253,13 @@ export class World {
    */
   revert() {
     this.objects.length = this.authoredObjectCount;
+    this.surface.set(this.baseSurface);
+    this.elevation.set(this.baseElevation);
+    this.flags.set(this.baseFlags);
     this.felled.clear();
     this.dug.clear();
     this.#derive();
+    this.shoal = shoal(this);
   }
 
   /** Apply player progression to derived portals and player-home presentation. */

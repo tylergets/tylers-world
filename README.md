@@ -50,6 +50,20 @@ ladders in stock every day of the week. Conversations, prices, permanent stock
 and daily catalogs are all data in the world file - see
 [`docs/WORLD_FORMAT.md`](docs/WORLD_FORMAT.md).
 
+Every town hall now has four working, individually furnished offices. **The
+Urban Planner** opens a near-full-screen map editor after a short consultation,
+with point, 2× circle, and 3× circle brushes for painting grass, roads, sand, and water while protecting
+buildings, doors, gardens, and resident posts. **Fish & Wildlife** sets saved
+population targets, stocks fish where water permits, and releases or baits land
+animals; managed populations recover to their target at dawn. **The Mayor's
+Office** handles general town matters and permanent investments, including the
+second and third stories of the player's home. The deliberately improper
+**Office of Cheats** can grant all tools, finish the home, restore health, and
+persistently enable unlimited money, unlimited shot, or immunity to damage.
+These decisions are sparse,
+per-town save data layered over the authored world rather than a rewritten world
+file.
+
 People keep a clock: authored schedules move them between daily posts, and
 shops trade only during posted hours. Meadowbrook's neighbours offer persistent
 errands for gathering, fishing, processing flowers, and changing the landscape.

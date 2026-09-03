@@ -63,7 +63,7 @@ export function toolOf(typeId) {
  */
 export function toolTarget({
   world, edits, ground, people, fauna, player, typeId,
-  inventory = null, now = 0, readyAt = 0, fishing = null,
+  inventory = null, unlimitedAmmo = false, now = 0, readyAt = 0, fishing = null,
 }) {
   const tool = toolOf(typeId);
   if (!tool) return null;
@@ -72,7 +72,7 @@ export function toolTarget({
   // is on it -- and before the `edits` guard, because shooting is the one verb
   // that changes nothing about the place's terrain.
   if (tool.verb === 'shoot') {
-    return shootTarget({ world, people, fauna, player, tool, inventory, now, readyAt });
+    return shootTarget({ world, people, fauna, player, tool, inventory, unlimitedAmmo, now, readyAt });
   }
   // The same argument, one tile shorter. A body standing in front of you is at
   // a float position with a radius, exactly like the thing a shot finds, so
@@ -216,8 +216,8 @@ const SWEEP = 0.42;
  * game loop, and this only reports it so the prompt can say why the key will
  * refuse instead of the key silently doing nothing.
  */
-function shootTarget({ world, people, fauna, player, tool, inventory, now, readyAt }) {
-  if (inventory && !inventory.count(AMMO)) {
+function shootTarget({ world, people, fauna, player, tool, inventory, unlimitedAmmo, now, readyAt }) {
+  if (!unlimitedAmmo && inventory && !inventory.count(AMMO)) {
     return { verb: 'shoot', tile: null, label: null, blocked: 'out of shot' };
   }
   if (now < readyAt) {
@@ -647,7 +647,13 @@ export function stumpDrops(id) {
  * is a judgement about the animal and not a function of its collision radius,
  * and a rabbit that grew a tile wider should not quietly become dinner twice.
  */
-const BIG_GAME = new Set(['sheep', 'goat']);
+const BIG_GAME = new Set([
+  'sheep', 'goat',
+  // The registry expansion's heavyweights pay the same double share the sheep
+  // does, for the same reason: a cow that dressed out like a sparrow would make
+  // the size of the animal a lie.
+  'cow', 'pony', 'donkey', 'deer', 'boar', 'pig', 'goose', 'turkey',
+]);
 
 /**
  * What a shot animal leaves on the ground.

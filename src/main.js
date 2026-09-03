@@ -36,13 +36,14 @@
  */
 
 import { PORTAL } from './world/World.js';
-import { itemType, furnitureItemFor } from './world/itemTypes.js';
+import { ITEM_TYPES, itemType, furnitureItemFor } from './world/itemTypes.js';
 import { objectType, rotateMask } from './world/objectTypes.js';
 import { Places } from './world/places.js';
 import { kits } from './world/kits.js';
 import { grudgeFor } from './world/grudge.js';
 import { theftFor } from './world/theft.js';
 import { closedFor } from './world/closed.js';
+import { withSmallTalk } from './world/smalltalk.js';
 import { climateOf, CLIMATES, WEATHER_KINDS, weatherOn } from './world/weather.js';
 import { plantType, STAGE_NAMES, yieldOf } from './world/plantTypes.js';
 import { Stage } from './render/Stage.js';
@@ -72,6 +73,8 @@ import { WorldsPanel } from './ui/worlds.js';
 import { TitleScreen } from './ui/title.js';
 import { Chat } from './ui/dialogue.js';
 import { MapScreen } from './ui/mapscreen.js';
+import { TownHallOffice } from './ui/townhall.js';
+import { invalidatePlaceBake } from './ui/minimap.js';
 import { PhotoView } from './ui/photo.js';
 import { Wardrobe } from './ui/wardrobe.js';
 import { VOICE_MODES } from './audio/voice.js';
@@ -199,6 +202,13 @@ class Game {
     this._residentT = 0;
     /** What a keeper is asking about right now, while the box is open. */
     this.owed = null;
+    /**
+     * Object ids whose theft was already charged on the first blow, so
+     * finishing the prying does not bill the same crime twice. Transient on
+     * the rule `Edits.hits` runs on: a reload starts the prying over, and the
+     * unpaid charge with it.
+     */
+    this.pried = new Set();
 
     this.graphics = readGraphicsSettings();
     this.gameSettings = readGameSettings();
@@ -251,6 +261,8 @@ class Game {
     this.saveName = 'World';
     /** Authoritative, save-backed tier of the player's marked home. */
     this.houseStories = 1;
+    /** Explicitly enabled rule overrides, saved with this player. */
+    this.cheats = { money: false, ammo: false, invulnerable: false };
     /**
      * Place state from a save that has not been applied yet, keyed by world id.
      *
@@ -305,6 +317,15 @@ class Game {
     this.mapScreen = new MapScreen(hudRoot);
     this.photos = new PhotoView(hudRoot);
     this.wardrobe = new Wardrobe(hudRoot, (row) => this.changeClothes(row));
+    this.townOffice = new TownHallOffice(hudRoot, {
+      onTerrain: (request) => this.planTerrain(request),
+      onPopulation: (request) => this.planPopulation(request),
+      onCheat: (request) => this.applyCheat(request),
+      onClose: () => {
+        this.officeNpc?.lookAt(null);
+        this.officeNpc = null;
+      },
+    });
 
     this.hud.setVoice(this.chat.mode);
     this.hud.setMap(this.graphics.map);
@@ -655,7 +676,15 @@ class Game {
     if (!this.walkTo(home.tile)) this.note(`You are already at ${home.name}.`);
   }
 
-  /** Keep the 3D player's heading under the mouse as the camera follows them. */
+  /**
+   * Turn the standing 3D player to face the mouse.
+   *
+   * Only the standing player: while movement is requested the body faces the
+   * way it is going (the caller gates on the requested velocity), so the
+   * cursor decides the heading exactly when nothing else is asking for one --
+   * which is also the moment facing matters, because tools and interactions
+   * read `player.facing` from a standstill.
+   */
   facePointer() {
     if (!this.pointer || this.input !== this.free || this.pendingInput === this.grid) return;
     const point = this.stage.pickPoint(this.pointer.x, this.pointer.y);
@@ -682,7 +711,9 @@ class Game {
     // Portal availability is derived from player progression. Do this before
     // either the renderer or HUD sees the place so inaccessible stairs are
     // never advertised for a frame.
-    world.setHouseStories(this.houseStories);
+    // A progression change can alter the player-home mesh as well as its
+    // portals. Drop an older cached build before Stage selects this place.
+    if (world.setHouseStories(this.houseStories)) this.stage.invalidateWorld(world);
     // A save records places by world id, because that is what the caches are
     // keyed by; getting back into one needs its URL. Recorded here rather than
     // read off the World, so a generated place -- which has no URL a fetch
@@ -701,6 +732,7 @@ class Game {
     this.stage.setWeather(weatherOn(world, this.player.clock.day));
     this.live = this.faunaFor(world);
     this.live.sync(this.edits.culled);
+    this.live.reconcile(this.edits.wildlife);
     this.stage.setFauna(this.live);
     this.people = this.folkFor(world);
     // Front doors first, then who is behind them: `learn` reads this place for
@@ -728,6 +760,7 @@ class Game {
     // rather than in `enter` covers every way of leaving, including the ones
     // that do not exist yet.
     this.endChat();
+    this.townOffice.close();
     this.input.reset();
     this.grid.reset();
     // Remember the arrival tile as already-visited, or a doorway you step out
@@ -759,7 +792,10 @@ class Game {
   setHouseStories(stories) {
     if (!Number.isInteger(stories) || stories !== this.houseStories + 1 || stories > 3) return false;
     this.houseStories = stories;
-    this.world.setHouseStories(stories);
+    for (const world of new Set([this.world, ...this.stack.map((back) => back.world)])) {
+      world.setHouseStories(stories);
+      if (world !== this.world) this.stage.invalidateWorld(world);
+    }
     // The footprint and collision do not change, but the marked home mesh does.
     // Rebuilding through Stage keeps its per-place geometry cache coherent.
     this.stage.rebuildWorld(this.world);
@@ -1040,6 +1076,11 @@ class Game {
     // session's tier into this one.
     this.houseStories = Number.isInteger(restore?.houseStories)
       && restore.houseStories >= 1 && restore.houseStories <= 3 ? restore.houseStories : 1;
+    this.cheats = {
+      money: restore?.cheats?.money === true,
+      ammo: restore?.cheats?.ammo === true,
+      invulnerable: restore?.cheats?.invulnerable === true,
+    };
 
     // Pockets and friendships before the place, because `setPlace` builds the
     // Folk of the arrival room and a trespass check runs on the first frame --
@@ -1047,6 +1088,7 @@ class Game {
     this.player.inventory.restore(restore?.inventory ?? { slots: [], selected: 0 });
     this.player.outfit.restore(restore?.outfit);
     this.player.purse.restore(restore?.coins);
+    this.player.purse.setUnlimited(this.cheats.money);
     // A save from before there was time has no clock in it, and the sensible
     // reading of that is the morning of the first day -- which is what
     // Clock.restore does with an absent block. See Save.js on why the save
@@ -1230,6 +1272,7 @@ class Game {
         clock: p.clock.snapshot(),
         health: p.health.snapshot(),
         houseStories: this.houseStories,
+        cheats: { ...this.cheats },
       },
       places,
     };
@@ -1262,6 +1305,7 @@ class Game {
       + `|${p.inventory.version}|${p.outfit.version}|${p.purse.version}|${p.friends.version}`
       + `|errands:${this.errands.version}`
       + `|house:${this.houseStories}`
+      + `|cheats:${Number(this.cheats.money)}${Number(this.cheats.ammo)}${Number(this.cheats.invulnerable)}`
       + `|${this.loose.version}|${this.edits.version}|${this.fixtures.version}`
       + `|${this._talked ?? 0}`
       // The DAY, and deliberately not the time of day. This string is the
@@ -1603,6 +1647,7 @@ class Game {
     this.stage.setShot(npc.x, npc.y, npc.z, Math.atan2(dx, dz), Math.hypot(dx, dz), this.time);
     sfx.shot();
     if (this.player.downed > 0) return;
+    if (this.cheats.invulnerable) { this.note(`${npc.name}'s shot did no damage.`); return; }
 
     if (this.player.hurt(1)) this.die(npc);
     else this.note(`${npc.name} shot you.`);
@@ -1814,6 +1859,7 @@ class Game {
       // save uses for Ground and Folk, arriving at the same answer.
       back += this.fauna.get(id)?.restock() ?? owed;
     }
+    for (const [id, fauna] of this.fauna) fauna.reconcile(this.changes.get(id)?.wildlife);
 
     for (const edits of this.changes.values()) this.growPlantings(edits);
     this.stage.setWeather(weatherOn(this.world, this.player.clock.day));
@@ -1921,6 +1967,28 @@ class Game {
    */
   talk(npc) {
     if (!npc || this.chat.active) return null;
+    this.pendingOffice = null;
+    if (['planner', 'wildlife', 'cheats'].includes(npc.props.office)) {
+      const back = this.stack.at(-1)?.world;
+      if (!back || back.kind !== 'exterior') {
+        this.note('This office needs a town map on file before it can help.');
+        return null;
+      }
+      const context = {
+        world: back,
+        edits: this.editsFor(back),
+        fauna: this.faunaFor(back),
+        people: this.folkFor(back),
+      };
+      if (npc.props.office !== 'planner') {
+        if (npc.props.office === 'cheats') context.cheats = this.cheats;
+        this.openTownOffice(npc, npc.props.office, context);
+        return npc;
+      }
+      // The planner first speaks through the ordinary validated dialogue. The
+      // map opens only when that short conversation reaches its end.
+      if (!this.player.friends.hates(npc.id)) this.pendingOffice = { npc, office: 'planner', context };
+    }
     // Somebody walking over about the thing in your pocket is having THAT
     // conversation, whoever opens it. Speaking first is allowed and changes
     // nothing -- it is still her question, and it is still the same three
@@ -1929,12 +1997,90 @@ class Game {
     npc.lookAt(this.player.x, this.player.z);
     if (!this.intruding()) this.player.friends.visit(npc.id, this.player.clock.day);
     const ctx = this.tradeCtx();
+    // The greeting on the front of an ordinary conversation is keyed to the
+    // relationship tier, so a stranger and a close friend open differently.
+    // Somebody angry, and somebody minding a shut till, are having their own
+    // conversation and get no pleasantries stitched on.
     const script = this.player.friends.hates(npc.id)
       ? grudgeFor(npc, this.player.friends.grudgeLevel(npc.id))
-      : (npc.shop && !npc.shopAvailable ? closedFor(npc) : npc.dialog);
+      : (npc.shop && !npc.shopAvailable
+        ? closedFor(npc)
+        : withSmallTalk(npc, this.player.friends.tier(npc.id), npc.dialog));
     this.chat.open(new Dialogue(npc, ctx, script), ctx);
     this.talking = npc;
     return npc;
+  }
+
+  openTownOffice(npc, office, context) {
+    npc.lookAt(this.player.x, this.player.z);
+    this.townOffice.show(office, context);
+    this.officeNpc = npc;
+  }
+
+  /** Apply one Urban Planner brush stroke to the exterior behind Town Hall. */
+  planTerrain({ world, edits, fauna, people, tiles, surface }) {
+    const allowed = (tiles ?? []).filter(([x, z]) => world?.inBounds(x, z)
+      && !world.objectAt(x, z) && !world.portalAt(x, z)
+      && !edits.holeAt(x, z) && !edits.plantingAt(x, z)
+      && !world.npcs.some((npc) => npc.tile[0] === x && npc.tile[1] === z
+        || npc.schedule?.some((row) => row.tile?.[0] === x && row.tile?.[1] === z))
+      && !people?.own.some((npc) => Math.floor(npc.x) === x && Math.floor(npc.z) === z));
+    if (!allowed.length) return { ok: false, message: 'Those tiles are outside the map or protected.' };
+    // Original is tile-specific, so restore groups tiles by their baseline
+    // surface while ordinary paint remains one batched terrain derivation.
+    let changed = 0;
+    if (surface === 'restore') {
+      const groups = new Map();
+      for (const tile of allowed) {
+        const name = world.baseSurfaceAt(...tile).name;
+        if (!groups.has(name)) groups.set(name, []);
+        groups.get(name).push(tile);
+      }
+      for (const [name, group] of groups) changed += edits.setSurfaces(group, name);
+    } else changed = edits.setSurfaces(allowed, surface);
+    if (!changed) return { ok: false, message: 'The whole brush already has this surface.' };
+    invalidatePlaceBake(world);
+    this.stage.invalidateWorld(world);
+    fauna.rebuild(edits.culled, edits.wildlife);
+    const skipped = (tiles?.length ?? 0) - allowed.length;
+    return { ok: true, message: `${changed} tile${changed === 1 ? '' : 's'} painted${skipped ? `; ${skipped} protected` : ''}.` };
+  }
+
+  /** Set and immediately reconcile one Fish & Wildlife population target. */
+  planPopulation({ edits, fauna, type, target }) {
+    if (target < 0) return { ok: false, message: 'The population is already at zero.' };
+    if (!edits.setPopulation(type, target)) return { ok: false, message: 'That population is already set.' };
+    fauna.reconcile(edits.wildlife);
+    const actual = fauna.count(type);
+    if (actual !== target) {
+      return { ok: true, message: `Target set to ${target}; suitable habitat is needed before stocking can finish.` };
+    }
+    return { ok: true, message: `Population set to ${target}. This is now the dawn recovery target.` };
+  }
+
+  applyCheat({ key, action }) {
+    if (key && Object.hasOwn(this.cheats, key)) {
+      this.cheats[key] = !this.cheats[key];
+      if (key === 'money') this.player.purse.setUnlimited(this.cheats.money);
+      return { message: `${key === 'money' ? 'Unlimited money' : key === 'ammo' ? 'Unlimited shot' : 'No damage'} ${this.cheats[key] ? 'enabled' : 'disabled'}.` };
+    }
+    if (action === 'tools') {
+      let added = 0, missing = 0;
+      for (const [typeId, type] of Object.entries(ITEM_TYPES)) {
+        if (!type.tool || this.player.inventory.count(typeId)) continue;
+        if (this.player.inventory.add(typeId, 1)) added++; else missing++;
+      }
+      return { message: `${added} tool${added === 1 ? '' : 's'} granted${missing ? `; ${missing} need bag space` : ''}.` };
+    }
+    if (action === 'heal') {
+      this.player.health.restore();
+      return { message: 'Health fully restored.' };
+    }
+    if (action === 'house') {
+      while (this.houseStories < 3) this.setHouseStories(this.houseStories + 1);
+      return { message: 'The three-story home is approved and complete.' };
+    }
+    return { message: 'No cheat selected.' };
   }
 
   /**
@@ -2213,18 +2359,50 @@ class Game {
    * Fold up a piece of furniture that is not yours and walk off with it.
    *
    * Mechanically it IS `packFurniture` -- same hammer, same flat-pack, same
-   * slot in your bag -- and everything that makes it different happens after
-   * the object is gone, in `pilfer`. That split is deliberate: the taking is a
-   * tool doing its job, and the consequence is a person having an opinion about
-   * it, and folding the two together would mean a hammer that knows who lives
-   * where.
+   * slot in your bag -- and everything that makes it different lives in
+   * `pilfer`. That split is deliberate: the taking is a tool doing its job,
+   * and the consequence is a person having an opinion about it, and folding
+   * the two together would mean a hammer that knows who lives where. WHEN the
+   * opinion lands depends on whether anybody is looking: witnessed, on the
+   * first blow; unseen, when the thing is finally gone.
+   *
+   * SEVERAL BLOWS, not one, and the count comes in on the action the way a
+   * tree's does: something bolted down by somebody else has to be pried loose,
+   * and each blow that is not the last one plays the same wobble a chopped
+   * trunk does, so the work reads as work. The progress lives in `Edits.hits`
+   * alongside axe and pick swings -- transient on purpose, so walking away
+   * mid-theft and coming back after a reload starts the prying over.
    */
-  stealFurniture(obj) {
+  stealFurniture(what) {
+    const obj = what.object;
     const label = objectType(obj.type).label;
+    const swung = this.edits.swing(obj);
+
+    // A WITNESSED theft is charged on the FIRST blow, not the last. Anybody
+    // watching you put a hammer to their chair has seen the whole crime
+    // already, and an owner who waited politely for the fourth swing before
+    // minding would make the pry timer a courtesy. The witness test runs out
+    // here, before `pilfer`, because pilfer's unseen branch narrates the thing
+    // being GONE -- which, three blows from now, it is not yet: an UNSEEN
+    // start stays uncharged, and the taking is billed at the end as ever.
+    if (swung === 1
+      && witness(this.world, this.people, this.owner, this.player.x, this.player.z)) {
+      this.pilfer({ label: `that ${label.toLowerCase()}`, typeId: furnitureItemFor(obj.type) });
+      this.pried.add(obj.id);
+    }
+
+    if (swung < what.swings) {
+      this.stage.chopHit(obj.id, this.time);
+      sfx.thud();
+      return what;
+    }
+    this.stage.chopHit(null);
     const taken = this.liftFurniture(obj);
     if (!taken) return null;
     this.note(`${label} taken.`);
-    this.pilfer({ label: `that ${label.toLowerCase()}`, typeId: furnitureItemFor(obj.type) });
+    if (!this.pried.delete(obj.id)) {
+      this.pilfer({ label: `that ${label.toLowerCase()}`, typeId: furnitureItemFor(obj.type) });
+    }
     return taken;
   }
 
@@ -2304,6 +2482,12 @@ class Game {
           object: obj,
           tile: [...obj.tile],
           label: objectType(obj.type).label,
+          // Your own furniture folds up in one press -- you know where the
+          // bolts are. Somebody else's has to be PRIED loose, several blows on
+          // the tree-chopping model, scaled by footprint the way mineTarget
+          // scales a boulder: theft should cost standing in the owner's room
+          // hammering, not one clean click on the way past.
+          swings: mine ? 1 : obj.shape.w * obj.shape.d > 1 ? 6 : 4,
           blocked: this.edits?.storedIn(obj.id) ? 'empty it first'
             : this.player.inventory.room(furnitureItemFor(obj.type)) < 1 ? 'no room in your pockets'
               : null,
@@ -2323,6 +2507,7 @@ class Game {
       // to change either, which is what keeps toolTarget free to be polled ten
       // times a second by the HUD.
       inventory: this.player.inventory,
+      unlimitedAmmo: this.cheats.ammo,
       now: this.time,
       readyAt: this._readyAt ?? 0,
       // Read for the same reason and under the same rule: the rod's answer
@@ -2346,7 +2531,7 @@ class Game {
     const what = this.toolAction();
     if (!what || what.blocked) return null;
     const done = what.verb === 'pack' ? this.packFurniture(what.object)
-      : what.verb === 'steal' ? this.stealFurniture(what.object)
+      : what.verb === 'steal' ? this.stealFurniture(what)
       : what.verb === 'chop' ? this.chop(what)
       : what.verb === 'mine' ? this.mine(what)
         : what.verb === 'dig' ? this.dig(what)
@@ -2433,6 +2618,13 @@ class Game {
     else if (k.pressed('ArrowDown') || k.pressed('KeyS')) this.wardrobe.move(1);
     else if (k.pressed('KeyE') || k.pressed('Space') || k.pressed('Enter')) this.wardrobe.confirm();
 
+    this.tickFolk(dt);
+    this.live.update(dt);
+  }
+
+  /** Town Hall desks own Escape while the town continues living underneath. */
+  updateTownOffice(dt) {
+    if (this.keys.pressed('Escape')) this.townOffice.close();
     this.tickFolk(dt);
     this.live.update(dt);
   }
@@ -2605,7 +2797,7 @@ class Game {
   shoot(what) {
     const tool = toolOf(this.player.inventory.held?.typeId);
     if (!tool) return null;
-    if (!this.player.inventory.spend(AMMO, 1)) return null;
+    if (!this.cheats.ammo && !this.player.inventory.spend(AMMO, 1)) return null;
 
     this._readyAt = this.time + (tool.cooldown ?? 0.9);
     this.stage.setShot(
@@ -2880,7 +3072,12 @@ class Game {
     this.talking?.lookAt(this.player.x, this.player.z);
 
     this.chat.draw();
-    if (this.chat.dialogue?.done) this.endChat();
+    if (this.chat.dialogue?.done) {
+      const pending = this.pendingOffice;
+      this.pendingOffice = null;
+      this.endChat();
+      if (pending) this.openTownOffice(pending.npc, pending.office, pending.context);
+    }
   }
 
   /**
@@ -3022,6 +3219,12 @@ class Game {
       return;
     }
 
+    if (this.townOffice.open) {
+      this.updateTownOffice(dt);
+      this.keys.endFrame();
+      return;
+    }
+
     // The two screens a carried tool opens take the keyboard on exactly the
     // terms a conversation does, and for the same reason: they are things you
     // are holding up in front of your face, not decisions about the session.
@@ -3068,6 +3271,7 @@ class Game {
     // a scene that has none, and the next reload would silently undo the key.
     if (this.keys.pressed('Digit0')) this.cycleShadows();
     if (this.keys.pressed('KeyP')) this.hud.togglePerf();
+    if (this.keys.pressed('KeyK')) this.hud.toggleKeys();
     // Bisect probes: hide a class of content and read the delta in `submit`.
     // These are diagnostics and NOT settings: nothing remembers them, on
     // purpose, because a world that came back with its trees hidden would be a
@@ -3104,7 +3308,12 @@ class Game {
     // filter steers by is a fact about that filter.
     const camYaw = this.input === this.grid ? this.orbit.stepYaw : this.orbit.yaw;
     const { vx, vz } = this.input.update(dt, this.player, this.keys.state, this.world, camYaw);
-    this.facePointer();
+    // The cursor only owns the heading while the player STANDS STILL. While
+    // any movement is requested, the input filter has already turned the body
+    // toward where it is going; letting the pointer overwrite that every frame
+    // makes every walk a strafe -- the body slides across the screen facing
+    // the mouse instead of walking forward.
+    if (vx === 0 && vz === 0) this.facePointer();
     this.player.move(dt, vx, vz);
 
     // Interaction reads the position the player is standing in NOW, so it runs
@@ -3194,7 +3403,7 @@ class Game {
    * is worth stating rather than leaving to that.
    */
   turnCamera(dt) {
-    const live = !this.travel && !this.worlds.open && !this.chat.active;
+    const live = !this.travel && !this.worlds.open && !this.chat.active && !this.townOffice.open;
     const k = this.keys;
     const held = live ? (k.state.turnRight ? 1 : 0) - (k.state.turnLeft ? 1 : 0) : 0;
     const tap = live ? (k.pressed('Period') ? 1 : 0) - (k.pressed('Comma') ? 1 : 0) : 0;

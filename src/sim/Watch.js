@@ -43,7 +43,7 @@ export const SIGHT = 8;
  *   3. nobody. The meadow, the beach, and your own house.
  *
  * Your own home is excluded outright rather than by having no zone, because a
- * house you have paid a housewright to add two floors to should never become
+ * house you have paid Town Hall to add two floors to should never become
  * somewhere you can be caught taking your own chair apart.
  */
 export function ownerOf(world, x, z) {

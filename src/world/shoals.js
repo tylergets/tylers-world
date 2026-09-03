@@ -36,6 +36,7 @@
  */
 
 import { makeRng } from '../core/rng.js';
+import { ANIMAL_TYPES } from './animalTypes.js';
 
 /**
  * Open water tiles a body needs before anything lives in it.
@@ -66,14 +67,25 @@ const MAX_PER_POND = 18;
 const SHORE_BAND = 6;
 
 /**
- * Water big enough to hold something heavy, and how often it does.
+ * Who can live in how much water.
  *
- * A carp is the reason to walk round a lake rather than fish the first puddle
- * you meet, so it is rare and it is only ever in deep water. A creek gets
- * trout, and that is the whole of the difference in kind between them.
+ * Built from the animal registry rather than authored here: a species that
+ * swims says which water it wants (`water`, in open tiles) and how often it
+ * turns up (`share`), because a pike's taste in lakes is a fact about pike.
+ *
+ * The consequence the numbers buy: a creek holds minnows and roach, a lake
+ * holds pike and salmon, and the sea off any island is the only place a cod
+ * has ever been seen. Rarity is a WEIGHT in the stocking draw rather than a
+ * reroll, so a small pond with three fish in it can still surprise you.
  */
-const CARP_WATER = 26;
-const CARP_SHARE = 0.3;
+const ROSTER = Object.entries(ANIMAL_TYPES)
+  .filter(([, t]) => t.swims)
+  .map(([id, t]) => ({
+    id,
+    min: t.water?.min ?? 8,
+    max: t.water?.max ?? Infinity,
+    share: t.share ?? 1,
+  }));
 
 /**
  * The fish of a place, as animal specs the same shape a world file writes.
@@ -175,7 +187,7 @@ function stock(world, out, body, pond, rng) {
     used.add(i);
 
     const x = i % world.width, z = (i - x) / world.width;
-    const type = body.length >= CARP_WATER && rng() < CARP_SHARE ? 'carp' : 'trout';
+    const type = pickSpecies(body.length, rng);
     out.push({
       id: `shoal.${pond}.${n}`,
       type,
@@ -183,6 +195,26 @@ function stock(world, out, body, pond, rng) {
       props: { range: roam },
     });
   }
+}
+
+/**
+ * Which species this fish is, drawn by habitat and weight.
+ *
+ * Every species whose water band covers this body's size is in the draw, with
+ * its `share` as its ticket count. Trout backstops the impossible case -- a
+ * band nobody claims -- so a pond can never be stocked with nothing.
+ */
+function pickSpecies(tiles, rng) {
+  let total = 0;
+  for (const s of ROSTER) if (tiles >= s.min && tiles <= s.max) total += s.share;
+  if (!total) return 'trout';
+  let draw = rng() * total;
+  for (const s of ROSTER) {
+    if (tiles < s.min || tiles > s.max) continue;
+    draw -= s.share;
+    if (draw <= 0) return s.id;
+  }
+  return 'trout';
 }
 
 /**

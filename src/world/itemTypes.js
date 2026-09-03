@@ -39,6 +39,8 @@
  * "which of these six colours IS this thing" is a judgement, not an average.
  */
 
+import { ANIMAL_TYPES } from './animalTypes.js';
+
 /**
  * How much smaller a garment is on the ground than it is on a head.
  *
@@ -516,6 +518,42 @@ export const ITEM_TYPES = {
     },
   },
 };
+
+// ------------------------------------------------------- the rest of the catch --
+// One item per fish species, derived from the animal registry rather than
+// restated: what a pike looks like on the bank is what it looked like in the
+// water, and keeping fifty palettes in two files is how they drift apart. Only
+// the VALUE is authored here, because worth-over-a-counter is a fact about
+// items and the animal registry has no business knowing it. Trout and carp
+// keep their hand-written entries above; everything with a `water` habitat
+// arrives this way. `fish` carries the figure hints render/ItemBatch.js uses
+// to lay the right shape on the bank.
+const FISH_VALUE = {
+  minnow: 8, goby: 12, gudgeon: 12, anchovy: 14, smelt: 14, loach: 16,
+  sardine: 18, dace: 20, sculpin: 20, roach: 22, bluegill: 24, rudd: 24,
+  herring: 26, sunfish: 26, crappie: 30, dab: 34, shad: 36, perch: 38,
+  chub: 40, mackerel: 42, ide: 44, bream: 46, mullet: 48, wrasse: 52,
+  goldfish: 55, tench: 58, garfish: 58, bass: 64, pollock: 66, whitefish: 70,
+  barbel: 72, flounder: 78, haddock: 85, eel: 88, sole: 90, grayling: 92,
+  cod: 95, char: 96, burbot: 98, zander: 105, catfish: 110, seabass: 115,
+  pike: 125, snapper: 125, bonito: 135, lingcod: 145, salmon: 150,
+  koi: 190, halibut: 210, sturgeon: 260,
+};
+
+for (const [id, value] of Object.entries(FISH_VALUE)) {
+  const species = ANIMAL_TYPES[id];
+  if (!species) throw new Error(`FISH_VALUE prices "${id}", which is no animal`);
+  const size = species.radius / 0.14;
+  ITEM_TYPES[`item.${id}`] = {
+    label: species.label,
+    stack: 10,
+    value,
+    height: 0.1 + 0.05 * size,
+    swatch: species.palette.body,
+    palette: species.palette,
+    fish: { ...species.fig, size },
+  };
+}
 
 function furnitureItem(label, value, swatch, furniture) {
   return {

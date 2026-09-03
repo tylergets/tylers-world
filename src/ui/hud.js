@@ -3,8 +3,9 @@
  * behind the gear -- the controls and the diagnostics.
  *
  * WHAT IS ON SCREEN BY DEFAULT is only what you need to play: the place name,
- * the view you are in, the prompts for whatever is in front of you, your bag,
- * and the keys. Everything else is a drawer or a toggle. That is a deliberate
+ * the view you are in, the prompts for whatever is in front of you, and your
+ * bag. Everything else -- the keymap included; `K`, or "Keymap" in the drawer,
+ * brings it back -- is a drawer or a toggle. That is a deliberate
  * reversal -- the diagnostics used to be up permanently -- and the reason is
  * that a panel of numbers nobody is reading is not free. It is the first thing
  * a new player tries to decode, and it makes the game look like a debugger.
@@ -212,6 +213,10 @@ export class Hud {
             <span class="vt-label" id="hud-perf-label"></span>
             <span class="vt-key">P</span>
           </button>
+          <button class="view-toggle" id="hud-keys-btn">
+            <span class="vt-label" id="hud-keys-label"></span>
+            <span class="vt-key">K</span>
+          </button>
           <button class="view-toggle" id="hud-worlds">
             <span class="vt-label">Worlds &amp; saves</span>
             <span class="vt-key">O</span>
@@ -264,7 +269,7 @@ export class Hud {
         </div>
       </div>
 
-      <div class="hud hud-bl">
+      <div class="hud hud-bl" id="hud-keys" hidden>
         <div class="keys">
           <b>WASD</b><span>Move <span class="dim">or arrows</span></span>
           <b>Shift</b><span>Run</span>
@@ -277,6 +282,7 @@ export class Hud {
           <b>[ ]</b><span>Change tool</span>
           <b>B</b><span>Open bag</span>
           <b>G</b><span>Wardrobe</span>
+          <b>K</b><span>Hide this keymap</span>
           <b>Esc</b><span>Walk away</span>
         </div>
       </div>`;
@@ -370,6 +376,14 @@ export class Hud {
     root.querySelector('#hud-worlds').addEventListener('click', onWorlds);
     this.#setPerfLabel();
 
+    // The keymap. Off by default for the same reason the diagnostics are: a
+    // card of twelve key bindings is a reference, not a readout, and a
+    // reference is a thing you open when you have the question.
+    this.keysPanel = root.querySelector('#hud-keys');
+    this.keysLabel = root.querySelector('#hud-keys-label');
+    root.querySelector('#hud-keys-btn').addEventListener('click', () => this.toggleKeys());
+    this.#setKeysLabel();
+
     // The drawer. Closed on load and remembered for the session only: which
     // controls you had open is not a fact worth carrying across a reload.
     this.settings = root.querySelector('#hud-settings');
@@ -440,6 +454,17 @@ export class Hud {
 
   #setPerfLabel() {
     this.perfLabel.textContent = `Readouts  ${this.showPerf ? 'on' : 'off'}`;
+  }
+
+  /** Show or hide the keymap card. Returns whether it is now showing. */
+  toggleKeys() {
+    this.keysPanel.hidden = !this.keysPanel.hidden;
+    this.#setKeysLabel();
+    return !this.keysPanel.hidden;
+  }
+
+  #setKeysLabel() {
+    this.keysLabel.textContent = `Keymap  ${this.keysPanel.hidden ? 'off' : 'on'}`;
   }
 
   /**

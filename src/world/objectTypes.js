@@ -210,6 +210,14 @@ export const OBJECT_TYPES = {
   },
   'furn.construction-sign': furniture('Under Construction', 3, 1, 1.8,
     { board: 0xe2b74f, edge: 0x6b4a30, text: 0x3f342a }),
+  'furn.sign.planning': furniture('Urban Planner', 3, 1, 1.8,
+    { board: 0x4f86b5, edge: 0x294b68, text: 0xf4f8eb }),
+  'furn.sign.wildlife': furniture('Fish & Wildlife', 3, 1, 1.8,
+    { board: 0x5f8f58, edge: 0x31533a, text: 0xf6edcf }),
+  'furn.sign.mayor': furniture("Mayor's Office", 3, 1, 1.8,
+    { board: 0x8b4b55, edge: 0x4f2831, text: 0xf4d77c }),
+  'furn.sign.cheats': furniture('Office of Cheats', 3, 1, 1.8,
+    { board: 0x623f91, edge: 0x29203f, text: 0x70f0da }),
 
   // ----------------------------------------------------------------- yard --
   // Two pieces the player buys indoors and puts down OUTdoors, and they are

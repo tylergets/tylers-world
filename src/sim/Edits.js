@@ -8,10 +8,11 @@
  * it here keeps the rule the codebase runs on intact: World holds facts derived
  * from the file, and it is never the authority on what has happened since.
  *
- * TWO RECORDS, ONE VERSION
- * ------------------------
- *   felled   object ids that are no longer there  (an axe)
- *   holes    tiles that have been dug open        (a shovel)
+ * ONE EDIT LOG, ONE VERSION
+ * -------------------------
+ * Tool work, placed furniture, civic terrain overlays, and wildlife targets
+ * all describe what changed in one place. They share one version counter so a
+ * save and renderer can observe the place as one coherent unit.
  *
  * Both are edits to the same place and both are undone the same way -- by
  * rebuilding the World from its file -- so they share one version counter, and
@@ -20,7 +21,8 @@
  * THE WORLD IS TOLD, NOT ASKED
  * ----------------------------
  * Every method here calls into the World's mutation API, which is deliberately
- * small and deliberately reversible: `removeObject`, `setHole`, `revert`. This
+ * small and deliberately reversible: `removeObject`, `setHole`, `setSurface`,
+ * `revert`. This
  * class owns WHAT changed and can write it down; the World owns the derived
  * collision and occupancy indices the simulation reads every frame, and it
  * would be a slow lie to make it re-derive them from a Set on every query.
@@ -37,6 +39,8 @@
 
 import { objectType } from '../world/objectTypes.js';
 import { PLANT_TYPES, stageOf } from '../world/plantTypes.js';
+import { SURFACE_ID } from '../world/surfaces.js';
+import { ANIMAL_TYPES } from '../world/animalTypes.js';
 
 export class Edits {
   constructor(world) {
@@ -59,6 +63,10 @@ export class Edits {
      * world's geometry -- Fauna owns it, this is only the record.
      */
     this.culled = new Set();
+    /** tile index -> surface name chosen by the Urban Planner. */
+    this.terrain = new Map();
+    /** species id -> desired population chosen by Fish and Wildlife. */
+    this.wildlife = new Map();
     /** tile index -> the id of the tree whose stump is on it, and back again. */
     this.stumps = new Map();
     this.stumpTile = new Map();
@@ -80,6 +88,35 @@ export class Edits {
 
   get holeList() { return [...this.holes.values()]; }
   get plantingList() { return [...this.plantings.values()]; }
+
+  /** Paint or restore one unobstructed tile. */
+  setSurface(x, z, name) {
+    return this.setSurfaces([[x, z]], name) > 0;
+  }
+
+  /** Record one whole planner brush stroke as a single effective change. */
+  setSurfaces(tiles, name) {
+    const surfaceId = SURFACE_ID[name];
+    if (surfaceId === undefined) return 0;
+    const changed = this.world.setSurfaces(tiles, surfaceId);
+    if (!changed.length) return 0;
+    for (const [x, z] of changed) {
+      const i = this.world.idx(x, z);
+      if (this.world.baseSurfaceAt(x, z).name === name) this.terrain.delete(i);
+      else this.terrain.set(i, name);
+    }
+    this.version++;
+    return changed.length;
+  }
+
+  /** Set an explicit species target; Fauna performs the live reconciliation. */
+  setPopulation(type, count) {
+    if (!ANIMAL_TYPES[type] || !Number.isInteger(count) || count < 0 || count > 40) return false;
+    if (this.wildlife.get(type) === count) return false;
+    this.wildlife.set(type, count);
+    this.version++;
+    return true;
+  }
 
   place(type, tile, rotation = 0, id = null) {
     let nextId = id;
@@ -312,6 +349,8 @@ export class Edits {
       digs: this.digs,
       placed: this.placed.map((p) => ({ ...p, tile: [...p.tile] })),
       stored: Object.fromEntries([...this.stored].map(([id, stack]) => [id, { ...stack }])),
+      terrain: [...this.terrain].map(([i, surface]) => [i % this.world.width, Math.floor(i / this.world.width), surface]),
+      wildlife: Object.fromEntries(this.wildlife),
     };
   }
 
@@ -324,6 +363,19 @@ export class Edits {
    */
   restore(snap) {
     if (!snap) return;
+    // Terrain first: everything placed afterward must validate against the
+    // effective town rather than against the old map underneath it.
+    for (const row of snap.terrain ?? []) {
+      const [x, z, surface] = row ?? [];
+      if (Number.isInteger(x) && Number.isInteger(z) && typeof surface === 'string') {
+        this.setSurface(x, z, surface);
+      }
+    }
+    for (const [type, count] of Object.entries(snap.wildlife ?? {})) {
+      if (ANIMAL_TYPES[type] && Number.isInteger(count) && count >= 0 && count <= 40) {
+        this.wildlife.set(type, count);
+      }
+    }
     for (const p of snap.placed ?? []) {
       if (p && typeof p.id === 'string' && typeof p.type === 'string'
         && Array.isArray(p.tile) && [0, 90, 180, 270].includes(p.rotation ?? 0)) {

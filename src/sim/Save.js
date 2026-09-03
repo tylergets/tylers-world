@@ -15,14 +15,15 @@
  *   the PLACES   what has changed in each one: the items on the floor, and
  *                what everybody in it remembers about you.
  *
- * WHAT IS DELIBERATELY NOT IN IT: the terrain, the buildings, the prices, the
- * dialog. All of those are facts about the world file, they are rebuilt from it
- * on load, and freezing them into a save is how a game ends up unable to fix a
- * typo in a shopkeeper's line for anyone who has already met him. A save
- * records what the PLAYER did, and nothing about what the world was.
+ * WHAT IS DELIBERATELY NOT IN IT: the baseline terrain, buildings, prices, or
+ * dialog. Those remain facts about the world file. The Urban Planner's sparse
+ * tile overlay and Fish & Wildlife targets are player decisions, so they live
+ * with the other per-place edits and replay over the current file on load. That
+ * preserves both halves of the contract: authored worlds can still be fixed,
+ * and approved civic changes remain approved.
  *
- * Nor the animals. A chicken's position is somewhere it wandered to a second
- * ago; restoring one is indistinguishable from letting it wander there again.
+ * Nor live animal positions. A chicken's position is somewhere it wandered to
+ * a second ago; Fish & Wildlife saves desired counts, not transient bodies.
  *
  * WHY PLACE STATE IS LAZY
  * -----------------------

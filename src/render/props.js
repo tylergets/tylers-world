@@ -592,6 +592,10 @@ const BUILDERS = {
   'furn.crate': crate,
   'furn.stairs': stairs,
   'furn.construction-sign': constructionSign,
+  'furn.sign.planning': constructionSign,
+  'furn.sign.wildlife': constructionSign,
+  'furn.sign.mayor': constructionSign,
+  'furn.sign.cheats': constructionSign,
   'yard.fence': fence,
   'yard.ladder': ladder,
 };
