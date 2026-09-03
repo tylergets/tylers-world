@@ -125,6 +125,7 @@ const EFFECTS = {
   take: 'itemcount',
   coins: 'number',
   houseStories: 'tier',
+  travel: 'string',
   shop: 'boolean',
   poker: 'boolean',
   gift: 'boolean',
