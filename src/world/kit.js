@@ -315,8 +315,8 @@ function checkInteract(raw, path) {
   }
   const action = raw.action === undefined ? null : raw.action;
   const run = typeof raw.run === 'string' && raw.run.trim() ? raw.run : null;
-  if (action !== null && action !== 'browser') {
-    throw new KitError('"interact.action" must be "browser"', path);
+  if (action !== null && !['browser', 'nes', 'flight-board', 'flight-gate'].includes(action)) {
+    throw new KitError('"interact.action" is not a supported built-in action', path);
   }
   if ((run === null) === (action === null)) {
     throw new KitError('"interact" needs exactly one of "run" or "action"', path);
