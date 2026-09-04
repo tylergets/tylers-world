@@ -38,7 +38,9 @@ function UI({ game }) {
     <MemoWardrobe controller={game.wardrobe} version={game.wardrobe.version} />
     <MemoContainer controller={game.containerPanel} version={game.containerPanel.version}
       inventoryVersion={game.player.inventory.version} editsVersion={game.containerPanel.context?.edits.version} />
-    <MemoInternet controller={game.internet} version={game.internet.version} />
+    <MemoInternet controller={game.internet} version={game.internet.version}
+      hudTick={game.ui.hudTick} inventoryVersion={game.player.inventory.version}
+      purseVersion={game.player.purse.version} />
     <MemoTownOffice controller={game.townOffice} version={game.townOffice.version}
       faunaVersion={game.townOffice.context?.fauna?.version}
       editsVersion={game.townOffice.context?.edits?.version}

@@ -200,22 +200,22 @@
     {
       "id": "airport.gate.a1", "type": "folk.villager", "tile": [5, 5], "facing": "west",
       "props": { "name": "June", "title": "Gate A1 Agent", "noSmallTalk": true, "roam": 1 },
-      "dialog": { "start": "hello", "nodes": { "hello": { "text": "Gate A1 is boarding by row, then by patience, then by whoever has stopped listening.", "then": "end" } } }
+      "dialog": { "start": "hello", "nodes": { "hello": { "text": "Gate A1 handles TW 104 to Cloudbreak Cay at 06:30 daily. Present your ticket at the blue podium when the board says BOARDING.", "then": "end" } } }
     },
     {
       "id": "airport.gate.b1", "type": "folk.villager", "tile": [33, 5], "facing": "east",
       "props": { "name": "Orin", "title": "Gate B1 Agent", "noSmallTalk": true, "roam": 1 },
-      "dialog": { "start": "hello", "nodes": { "hello": { "text": "B1 is on time. This is airport language for nothing has happened yet.", "then": "end" } } }
+      "dialog": { "start": "hello", "nodes": { "hello": { "text": "TW 218 for Copperglass Mesa leaves Gate B1 at 10:15 daily. Boarding opens one hour before departure.", "then": "end" } } }
     },
     {
       "id": "airport.gate.a2", "type": "folk.villager", "tile": [5, 19], "facing": "west",
       "props": { "name": "Mica", "title": "Gate A2 Agent", "noSmallTalk": true, "roam": 1 },
-      "dialog": { "start": "hello", "nodes": { "hello": { "text": "A2 leaves after the weather decides whether it approves of aviation.", "then": "end" } } }
+      "dialog": { "start": "hello", "nodes": { "hello": { "text": "Moonfen is TW 332 from Gate A2, departing at 14:00 daily. The podium scans route tickets from your bag.", "then": "end" } } }
     },
     {
       "id": "airport.gate.b2", "type": "folk.villager", "tile": [33, 19], "facing": "east",
       "props": { "name": "Pella", "title": "Gate B2 Agent", "noSmallTalk": true, "roam": 1 },
-      "dialog": { "start": "hello", "nodes": { "hello": { "text": "The moving walkway is for moving. Standing is permitted only with conviction.", "then": "end" } } }
+      "dialog": { "start": "hello", "nodes": { "hello": { "text": "TW 446 to Sunspoke Coast departs Gate B2 at 19:30 daily. Your ticket remains valid if you miss today's flight.", "then": "end" } } }
     },
     {
       "id": "airport.gate.a3", "type": "folk.villager", "tile": [5, 32], "facing": "west",

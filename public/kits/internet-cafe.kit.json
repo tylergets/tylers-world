@@ -24,6 +24,27 @@
       ],
       "interact": { "label": "Browse internet", "action": "browser" }
     },
+    "fixture.cafe.nes-desk": {
+      "kind": "object",
+      "label": "NES Game Station",
+      "footprint": { "w": 2, "d": 1 },
+      "height": 1.42,
+      "squash": 0.3,
+      "palette": { "desk": "#6d435c", "deskHi": "#97627f", "case": "#b9b7b0", "dark": "#282a2f", "screen": "#25282c", "key": "#a3243c", "light": "#78df9b" },
+      "parts": [
+        { "prim": "box", "at": [0, 0.7, 0], "size": [1.78, 0.12, 0.82], "color": "desk" },
+        { "prim": "box", "at": [0, 0.77, 0], "size": [1.7, 0.03, 0.74], "color": "deskHi" },
+        { "prim": "box", "at": [-0.72, 0.34, 0], "size": [0.1, 0.68, 0.62], "color": "desk" },
+        { "prim": "box", "at": [0.72, 0.34, 0], "size": [0.1, 0.68, 0.62], "color": "desk" },
+        { "prim": "box", "at": [0, 1.12, -0.18], "size": [0.82, 0.58, 0.12], "color": "case" },
+        { "prim": "box", "at": [0, 1.12, -0.105], "size": [0.67, 0.43, 0.035], "color": "screen" },
+        { "prim": "box", "at": [0, 0.83, -0.18], "size": [0.12, 0.13, 0.1], "color": "dark" },
+        { "prim": "box", "at": [0, 0.79, 0.18], "size": [0.72, 0.04, 0.24], "color": "key" },
+        { "prim": "box", "at": [0.28, 1.12, -0.08], "size": [0.08, 0.035, 0.02], "color": "light" },
+        { "prim": "box", "at": [0.48, 0.99, 0.12], "size": [0.26, 0.05, 0.28], "color": "dark" }
+      ],
+      "interact": { "label": "Play NES adventure", "action": "nes" }
+    },
     "fixture.cafe.neon-spine": {
       "kind": "object",
       "label": "Network Light Strip",

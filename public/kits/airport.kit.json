@@ -86,6 +86,7 @@
     "fixture.airport.flight-board": {
       "kind": "object",
       "label": "Departures Board",
+      "interact": { "label": "View flight schedule", "action": "flight-board" },
       "footprint": { "w": 4, "d": 1 },
       "height": 2.25,
       "squash": 0.2,
@@ -106,6 +107,7 @@
     "fixture.airport.gate-podium": {
       "kind": "object",
       "label": "Gate Podium",
+      "interact": { "label": "Present ticket", "action": "flight-gate" },
       "footprint": { "w": 1, "d": 1 },
       "height": 1.38,
       "squash": 0.3,

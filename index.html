@@ -1534,7 +1534,8 @@
   }
   .internet-mark { flex: none; color: #55d9e8; font: 800 15px/1 var(--mono); letter-spacing: .08em; }
   .internet-mark span { color: #f06fb6; }
-  .internet-tabs { display: flex; gap: 3px; padding: 3px; background: #081018; border: 1px solid #355363; border-radius: 8px; }
+  .internet-tabs { display: flex; flex: 1; min-width: 0; gap: 3px; padding: 3px; overflow-x: auto; background: #081018; border: 1px solid #355363; border-radius: 8px; }
+  .internet-tabs button { flex: none; }
   .internet-head .internet-tabs button { padding: 6px 10px; border: 0; }
   .internet-head .internet-tabs button.active { color: #081018; background: #55d9e8; }
   .internet-head form { display: flex; flex: 1; min-width: 120px; }

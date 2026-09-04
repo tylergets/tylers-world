@@ -40,6 +40,7 @@
  */
 
 import { ANIMAL_TYPES } from './animalTypes.js';
+import { FLIGHT_DESTINATIONS, flightTicketType } from './flights.js';
 
 /**
  * How much smaller a garment is on the ground than it is on a head.
@@ -575,6 +576,23 @@ export const ITEM_TYPES = {
     },
   },
 };
+
+// Route-specific tickets fit the inventory's deliberately metadata-free stacks.
+for (const flight of FLIGHT_DESTINATIONS) {
+  ITEM_TYPES[flightTicketType(flight)] = {
+    label: `${flight.name} Ticket`,
+    stack: 4,
+    value: flight.price,
+    height: 0.08,
+    swatch: flight.swatch,
+    palette: { paper: 0xf1ead8, ink: 0x243a4a, route: flight.swatch, edge: 0xd4c7a8 },
+    parts: [
+      { prim: 'box', at: [0, 0.018, 0], rot: [0, 0, 0], size: [0.3, 0.036, 0.16], color: 'paper' },
+      { prim: 'box', at: [-0.09, 0.039, 0], rot: [0, 0, 0], size: [0.055, 0.008, 0.145], color: 'route' },
+      { prim: 'box', at: [0.045, 0.039, 0], rot: [0, 0, 0], size: [0.13, 0.008, 0.018], color: 'ink' },
+    ],
+  };
+}
 
 // ------------------------------------------------------- the rest of the catch --
 // One item per fish species, derived from the animal registry rather than

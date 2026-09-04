@@ -44,6 +44,7 @@ import { kits } from './world/kits.js';
 import { grudgeFor } from './world/grudge.js';
 import { theftFor } from './world/theft.js';
 import { closedFor, memorialFor } from './world/closed.js';
+import { AIRPORT_URL } from './world/cabService.js';
 import { wantsGreeting, withGreeting } from './world/greetings.js';
 import { parseDialog } from './world/dialog.js';
 import { climateOf, CLIMATES, WEATHER_KINDS, weatherOn } from './world/weather.js';
@@ -70,6 +71,7 @@ import { Fishing } from './sim/Fishing.js';
 import { Museum, MUSEUM_ID } from './sim/Museum.js';
 import { fits } from './sim/body.js';
 import { Mail } from './sim/Mail.js';
+import { Marketplace } from './sim/Marketplace.js';
 import { Errands } from './sim/Errands.js';
 import { FreeInput, GridInput } from './sim/inputs.js';
 import { findPath, findPathToAny } from './sim/pathfind.js';
@@ -96,6 +98,11 @@ import { VOICE_MODES } from './audio/voice.js';
 import * as sfx from './audio/sfx.js';
 import { setPlaceMusic, unlockMusic } from './audio/music.js';
 import { generate, worldId } from './world/generate.js';
+import { ANIMAL_TYPES } from './world/animalTypes.js';
+import {
+  AIRPORT_WORLD_ID, flightForGate, flightForId, flightForUrl, flightSchedule,
+  flightTicketType, flightWorldUrl,
+} from './world/flights.js';
 import {
   SHORELINE_STYLES, WATER_STYLES, MAP_MODES, MAP_SIZES,
   SHADOW_MODES, ANTIALIAS_MODES, RENDER_SCALES, SCALE_VALUES,
@@ -295,6 +302,7 @@ class Game {
     this.angling = new Fishing();
     this.museum = new Museum();
     this.mail = new Mail();
+    this.marketplace = new Marketplace();
     // Antialiasing is a context property, so it is passed in at construction
     // and cannot be changed after. Everything else below is a live switch.
     this.stage = new Stage(canvas, { antialias: this.graphics.antialias === 'on' });
@@ -416,7 +424,16 @@ class Game {
     // camera means neither of these is ever seen.
     this.mapScreen = new MapScreen(hudRoot);
     this.photos = new PhotoView(hudRoot);
-    this.internet = new InternetBrowser();
+    this.internet = new InternetBrowser({
+      flightInfo: () => this.flightInfo(),
+      purchaseTicket: (id) => this.purchaseFlightTicket(id),
+      catalogueInfo: () => this.catalogueInfo(),
+      purchaseCatalogueItem: (id) => this.purchaseCatalogueItem(id),
+      marketplaceInfo: () => this.marketplaceInfo(),
+      reserveListing: (id) => this.reserveMarketplaceListing(id),
+      cancelListing: (id) => this.cancelMarketplaceListing(id),
+      museumInfo: () => this.museumInfo(),
+    });
     this.wardrobe = new Wardrobe(hudRoot, (row) => this.changeClothes(row));
     this.containerPanel = new ContainerPanel();
     this.townOffice = new TownHallOffice(hudRoot, {
@@ -2001,6 +2018,8 @@ class Game {
     this.everHiredWorker = town?.everHiredWorker === true || this.workers.assignments.size > 0;
     this.logistics = new Logistics();
     this.logistics.restore(town?.logistics);
+    this.marketplace = new Marketplace();
+    this.marketplace.restore(town?.marketplace);
     this.shopClosures = new Map((town?.shopClosures ?? [])
       .filter((row) => Array.isArray(row) && typeof row[0] === 'string'
         && row[1] && typeof row[1] === 'object')
@@ -2163,6 +2182,16 @@ class Game {
     return this.places.get(source?.url ?? STARTERS[0].url);
   }
 
+  /** Load an ordinary place, or deterministically rebuild an airline destination. */
+  placeForUrl(url) {
+    const flight = flightForUrl(url);
+    if (!flight) return this.places.get(url);
+    const cached = this.places.cached(url);
+    if (cached) return Promise.resolve(cached);
+    const built = generate({ form: flight.form, seed: flight.seed, name: flight.name });
+    return Promise.resolve(this.places.put(url, built.data));
+  }
+
   /**
    * Walk the player back to where the save left them, doorways and all.
    *
@@ -2177,7 +2206,7 @@ class Game {
     for (const back of snap.stack ?? []) {
       try {
         this.stack.push({
-          world: await this.places.get(back.url),
+          world: await this.placeForUrl(back.url),
           tile: back.tile,
           facing: back.facing,
           label: back.label,
@@ -2191,7 +2220,7 @@ class Game {
     const at = snap.at;
     if (!at) return;
     try {
-      const world = await this.places.get(at.url);
+      const world = await this.placeForUrl(at.url);
       this.setPlace(world, at.tile, at.facing ?? world.spawn.facing);
       this.hud.setWorld(world, this.stack.length > 0);
     } catch (err) {
@@ -2245,6 +2274,7 @@ class Game {
         recruitedNeighbors: [...this.recruitedNeighbors],
         homeBuildQueue: [...this.homeBuildQueue],
         shopClosures: [...this.shopClosures],
+        marketplace: this.marketplace.snapshot(),
       },
       player: {
         inventory: p.inventory.snapshot(),
@@ -2305,6 +2335,7 @@ class Game {
       + `|everHiredWorker:${Number(this.everHiredWorker)}`
       + `|workers:${this.workers.version}`
       + `|logistics:${this.logistics.version}`
+      + `|marketplace:${this.marketplace.version}`
       + `|folk:${[...this.folk].map(([id, folk]) => `${id}:${folk.version}`).join(',')}`
       + `|house:${this.houseStories}`
       + `|cheats:${Number(this.cheats.money)}${Number(this.cheats.ammo)}${Number(this.cheats.invulnerable)}`
@@ -2911,8 +2942,22 @@ class Game {
     }
     if (interact?.action === 'browser') {
       this.cancelContextAction();
-      this.internet.show();
+      this.internet.show('home');
       return true;
+    }
+    if (interact?.action === 'nes') {
+      this.cancelContextAction();
+      this.internet.show('nes');
+      return true;
+    }
+    if (interact?.action === 'flight-board') {
+      this.cancelContextAction();
+      this.internet.show('flights');
+      return true;
+    }
+    if (interact?.action === 'flight-gate') {
+      const gate = fixture.object.id.match(/gate\.([ab]\d)\./i)?.[1];
+      return this.boardFlight(gate);
     }
     const result = this.fixtures.use(fixture.object, this.tradeCtx());
     if (result.ok) this.errands.record({
@@ -3042,6 +3087,7 @@ class Game {
       }, this.player.clock.day);
     }
     const newMail = this.mail.deliver(this.player.clock.day);
+    this.marketplace.prune(this.player.clock.day);
 
     // A night mends what a shot took, and it is the only thing that does.
     // There is no bandage, no food that heals and nothing to buy for it: the
@@ -3212,6 +3258,13 @@ class Game {
     // Somebody angry, and somebody minding a shut till, are having their own
     // conversation: no work talk, no pickups, no pleasantries.
     const unavailable = this.player.friends.hates(npc.id) || npc.shop && !npc.shopAvailable;
+    if (!unavailable) {
+      const pickup = this.marketplace.complete(npc.id, this.player.inventory, this.player.purse);
+      if (pickup) {
+        this.note(pickup.message);
+        if (pickup.ok) this.internet.changed();
+      }
+    }
     let script;
     if (this.player.friends.hates(npc.id)) script = grudgeFor(npc, this.player.friends.grudgeLevel(npc.id));
     else if (npc.shop && !npc.shopAvailable) script = closedFor(npc);
@@ -3517,9 +3570,188 @@ class Game {
     };
   }
 
+  /** Read-only airline data consumed by the React page inside the cafe iframe. */
+  flightInfo() {
+    const inventory = this.player.inventory;
+    const purse = this.player.purse;
+    return {
+      date: dateLabel(dayOfYear(this.player.clock.day)),
+      time: this.player.clock.label,
+      coins: purse.unlimited ? 'unlimited' : purse.coins,
+      flights: flightSchedule(this.player.clock).map((flight) => ({
+        ...flight,
+        owned: inventory.count(flight.ticketType),
+        canBuy: purse.canAfford(flight.price) && inventory.room(flight.ticketType) > 0,
+      })),
+    };
+  }
+
+  /** Every registered item except route tickets, priced as an always-open mail-order catalogue. */
+  catalogueInfo() {
+    const rows = Object.entries(ITEM_TYPES)
+      .filter(([typeId, type]) => !typeId.startsWith('item.ticket.')
+        && Number.isFinite(type.value) && type.value > 0)
+      .map(([typeId, type]) => {
+        const category = type.wear ? `${type.wear.slot[0].toUpperCase()}${type.wear.slot.slice(1)}`
+          : type.tool ? 'Tools'
+            : type.furniture ? 'Furniture'
+              : type.seed ? 'Seeds'
+                : type.fish ? 'Fish'
+                  : type.food ? 'Food' : 'Goods';
+        const price = Math.max(1, Math.round(type.value * 1.2));
+        return {
+          typeId, type, category, price,
+          label: type.label,
+          swatch: type.swatch,
+          owned: this.player.inventory.count(typeId),
+          canBuy: this.player.purse.canAfford(price) && this.player.inventory.room(typeId) > 0,
+        };
+      })
+      .sort((a, b) => a.category.localeCompare(b.category) || a.label.localeCompare(b.label));
+    return {
+      coins: this.player.purse.unlimited ? 'unlimited' : this.player.purse.coins,
+      rows,
+      categories: [...new Set(rows.map((row) => row.category))],
+    };
+  }
+
+  purchaseCatalogueItem(typeId) {
+    const row = this.catalogueInfo().rows.find((entry) => entry.typeId === typeId);
+    if (!row) return { ok: false, message: 'That product is not in the catalogue.' };
+    if (this.player.inventory.room(typeId) < 1) return { ok: false, message: 'Your bag has no room for that order.' };
+    if (!this.player.purse.canAfford(row.price)) return { ok: false, message: `You need ${row.price} coins for that order.` };
+    const chargedCoins = !this.player.purse.unlimited;
+    if (!this.player.purse.pay(row.price)) return { ok: false, message: 'Payment was declined.' };
+    if (this.player.inventory.add(typeId, 1) !== 1) {
+      if (chargedCoins) this.player.purse.earn(row.price);
+      return { ok: false, message: 'The order could not be placed in your bag.' };
+    }
+    this.internet.changed();
+    return { ok: true, message: `${row.label} purchased and added to your inventory.` };
+  }
+
+  marketplaceInfo() {
+    const ids = new Set([
+      ...this.residents.livingIn(this.homeTownId),
+      ...this.recruitedNeighbors,
+    ]);
+    const sellers = [...ids].map((id) => this.findNpc(id)).filter(Boolean);
+    const listings = this.marketplace.listings(this.player.clock.day, this.homeTownId, sellers)
+      .map((listing) => {
+        const type = itemType(listing.typeId);
+        return {
+          ...listing,
+          type,
+          label: type.label,
+          swatch: type.swatch,
+          reserved: this.marketplace.reservations.has(listing.id),
+        };
+      });
+    return { listings, town: this.saveName, day: this.player.clock.day };
+  }
+
+  reserveMarketplaceListing(id) {
+    const listing = this.marketplaceInfo().listings.find((entry) => entry.id === id);
+    const result = this.marketplace.reserve(listing);
+    if (result.ok) this.internet.changed();
+    return result;
+  }
+
+  cancelMarketplaceListing(id) {
+    const result = this.marketplace.cancel(id);
+    if (result.ok) this.internet.changed();
+    return result;
+  }
+
+  museumInfo() {
+    const rows = Object.entries(ANIMAL_TYPES)
+      .map(([typeId, type]) => {
+        const exhibit = this.museum.species.get(typeId);
+        return {
+          typeId, type,
+          label: type.label,
+          gallery: type.swims === true ? 'Fish' : 'Wildlife',
+          collected: !!exhibit,
+          count: exhibit?.count ?? 0,
+          firstSeen: exhibit ? dateLabel(dayOfYear(exhibit.day)) : null,
+          swatch: type.palette?.body ?? 0x7f8c89,
+        };
+      })
+      .sort((a, b) => a.gallery.localeCompare(b.gallery) || a.label.localeCompare(b.label));
+    const tally = this.museum.tally();
+    return {
+      rows,
+      collected: tally.fish + tally.game,
+      total: rows.length,
+      fish: tally.fish,
+      wildlife: tally.game,
+    };
+  }
+
+  /** Buy one route ticket without allowing a partial purse/inventory transaction. */
+  purchaseFlightTicket(id) {
+    const flight = flightForId(id);
+    if (!flight) return { ok: false, message: 'That route is not for sale.' };
+    const typeId = flightTicketType(flight);
+    if (this.player.inventory.room(typeId) < 1) return { ok: false, message: 'Your bag has no room for another ticket.' };
+    if (!this.player.purse.canAfford(flight.price)) return { ok: false, message: `You need ${flight.price} coins for that fare.` };
+    const chargedCoins = !this.player.purse.unlimited;
+    if (!this.player.purse.pay(flight.price)) return { ok: false, message: 'Payment was declined.' };
+    if (this.player.inventory.add(typeId, 1) !== 1) {
+      if (chargedCoins) this.player.purse.earn(flight.price);
+      return { ok: false, message: 'The ticket could not be placed in your bag.' };
+    }
+    this.internet.changed();
+    return { ok: true, message: `${flight.name} ticket purchased. It is now in your inventory.` };
+  }
+
+  /** Present a ticket at its assigned gate while that route is boarding. */
+  boardFlight(gate) {
+    const flight = flightForGate(gate);
+    if (!flight) {
+      this.note('There is no scheduled departure at this gate.');
+      return false;
+    }
+    const departure = flightSchedule(this.player.clock).find((row) => row.id === flight.id);
+    if (!departure.boarding) {
+      this.note(`${flight.flight} to ${flight.name} boards at Gate ${flight.gate} on ${departure.date} at ${departure.time}.`);
+      return false;
+    }
+    const typeId = flightTicketType(flight);
+    if (this.player.inventory.count(typeId) < 1) {
+      this.note(`A ${flight.name} ticket is required for ${flight.flight}.`);
+      return false;
+    }
+    if (this.travel || this.world.meta.id !== AIRPORT_WORLD_ID) return false;
+
+    let destination;
+    try {
+      const url = flightWorldUrl(flight);
+      destination = this.places.cached(url);
+      if (!destination) {
+        const built = generate({ form: flight.form, seed: flight.seed, name: flight.name });
+        destination = this.places.put(url, built.data);
+      }
+    } catch (err) {
+      console.error(`could not prepare flight to ${flight.name}:`, err);
+      this.note('The flight could not be prepared. Your ticket was not used.');
+      return false;
+    }
+
+    if (!this.player.inventory.spend(typeId, 1)) return false;
+    this.beginTravel(Promise.resolve(destination), (world) => {
+      const crossed = this.player.clock.skip(flight.duration / 24);
+      if (crossed) this.dawn(crossed);
+      this.setPlace(world, world.spawn.tile, world.spawn.facing);
+      this.note(`Welcome to ${flight.name}. Local time is ${this.player.clock.label}.`);
+    });
+    return true;
+  }
+
   /** Ride to a place while retaining the cab stand as its return address. */
   travelByCab(url) {
     if (this.travel || typeof url !== 'string') return false;
+    const returningFromFlight = url === AIRPORT_URL && !!flightForUrl(this.world.url);
     const back = {
       world: this.world,
       tile: [this.player.tileX, this.player.tileZ],
@@ -3527,7 +3759,7 @@ class Game {
       label: 'Cab stand',
     };
     this.beginTravel(this.places.get(url), (world) => {
-      this.stack.push(back);
+      if (!returningFromFlight) this.stack.push(back);
       this.setPlace(world, world.spawn.tile, world.spawn.facing);
     });
     return true;

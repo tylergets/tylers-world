@@ -18,7 +18,7 @@ export function NesEmulator({ active }) {
   const canvasRef = useRef(null);
   const nesRef = useRef(null);
   const [loaded, setLoaded] = useState(false);
-  const [status, setStatus] = useState('Insert a .nes cartridge to begin.');
+  const [status, setStatus] = useState('Loading NES Starter Kit adventure...');
 
   useEffect(() => {
     const canvas = canvasRef.current;
@@ -26,7 +26,7 @@ export function NesEmulator({ active }) {
     const image = context.createImageData(256, 240);
     const pixels = new Uint32Array(image.data.buffer);
     context.imageSmoothingEnabled = false;
-    nesRef.current = new NES({
+    const nes = nesRef.current = new NES({
       emulateSound: false,
       onFrame(frame) {
         for (let i = 0; i < frame.length; i++) {
@@ -36,7 +36,24 @@ export function NesEmulator({ active }) {
         context.putImageData(image, 0, 0);
       },
     });
-    return () => { nesRef.current = null; };
+    let live = true;
+    fetch('roms/nes-starter-kit.nes')
+      .then((response) => {
+        if (!response.ok) throw new Error(`HTTP ${response.status}`);
+        return response.arrayBuffer();
+      })
+      .then((rom) => {
+        if (!live || nesRef.current !== nes) return;
+        nes.loadROM(rom);
+        setLoaded(true);
+        setStatus('NES Starter Kit loaded. Press Start to begin. Audio is muted.');
+      })
+      .catch((error) => {
+        if (!live) return;
+        setLoaded(false);
+        setStatus(`Built-in game could not be read: ${error.message}`);
+      });
+    return () => { live = false; nesRef.current = null; };
   }, []);
 
   useEffect(() => {
@@ -73,18 +90,6 @@ export function NesEmulator({ active }) {
     };
   }, [active, loaded]);
 
-  const load = async (event) => {
-    const file = event.target.files?.[0];
-    if (!file) return;
-    try {
-      nesRef.current.loadROM(await file.arrayBuffer());
-      setLoaded(true);
-      setStatus(`${file.name} loaded. Audio is muted.`);
-    } catch (error) {
-      setLoaded(false);
-      setStatus(`Cartridge could not be read: ${error.message}`);
-    }
-  };
   const press = (key, down) => (event) => {
     event.preventDefault();
     nesRef.current?.[down ? 'buttonDown' : 'buttonUp'](1, key);
@@ -98,7 +103,6 @@ export function NesEmulator({ active }) {
       <div className="nes-bezel"><canvas ref={canvasRef} width="256" height="240" aria-label="NES display" /></div>
       <div className="nes-status" aria-live="polite">{status}</div>
       <div className="nes-actions">
-        <label className="nes-load">Insert cartridge<input type="file" accept=".nes,application/octet-stream" onChange={load} /></label>
         <UiButton disabled={!loaded} onClick={() => nesRef.current?.reset()}>Reset</UiButton>
       </div>
     </div>
@@ -118,6 +122,6 @@ export function NesEmulator({ active }) {
         {control('A', Controller.BUTTON_A)}
       </div>
     </div>
-    <p className="nes-help"><b>Keyboard:</b> arrows move, Z is B, X is A, Shift selects, Enter starts.</p>
+    <p className="nes-help"><b>NES Starter Kit:</b> Enter starts/pauses; arrows navigate menus and move. MIT licensed by IGW Games.</p>
   </div>;
 }

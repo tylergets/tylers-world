@@ -55,7 +55,7 @@
     { "id": "terminal.3", "type": "fixture.cafe.computer-desk", "tile": [2, 5], "rotation": 90 },
     { "id": "terminal.4", "type": "fixture.cafe.computer-desk", "tile": [2, 8], "rotation": 90 },
     { "id": "terminal.5", "type": "fixture.cafe.computer-desk", "tile": [7, 7] },
-    { "id": "terminal.6", "type": "fixture.cafe.computer-desk", "tile": [10, 7] },
+    { "id": "terminal.6", "type": "fixture.cafe.nes-desk", "tile": [10, 7] },
     { "id": "terminal.chair.1", "type": "furn.chair", "tile": [7, 3] },
     { "id": "terminal.chair.2", "type": "furn.chair", "tile": [10, 3] },
     { "id": "terminal.chair.3", "type": "furn.chair", "tile": [3, 5], "rotation": 90 },
@@ -75,11 +75,11 @@
       "id": "keep.pixel", "type": "folk.shopkeep", "tile": [2, 1], "facing": "south",
       "props": { "name": "Pixel", "title": "Internet Cafe Attendant", "noSmallTalk": true, "roam": 1 },
       "dialog": { "start": "hello", "nodes": {
-        "hello": { "text": "Every glowing station is live. Face a computer and press E to browse the web or load a cartridge in the NES emulator.", "choices": [
+        "hello": { "text": "The teal computers open TWNET. The purple station runs a little NES adventure. Shop, check neighbor classifieds, browse the museum archive, or book a flight.", "choices": [
           { "text": "What can I do here?", "to": "about" },
           { "text": "Maybe later.", "to": "end" }
         ] },
-        "about": { "text": "Type an address or search, or choose NES and load your own .nes cartridge. Some sites refuse to appear inside another page; the external button opens those in your regular browser.", "then": "hello" }
+        "about": { "text": "TWNET starts on its home page and links to every local service. The purple game station has its own controller and a built-in open-source adventure.", "then": "hello" }
       } }
     }
   ],
