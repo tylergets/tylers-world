@@ -5,9 +5,19 @@ import { MUSIC_STYLES } from '../world/ambience.js';
 
 const TRACKS = {
   outside: {
-    tempo: 66, wave: 'sine', root: 50, gain: 0.042,
-    melody: [0, null, null, 4, null, 7, null, null, 9, null, 7, null, 4, null, 2, null],
-    bass: [0, null, null, null, null, null, null, null, 5, null, null, null, null, null, null, null],
+    tempo: 100, wave: 'triangle', root: 50, gain: 0.042,
+    melody: [
+      0, null, 4, 7, 9, 7, 4, 2, 0, 2, 4, null, 7, 9, 7, null,
+      4, null, 7, 9, 11, 9, 7, 4, 2, 4, 7, null, 9, 7, 4, 2,
+      5, null, 9, 12, 11, 9, 7, null, 4, 7, 9, 11, 9, 7, 4, null,
+      2, 4, 5, 7, 9, null, 7, 5, 4, 2, 0, 2, 4, 7, 2, null,
+    ],
+    bass: [
+      0, null, 0, null, 5, null, 5, null, 0, null, 0, null, 7, null, 7, null,
+      5, null, 5, null, 0, null, 0, null, 2, null, 2, null, 7, null, 7, null,
+      5, null, 5, null, 4, null, 4, null, 0, null, 0, null, 7, null, 7, null,
+      2, null, 2, null, 5, null, 5, null, 0, null, 0, null, 7, null, 7, null,
+    ],
   },
   shop: {
     tempo: 104, wave: 'triangle', root: 55, gain: 0.055,
