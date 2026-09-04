@@ -50,7 +50,8 @@ export class Dialogue {
    *   houseStories?: function(): number, setHouseStories?: function(number): void,
    *   shops24?: function(): boolean, setShops24?: function(boolean): void,
    *   townBankBalance?: function(): number,
-   *   travel?: function(string): void}} ctx
+   *   atHome?: boolean, travel?: function(string): void,
+   *   returnHome?: function(): void}} ctx
    * @param {object} [script]  what he says, defaulting to his own dialog. The
    *   one caller that passes something else is the one talking to somebody who
    *   is angry, who gets a grudge script instead -- see world/grudge.js. It is
@@ -257,6 +258,7 @@ export class Dialogue {
         case 'shops24': this.ctx.setShops24?.(v); break;
         case 'officeBuilt': if (v) this.ctx.buildWorkerOffice?.(); break;
         case 'travel': this.ctx.travel?.(v); break;
+        case 'returnHome': if (v) this.ctx.returnHome?.(); break;
         case 'shop': if (v) this.shop = this.npc.shop; break;
         case 'poker': if (v) this.ctx.openPoker?.(this.npc); break;
         case 'gift': break; // Choice handling suspends for explicit item selection.
@@ -327,6 +329,7 @@ export class Dialogue {
         case 'visits': if (mem.visits < v) return false; break;
         case 'coins': if (purse.coins < v) return false; break;
         case 'hurt': if (this.ctx.health && (!this.ctx.health.full) !== v) return false; break;
+        case 'atHome': if (this.ctx.atHome !== undefined && this.ctx.atHome !== v) return false; break;
         // As with `friend`, absence means the caller is not asking. This keeps
         // every authored tier alternative walkable under checkworld.
         case 'houseStories': if (this.ctx.houseStories && this.ctx.houseStories() !== v) return false; break;

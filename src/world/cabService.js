@@ -30,12 +30,25 @@ export const CAB_STOPS = Object.freeze([
 ]);
 
 const DRIVER_DIALOG = parseDialog({
-  start: 'offer',
+  start: 'where',
   nodes: {
+    where: {
+      branch: [
+        { when: { atHome: true }, to: 'offer' },
+        { to: 'return' },
+      ],
+    },
     offer: {
       text: 'Need a ride? I can take you anywhere on my board. Some of it is rougher than it sounds.',
       choices: [
         ...CAB_STOPS.map(({ label, url }) => ({ text: label, do: { travel: url }, to: 'end' })),
+        { text: 'Not right now.', to: 'end' },
+      ],
+    },
+    return: {
+      text: 'Ready to return home?',
+      choices: [
+        { text: 'Take me home.', do: { returnHome: true }, to: 'end' },
         { text: 'Not right now.', to: 'end' },
       ],
     },

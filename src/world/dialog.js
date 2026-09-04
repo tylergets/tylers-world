@@ -72,6 +72,7 @@
  *   { "room": { "type": "item.apple" } }  the bag could take one
  *   { "coins": 40 }                       carrying at least this much
  *   { "hurt": true }                      the player is missing any health
+ *   { "atHome": true }                    the player is in their home town
  *   { "houseStories": 2 }                the player's house is exactly this tier
  *   { "shops24": true }                  round-the-clock trading is enacted
  *   { "not": <cond> } / { "all": [...] } / { "any": [...] }
@@ -86,6 +87,7 @@
  *   { "houseStories": 2 }                upgrade the player's house to this tier
  *   { "shops24": true }                  enact round-the-clock trading
  *   { "travel": "worlds/interiors/debug-room.json" }  go to another place
+ *   { "returnHome": true }                use the saved return trip home
  *   { "shop": true }                      open the trade interface
  *   { "gift": true }                      ask the player to choose one item
  *                                         from the bag to hand over
@@ -132,6 +134,7 @@ const CONDITIONS = {
   visits: 'number',
   coins: 'number',
   hurt: 'boolean',
+  atHome: 'boolean',
   houseStories: 'tier',
   shops24: 'boolean',
   hasHiredWorker: 'boolean',
@@ -158,6 +161,7 @@ const EFFECTS = {
   shops24: 'boolean',
   officeBuilt: 'boolean',
   travel: 'string',
+  returnHome: 'boolean',
   shop: 'boolean',
   poker: 'boolean',
   gift: 'boolean',

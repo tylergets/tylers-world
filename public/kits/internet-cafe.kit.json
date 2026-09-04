@@ -45,6 +45,28 @@
       ],
       "interact": { "label": "Play NES adventure", "action": "nes" }
     },
+    "kititem.cafe.computer-desk": {
+      "kind": "item",
+      "label": "Computer Workstation",
+      "badge": "table",
+      "stack": 1,
+      "value": 450,
+      "height": 0.18,
+      "swatch": "#477e78",
+      "palette": { "wrap": "#bda77c", "wrapHi": "#dfc999", "strap": "#6f5637", "mark": "#477e78" },
+      "furniture": "fixture.cafe.computer-desk"
+    },
+    "kititem.cafe.nes-desk": {
+      "kind": "item",
+      "label": "NES Game Station",
+      "badge": "table",
+      "stack": 1,
+      "value": 520,
+      "height": 0.18,
+      "swatch": "#97627f",
+      "palette": { "wrap": "#bda77c", "wrapHi": "#dfc999", "strap": "#6f5637", "mark": "#97627f" },
+      "furniture": "fixture.cafe.nes-desk"
+    },
     "fixture.cafe.neon-spine": {
       "kind": "object",
       "label": "Network Light Strip",

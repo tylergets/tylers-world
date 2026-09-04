@@ -44,7 +44,6 @@ import { kits } from './world/kits.js';
 import { grudgeFor } from './world/grudge.js';
 import { theftFor } from './world/theft.js';
 import { closedFor, memorialFor } from './world/closed.js';
-import { AIRPORT_URL } from './world/cabService.js';
 import { wantsGreeting, withGreeting } from './world/greetings.js';
 import { parseDialog } from './world/dialog.js';
 import { climateOf, CLIMATES, WEATHER_KINDS, weatherOn } from './world/weather.js';
@@ -3547,6 +3546,7 @@ class Game {
       friends: this.player.friends,
       errands: this.errands,
       clock: this.player.clock,
+      atHome: this.world.meta.id === this.homeTownId,
       houseStories: () => this.houseStories,
       setHouseStories: (stories) => this.setHouseStories(stories),
       shops24: () => this.shops24,
@@ -3555,6 +3555,7 @@ class Game {
       officeBuilt: () => this.officeBuilt(),
       buildWorkerOffice: () => this.buildWorkerOffice(),
       travel: (url) => this.travelByCab(url),
+      returnHome: () => this.leave(),
       // The other effect that reaches back out into the world, and it is here
       // on the same terms: the script can only report which of three answers
       // the player gave to somebody who caught them, and the Game decides what
@@ -3751,7 +3752,6 @@ class Game {
   /** Ride to a place while retaining the cab stand as its return address. */
   travelByCab(url) {
     if (this.travel || typeof url !== 'string') return false;
-    const returningFromFlight = url === AIRPORT_URL && !!flightForUrl(this.world.url);
     const back = {
       world: this.world,
       tile: [this.player.tileX, this.player.tileZ],
@@ -3759,7 +3759,7 @@ class Game {
       label: 'Cab stand',
     };
     this.beginTravel(this.places.get(url), (world) => {
-      if (!returningFromFlight) this.stack.push(back);
+      this.stack.push(back);
       this.setPlace(world, world.spawn.tile, world.spawn.facing);
     });
     return true;
@@ -3885,9 +3885,11 @@ class Game {
       if (this.world.kind !== 'exterior') {
         return { furniture, tile: null, shape: null, rotation: 0, blocked: `${type.label}s go outside.` };
       }
-    } else if (this.world.kind !== 'exterior' && this.world.meta.role !== 'player-home') {
+    } else if (this.world.kind !== 'exterior'
+      && this.world.meta.role !== 'player-home'
+      && !this.world.meta.id.startsWith('home.')) {
       return { furniture, tile: null, shape: null, rotation: 0,
-        blocked: 'Furniture can be assembled outside or in your house.' };
+        blocked: 'Furniture can be assembled outside or in a home.' };
     }
 
     const rotation = this.player.facing * 90;
@@ -5649,13 +5651,13 @@ function directGame(hold, params, resume) {
 }
 
 /**
- * The furniture shop's catalogue, loaded once before anything else.
+ * Portable kit types, loaded once before anything else.
  *
  * Every other kit in the game is declared by the ONE world that places it, and
- * loaded on the way into that world (see world/kits.js). This one cannot be,
- * and the reason is that its types leave the building: a flat-pack bought at
- * Turnip & Timber goes into your pockets, walks out of the door, crosses the
- * town and gets assembled in your own front room -- and it is in the SAVE, so a
+ * loaded on the way into that world (see world/kits.js). These cannot be,
+ * because their types leave the building: a flat-pack bought at Turnip & Timber
+ * or a workstation pried out of the cafe goes into your pockets, walks out of
+ * the door, crosses the town and gets assembled in a home -- and it is in the SAVE, so a
  * fresh session restores an inventory holding `kititem.wingback-chair` before
  * it has been anywhere near the shop.
  *
@@ -5669,10 +5671,10 @@ function directGame(hold, params, resume) {
  * (The store interior declares it too, so `checkworld` -- which never runs
  * this function -- still validates the shop's three hundred stock rows.)
  */
-const CATALOGUE_KIT = 'kits/turnip-catalog.kit.json';
+const PORTABLE_KITS = ['kits/turnip-catalog.kit.json', 'kits/internet-cafe.kit.json'];
 
 async function boot() {
-  await kits.load(CATALOGUE_KIT);
+  await kits.loadAll(PORTABLE_KITS);
 
   // Everything a Game needs that is not a world. Held together because all
   // three constructors below want the same four things, and threading them
