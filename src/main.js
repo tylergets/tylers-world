@@ -143,6 +143,9 @@ const TALK_RANGE = 2.2;
 /** Radius around the player in which E can collect one loose item. */
 const PICKUP_RANGE = 2;
 
+/** Shop theft at this value skips sight and negotiation and starts a fight. */
+const HIGH_VALUE_THEFT = 400;
+
 /**
  * How long a resident will keep trying to reach his own front door before he is
  * simply put behind it, in seconds.
@@ -2569,16 +2572,17 @@ class Game {
    * Say out loud that you have just taken or broken something of somebody's,
    * and let them do something about it.
    *
-   * TWO OUTCOMES, AND THE DIFFERENCE IS WHETHER THEY WERE IN THE ROOM:
+   * TWO OUTCOMES, AND THE DIFFERENCE IS WHETHER THEY CAN REACT NOW:
    *
    *   out      they find out anyway. The grudge lands exactly as if you had
    *            shot them -- their door closes, their shop closes, and it wears
    *            off in a day (sim/Friends.js). There is no way to be caught
    *            later and no stolen-goods check at the door: knowing is enough.
-   *   in       a shopkeeper walks over and asks you to pay for it, because she
-   *            would rather have the money than the argument (world/theft.js).
-   *            Anybody else -- in their own home, where you should not be --
-   *            goes straight for the gun.
+   *   in       a shopkeeper who sees ordinary goods taken walks over and asks
+   *            you to pay, because she would rather have the money than the
+   *            argument (world/theft.js). A keeper anywhere in the room notices
+   *            high-value goods; those, damage, and witnessed home theft send
+   *            the owner straight for the gun.
    *
    * The asymmetry is the point. A shop is a place where things have prices, so
    * being caught in one is a transaction you tried to skip; a house is not, so
@@ -2596,9 +2600,14 @@ class Game {
     this.player.friends.recordCrime('theft');
 
     const seen = witness(this.world, this.people, ownerId, this.player.x, this.player.z);
-    const name = (seen ?? this.findNpc(ownerId))?.name ?? 'Somebody';
+    const present = this.people.byId?.(ownerId)
+      ?? this.people.npcs.find((npc) => npc.id === ownerId)
+      ?? null;
+    const highValue = typeId && itemType(typeId).value >= HIGH_VALUE_THEFT;
+    const responder = seen ?? (highValue && present?.shop ? present : null);
+    const name = (responder ?? this.findNpc(ownerId))?.name ?? 'Somebody';
 
-    if (!seen) {
+    if (!responder) {
       const fresh = this.player.friends.anger(ownerId, this.player.clock.stamp);
       this.note(fresh
         ? `${name} is going to notice ${label} is gone.`
@@ -2606,16 +2615,16 @@ class Game {
       return 'noted';
     }
 
-    if (seen.shop && typeId) {
+    if (seen?.shop && typeId && !highValue) {
       seen.accuse(seen.shop.askFor(typeId), typeId, label);
       sfx.click(false);
       this.note(`${name} saw that.`);
       return 'accused';
     }
 
-    seen.enrage();
-    this.player.friends.anger(seen.id, this.player.clock.stamp);
-    this.note(`${name} saw you.`);
+    responder.enrage();
+    this.player.friends.anger(responder.id, this.player.clock.stamp);
+    this.note(seen ? `${name} saw you.` : `${name} knows what you took.`);
     return 'caught';
   }
 
@@ -5655,11 +5664,9 @@ function directGame(hold, params, resume) {
  *
  * Every other kit in the game is declared by the ONE world that places it, and
  * loaded on the way into that world (see world/kits.js). These cannot be,
- * because their types leave the building: a flat-pack bought at Turnip & Timber
- * or a workstation pried out of the cafe goes into your pockets, walks out of
- * the door, crosses the town and gets assembled in a home -- and it is in the SAVE, so a
- * fresh session restores an inventory holding `kititem.wingback-chair` before
- * it has been anywhere near the shop.
+ * because their types leave the building: furniture, workstations, and prizes
+ * go into your pockets, cross places, and land in the SAVE, so a fresh session
+ * may restore one before it has been anywhere near the kit's original world.
  *
  * A per-place dependency would therefore have to be declared by every place the
  * player might carry a chair into, which is all of them. So the catalogue is a
@@ -5671,7 +5678,15 @@ function directGame(hold, params, resume) {
  * (The store interior declares it too, so `checkworld` -- which never runs
  * this function -- still validates the shop's three hundred stock rows.)
  */
-const PORTABLE_KITS = ['kits/turnip-catalog.kit.json', 'kits/internet-cafe.kit.json'];
+const PORTABLE_KITS = [
+  'kits/turnip-catalog.kit.json',
+  'kits/internet-cafe.kit.json',
+  'kits/pit.kit.json',
+  'kits/casino.kit.json',
+  'kits/bunker.kit.json',
+  'kits/skydeck.kit.json',
+  'kits/moonwell.kit.json',
+];
 
 async function boot() {
   await kits.loadAll(PORTABLE_KITS);
