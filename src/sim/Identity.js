@@ -91,7 +91,7 @@ export const NAME_MAX = 16;
 /**
  * What you are before anyone asks: the character as originally drawn.
  * The birthday is a 0-based day of the calendar year (see Clock.js) --
- * Spring 1, i.e. the day every new world opens on, so a player who skips the
+ * January 1, i.e. the day every new world opens on, so a player who skips the
  * picker still gets one morning that mentions them.
  */
 export const DEFAULT_IDENTITY = Object.freeze({

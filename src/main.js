@@ -75,7 +75,7 @@ import { Errands } from './sim/Errands.js';
 import { FreeInput, GridInput } from './sim/inputs.js';
 import { findPath, findPathToAny } from './sim/pathfind.js';
 import { Keyboard } from './sim/Keyboard.js';
-import { dayOfYear, dateLabel, YEAR_DAYS } from './sim/Clock.js';
+import { calendarYear, dayOfYear, fullDateLabel } from './sim/Clock.js';
 import { yawFromVec, DIR, DIR_VEC } from './core/constants.js';
 import { makeRng, hashString } from './core/rng.js';
 import { Hud } from './ui/hud.js';
@@ -99,8 +99,8 @@ import { setPlaceMusic, unlockMusic } from './audio/music.js';
 import { generate, worldId } from './world/generate.js';
 import { ANIMAL_TYPES } from './world/animalTypes.js';
 import {
-  AIRPORT_WORLD_ID, flightForGate, flightForId, flightForUrl, flightSchedule,
-  flightTicketType, flightWorldUrl,
+  AIRPORT_SECURITY_Z, AIRPORT_WORLD_ID, flightForGate, flightForId, flightForUrl,
+  flightSchedule, flightTicketType, flightWorldUrl, hasFlightTicket,
 } from './world/flights.js';
 import {
   SHORELINE_STYLES, WATER_STYLES, MAP_MODES, MAP_SIZES,
@@ -109,9 +109,7 @@ import {
   readGraphicsSettings, writeGraphicsSettings,
 } from './settings/graphics.js';
 import {
-  DAY_LENGTHS, DAY_SECONDS as DAY_LENGTH_SECONDS, DAY_LABELS,
-  DEATH_PENALTIES, DEATH_LABELS,
-  readGameSettings, writeGameSettings,
+  DEATH_PENALTIES, DEATH_LABELS, readGameSettings, writeGameSettings,
 } from './settings/game.js';
 import {
   SAVE_VERSION, listSaves, readSave, writeSave, deleteSave, readSavePreview, writeSavePreview,
@@ -391,7 +389,6 @@ class Game {
       onResolution: () => this.cycleResolution(),
       onShadows: () => this.cycleShadows(),
       onAntialias: () => this.cycleAntialias(),
-      onDayLength: () => this.cycleDayLength(),
       onDeath: () => this.cycleDeathPenalty(),
       onMap: (sizesOnly) => this.cycleMap(sizesOnly),
       onWorlds: () => this.openWorlds(),
@@ -569,37 +566,11 @@ class Game {
     this.syncGraphics();
   }
 
-  // ------------------------------------------------------------------- time --
+  // ------------------------------------------------------------------- game --
 
-  /**
-   * Push the day length at the clock and at the label that reports it.
-   *
-   * The same shape as syncGraphics and for the same reason: one place where the
-   * setting reaches everything that reads it, so the drawer cannot drift from
-   * the game. Called on boot AND on every restore, because a save carries the
-   * day it was on but never the speed the player likes it running at -- that is
-   * a preference and lives in settings/game.js.
-   */
+  /** Push player-owned gameplay settings at the systems that read them. */
   syncGameSettings() {
-    const length = this.gameSettings.dayLength;
-    this.player.clock.daySeconds = DAY_LENGTH_SECONDS[length];
-    this.hud.setDayLength(DAY_LABELS[length]);
     this.hud.setDeathPenalty(DEATH_LABELS[this.gameSettings.deathPenalty]);
-  }
-
-  /**
-   * Step through the day lengths, briskest first, and round again through
-   * `frozen` -- which is a length like any other and not a separate switch.
-   *
-   * Free and instant: nothing is rebuilt, because the only thing that reads it
-   * is the divisor in Clock.advance. Changing it mid-day does not move the sun,
-   * it changes how fast the sun is moving, which is the honest behaviour.
-   */
-  cycleDayLength() {
-    const at = DAY_LENGTHS.indexOf(this.gameSettings.dayLength);
-    this.gameSettings.dayLength = DAY_LENGTHS[(at + 1) % DAY_LENGTHS.length];
-    writeGameSettings(this.gameSettings);
-    this.syncGameSettings();
   }
 
   /**
@@ -2081,11 +2052,6 @@ class Game {
     this.player.purse.setUnlimited(this.cheats.money);
     this.museum.restore(restore?.museum);
     this.mail.restore(restore?.mail);
-    // A save from before there was time has no clock in it, and the sensible
-    // reading of that is the morning of the first day -- which is what
-    // Clock.restore does with an absent block. See Save.js on why the save
-    // version is NOT bumped for an additive field.
-    //
     // BEFORE the friendships, which is the one ordering here that is load
     // bearing rather than tidy: a grudge is a deadline measured against this
     // clock, and a save written before grudges had deadlines has to be given
@@ -3087,7 +3053,7 @@ class Game {
     const pickups = this.settleLogistics();
     if (dayOfYear(this.player.clock.day) === this.player.identity.birthday) {
       this.mail.queue({
-        id: `birthday:${Math.floor((this.player.clock.day - 1) / YEAR_DAYS)}`,
+        id: `birthday:365:${calendarYear(this.player.clock.day)}`,
         from: 'Town Hall',
         subject: `Happy birthday, ${this.player.identity.name}!`,
         body: `Dear ${this.player.identity.name},\n\nEveryone at Town Hall wishes you a very happy birthday. We hope the year ahead brings good weather, good neighbours, and plenty worth coming home to.\n\nWarmly,\nTown Hall`,
@@ -3105,7 +3071,7 @@ class Game {
     const mended = this.player.health.restore();
 
     const sky = weatherOn(this.world, this.player.clock.day);
-    const lines = [`Day ${this.player.clock.day}, ${dateLabel(dayOfYear(this.player.clock.day))}.`];
+    const lines = [fullDateLabel(this.player.clock.day) + '.'];
     // The one morning a year that is about you. Ahead of the weather, because
     // a town would mention your birthday before it mentioned the rain.
     if (dayOfYear(this.player.clock.day) === this.player.identity.birthday) {
@@ -3216,6 +3182,7 @@ class Game {
     this.cancelContextAction();
     this.pendingOffice = null;
     this.pendingPoker = null;
+    let offeredOffice = null;
     if (['planner', 'wildlife', 'mayor', 'employment', 'cheats'].includes(npc.props.office)) {
       const back = this.stack.at(-1)?.world;
       if (!back || back.kind !== 'exterior') {
@@ -3244,7 +3211,8 @@ class Game {
       // Town Hall officials first speak through ordinary validated dialogue.
       // Their desk opens only when that conversation reaches its end.
       if (!this.player.friends.hates(npc.id)) {
-        this.pendingOffice = { npc, office: npc.props.office, context };
+        offeredOffice = { npc, office: npc.props.office, context };
+        if (npc.props.office !== 'mayor') this.pendingOffice = offeredOffice;
       }
     }
     // Somebody walking over about the thing in your pocket is having THAT
@@ -3263,6 +3231,9 @@ class Game {
       }, this.player.clock.day + 1);
     }
     const ctx = this.tradeCtx();
+    if (offeredOffice?.office === 'mayor') {
+      ctx.openOffice = () => { this.pendingOffice = offeredOffice; };
+    }
     // Somebody angry, and somebody minding a shut till, are having their own
     // conversation: no work talk, no pickups, no pleasantries.
     const unavailable = this.player.friends.hates(npc.id) || npc.shop && !npc.shopAvailable;
@@ -3585,7 +3556,7 @@ class Game {
     const inventory = this.player.inventory;
     const purse = this.player.purse;
     return {
-      date: dateLabel(dayOfYear(this.player.clock.day)),
+      date: fullDateLabel(this.player.clock.day),
       time: this.player.clock.label,
       coins: purse.unlimited ? 'unlimited' : purse.coins,
       flights: flightSchedule(this.player.clock).map((flight) => ({
@@ -3683,7 +3654,7 @@ class Game {
           gallery: type.swims === true ? 'Fish' : 'Wildlife',
           collected: !!exhibit,
           count: exhibit?.count ?? 0,
-          firstSeen: exhibit ? dateLabel(dayOfYear(exhibit.day)) : null,
+          firstSeen: exhibit ? fullDateLabel(exhibit.day) : null,
           swatch: type.palette?.body ?? 0x7f8c89,
         };
       })
@@ -3750,8 +3721,6 @@ class Game {
 
     if (!this.player.inventory.spend(typeId, 1)) return false;
     this.beginTravel(Promise.resolve(destination), (world) => {
-      const crossed = this.player.clock.skip(flight.duration / 24);
-      if (crossed) this.dawn(crossed);
       this.setPlace(world, world.spawn.tile, world.spawn.facing);
       this.note(`Welcome to ${flight.name}. Local time is ${this.player.clock.label}.`);
     });
@@ -4010,9 +3979,7 @@ class Game {
 
     if (action === 'sleep') {
       this.poseAtFurniture(obj, 'lie');
-      const crossed = this.player.clock.skip((1 - this.player.clock.t) + 0.22);
-      if (crossed) this.dawn(crossed);
-      this.note('You sleep until dawn. Move or press E to get up.');
+      this.note('You lie down. Time keeps pace with the real world. Move or press E to get up.');
       return obj;
     }
 
@@ -5095,28 +5062,21 @@ class Game {
       return;
     }
 
-    // The worlds panel stops the world, and it is the only thing that does. A
-    // conversation merely takes the keyboard; this is a modal about ENDING the
-    // session, so leaving the chickens walking around underneath it -- and,
-    // worse, the trespass clock running -- would mean coming back from a
-    // decision you had not made yet to consequences you had not chosen.
+    // The worlds panel pauses simulation, but not wall time. Chickens and the
+    // trespass timer stop under this session-ending modal; the clock catches up
+    // to the device as soon as the panel closes.
     if (this.worlds.open) {
       if (this.keys.pressed('Escape')) this.worlds.close();
       this.keys.endFrame();
       return;
     }
 
-    // Time, and where it sits in this list is the whole of what it means.
-    //
-    // AFTER travel, so it pauses for the quarter-second a doorway is black --
-    // there is no world on screen to be a time of day in. AFTER the worlds
-    // panel, which is documented above as the one thing that stops the world.
-    // But BEFORE the conversation branch, so time keeps passing while you are
-    // talking: a chat that froze the sun would let a player park midnight, and
-    // it is the same argument that keeps the trespass clock running through one.
-    this.stage.setTimeOfDay(this.player.clock.t);
-    const dawned = this.player.clock.advance(dt);
+    // Sync after travel and the worlds panel so the first visible frame catches
+    // up to the device clock. It runs before conversation handling because a
+    // chat cannot park midnight or defer an expired grudge.
+    const dawned = this.player.clock.advance();
     if (dawned) this.dawn(dawned);
+    this.stage.setTimeOfDay(this.player.clock.t);
     // Straight after the clock moves, and BEFORE the conversation branch: the
     // grudge that runs out has to be gone before `talk` decides which script
     // this hello gets, or the first sentence of a reconciliation would be an
@@ -5133,7 +5093,7 @@ class Game {
     // Who is at home at this hour, and who has just walked out of their own
     // front door. Throttled rather than run every frame: it is a reconcile over
     // a handful of houses and nothing it decides can change inside a fifth of a
-    // second -- the clock it reads moves a game-hour in tens of real seconds.
+    // second -- its schedule reads the wall clock.
     this._residentT += dt;
     if (this._residentT >= RESIDENT_TICK) {
       this.syncResidents(this._residentT);
@@ -5280,15 +5240,6 @@ class Game {
     // These are diagnostics and NOT settings: nothing remembers them, on
     // purpose, because a world that came back with its trees hidden would be a
     // bug report rather than a preference.
-    // Push the sun along by about an in-game hour. A diagnostic like the probes
-    // below, with one difference worth saying out loud: this one CHANGES SAVED
-    // STATE, because it moves the real clock rather than previewing one. It is
-    // here because a twenty-minute day makes "does dusk look right" a
-    // twenty-minute question otherwise.
-    if (this.keys.pressed('KeyT')) {
-      const dawned = this.player.clock.skip();
-      if (dawned) this.dawn(dawned);
-    }
     if (this.keys.pressed('Digit4')) this.stage.toggleGroup('items');
     if (this.keys.pressed('Digit5')) this.stage.toggleGroup('fauna');
     if (this.keys.pressed('Digit7')) this.stage.toggleGroup('folk');
@@ -5329,7 +5280,17 @@ class Game {
     // makes every walk a strafe -- the body slides across the screen facing
     // the mouse instead of walking forward.
     if (vx === 0 && vz === 0) this.facePointer();
+    const beforeMoveZ = this.player.z;
     this.player.move(dt, vx, vz, this.collisionBodies());
+    if (this.world.meta.id === AIRPORT_WORLD_ID
+      && beforeMoveZ >= AIRPORT_SECURITY_Z
+      && this.player.z < AIRPORT_SECURITY_Z
+      && !hasFlightTicket(this.player.inventory)) {
+      this.player.z = beforeMoveZ;
+      this.player.y = this.world.groundHeight(this.player.x, this.player.z);
+      this.player.speed = 0;
+      this.note('A plane ticket is required beyond airport security.');
+    }
     this.advanceContextAction();
 
     // Interaction reads the position the player is standing in NOW, so it runs

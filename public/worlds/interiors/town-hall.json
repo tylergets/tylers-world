@@ -183,6 +183,7 @@
           {"text":"How is the town doing?","to":"town"},
           {"text":"What is my reputation here?","to":"reputation"},
           {"text":"What is the town bank balance?","to":"bank"},
+          {"text":"Open Resident Services.","do":{"office":true},"to":"end"},
           {"text":"Can shops stay open 24 hours?","when":{"shops24":false},"to":"shops24.proposal"},
           {"text":"Are shops still open all day?","when":{"shops24":true},"to":"shops24.active"},
           {"text":"We need an office for managing my workers.","when":{"all":[{"hasHiredWorker":true},{"officeBuilt":false}]},"do":{"officeBuilt":true},"to":"office.approved"},

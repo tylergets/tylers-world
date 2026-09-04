@@ -259,6 +259,7 @@ export class Dialogue {
         case 'officeBuilt': if (v) this.ctx.buildWorkerOffice?.(); break;
         case 'travel': this.ctx.travel?.(v); break;
         case 'returnHome': if (v) this.ctx.returnHome?.(); break;
+        case 'office': if (v) this.ctx.openOffice?.(); break;
         case 'shop': if (v) this.shop = this.npc.shop; break;
         case 'poker': if (v) this.ctx.openPoker?.(this.npc); break;
         case 'gift': break; // Choice handling suspends for explicit item selection.

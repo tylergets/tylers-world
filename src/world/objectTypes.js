@@ -150,10 +150,16 @@ export const OBJECT_TYPES = {
     palette: { wall: 0xf7ecd6, roof: 0x4f93c9, roofDark: 0x3d7cad, trim: 0x7d6248, door: 0x6b4a30, window: 0x9fd4e8, awning: 0xe8b84b, sign: 0x315f84, signText: 0xfff2c9 },
   },
   'building.internet-cafe': {
-    category: 'building', label: 'Internet Cafe',
+    category: 'building', label: 'Coffee Shop',
     footprint: withDoor(5, 4, 2), height: 3.9,
     squash: 0.3,
-    palette: { wall: 0x28343f, wallHi: 0x40515e, roof: 0x17222b, trim: 0x72d8c0, door: 0x314f62, window: 0x65b8d0, sign: 0x14212a, signText: 0x8ff5d7, metal: 0xa5b3bc },
+    palette: { wall: 0xe7d3b0, wallHi: 0xf4e5ca, roof: 0x5c3b2c, trim: 0x7c4f38, door: 0x59392b, window: 0xa8d8df, sign: 0x315b49, signText: 0xffedc2, awning: 0xb85f4a, metal: 0x8e8174 },
+  },
+  'building.lighthouse': {
+    category: 'building', label: 'Lighthouse',
+    footprint: solid(2, 2), height: 6.4,
+    squash: 0.18,
+    palette: { stone: 0xf0eadb, band: 0xc65345, dark: 0x4b555a, glass: 0x9edce5, light: 0xffdf72, rail: 0x303a40, door: 0x4e392d },
   },
   'building.clinic': {
     category: 'building', label: 'Clinic & Pharmacy',

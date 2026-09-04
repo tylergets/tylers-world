@@ -1,7 +1,7 @@
 {
   "format": "tw.kit",
   "version": 1,
-  "meta": { "id": "internet-cafe", "name": "Internet Cafe Fixtures" },
+  "meta": { "id": "internet-cafe", "name": "Coffee Shop Fixtures" },
   "types": {
     "fixture.cafe.computer-desk": {
       "kind": "object",
@@ -99,17 +99,20 @@
     },
     "fixture.cafe.counter": {
       "kind": "object",
-      "label": "Login Bar",
+      "label": "Coffee Counter",
       "footprint": { "w": 4, "d": 1 },
       "height": 1.18,
       "squash": 0.3,
-      "palette": { "body": "#5a8f88", "top": "#f0e2c4", "cyan": "#e89a62", "pink": "#d96676", "screen": "#36484b" },
+      "palette": { "body": "#5a8f88", "top": "#f0e2c4", "cyan": "#e89a62", "pink": "#d96676", "screen": "#36484b", "coffee": "#513326", "cup": "#f7efe0" },
       "parts": [
         { "prim": "box", "at": [0, 0.52, 0], "size": [3.82, 1.04, 0.76], "color": "body" },
         { "prim": "box", "at": [0, 1.09, 0], "size": [3.96, 0.14, 0.9], "color": "top" },
         { "prim": "box", "at": [-0.9, 0.54, 0.39], "size": [1.45, 0.1, 0.03], "color": "cyan" },
         { "prim": "box", "at": [0.9, 0.54, 0.39], "size": [1.45, 0.1, 0.03], "color": "pink" },
-        { "prim": "box", "at": [0, 1.24, -0.1], "size": [0.64, 0.34, 0.08], "color": "screen" }
+        { "prim": "box", "at": [-0.65, 1.28, -0.1], "size": [0.78, 0.38, 0.34], "color": "screen" },
+        { "prim": "box", "at": [-0.65, 1.49, -0.1], "size": [0.62, 0.08, 0.3], "color": "coffee" },
+        { "prim": "cyl", "at": [0.2, 1.22, 0.02], "size": [0.13, 0.2, 0.13], "color": "cup" },
+        { "prim": "cyl", "at": [0.58, 1.22, 0.02], "size": [0.13, 0.2, 0.13], "color": "cup" }
       ]
     },
     "fixture.cafe.booth": {

@@ -23,8 +23,9 @@ import { loadWorldFile, parseWorldFile } from './WorldFile.js';
 import { World } from './World.js';
 import { addCabService } from './cabService.js';
 import { addBusinessServices } from './businessServices.js';
+import { addCoastalLandmark } from './coastalLandmarks.js';
 
-const addSharedServices = (world) => addBusinessServices(addCabService(world));
+const addSharedServices = (world) => addBusinessServices(addCoastalLandmark(addCabService(world)));
 
 export class Places {
   constructor() {

@@ -1,6 +1,7 @@
-import { dateLabel, dayOfYear } from '../sim/Clock.js';
+import { fullDateLabel } from '../sim/Clock.js';
 
 export const AIRPORT_WORLD_ID = 'airport.terminal';
+export const AIRPORT_SECURITY_Z = 36;
 export const BOARDING_EARLY_HOURS = 1;
 export const BOARDING_LATE_HOURS = 0.5;
 
@@ -29,6 +30,10 @@ export const FLIGHT_DESTINATIONS = Object.freeze([
 
 export const flightTicketType = (flight) => `item.ticket.${flight.id}`;
 export const flightWorldUrl = (flight) => `flight:${flight.id}`;
+
+export function hasFlightTicket(inventory) {
+  return FLIGHT_DESTINATIONS.some((flight) => inventory.count(flightTicketType(flight)) > 0);
+}
 
 export function flightForId(id) {
   return FLIGHT_DESTINATIONS.find((flight) => flight.id === id) ?? null;
@@ -64,7 +69,7 @@ export function nextFlight(clock, flight) {
     ticketType: flightTicketType(flight),
     url: flightWorldUrl(flight),
     day,
-    date: dateLabel(dayOfYear(day)),
+    date: fullDateLabel(day),
     time: formatFlightTime(flight.departure),
     arrival: formatFlightTime((flight.departure + flight.duration) % 24),
     untilHours,

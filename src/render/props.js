@@ -474,12 +474,12 @@ function generalStore(c) {
     c.obj.props?.label ?? c.type.label, p.signText);
 }
 
-function internetCafe(c) {
+function coffeeShop(c) {
   const p = c.pal, W = 4.5, D = 3.3, H = 2.25;
   c.box(0, 0.1, 0, W + 0.18, 0.2, D + 0.18, p.trim);
   c.box(0, H / 2 + 0.1, 0, W, H, D, p.wall);
   c.box(0, H + 0.15, 0, W + 0.28, 0.3, D + 0.28, p.roof);
-  for (const x of [-2.12, 2.12]) c.box(x, H + 0.42, 0, 0.12, 0.55, D + 0.18, p.wallHi);
+  c.box(0, H + 0.36, 0, W - 0.45, 0.16, D - 0.45, p.wallHi);
 
   const [dx, dz] = c.type.door;
   const doorX = dx + 0.5 - c.type.footprint.w / 2;
@@ -491,17 +491,37 @@ function internetCafe(c) {
     c.box(wx, 1.0, face + 0.08 * zf, 1.12, 1.18, 0.12, p.wallHi);
     c.box(wx, 1.0, face + 0.15 * zf, 0.92, 0.98, 0.05, p.window);
     c.box(wx, 1.0, face + 0.18 * zf, 0.05, 0.98, 0.025, p.trim);
+    c.add(BOX, trs(wx, 1.58, face + 0.4 * zf, 0.18 * zf, 0, 0, 1.22, 0.08, 0.62), p.awning);
   }
   c.box(0, 1.91, face + 0.13 * zf, 4.04, 0.52, 0.1, p.sign);
   shopSign(c, face + 0.09 * zf, zf, 0, c.obj.props?.label ?? c.type.label,
     p.signText, 1.91, 3.72);
 
-  // Rooftop aerial and signal bars make the silhouette readable from overhead.
-  c.box(0, 3.05, 0, 0.09, 1.5, 0.09, p.metal);
-  for (let i = 0; i < 3; i++) {
-    c.box(0, 2.72 + i * 0.32, 0, 1.35 - i * 0.34, 0.08, 0.08, p.trim);
+  // A broad stovepipe replaces the old network aerial and reads clearly overhead.
+  c.add(CYL, trs(-1.25, 2.95, 0.45, 0, 0, 0, 0.14, 0.9, 0.14), p.metal);
+  c.add(CYL, trs(-1.25, 3.43, 0.45, 0, 0, 0, 0.22, 0.08, 0.22), p.roof);
+}
+
+function lighthouse(c) {
+  const p = c.pal;
+  c.add(CYL, trs(0, 0.12, 0, 0, 0, 0, 0.94, 0.24, 0.94), p.dark);
+  c.add(TAPER, trs(0, 2.35, 0, 0, 0, 0, 0.76, 4.5, 0.76), p.stone);
+  for (const y of [1.35, 3.05]) {
+    const radius = 0.76 - y * 0.035;
+    c.add(CYL, trs(0, y, 0, 0, 0, 0, radius, 0.5, radius), p.band);
   }
-  c.box(0, 3.84, 0, 0.22, 0.18, 0.22, p.trim);
+  c.box(0, 0.68, 0.69, 0.48, 1.02, 0.08, p.door);
+
+  c.add(CYL, trs(0, 4.65, 0, 0, 0, 0, 0.96, 0.16, 0.96), p.dark);
+  c.add(CYL, trs(0, 5.08, 0, 0, 0, 0, 0.58, 0.72, 0.58), p.glass);
+  c.add(CYL, trs(0, 5.08, 0, 0, 0, 0, 0.25, 0.5, 0.25), p.light);
+  for (let i = 0; i < 8; i++) {
+    const a = i * Math.PI / 4;
+    c.box(Math.cos(a) * 0.77, 4.98, Math.sin(a) * 0.77, 0.05, 0.62, 0.05, p.rail);
+  }
+  c.add(CYL, trs(0, 5.47, 0, 0, 0, 0, 0.7, 0.12, 0.7), p.rail);
+  c.add(CONE, trs(0, 5.86, 0, 0, 0, 0, 0.82, 0.72, 0.82), p.band);
+  c.box(0, 6.27, 0, 0.08, 0.28, 0.08, p.rail);
 }
 
 function clinic(c) {
@@ -1026,7 +1046,8 @@ const BUILDERS = {
   'building.cabin': home,
   'building.bungalow': home,
   'building.store': generalStore,
-  'building.internet-cafe': internetCafe,
+  'building.internet-cafe': coffeeShop,
+  'building.lighthouse': lighthouse,
   'building.clinic': clinic,
   'building.office': generalStore,
   'building.furniture': furnitureStore,

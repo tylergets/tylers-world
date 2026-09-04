@@ -3,7 +3,7 @@
   "version": 1,
   "kind": "interior",
   "kits": ["kits/internet-cafe.kit.json"],
-  "meta": { "id": "business.internet-cafe.interior", "name": "Internet Cafe", "note": "A cozy retro cafe of chunky computers, coral booths, magazines, and coffee." },
+  "meta": { "id": "business.internet-cafe.interior", "name": "Coffee Shop", "note": "A warm neighborhood coffee shop with booths, small tables, and a public computer." },
   "grid": { "width": 20, "height": 15, "tileSize": 1 },
   "ambience": { "music": "home", "sun": 0.9, "hemi": 2.35, "hemiSky": "#ffe9c9", "hemiGround": "#557b72" },
   "layers": {
@@ -51,17 +51,15 @@
   "objects": [
     { "id": "cafe.counter", "type": "fixture.cafe.counter", "tile": [1, 2] },
     { "id": "terminal.1", "type": "fixture.cafe.computer-desk", "tile": [7, 2] },
-    { "id": "terminal.2", "type": "fixture.cafe.computer-desk", "tile": [10, 2] },
-    { "id": "terminal.3", "type": "fixture.cafe.computer-desk", "tile": [2, 5], "rotation": 90 },
-    { "id": "terminal.4", "type": "fixture.cafe.computer-desk", "tile": [2, 8], "rotation": 90 },
-    { "id": "terminal.5", "type": "fixture.cafe.computer-desk", "tile": [7, 7] },
     { "id": "terminal.6", "type": "fixture.cafe.nes-desk", "tile": [10, 7] },
     { "id": "terminal.chair.1", "type": "furn.chair", "tile": [7, 3] },
-    { "id": "terminal.chair.2", "type": "furn.chair", "tile": [10, 3] },
-    { "id": "terminal.chair.3", "type": "furn.chair", "tile": [3, 5], "rotation": 90 },
-    { "id": "terminal.chair.4", "type": "furn.chair", "tile": [3, 8], "rotation": 90 },
-    { "id": "terminal.chair.5", "type": "furn.chair", "tile": [7, 8] },
     { "id": "terminal.chair.6", "type": "furn.chair", "tile": [10, 8] },
+    { "id": "cafe.table.w", "type": "furn.table", "tile": [2, 5] },
+    { "id": "cafe.table.c", "type": "furn.table", "tile": [7, 7] },
+    { "id": "cafe.chair.w1", "type": "furn.chair", "tile": [4, 5], "rotation": 90 },
+    { "id": "cafe.chair.w2", "type": "furn.chair", "tile": [2, 7] },
+    { "id": "cafe.chair.c1", "type": "furn.chair", "tile": [9, 7], "rotation": 90 },
+    { "id": "cafe.chair.c2", "type": "furn.chair", "tile": [7, 9] },
     { "id": "cafe.booth.n", "type": "fixture.cafe.booth", "tile": [15, 2] },
     { "id": "cafe.booth.s", "type": "fixture.cafe.booth", "tile": [15, 7] },
     { "id": "cafe.magazines", "type": "furn.shelf", "tile": [17, 11], "rotation": 90 },
@@ -73,13 +71,13 @@
   "npcs": [
     {
       "id": "keep.pixel", "type": "folk.shopkeep", "tile": [2, 1], "facing": "south",
-      "props": { "name": "Pixel", "title": "Internet Cafe Attendant", "noSmallTalk": true, "roam": 1 },
+      "props": { "name": "Pixel", "title": "Barista", "noSmallTalk": true, "roam": 1 },
       "dialog": { "start": "hello", "nodes": {
-        "hello": { "text": "The teal computers open TWNET. The purple station runs a little NES adventure. Shop, check neighbor classifieds, browse the museum archive, or book a flight.", "choices": [
+        "hello": { "text": "Coffee is always on. The public computer opens TWNET for shopping, classifieds, museum records, and flights. The purple station still runs its little NES adventure.", "choices": [
           { "text": "What can I do here?", "to": "about" },
           { "text": "Maybe later.", "to": "end" }
         ] },
-        "about": { "text": "TWNET starts on its home page and links to every local service. The purple game station has its own controller and a built-in open-source adventure.", "then": "hello" }
+        "about": { "text": "Take any open table. TWNET is on the computer by the counter, and the purple game station has its own controller.", "then": "hello" }
       } }
     }
   ],

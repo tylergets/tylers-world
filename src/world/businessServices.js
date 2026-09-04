@@ -3,7 +3,7 @@
 import { placeBuildingAtSafeSite } from './buildingPlacement.js';
 
 const BUSINESSES = [
-  ['business.internet-cafe', 'building.internet-cafe', 'Internet Cafe', 'worlds/interiors/internet-cafe.json'],
+  ['business.internet-cafe', 'building.internet-cafe', 'Coffee Shop', 'worlds/interiors/internet-cafe.json'],
   ['business.clinic', 'building.clinic', 'Clinic & Pharmacy', 'worlds/interiors/doctors-office.json'],
 ];
 const SERVICE_TYPES = new Set(BUSINESSES.map(([, type]) => type));

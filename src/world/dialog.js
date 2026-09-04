@@ -162,6 +162,7 @@ const EFFECTS = {
   officeBuilt: 'boolean',
   travel: 'string',
   returnHome: 'boolean',
+  office: 'boolean',
   shop: 'boolean',
   poker: 'boolean',
   gift: 'boolean',

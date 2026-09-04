@@ -34,7 +34,7 @@ import {
   GENDERS, HAIR_STYLES, HAIR_COLORS, SKIN_COLORS, EYE_COLORS, DEFAULT_IDENTITY,
   NAME_MAX, cleanName, hairColorOf, skinColorOf, eyeColorOf, randomWho,
 } from '../sim/Identity.js';
-import { SEASONS, DAYS_PER_SEASON } from '../sim/Clock.js';
+import { MONTHS, calendarDate, dayOfYearForDate } from '../sim/Clock.js';
 
 export class TitleScreen {
   /**
@@ -296,15 +296,15 @@ export class TitleScreen {
     const eyes = EYE_COLORS.map((c) => `
       <button class="who-hue${c.id === w.eye ? ' on' : ''}" data-eye="${esc(c.id)}"
         style="background:${hex(c.color)}" title="${esc(c.label)}" aria-label="${esc(c.label)} eyes"></button>`).join('');
-    // The birthday, as a season and a day within it. One number underneath
-    // (see Identity.js), split here purely because 28 buttons in a row is a
-    // calendar and two short rows is a birthday.
-    const seasons = SEASONS.map((s, i) => `
-      <button class="who-opt${Math.floor(w.birthday / DAYS_PER_SEASON) === i ? ' on' : ''}"
-        data-season="${i}">${esc(s)}</button>`).join('');
-    const days = Array.from({ length: DAYS_PER_SEASON }, (_, i) => `
-      <button class="who-opt who-day${w.birthday % DAYS_PER_SEASON === i ? ' on' : ''}"
-        data-bday="${i}">${i + 1}</button>`).join('');
+    // Identity keeps one ordinal; the picker resolves it into a real month and
+    // date so February cannot offer dates that the calendar does not have.
+    const birthday = calendarDate(w.birthday);
+    const months = MONTHS.map((month, i) => `
+      <button class="who-opt${birthday.month === i ? ' on' : ''}"
+        data-month="${i}">${esc(month.name)}</button>`).join('');
+    const days = Array.from({ length: MONTHS[birthday.month].days }, (_, i) => `
+      <button class="who-opt who-day${birthday.day === i + 1 ? ' on' : ''}"
+        data-bday="${i + 1}">${i + 1}</button>`).join('');
 
     return `
       <div class="set-title">Who's playing?</div>
@@ -328,8 +328,8 @@ export class TitleScreen {
           <div class="who-row" role="group" aria-labelledby="who-hair-label">${cuts}</div>
           <div class="who-row who-hues" role="group" aria-label="Hair colour">${hues}</div>
           <div class="who-label" id="who-bday-label">Birthday</div>
-          <div class="who-row" role="group" aria-labelledby="who-bday-label">${seasons}</div>
-          <div class="who-row" role="group" aria-label="Day of the season">${days}</div>
+          <div class="who-row" role="group" aria-labelledby="who-bday-label">${months}</div>
+          <div class="who-row" role="group" aria-label="Day of the month">${days}</div>
         </div>
       </div>
       <div class="modal-actions">
@@ -402,17 +402,19 @@ export class TitleScreen {
     if (skin) { this.who.skin = skin.dataset.skin; this.#mark(skin, '[data-skin]'); this.#reflect(); return; }
     const eye = e.target.closest('[data-eye]');
     if (eye) { this.who.eye = eye.dataset.eye; this.#mark(eye, '[data-eye]'); this.#reflect(); return; }
-    const season = e.target.closest('[data-season]');
-    if (season) {
-      this.who.birthday = Number(season.dataset.season) * DAYS_PER_SEASON
-        + (this.who.birthday % DAYS_PER_SEASON);
-      this.#mark(season, '[data-season]');
+    const month = e.target.closest('[data-month]');
+    if (month) {
+      const selected = Number(month.dataset.month);
+      const current = calendarDate(this.who.birthday);
+      this.who.birthday = dayOfYearForDate(selected, Math.min(current.day, MONTHS[selected].days));
+      this.#draw();
+      this.card.querySelector(`[data-month="${selected}"]`)?.focus();
       return;
     }
     const bday = e.target.closest('[data-bday]');
     if (bday) {
-      this.who.birthday = Math.floor(this.who.birthday / DAYS_PER_SEASON) * DAYS_PER_SEASON
-        + Number(bday.dataset.bday);
+      const current = calendarDate(this.who.birthday);
+      this.who.birthday = dayOfYearForDate(current.month, Number(bday.dataset.bday));
       this.#mark(bday, '[data-bday]');
       return;
     }

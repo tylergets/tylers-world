@@ -2,6 +2,7 @@ import { DIR_NAME, DIR_VEC } from '../../core/constants.js';
 import { objectType } from '../../world/objectTypes.js';
 import { itemType } from '../../world/itemTypes.js';
 import { POCKET_COUNT } from '../../sim/Inventory.js';
+import { fullDateLabel } from '../../sim/Clock.js';
 import { PORTAL } from '../../world/World.js';
 import { WEATHER_KINDS, weatherOn } from '../../world/weather.js';
 import { itemIcon } from '../icons.js';
@@ -66,7 +67,7 @@ function Settings({ hud }) {
   return <div className="settings" hidden={!hud.settingsOpen}><div className="set-title">View blend</div><div className="morph"><span className="morph-end">3D</span><input type="range" id="hud-scrub" min="0" max="1000" step="1" defaultValue="0" aria-label="View morph" ref={hud.attachScrub} onInput={(e) => hud.scrubTo(e.currentTarget.value / 1000)} onMouseUp={(e) => e.currentTarget.blur()} /><span className="morph-end">2D</span></div>
     <Setting label="First person" value={hud.game?.firstPerson ? 'On' : 'Off'} hotkey="V" title="Mouse-look from the player's point of view. Click the world to capture the mouse." onClick={c.onFirstPerson} />
     <div className="set-title">Video</div><Setting label="Quality" value={title(hud.quality)} title="Low, Medium or High -- sets resolution, shadows, water and antialiasing together" onClick={c.onQuality} /><Setting label="Resolution" value={hud.resolution} title="How many pixels the frame is drawn at. Lower is faster and softer." onClick={c.onResolution} /><Setting label="Shadows" value={title(hud.shadows)} title="The sun's cast shadows. Off is the biggest single saving here." onClick={c.onShadows} /><Setting label="Antialiasing" value={title(hud.antialias) + (hud.antialiasNote ?? '')} title="Smooths jagged edges. Takes effect on the next reload." onClick={c.onAntialias} /><Setting label="Water" value={title(hud.water)} title="Still, rippling, or a full sunlit surface with glints and reflections" onClick={c.onWater} /><Setting label="Shoreline" value={hud.shoreline === 'natural' ? 'Natural' : 'Blocky'} title="Blend sand into shallow water with wet sand and foam" onClick={c.onShoreline} />
-    <div className="set-title">World</div><Setting label="Day length" value={hud.dayLength} title="How long a day lasts. Frozen stops the sun where it stands." onClick={c.onDayLength} /><Setting label="On death" value={hud.deathPenalty} title="What happens to your pockets when you run out of hearts: keep them, drop them where you fell, or lose them." onClick={c.onDeath} /><Setting label="Unstuck" title="Return to this place's safe arrival point" onClick={c.onUnstuck} />
+    <div className="set-title">World</div><Setting label="On death" value={hud.deathPenalty} title="What happens to your pockets when you run out of hearts: keep them, drop them where you fell, or lose them." onClick={c.onDeath} /><Setting label="Unstuck" title="Return to this place's safe arrival point" onClick={c.onUnstuck} />
     <div className="set-title">Options</div><Setting label={`Voice  ${hud.voice}`} hotkey="M" onClick={c.onVoice} /><Setting label={`Map  ${hud.mapMode}`} hotkey="N" onClick={() => c.onMap()} /><Setting label={`Readouts  ${hud.showPerf ? 'on' : 'off'}`} hotkey="P" onClick={() => hud.togglePerf()} /><Setting label={`Keymap  ${hud.keysOpen ? 'on' : 'off'}`} hotkey="K" onClick={() => hud.toggleKeys()} /><Setting label="Worlds & saves" hotkey="O" onClick={c.onWorlds} />
   </div>;
 }
@@ -86,7 +87,7 @@ export function HudView({ controller: hud, game }) {
   const model = rowsFor(game), player = game.player, world = game.world;
   const promptCount = Object.values(model.prompts).filter(([value]) => value != null).length;
   const weather = weatherOn(world, player.clock.day), trespass = game.trespass;
-  const clock = `Day ${player.clock.day}  ·  ${player.clock.label}${weather ? `  ·  ${WEATHER_KINDS[weather].label}` : ''}`;
+  const clock = `${fullDateLabel(player.clock.day)}  ·  ${player.clock.label}${weather ? `  ·  ${WEATHER_KINDS[weather].label}` : ''}`;
   const full = player.health?.full ?? true;
   const viewLabel = game.firstPerson
     ? `First Person${game.firstPersonLocked ? '' : ' · click to look'}`

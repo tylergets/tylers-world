@@ -42,8 +42,10 @@
  * playing; a failed read is a save that was not there.
  */
 
-/** Current shape. Version one is migrated on read; unknown versions are refused. */
-export const SAVE_VERSION = 2;
+import { dayOfYearForDate, wallClockAt } from './Clock.js';
+
+/** Current shape. Older known versions are migrated on read. */
+export const SAVE_VERSION = 4;
 /** Generated saves require the exact generator revision that built their baseline. */
 export const GENERATED_WORLD_VERSION = 1;
 
@@ -56,6 +58,81 @@ const previewKey = (id) => `tw.save-preview.${id}`;
 
 /** How many saves to keep. The oldest is dropped when a new one would exceed it. */
 export const MAX_SAVES = 12;
+
+const shifted = (value, by) => Number.isFinite(value) ? value + by : value;
+
+function shiftListingId(id, dayShift) {
+  if (typeof id !== 'string') return id;
+  const parts = id.split(':');
+  if (parts[0] !== 'classified' || !Number.isFinite(Number(parts[2]))) return id;
+  parts[2] = String(Number(parts[2]) + dayShift);
+  return parts.join(':');
+}
+
+/** Rebase every persisted old game-day value around the save's real timestamp. */
+function migrateWallClock(snap) {
+  const oldClock = snap.player?.clock;
+  const oldDay = Number.isFinite(oldClock?.day) ? Math.floor(oldClock.day) : 1;
+  const oldT = Number.isFinite(oldClock?.t) ? ((oldClock.t % 1) + 1) % 1 : 0;
+  const savedDate = Number.isFinite(snap.savedAt) ? new Date(snap.savedAt) : null;
+  const savedAt = savedDate && Number.isFinite(savedDate.getTime()) ? savedDate : new Date();
+  const wall = wallClockAt(savedAt);
+  const dayShift = wall.day - oldDay;
+  const stampShift = wall.day + wall.t - (oldDay + oldT);
+  const player = snap.player ??= {};
+
+  for (const id of Object.keys(player.friends?.visited ?? {})) {
+    player.friends.visited[id] = shifted(player.friends.visited[id], dayShift);
+  }
+  if (player.friends?.foes && !Array.isArray(player.friends.foes)) {
+    for (const [id, foe] of Object.entries(player.friends.foes)) {
+      if (Number.isFinite(foe)) player.friends.foes[id] = foe + stampShift;
+      else if (foe && Number.isFinite(foe.until)) foe.until += stampShift;
+    }
+  }
+  for (const letter of player.mail?.pending ?? []) {
+    if (letter) letter.dueDay = shifted(letter.dueDay, dayShift);
+  }
+  for (const row of snap.town?.logistics ?? []) {
+    if (!row) continue;
+    row.nextDay = shifted(row.nextDay, dayShift);
+    if (row.last) row.last.day = shifted(row.last.day, dayShift);
+  }
+  for (const closure of snap.town?.shopClosures ?? []) {
+    const state = closure?.[1];
+    if (!state) continue;
+    state.startedDay = shifted(state.startedDay, dayShift);
+    state.reopensDay = shifted(state.reopensDay, dayShift);
+  }
+  const market = snap.town?.marketplace;
+  for (const listing of market?.reservations ?? []) {
+    if (!listing) continue;
+    listing.day = shifted(listing.day, dayShift);
+    listing.id = shiftListingId(listing.id, dayShift);
+  }
+  if (Array.isArray(market?.sold)) market.sold = market.sold.map((id) => shiftListingId(id, dayShift));
+
+  for (const place of Object.values(snap.places ?? {})) {
+    for (const planting of place?.edits?.plantings ?? []) {
+      if (planting) planting.plantedDay = shifted(planting.plantedDay, dayShift);
+    }
+    for (const npc of Object.values(place?.folk ?? {})) {
+      if (!npc) continue;
+      npc.talkedAt = shifted(npc.talkedAt, stampShift);
+      if (npc.shop && Number.isFinite(npc.shop.day)) npc.shop.day += dayShift;
+    }
+  }
+  for (const row of player.museum?.species ?? []) {
+    if (Array.isArray(row)) row[2] = shifted(row[2], dayShift);
+  }
+  for (const state of Object.values(player.errands ?? {})) {
+    if (!Array.isArray(state?.events)) continue;
+    state.events = state.events.map((event) => typeof event === 'string'
+      ? event.replace(/(:harvest:-?\d+,-?\d+:)(-?\d+)$/, (_, prefix, day) => prefix + (Number(day) + dayShift))
+      : event);
+  }
+  player.clock = wall;
+}
 
 function read(key) {
   try {
@@ -93,8 +170,16 @@ export function listSaves() {
 
 export function readSave(id) {
   const snap = read(slotKey(id));
-  if (!snap || ![1, SAVE_VERSION].includes(snap.v)
+  if (!snap || ![1, 2, 3, SAVE_VERSION].includes(snap.v)
     || snap.source?.kind === 'seed' && snap.source.generator !== GENERATED_WORLD_VERSION) return null;
+  if (snap.v < 4) migrateWallClock(snap);
+  if (snap.v < 3 && Number.isInteger(snap.player?.identity?.birthday)) {
+    const oldBirthday = Math.max(0, Math.min(27, snap.player.identity.birthday));
+    const season = Math.floor(oldBirthday / 7);
+    const day = oldBirthday % 7 + 1;
+    // Preserve Spring/Summer/Autumn/Winter birthdays as March/June/September/December.
+    snap.player.identity.birthday = dayOfYearForDate([2, 5, 8, 11][season], day);
+  }
   // Edits.restore owns the v1 single-stack -> slot-array migration. Marking the
   // in-memory snapshot current ensures its first autosave completes the upgrade.
   snap.v = SAVE_VERSION;

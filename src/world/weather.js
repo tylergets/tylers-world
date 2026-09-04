@@ -2,8 +2,8 @@
  * What the sky is doing today, and why it depends on where you are.
  *
  * Weather is a pure function of (world, day) and is never stored anywhere:
- * roll it again and you get the same answer, which is the same argument the
- * clock makes for compressed time and every drop table makes for seeding. A
+ * roll it again and you get the same answer. The clock supplies the real local
+ * civil day, and every drop table makes the same bargain with seeding. A
  * save needs no weather block, a place you have not visited in a week has a
  * complete weather history the moment anything asks, and the whole module
  * stays importable by tools/checkworld.mjs in node.

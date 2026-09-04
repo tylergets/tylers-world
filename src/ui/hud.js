@@ -8,7 +8,7 @@ export class Hud {
     this.version = 0;
     this.settingsOpen = false; this.bagOpen = false; this.showPerf = false; this.keysOpen = false;
     this.voice = ''; this.shoreline = ''; this.water = ''; this.quality = '';
-    this.resolution = ''; this.shadows = ''; this.antialias = ''; this.dayLength = ''; this.deathPenalty = '';
+    this.resolution = ''; this.shadows = ''; this.antialias = ''; this.deathPenalty = '';
     this.mapMode = 'off'; this.world = null; this.indoors = false;
     this.homeReady = false; this.homeName = null;
     this.minimap = null; this.mapCanvas = null; this.scrub = null;
@@ -25,7 +25,6 @@ export class Hud {
   toggleKeys() { this.keysOpen = !this.keysOpen; this.changed(); return this.keysOpen; }
   setVoice(value) { this.voice = value; this.changed(); }
   setShoreline(value) { this.shoreline = value; this.changed(); }
-  setDayLength(value) { this.dayLength = value; this.changed(); }
   setDeathPenalty(value) { this.deathPenalty = value; this.changed(); }
   setClock() { /* clock is derived by the React view on the 10 Hz HUD tick */ }
   setWater(value) { this.water = value; this.changed(); }
